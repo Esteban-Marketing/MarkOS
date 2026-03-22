@@ -1,0 +1,16 @@
+{
+  "model_profile": "balanced",
+  "commit_docs": true,
+  "parallelization": true,
+  "mir_gate_enforcement": true,
+  "campaign_approval_flow": true,
+  "linear_sync": true,
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true,
+    "auto_advance": false,
+    "text_mode": false
+  },
+  "discipline_activation": {}
+}
