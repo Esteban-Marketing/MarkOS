@@ -1,12 +1,12 @@
 ---
 name: mgsd-plan-phase
-description: Plan marketing phase: MIR gate check, research, campaign planning, and verification
+description: Create detailed phase plans (PLAN.md) with researcher → planner → checker agent chain and MIR gate verification
 ---
 
 # mgsd-plan-phase
 
 <context>
-Plans the execution steps for a specific marketing phase.
+Orchestrates a 3-agent chain (market researcher → marketing planner → plan checker) with a revision loop to produce deep, concrete PLAN.md files for a marketing phase. Includes MIR gate check, brief express path, and auto-advance to execute.
 </context>
 
 <execution_context>
@@ -15,4 +15,5 @@ Plans the execution steps for a specific marketing phase.
 
 <process>
 Execute the `/mgsd-plan-phase` workflow exactly as documented in the workflow file.
+Arguments: phase number (e.g., `1` or `2.1`), optional flags: `--research`, `--skip-research`, `--gaps`, `--brief <file>`, `--auto`.
 </process>

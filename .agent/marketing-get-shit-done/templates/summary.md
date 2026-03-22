@@ -1,46 +1,48 @@
 ---
-phase: "{PHASE_NUMBER}"
-plan: "{PLAN_ID}"
-created: "{DATE}"
+plan: [FILL — plan ID]
+phase: [FILL — phase number]
+status: [FILL — complete | partial | failed]
+completed: [FILL — ISO timestamp]
+discipline: [FILL]
+campaign_id: [FILL — if applicable, else omit]
 ---
 
-# Phase {PHASE_NUMBER}: {PHASE_NAME} — Summary
+# Execution Summary — {Plan ID}: {Plan Name}
 
 ## One-Liner
-
-[FILL — Single sentence: what this plan accomplished]
+[FILL — single sentence: what was delivered and its purpose]
 
 ## Key Files
 
-- [FILL — file paths created or modified]
+### Created
+- [FILL — path/to/new-file.md]
 
-## Key Decisions
-
-- [FILL — Decision: rationale]
-
-## Requirements Completed
-
-- [REQ-XXX]
-
-## Patterns Established
-
-- [FILL — reusable patterns created by this work]
-
-## Dependency Graph
-
-```yaml
-provides:
-  - [What this phase makes available to later phases]
-affects:
-  - [What existing components were changed]
-```
+### Modified
+- [FILL — path/to/changed-file.md]
 
 ## Campaign Impact
 
-| Campaign | Action | Before → After |
-|----------|--------|----------------|
+| Campaign | Metric | Before | After / Expected |
+|---------|--------|--------|-----------------|
+| [FILL] | [FILL] | [FILL] | [FILL] |
 
-## Marketing Stack Changes
+**Net impact:** [FILL — leads expected, budget committed, KPI moved]
 
-| Tool | Action | Notes |
-|------|--------|-------|
+## Key Decisions Made
+
+[FILL — any deviation from plan or significant execution choice]
+[FILL — stakeholder inputs incorporated]
+
+## MIR Changes
+
+[FILL — any MIR files updated and what was populated]
+
+## Self-Check
+
+| Must-Have | Status | Notes |
+|-----------|--------|-------|
+| [FILL — from plan must_haves] | PASSED / FAILED | [FILL] |
+
+---
+
+*Plan: {plan_id} | Phase: {N} | Completed: {date}*

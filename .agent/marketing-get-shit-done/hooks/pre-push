@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+/**
+ * pre-push: MGSD MIR Gate pre-push check
+ * Install: cp .agent/marketing-get-shit-done/hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+ * 
+ * Warns if pushing with Gate 2 RED (execution content missing).
+ * Never blocks the push — only informs.
+ */
+
+const { execSync } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+const projectRoot = process.cwd();
+const toolsPath = path.join(projectRoot, '.agent', 'marketing-get-shit-done', 'bin', 'mgsd-tools.cjs');
+
+// Only run if MGSD planning exists
+const planningExists = fs.existsSync(path.join(projectRoot, '.planning'));
+if (!planningExists) process.exit(0);
+if (!fs.existsSync(toolsPath)) process.exit(0);
+
+try {
+  const result = execSync(`node "${toolsPath}" mir-audit --raw --quiet`, { 
+    encoding: 'utf8', 
+    cwd: projectRoot,
+    timeout: 10000,
+  });
+  
+  const status = JSON.parse(result);
+
+  if (status.gate1 && status.gate1.status === 'red') {
+    console.error('');
+    console.error('⚠  MGSD MIR Gate 1 (Identity) is RED');
+    console.error(`   ${status.gate1.gaps.length} gap(s) in core identity files:`);
+    for (const gap of status.gate1.gaps.slice(0, 5)) {
+      console.error(`   • ${gap}`);
+    }
+    console.error('');
+    console.error('   Run /mgsd-mir-audit for the full list.');
+    console.error('   Fill gaps before pushing for cleaner commit history.');
+    console.error('   (Push will continue — this is advisory only)');
+    console.error('');
+  }
+
+  if (status.gate2 && status.gate2.status === 'red') {
+    const gapCount = status.gate2.gaps.length;
+    console.warn(`ℹ  MGSD MIR Gate 2 (Execution) — ${gapCount} gap(s) in execution files.`);
+    console.warn('   Campaign planning may use placeholder data. Run /mgsd-mir-audit.');
+    console.warn('');
+  }
+
+} catch (_e) {
+  // MIR audit failure should never block a push
+}
+
+process.exit(0);

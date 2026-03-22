@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# commit-msg: Enforce mktg() commit prefix on marketing repository commits
+# Install: cp .agent/marketing-get-shit-done/hooks/commit-msg .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg
+
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Skip merge commits, fixups, and rebase operations
+if echo "$COMMIT_MSG" | grep -qE "^(Merge|Rebase|fixup!|squash!|WIP)"; then
+  exit 0
+fi
+
+# Skip commits from automation tools (CI, Linear sync, etc.)
+if echo "$COMMIT_MSG" | grep -qE "^(chore|ci|build|release)\("; then
+  exit 0
+fi
+
+# Validate format: mktg({scope}): description
+VALID_SCOPES="init|phase-[0-9]+(?:\.[0-9]+)?|roadmap|milestone|mir|msp|cleanup|pause|linear|tracking|campaign|planning"
+
+if ! echo "$COMMIT_MSG" | grep -qP "^mktg\(($VALID_SCOPES)\): .{3,}"; then
+  echo ""
+  echo "⚠  MGSD Commit Format Required"
+  echo ""
+  echo "   Expected: mktg({scope}): {description}"
+  echo ""
+  echo "   Valid scopes: init, phase-N, roadmap, milestone, mir, msp, cleanup, pause, linear"
+  echo ""
+  echo "   Examples:"
+  echo "   ✓  mktg(phase-1): market research complete"
+  echo "   ✓  mktg(mir): update AUDIENCES.md with ICP research"
+  echo "   ✓  mktg(roadmap): add Phase 4 — influencer pilot"
+  echo ""
+  echo "   Your commit: $COMMIT_MSG"
+  echo ""
+  echo "   (Use --no-verify to bypass for emergency commits)"
+  exit 1
+fi
+
+exit 0
