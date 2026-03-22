@@ -1,0 +1,85 @@
+# POSITIONING.md — Market Position & Differentiation Strategy
+
+```
+file_purpose  : Define how this business is positioned in the market relative to
+                alternatives, and why that position is defensible and valuable.
+status        : empty
+last_updated  : YYYY-MM-DD
+authoritative : YES for strategic positioning decisions
+```
+
+---
+
+## 1. Positioning Statement
+
+> Internal use only. Precise and specific.
+
+```
+For [most specific description of target customer],
+who [the specific problem they have],
+[Brand name] is the [category]
+that [key benefit/outcome].
+
+Unlike [the main alternative they would consider],
+[Brand name] [the single clearest differentiator].
+```
+
+**Filled version:**
+[FILL]
+
+---
+
+## 2. Category We Compete In
+
+**How we define our category:**
+[FILL — e.g. "We're a performance marketing operations firm — not a creative agency, not a media buyer, not a consultant."]
+
+**Why we use this category definition:**
+[FILL — what it signals, what it rules out, who it attracts]
+
+---
+
+## 3. The Single Differentiator
+
+> One differentiator that is specific, believable, and hard to copy.
+
+**What we do differently than any alternative:**
+[FILL]
+
+**Why competitors can't immediately copy this:**
+[FILL]
+
+**How we prove this in marketing:**
+[FILL]
+
+---
+
+## 4. Positioning by Audience Segment
+
+| Segment | How We Position For Them | Primary Message |
+|---------|------------------------|----------------|
+| ICP-1 | [FILL] | [FILL] |
+| ICP-2 | [FILL] | [FILL] |
+
+---
+
+## 5. Positioning Guardrails
+
+**We will NOT position as:**
+[FILL — positioning directions that are off-limits and why]
+
+**We will NOT compete on:**
+[FILL — e.g. "Price. We do not compete on being the cheapest option."]
+
+---
+
+## 6. Positioning Evolution
+
+**Where positioning is today:**
+[FILL]
+
+**Where positioning should be in 12 months:**
+[FILL]
+
+**What needs to be true for the positioning to shift:**
+[FILL — proof, market conditions, or capabilities required]

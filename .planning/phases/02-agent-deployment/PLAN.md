@@ -12,14 +12,14 @@ Instead of just serving templates, `mgsd` must be a fully functional autonomous 
 ## Plan
 
 ### 1. Mirror Core Architecture
-- [ ] Scaffold the missing directory structure inside `.agent/marketing-get-shit-done/`: `agents/`, `bin/`, `hooks/`, `references/`, `workflows/`.
-- [ ] Define the `VERSION` file for `mgsd`.
-- [ ] Replicate or stub `mgsd-tools.cjs` (or parallel Node.js tools) into `bin/` so the system executes its own routing identical to GSD.
+- [x] Scaffold the missing directory structure inside `.agent/marketing-get-shit-done/`: `agents/`, `bin/`, `hooks/`, `references/`, `workflows/`.
+- [x] Define the `VERSION` file for `mgsd`.
+- [x] Replicate or stub `mgsd-tools.cjs` (or parallel Node.js tools) into `bin/` so the system executes its own routing identical to GSD.
 
 ### 2. Deploy Marketing Agents
-- [ ] Extract the definitions from `.agent/marketing-get-shit-done/templates/AGENTS/` to identify the required specialized AI personas (e.g., `mgsd-marketing-strategist`, `mgsd-content-creator`).
-- [ ] Write the system prompt `.md` files for these newly derived AI marketing personas into `.agent/marketing-get-shit-done/agents/`.
+- [x] Extract the definitions from `.agent/marketing-get-shit-done/templates/AGENTS/` to identify the required specialized AI personas (e.g., `mgsd-marketing-strategist`, `mgsd-content-creator`).
+- [x] Write the system prompt `.md` files for these newly derived AI marketing personas into `.agent/marketing-get-shit-done/agents/`.
 
 ### 3. Dedicated Linear PM Setup
-- [ ] Develop the explicit Linear PM agent persona (`mgsd-linear-manager`) responsible for verifying task progress across the board.
-- [ ] Write the workflow `.md` instructions that permit autonomous task mapping and checking to Linear automatically when a phase is planned or completed.
+- [x] Develop the explicit Linear PM agent persona (`mgsd-linear-manager`) responsible for verifying task progress across the board.
+- [x] Write the workflow `.md` instructions that permit autonomous task mapping and checking to Linear automatically when a phase is planned or completed.

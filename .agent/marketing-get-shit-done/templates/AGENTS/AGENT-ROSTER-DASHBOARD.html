@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,'system-ui');background:transparent;color:var(--color-text-primary,'#1a1a18');font-size:13px;line-height:1.5}
+
+.header{padding:1.5rem 0 1rem;border-bottom:0.5px solid var(--color-border-tertiary,'#e0ddd6')}
+.header h1{font-size:15px;font-weight:500;letter-spacing:.01em}
+.header p{font-size:12px;color:var(--color-text-secondary,'#6b6a65');margin-top:3px}
+
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:1rem 0}
+.stat{background:var(--color-background-secondary,'#f5f4ef');border-radius:8px;padding:.75rem;text-align:center}
+.stat-n{font-size:22px;font-weight:500;line-height:1}
+.stat-l{font-size:11px;color:var(--color-text-secondary,'#6b6a65');margin-top:3px}
+
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.filter-row span{font-size:11px;color:var(--color-text-secondary);margin-right:2px}
+.pill{padding:4px 10px;border-radius:99px;border:0.5px solid var(--color-border-tertiary,'#e0ddd6');background:transparent;font-size:11px;cursor:pointer;color:var(--color-text-secondary);transition:all .15s;font-family:inherit}
+.pill:hover{border-color:var(--color-border-secondary);color:var(--color-text-primary)}
+.pill.active{color:white;border-color:transparent}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:1.5rem}
+.card{border:0.5px solid var(--color-border-tertiary,'#e0ddd6');border-radius:10px;padding:.75rem;cursor:pointer;transition:all .15s;background:var(--color-background-primary,'#fff')}
+.card:hover{border-color:var(--color-border-secondary);background:var(--color-background-secondary)}
+.card.active{border-width:1.5px}
+.card-id{font-size:10px;font-weight:500;letter-spacing:.06em;margin-bottom:4px;opacity:.7}
+.card-name{font-size:12px;font-weight:500;line-height:1.3;margin-bottom:5px}
+.card-layer{font-size:10px;opacity:.6}
+.card-purpose{font-size:11px;color:var(--color-text-secondary);margin-top:5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+.detail{border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;background:var(--color-background-primary)}
+.detail-hidden{display:none}
+.detail-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:1rem}
+.detail-id{font-size:11px;font-weight:500;letter-spacing:.06em;opacity:.6}
+.detail-name{font-size:16px;font-weight:500;margin-top:2px}
+.detail-badge{padding:3px 10px;border-radius:99px;font-size:10px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-top:4px}
+.detail-purpose{font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem;line-height:1.6;padding-bottom:1rem;border-bottom:0.5px solid var(--color-border-tertiary)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.detail-section{margin-bottom:1rem}
+.detail-section.full{grid-column:1/-1}
+.detail-label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary,'#9c9a92');margin-bottom:6px}
+.detail-content{font-size:12px;line-height:1.7;color:var(--color-text-secondary)}
+.detail-content code{font-family:var(--font-mono,'monospace');font-size:11px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px}
+.detail-content li{margin-bottom:2px}
+.trigger-badge{display:inline-block;padding:3px 8px;border-radius:6px;background:var(--color-background-secondary);font-size:11px;font-weight:500;margin-bottom:4px;border:0.5px solid var(--color-border-tertiary)}
+.handoff{background:var(--color-background-warning,'#fff8ed');border:0.5px solid var(--color-border-warning,'#f0c060');border-radius:8px;padding:.75rem;font-size:12px;color:var(--color-text-warning,'#7a5010')}
+.constraint{background:var(--color-background-danger,'#fff0f0');border:0.5px solid var(--color-border-danger,'#f0a0a0');border-radius:8px;padding:.75rem;font-size:12px;color:var(--color-text-danger,'#8b2020')}
+
+.human-section{border:0.5px solid var(--color-border-tertiary);border-radius:12px;padding:1.25rem;background:var(--color-background-secondary);margin-bottom:1.5rem}
+.human-section h3{font-size:12px;font-weight:500;margin-bottom:.75rem;color:var(--color-text-secondary)}
+.human-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.human-item{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:8px;padding:.6rem .75rem;font-size:11px}
+.human-item strong{display:block;font-size:11px;font-weight:500;margin-bottom:2px}
+.human-item span{color:var(--color-text-secondary);font-size:10px}
+
+.close-btn{background:none;border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:11px;color:var(--color-text-secondary);font-family:inherit}
+.close-btn:hover{background:var(--color-background-secondary)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Agent Roster — esteban.marketing</h1>
+  <p>22 agents · 7 layers · Automated intelligence for MIR + MSP + mGSD</p>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-n">22</div><div class="stat-l">Total agents</div></div>
+  <div class="stat"><div class="stat-n">7</div><div class="stat-l">System layers</div></div>
+  <div class="stat"><div class="stat-n">0</div><div class="stat-l">Publish without review</div></div>
+  <div class="stat"><div class="stat-n">∞</div><div class="stat-l">Esteban approves all</div></div>
+</div>
+
+<div class="filter-row">
+  <span>Filter</span>
+  <button class="pill active" data-filter="all" onclick="filter('all',this)">All 22</button>
+  <button class="pill" data-filter="L0" onclick="filter('L0',this)" style="">Foundation</button>
+  <button class="pill" data-filter="L1" onclick="filter('L1',this)">Intelligence</button>
+  <button class="pill" data-filter="L2" onclick="filter('L2',this)">Strategy</button>
+  <button class="pill" data-filter="L3" onclick="filter('L3',this)">Creative</button>
+  <button class="pill" data-filter="L4" onclick="filter('L4',this)">Technical</button>
+  <button class="pill" data-filter="L5" onclick="filter('L5',this)">Analytics</button>
+  <button class="pill" data-filter="L6" onclick="filter('L6',this)">Operations</button>
+</div>
+
+<div id="detail-panel" class="detail detail-hidden"></div>
+
+<div class="grid" id="agent-grid"></div>
+
+<div class="human-section">
+  <h3>What Esteban always owns — no agent takes these over</h3>
+  <div class="human-grid">
+    <div class="human-item"><strong>Strategic direction</strong><span>Judgment, not pattern matching</span></div>
+    <div class="human-item"><strong>Final content approval</strong><span>Voice, brand, legal responsibility</span></div>
+    <div class="human-item"><strong>Client communication</strong><span>Relationship, trust, accountability</span></div>
+    <div class="human-item"><strong>Budget decisions &gt;10%</strong><span>Financial authority</span></div>
+    <div class="human-item"><strong>Campaign activation</strong><span>Going live is irreversible</span></div>
+    <div class="human-item"><strong>Contract &amp; pricing</strong><span>Legal and commercial</span></div>
+    <div class="human-item"><strong>Crisis response</strong><span>Reputation, speed, nuance</span></div>
+    <div class="human-item"><strong>Discovery calls &amp; sales</strong><span>Closing is human</span></div>
+    <div class="human-item"><strong>MIR/MSP verification</strong><span>Only Esteban can mark files verified</span></div>
+    <div class="human-item"><strong>Hiring &amp; vendors</strong><span>Relationship and judgment</span></div>
+  </div>
+</div>
+
+<script>
+const LAYER_COLORS = {
+  'L0': {bg:'#D3D1C7',text:'#444441',label:'Foundation'},
+  'L1': {bg:'#B5D4F4',text:'#0C447C',label:'Intelligence'},
+  'L2': {bg:'#CECBF6',text:'#3C3489',label:'Strategy'},
+  'L3': {bg:'#F5C4B3',text:'#993C1D',label:'Creative'},
+  'L4': {bg:'#9FE1CB',text:'#085041',label:'Technical'},
+  'L5': {bg:'#FAC775',text:'#633806',label:'Analytics'},
+  'L6': {bg:'#C0DD97',text:'#27500A',label:'Operations'},
+};
+
+const AGENTS = [
+  {id:'AG-F01',name:'Repository Librarian',layer:'L0',trigger:'Post-session + weekly',freq:'Per-session + weekly',
+   purpose:'Maintain the structural integrity of MIR and MSP repositories by updating status fields, logging changes, and keeping STATE.md current.',
+   inputs:['All modified MIR/MSP files','Current STATE.md (MIR + MSP)','00_META/CHANGELOG.md','00_META/PROJECT.md'],
+   outputs:['Updated STATE.md in both repos','New CHANGELOG.md entry','Conflict report if contradictions detected'],
+   handoff:'Conflict reports require Esteban resolution before campaign work. Gate status changes require awareness.',
+   constraints:['Never deletes content from files','Never marks a file verified (Esteban only)','Never changes business-content fields']},
+  {id:'AG-F02',name:'Context Loader',layer:'L0',trigger:'Start of every AI session',freq:'Every session',
+   purpose:'Bootstrap any AI session with the correct project context so agents never work from incomplete information.',
+   inputs:['00_META/AGENTS.md','00_META/PROJECT.md','STATE.md','01_COMPANY/PROFILE.md','Task from Esteban'],
+   outputs:['Session context header','Project summary','Active constraints list','Files to read before proceeding'],
+   handoff:'If Gate 2 is RED and task requires paid work → flag and pause. If required files are empty → list gaps.',
+   constraints:['Must run before any other agent','Never skips loading because "it remembers" — sessions have no memory']},
+  {id:'AG-F03',name:'Gap Auditor',layer:'L0',trigger:'Weekly Monday + pre-launch',freq:'Weekly + per campaign',
+   purpose:'Detect every [FILL] placeholder, empty file, and stale record across the entire repository and surface a prioritized remediation list.',
+   inputs:['All MIR files (full scan)','All MSP PLAN.md files','STATE.md both repos','Active CAMPAIGN.md files'],
+   outputs:['Gap report sorted by CRITICAL / HIGH / MEDIUM / LOW','Estimated fill time','Stale file flags'],
+   handoff:'CRITICAL gaps escalated immediately if a campaign is trying to launch. Full report reviewed weekly.',
+   constraints:['Report only — never fills gaps itself','Never assumes a default value for a blank field']},
+  {id:'AG-I01',name:'Audience Intelligence',layer:'L1',trigger:'Monthly + pre-campaign brief',freq:'Monthly',
+   purpose:'Continuously surface new insights about ICP-1 behavior, language, and pain points from public data to sharpen targeting and messaging.',
+   inputs:['MIR AUDIENCES.md','MIR MESSAGING-FRAMEWORK.md','Public forums and communities','PostHog session summary','CRM lead notes'],
+   outputs:['New ICP language patterns','Uncharted objections','Recommended AUDIENCES.md updates','Recommended MESSAGING updates'],
+   handoff:'Esteban reviews and approves all suggested MIR updates before they are applied.',
+   constraints:['Never scrapes private or paywalled communities','Every claim cites a public source','Never updates MIR files directly']},
+  {id:'AG-I02',name:'Competitive Monitor',layer:'L1',trigger:'Weekly automated scan',freq:'Weekly',
+   purpose:'Track competitor advertising activity, messaging shifts, and new offers to keep competitive positioning current and responsive.',
+   inputs:['MIR COMPETITIVE-LANDSCAPE.md','MIR MESSAGING-FRAMEWORK.md','Meta Ad Library','Competitor websites','Competitor social profiles'],
+   outputs:['New competitor ads detected','Messaging collision flags','New competitor offers','Landing page changes','Recommended actions'],
+   handoff:'Esteban decides whether to respond to competitive shifts. MSP updates approved by Esteban.',
+   constraints:['Only uses publicly available data','Never engages competitor accounts','Never makes strategic recommendations beyond flagging']},
+  {id:'AG-I03',name:'Market Signal Scanner',layer:'L1',trigger:'Weekly + major announcements',freq:'Weekly',
+   purpose:'Monitor platform algorithm changes, advertising policy updates, and industry developments that could affect campaign performance.',
+   inputs:['Meta Business blog','Google Ads announcements','TikTok for Business updates','PostHog changelog','n8n release notes'],
+   outputs:['URGENT / MONITOR / FYI signal classification','Recommended response for urgent signals','MSP INDUSTRY.md signal log update'],
+   handoff:'URGENT signals escalated immediately. Esteban decides response to platform policy changes.',
+   constraints:['Classification only — no autonomous action','Always cites source for every signal']},
+  {id:'AG-S01',name:'Campaign Architect',layer:'L2',trigger:'Esteban initiates new campaign',freq:'Per campaign',
+   purpose:'Draft a complete CAMPAIGN.md file using data pulled from MIR and MSP so Esteban starts every campaign from a fully-populated brief.',
+   inputs:['MIR PROFILE.md + MESSAGING-FRAMEWORK.md','MIR AUDIENCES.md + CATALOG.md + OFFERS.md','MIR PAID-MEDIA.md + TRACKING.md','MSP STRATEGIC-GOALS.md + BUDGET-ALLOCATION.md','Esteban campaign brief input'],
+   outputs:['Complete CAMPAIGN.md draft with all sections','Gap report of fields requiring Esteban input','UTM parameter set (via AG-T04)'],
+   handoff:'Review all auto-populated fields. Fill flagged gaps. Approve creative direction before AG-C01. Approve tracking before AG-T01.',
+   constraints:['Never invents data not in the repository','Never sets a campaign live','Flags if Gate 2 is not GREEN']},
+  {id:'AG-S02',name:'Content Calendar Builder',layer:'L2',trigger:'Monthly (last week) + quarterly',freq:'Monthly',
+   purpose:'Populate the monthly editorial calendar by mapping content pillars, SEO keywords, and campaign alignment into a structured schedule.',
+   inputs:['MIR CONTENT-STRATEGY.md','MSP CONTENT-PILLARS.md + SEO-CONTENT.md','MIR EDITORIAL-CALENDAR.md','Active CAMPAIGN.md files','MSP ANNUAL-CALENDAR.md'],
+   outputs:['Monthly content calendar table for EDITORIAL-CALENDAR.md','Content gaps flagged','Briefing queue for AG-C03'],
+   handoff:'Approve calendar before AG-C03 starts drafting briefs. Adjust any topic angles.',
+   constraints:['Never publishes content','Flags if insufficient assets for active ad campaigns']},
+  {id:'AG-S03',name:'Budget Pacing Monitor',layer:'L2',trigger:'Daily (weekdays) during campaigns',freq:'Daily',
+   purpose:'Compare actual ad spend against the monthly plan, flag overspend/underspend, and surface budget reallocation recommendations.',
+   inputs:['MSP BUDGET-ALLOCATION.md','Platform spend data','Active CAMPAIGN.md budgets','Current date pacing %'],
+   outputs:['Daily pacing card per platform','CPL trend alerts','Reallocation recommendations','Budget rule trigger flags'],
+   handoff:'Any red flag reviewed by Esteban within 24 hours. Reallocation approved by Esteban. Logged in BUDGET-ALLOCATION.md.',
+   constraints:['Never changes budgets directly','Always references the budget rule that triggered each flag']},
+  {id:'AG-C01',name:'Creative Brief Agent',layer:'L3',trigger:'Campaign approved + assets required',freq:'Per campaign batch',
+   purpose:'Produce a complete structural design brief for the designer based on MIR brand standards — no copy, no code, pure specifications.',
+   inputs:['Approved CAMPAIGN.md §4','MIR BRAND-IDENTITY.md','MIR VISUAL-GUIDELINES.md','MIR AD-COPY.md template','Format list from campaign'],
+   outputs:['Structural design brief per asset format','Color HEX specs','Typography specs per zone','Logo placement rules','Naming convention per asset'],
+   handoff:'Esteban reviews brief before sending to designer. Esteban approves designer deliverables against this brief.',
+   constraints:['Structural specifications only — never writes ad copy','Never generates visual files','Never sends brief to designer directly']},
+  {id:'AG-C02',name:'Copy Drafter',layer:'L3',trigger:'Campaign brief approved + copy required',freq:'Per campaign + per refresh',
+   purpose:'Draft all required marketing copy — ads, landing page, email — strictly following brand voice rules and messaging architecture.',
+   inputs:['Approved CAMPAIGN.md','MIR VOICE-TONE.md','MIR MESSAGING-FRAMEWORK.md','MIR AUDIENCES.md psychographic data','MIR copy templates'],
+   outputs:['Ad copy deck (all variants labeled)','Landing page copy draft section-by-section','Email copy draft all sequence steps','Legal flag list'],
+   handoff:'ALL copy requires Esteban review. Client approval per APPROVALS.md before any external publication. Legal flags resolved before going live.',
+   constraints:['Always labeled DRAFT — never final','Every piece cites which MESSAGING-FRAMEWORK.md message it derives from','Prohibited words hard-blocked from VOICE-TONE.md']},
+  {id:'AG-C03',name:'Content Brief Agent',layer:'L3',trigger:'Approved editorial calendar + Esteban confirmation',freq:'Monthly batch',
+   purpose:'Generate a detailed content brief for every item on the editorial calendar so content is produced consistently, on-strategy, and SEO-ready.',
+   inputs:['MIR EDITORIAL-CALENDAR.md approved items','MSP CONTENT-PILLARS.md','MSP KEYWORD-STRATEGY.md','MIR VOICE-TONE.md','MIR AUDIENCES.md'],
+   outputs:['Full brief per content item: H1, H2s, key points, proof, internal links, CTA, SEO spec, repurposing plan'],
+   handoff:'Esteban reviews brief direction before writing begins. Final draft reviewed by Esteban before scheduling.',
+   constraints:['Never writes the content itself — briefs only','Every brief references pillar and audience stage']},
+  {id:'AG-C04',name:'Social Content Drafter',layer:'L3',trigger:'Weekly Thursday — draft next week',freq:'Weekly',
+   purpose:'Draft a batch of organic social posts for the week based on the editorial calendar, repurposed content, and platform-specific rules.',
+   inputs:['MIR EDITORIAL-CALENDAR.md','MIR SOCIAL-POST.md template','MIR VOICE-TONE.md','MSP PLATFORM-STRATEGIES.md','Published content to repurpose'],
+   outputs:['Draft post batch (one per slot by platform and date)','Repurposed content variants','Visual spec note per post needing an image'],
+   handoff:'Esteban reviews and edits ALL drafts — voice is personal. Esteban schedules approved posts.',
+   constraints:['Never publishes directly','Never invents proof points not in repository','Prohibited words from VOICE-TONE.md hard-blocked']},
+  {id:'AG-T01',name:'Tracking Specifier',layer:'L4',trigger:'New landing page or campaign approved',freq:'Per new page/campaign',
+   purpose:'Generate a complete implementation-ready tracking specification — PostHog events, CAPI params, deduplication logic.',
+   inputs:['MIR TRACKING.md master schema','Active CAMPAIGN.md UTM/form structure','MIR CUSTOMER-JOURNEY.md','MIR PAID-MEDIA.md pixel IDs'],
+   outputs:['All PostHog events with required properties','Meta CAPI Lead event JSON schema','Event ID deduplication format','PostHog funnel 4-step definition','Validation test plan'],
+   handoff:'Spec reviewed before passing to Vibe code implementation. Validation checklist executed by Esteban before campaign launch.',
+   constraints:['Produces specifications only — never implements tracking','Always follows naming convention object_action from TRACKING.md']},
+  {id:'AG-T02',name:'Automation Architect',layer:'L4',trigger:'New campaign requiring automation',freq:'Per new workflow',
+   purpose:'Specify complete n8n/Make workflow logic for any lead routing, data sync, or automation requirement — ready for implementation.',
+   inputs:['MIR AUTOMATION.md existing workflows','MIR INTEGRATIONS.md system connections','MIR TRACKING.md CAPI requirements','MIR INFRASTRUCTURE.md CRM and ESP'],
+   outputs:['Workflow spec with trigger, steps, logic, error handling','Data mapping reference','Test payload','Validation checklist'],
+   handoff:'Spec reviewed by Esteban before implementation. Esteban or developer implements — this agent does not build workflows.',
+   constraints:['Never generates executable code','Produces structured logic documents only','Always assigns WF-NNN ID following convention']},
+  {id:'AG-T03',name:'Landing Page Specifier',layer:'L4',trigger:'New landing page needed',freq:'Per campaign/page',
+   purpose:'Produce a complete Vibe code page specification: section structure, copy zones, form fields, tracking hooks, and mobile rules.',
+   inputs:['Approved CAMPAIGN.md','MIR LANDING-PAGE.md template','AG-C02 copy draft if available','MIR BRAND-IDENTITY.md','MSP CRO PLAN.md standards'],
+   outputs:['Section-by-section page spec','Mobile layout adjustments','Form field specification','Tracking hook placement','CRO standards checklist'],
+   handoff:'Spec reviewed before Vibe code build. Page reviewed on staging before going live.',
+   constraints:['Never generates HTML/CSS/JS','All specs reference MIR brand files — never invents design decisions']},
+  {id:'AG-T04',name:'UTM Architect',layer:'L4',trigger:'Any new campaign, ad, or promotional link',freq:'Per campaign + per new link',
+   purpose:'Generate the complete UTM parameter set for every campaign and asset, ensuring PostHog attribution is clean and consistent.',
+   inputs:['MIR PAID-MEDIA.md §8 UTM conventions','Active CAMPAIGN.md campaign_id + platforms + ad variants'],
+   outputs:['Full UTM parameter sheet with all URLs','Validation check (no spaces, correct encoding)','Warning if any proposed link deviates from convention'],
+   handoff:'Sheet verified before assets go live. Any URL or campaign ID change requires a fresh UTM sheet.',
+   constraints:['No UTM parameter scheme may deviate from MIR PAID-MEDIA.md naming convention','All generated URLs validated before output']},
+  {id:'AG-A01',name:'Performance Monitor',layer:'L5',trigger:'Daily (first 14 days) then weekly',freq:'Daily → Weekly',
+   purpose:'Generate the daily/weekly marketing performance pulse across all active campaigns — PostHog first, platform data as signal only.',
+   inputs:['MIR KPI-FRAMEWORK.md targets and decision rules','PostHog dashboard data','Platform spend data (signal)','Active CAMPAIGN.md files'],
+   outputs:['Daily/weekly pacing card per campaign','CPL vs target status','Discrepancy check PostHog vs CAPI','Optimization flags per KPI-FRAMEWORK.md rules'],
+   handoff:'Any red flag reviewed by Esteban within 4 hours. Optimization recommendations require Esteban decision to act.',
+   constraints:['PostHog numbers always cited as primary','Platform numbers always labeled signal only','Never makes optimization changes — recommendations only']},
+  {id:'AG-A02',name:'Funnel Analyst',layer:'L5',trigger:'Monthly (first week) + post-change',freq:'Monthly',
+   purpose:'Run the monthly funnel analysis — identify the biggest conversion drop-off, surface session recording patterns, generate CRO hypotheses.',
+   inputs:['PostHog 4-step funnel data per campaign','PostHog session recording summary','MSP FUNNEL-ANALYSIS.md historical trend','MIR KPI-FRAMEWORK.md funnel targets'],
+   outputs:['Monthly funnel snapshot (4 steps vs. target)','Primary bottleneck identified','Session recording observations','2-3 drop-off hypotheses','Test recommendation for AG-A04'],
+   handoff:'Hypotheses reviewed by Esteban before adding to test queue. Page changes approved by Esteban.',
+   constraints:['Never makes changes to pages','Always distinguishes PostHog data from platform data']},
+  {id:'AG-A03',name:'Report Compiler',layer:'L5',trigger:'Weekly Friday PM + monthly',freq:'Weekly + Monthly',
+   purpose:'Assemble the weekly and monthly performance report from all data sources into the approved template — ready for Esteban review and delivery.',
+   inputs:['AG-A01 pulse outputs (7-day or 30-day)','AG-A02 funnel analysis (monthly)','AG-S03 budget pacing output','MIR REPORTING-CADENCE.md format','Active CAMPAIGN.md optimization log'],
+   outputs:['Draft weekly/monthly report as .md in 09_ANALYTICS/REPORTS/','Executive summary first (3-5 sentences)','Named per convention from REPORTS/README.md'],
+   handoff:'Esteban reviews draft. Esteban adds context not in data. Esteban delivers to client. Never delivered without Esteban review.',
+   constraints:['Never delivers to client directly','Always labels output as DRAFT until Esteban approves','Report format must match REPORTING-CADENCE.md']},
+  {id:'AG-A04',name:'CRO Hypothesis Generator',layer:'L5',trigger:'Monthly after AG-A02 runs',freq:'Monthly',
+   purpose:'Generate structured A/B test hypotheses from funnel data, session recordings, and heuristic analysis — keeping the test queue full.',
+   inputs:['AG-A02 funnel analysis output','MSP TESTING-ROADMAP.md','MSP CRO PLAN.md §3 research framework','MIR LANDING-PAGE.md structure','PostHog heatmap/session data'],
+   outputs:['3-5 prioritized hypotheses per month','Impact/effort scoring matrix','Updated TESTING-ROADMAP.md queue'],
+   handoff:'Esteban approves hypotheses before tests are implemented. Test implementation requires Vibe code changes.',
+   constraints:['Never implements tests','Every hypothesis in format: if X then Y by Z% because [behavior insight]']},
+  {id:'AG-O01',name:'Lead Scorer',layer:'L6',trigger:'New CRM lead arrives (post WF-001)',freq:'Per lead (real-time)',
+   purpose:'Apply the standardized lead scoring model to every new CRM lead and output a routing recommendation within minutes of capture.',
+   inputs:['CRM lead record with UTM data','MIR AUDIENCES.md ICP criteria','MIR AUTOMATION.md WF-001 scoring rules','PostHog person profile for this email'],
+   outputs:['Lead score 0-80','PRIORITY / STANDARD / NURTURE routing','Scoring breakdown','Recommended CRM stage','Esteban notification for PRIORITY leads'],
+   handoff:'PRIORITY → Esteban notified within 5 min. STANDARD → daily review. NURTURE → fully automated.',
+   constraints:['Never contacts leads directly','Scoring model is fixed — changes only via MIR AUTOMATION.md update by Esteban']},
+  {id:'AG-O02',name:'Email Sequence Drafter',layer:'L6',trigger:'New sequence required or gap identified',freq:'Per new sequence',
+   purpose:'Draft complete lifecycle email sequences — welcome, nurture, onboarding, re-engagement — for Esteban review before ESP activation.',
+   inputs:['MSP LIFECYCLE-SEQUENCES.md architecture','MIR EMAIL.md template','MIR VOICE-TONE.md','MIR MESSAGING-FRAMEWORK.md §8','MIR AUDIENCES.md psychographic data'],
+   outputs:['Complete sequence draft (all emails in order)','Subject line alternatives (2 per email)','Deliverability checklist','Legal flag list'],
+   handoff:'ALL sequence drafts require Esteban approval. ESP upload done by Esteban. Activation only after n8n workflow test.',
+   constraints:['Always labeled DRAFT','Never uploads to ESP directly','Subject lines must pass VOICE-TONE.md rules']},
+  {id:'AG-O03',name:'SEO Content Planner',layer:'L6',trigger:'Monthly before calendar build + quarterly refresh',freq:'Monthly',
+   purpose:'Maintain the SEO content pipeline by mapping target keywords to content briefs and ensuring the keyword queue advances each month.',
+   inputs:['MSP KEYWORD-STRATEGY.md Tier 1 queue','MSP SEO PLAN.md goals','MIR EDITORIAL-CALENDAR.md','MIR CONTENT-LIBRARY index','AG-I02 competitive ranking data'],
+   outputs:['2-3 monthly SEO content targets with format + structure','Ranking movement report','Internal linking map update','Updated KEYWORD-STRATEGY.md status'],
+   handoff:'Keyword targets approved by Esteban before briefing. Ranking report reviewed monthly.',
+   constraints:['Never publishes content','Cannibalization check required before queuing any new keyword']},
+  {id:'AG-O04',name:'Crisis Signal Monitor',layer:'L6',trigger:'Daily automated scan (morning)',freq:'Daily',
+   purpose:'Continuously scan for signals requiring urgent attention — ad account issues, tracking failures, negative brand mentions, platform outages.',
+   inputs:['Ad account status check','PostHog live events (last event timestamp)','n8n/Make error log summary','Brand mention search','Platform status pages'],
+   outputs:['Daily CRITICAL / HIGH / MONITOR / CLEAR report','Immediate Esteban alert for CRITICAL','Draft response from MSP CRISIS-PLAYBOOK.md'],
+   handoff:'CRITICAL alerts sent to Esteban via preferred channel within 10 minutes. Esteban executes response from CRISIS-PLAYBOOK.md.',
+   constraints:['Never responds publicly to any platform or brand mention','Alert and draft only — Esteban executes all responses']},
+  {id:'AG-O05',name:'Influencer Vetter',layer:'L6',trigger:'Influencer PLAN.md activated + candidates identified',freq:'Per prospective partner',
+   purpose:'Research prospective influencer partners against the tier framework and ICP criteria — producing a scored profile before any outreach.',
+   inputs:['MSP TIER-FRAMEWORK.md vetting criteria','MSP INFLUENCER PLAN.md partner profile','MIR AUDIENCES.md ICP to match','Prospective handle/profile URL from Esteban'],
+   outputs:['Partner vetting profile card: tier, engagement, ICP match, disclosure compliance, competitor check, controversy scan','PARTNER-ROSTER.md update'],
+   handoff:'Esteban reviews profiles before any outreach. Esteban conducts all outreach and negotiations.',
+   constraints:['Never contacts influencers','Uses only publicly available data','Controversy scan required for every profile']},
+  {id:'AG-O06',name:'Partnership Scout',layer:'L6',trigger:'Partnerships PLAN.md activated or quarterly review',freq:'Quarterly',
+   purpose:'Identify and profile potential strategic co-marketing partners and referral sources that serve the same ICP without competing directly.',
+   inputs:['MIR AUDIENCES.md ICP-1 definition','MSP PARTNERSHIPS PLAN.md partner profile','MSP STRATEGIC-PARTNERS.md existing partners','MIR COMPETITIVE-LANDSCAPE.md','Adjacent service web search'],
+   outputs:['Top 5 partnership candidates per adjacent category','ICP overlap + non-competitive + reachability scoring','STRATEGIC-PARTNERS.md prospecting pipeline update'],
+   handoff:'Esteban reviews candidates before any outreach. Esteban conducts all partnership conversations.',
+   constraints:['Never contacts potential partners','Never proposes a partner that appears in MIR COMPETITIVE-LANDSCAPE.md']},
+];
+
+let activeAgent = null;
+let activeFilter = 'all';
+
+function getLayerKey(id) {
+  if(id.startsWith('AG-F')) return 'L0';
+  if(id.startsWith('AG-I')) return 'L1';
+  if(id.startsWith('AG-S')) return 'L2';
+  if(id.startsWith('AG-C')) return 'L3';
+  if(id.startsWith('AG-T')) return 'L4';
+  if(id.startsWith('AG-A')) return 'L5';
+  if(id.startsWith('AG-O')) return 'L6';
+  return 'L0';
+}
+
+function filter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  // update pill colors
+  stylePills();
+  renderGrid();
+  if(activeAgent) {
+    const ag = AGENTS.find(a=>a.id===activeAgent);
+    if(ag && f !== 'all' && getLayerKey(ag.id) !== f) {
+      closeDetail();
+    }
+  }
+}
+
+function stylePills() {
+  const layerMap = {L0:'#888780',L1:'#185FA5',L2:'#534AB7',L3:'#993C1D',L4:'#0F6E56',L5:'#854F0B',L6:'#3B6D11'};
+  const layerFilters = ['L0','L1','L2','L3','L4','L5','L6'];
+  document.querySelectorAll('.pill').forEach(p => {
+    const f = p.getAttribute('data-filter');
+    if(p.classList.contains('active')) {
+      if(f === 'all') { p.style.background='#5F5E5A'; p.style.color='white'; }
+      else { const c = layerMap[f]||'#5F5E5A'; p.style.background=c; p.style.color='white'; }
+    } else {
+      p.style.background = '';
+      p.style.color = '';
+    }
+  });
+}
+
+function renderGrid() {
+  const grid = document.getElementById('agent-grid');
+  grid.innerHTML = '';
+  AGENTS.forEach(ag => {
+    const lk = getLayerKey(ag.id);
+    if(activeFilter !== 'all' && lk !== activeFilter) return;
+    const lc = LAYER_COLORS[lk];
+    const card = document.createElement('div');
+    card.className = 'card' + (ag.id === activeAgent ? ' active' : '');
+    card.style.borderColor = ag.id === activeAgent ? lc.bg : '';
+    card.innerHTML = `
+      <div class="card-id" style="color:${lc.text}">${ag.id}</div>
+      <div class="card-name">${ag.name}</div>
+      <div class="card-layer" style="color:${lc.text}">${lc.label} · ${ag.freq}</div>
+      <div class="card-purpose">${ag.purpose}</div>
+    `;
+    card.onclick = () => selectAgent(ag.id);
+    grid.appendChild(card);
+  });
+}
+
+function selectAgent(id) {
+  if(activeAgent === id) { closeDetail(); return; }
+  activeAgent = id;
+  renderGrid();
+  showDetail(id);
+}
+
+function closeDetail() {
+  activeAgent = null;
+  document.getElementById('detail-panel').classList.add('detail-hidden');
+  renderGrid();
+}
+
+function showDetail(id) {
+  const ag = AGENTS.find(a=>a.id===id);
+  if(!ag) return;
+  const lk = getLayerKey(ag.id);
+  const lc = LAYER_COLORS[lk];
+  const panel = document.getElementById('detail-panel');
+  panel.classList.remove('detail-hidden');
+  panel.innerHTML = `
+    <div class="detail-header">
+      <div>
+        <div class="detail-id">${ag.id}</div>
+        <div class="detail-name">${ag.name}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <button class="close-btn" onclick="closeDetail()">Close ×</button>
+        <span class="detail-badge" style="background:${lc.bg};color:${lc.text}">${lc.label}</span>
+      </div>
+    </div>
+    <div class="detail-purpose">${ag.purpose}</div>
+    <div class="detail-grid">
+      <div class="detail-section">
+        <div class="detail-label">Trigger</div>
+        <div class="trigger-badge">${ag.trigger}</div>
+        <div class="detail-label" style="margin-top:10px">Frequency</div>
+        <div class="detail-content">${ag.freq}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Inputs</div>
+        <div class="detail-content"><ul style="padding-left:14px">${ag.inputs.map(i=>`<li>${i}</li>`).join('')}</ul></div>
+      </div>
+      <div class="detail-section full">
+        <div class="detail-label">Outputs</div>
+        <div class="detail-content"><ul style="padding-left:14px">${ag.outputs.map(o=>`<li>${o}</li>`).join('')}</ul></div>
+      </div>
+      <div class="detail-section full">
+        <div class="detail-label">Esteban handoff</div>
+        <div class="handoff">${ag.handoff}</div>
+      </div>
+      <div class="detail-section full">
+        <div class="detail-label">Constraints</div>
+        <div class="constraint"><ul style="padding-left:14px">${ag.constraints.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+      </div>
+    </div>
+  `;
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+renderGrid();
+stylePills();
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+# MIR — .gitignore
+
+# Secrets and credentials — NEVER commit these
+.env
+.env.*
+secrets/
+*.pem
+*.key
+*.p12
+config/secrets.json
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor artifacts
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Node / npm (if any scripts are added)
+node_modules/
+npm-debug.log*
+
+# Python (if any scripts are added)
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Large binary assets — store in Drive/S3, not Git
+*.psd
+*.ai
+*.indd
+*.sketch
+*.fig
+
+# Exported PDFs (reference from Drive instead)
+# Uncomment if you want to exclude PDFs:
+# *.pdf
+
+# But DO commit:
+# - All .md files
+# - All .json config files
+# - All .txt files
+# - This .gitignore

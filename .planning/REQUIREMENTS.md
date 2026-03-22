@@ -5,6 +5,7 @@
 ### Template Overhaul
 - [ ] **TPL-01**: MIR templates must dynamically support any company/industry/niche.
 - [ ] **TPL-02**: MSP templates must be lightweight, organized, and clonable into any project.
+- [ ] **TPL-03**: The template infrastructure must include ultra-competitive, deep modular arrays translating all major marketing disciplines into rigorous GSD executable files.
 
 ### Skill Alignment
 - [ ] **SKL-01**: All `mgsd-*` skills must perfectly map to the new template directory structures.
