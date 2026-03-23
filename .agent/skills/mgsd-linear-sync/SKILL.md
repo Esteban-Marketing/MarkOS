@@ -14,3 +14,7 @@ Parse all active `.planning` files and automatically map them to Linear Issues a
 4. Create Epics/Projects for each Phase, and Issues for each Task within the Phase.
 5. Assign issues to humans or agent avatars as indicated in the plans.
 </process>
+
+## Template Paths
+
+This skill operates within the MGSD structure. It honors overrides placed in the client .mgsd-local/ directory before falling back to the default .agent/marketing-get-shit-done/ templates.

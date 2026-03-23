@@ -16,3 +16,7 @@ Spawns mgsd-market-researcher to produce RESEARCH.md for the specified phase. Us
 <process>
 Execute the `/mgsd-research-phase` workflow exactly as documented in the workflow file.
 </process>
+
+## Template Paths
+
+This skill operates within the MGSD structure. It honors overrides placed in the client .mgsd-local/ directory before falling back to the default .agent/marketing-get-shit-done/ templates.

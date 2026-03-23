@@ -16,3 +16,7 @@ Generates a summary of all work done in the current session.
 <process>
 Execute the `/mgsd-session-report` workflow exactly as documented in the workflow file.
 </process>
+
+## Template Paths
+
+This skill operates within the MGSD structure. It honors overrides placed in the client .mgsd-local/ directory before falling back to the default .agent/marketing-get-shit-done/ templates.
