@@ -62,3 +62,33 @@ Research agent for the plan-phase orchestration chain. Answers: "What do I need 
 - Only publicly available data sources
 - Every claim cites where it came from
 - Never invent benchmarks — clearly mark estimated vs. sourced
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+Research output must include a `## Biological Signal Scan` section:
+
+**B03 — Cortisol (loss/threat language)**
+- Pull verbatim ICP phrases describing fear, failure, or urgency from forums/communities
+- Note which competitor ads use loss framing vs. gain framing — classify each
+
+**B07 — Tribal Identity**
+- Identify ICP self-labels ("indie hacker," "agency owner," "growth lead") from community data
+- Identify competitor brand archetypes: Hero? Ruler? Outlaw? Classify with evidence
+
+**B01 — Dopamine (reward anticipation)**
+- Extract ICP aspirational language: "I want to get to a point where..."
+- These become reward-state copy anchors
+
+**B08 — Anchoring (Prefrontal Cortex)**
+- Identify competitor pricing anchors and reference points visible in ads or landing pages
+- Document highest price shown first in competitor funnels
+
+Add to `RESEARCH.md`:
+```markdown
+## Biological Signal Scan
+[B03 pain phrases] / [B07 tribal labels] / [B01 reward language] / [B08 price anchors]
+```
+
+**PSY-KPI linkage:** Pain resonance score (PSY-03), Tribal adoption rate (PSY-07)

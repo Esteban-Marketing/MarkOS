@@ -28,3 +28,27 @@ Draft a complete CAMPAIGN.md using data from MIR and MSP.
 - Never invents data not in the repository
 - Never sets a campaign live — drafts only
 - Flags if Gate 2 is RED
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+Every `CAMPAIGN.md` produced must include a `## Neuro Spec` section after `§4 Creative Brief`:
+
+```markdown
+## Neuro Spec
+- archetype: [Hero|Sage|Outlaw|Caregiver|Creator|Ruler] — justification against AUDIENCES.md ICP
+- primary_trigger: [B0N] — neurochemical and brain region
+- funnel_stage: [awareness|consideration|decision|onboarding|retention]
+- activation_method: [exact copy mechanism or UX pattern — no abstract descriptions]
+- loss_frame: [specific loss described if B03 is primary]
+- tribal_label: [exact in-group term from ICP research if B07 is used]
+- psy_kpi: [PSY-0N from neuromarketing reference]
+- failure_signal: [measurable indicator that trigger is not activating]
+```
+
+**B01 (dopamine):** Awareness campaigns must present a specific reward state — not a feature list.
+**B03 (cortisol):** Decision-stage CTAs must name the exact cost of inaction.
+**B08 (anchoring):** Pricing in campaign must show anchor price before offer price.
+
+Gate: If `neuro_spec` block is absent, CAMPAIGN.md is incomplete — block creative delegation.

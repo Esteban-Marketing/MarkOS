@@ -24,3 +24,23 @@ Draft social media posts per platform constraints and brand voice.
 ## Constraints
 - All posts reviewed by human before scheduling
 - Platform-specific adaptations (LinkedIn professional, Twitter concise, Instagram visual-first)
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+Before drafting each post, identify the post's biological trigger from the campaign `<neuro_spec>` or assign one based on post objective:
+
+| Post Objective | Required Trigger | Platform Application |
+|---------------|-----------------|---------------------|
+| Awareness / reach | B05 (Curiosity Gap) | Open-loop hook — withhold resolution until CTA or link |
+| Community / advocacy | B07 (Tribal Identity) | Use exact ICP label in copy ("los que ya...") |
+| Urgency / time-sensitive | B03 (Cortisol) | Loss frame in first 100 chars (platform previews) |
+| Social proof | B09 (Social Proof) | Peer-specific language; avoid generic "clientes" |
+| Post-purchase retention | B04 (Oxytocin) | We/us framing; belonging confirmation |
+
+**Hook rule:** First line of every post must activate one trigger. No preamble. No context-setting.
+
+**Character allocation:** B03 posts — loss frame in first 80 chars; B05 posts — resolution withheld until character 120+.
+
+**PSY-KPI linkage:** PSY-06 (social engagement rate) and PSY-07 (tribal resonance) — measured per post vs. baseline engagement rate

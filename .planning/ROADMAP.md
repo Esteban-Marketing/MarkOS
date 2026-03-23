@@ -1,5 +1,8 @@
 # Roadmap: Marketing Get Shit Done (MGSD)
 
+<details>
+<summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
+
 ## Phase 1: Template Restructuring
 **Goal:** Completely design and augment the current standard planning and templates (MIR/MSP).
 **Requirements Mapped:** TPL-01, TPL-02
@@ -48,6 +51,7 @@
 **Goal:** Build the structured `RESEARCH/` system — a dedicated top-level directory of post-processed, tokenized market and audience intelligence that feeds MIR, MSP, and all downstream content generation. Attach agentic generation to `mgsd-new-project`.
 **Requirements Mapped:** RES-01, RES-02
 **Depends on:** Phase 4
+**Status:** ✅ Complete
 **Success Criteria:**
 1. `RESEARCH/` directory scaffolded at project root (peer to `MIR/`, `MSP/`) with 6 canonical research files: `AUDIENCE-RESEARCH.md`, `ORG-PROFILE.md`, `PRODUCT-RESEARCH.md`, `COMPETITIVE-INTEL.md`, `MARKET-TRENDS.md`, `CONTENT-AUDIT.md`.
 2. Each file has a fully specified, tokenized template with frontmatter, agent instructions, and explicit cross-references to MIR/MSP fields it populates.
@@ -56,7 +60,10 @@
 5. MIR and MSP templates carry RESEARCH token references so planner agents pull live context automatically.
 
 **Plans:**
-- [ ] TBD (run `/gsd-plan-phase 5` to break down)
+- [x] 05-01: Research file templates
+- [x] 05-02: mgsd-researcher implementation
+- [x] 05-03: MIR and MSP Tokenization
+- [x] 05-04: Hooking down to mgsd-new-project
 
 ---
 
@@ -64,6 +71,7 @@
 **Goal:** Build a lightweight, white-labeled web onboarding UI (step-by-step form) that collects the seed data needed to populate `RESEARCH/`, `MIR/`, and `MSP/` for a new client. Output is a structured JSON seed consumed by agentic generation.
 **Requirements Mapped:** ONB-01, ONB-02
 **Depends on:** Phase 5
+**Status:** ✅ Complete
 **Success Criteria:**
 1. A self-contained web onboarding app (spun up optionally via CLI during `mgsd-new-project`) presents a clean multi-step form covering: Company/Brand, Audience, Product/Service, Competitive landscape, Market context, and Content inventory.
 2. Submission produces a versioned `onboarding-seed.json` committed to the project.
@@ -72,7 +80,8 @@
 5. Form UX is premium and guided — minimal friction, no marketing jargon exposed to clients.
 
 **Plans:**
-- [ ] TBD (run `/gsd-plan-phase 6` to break down)
+- [x] 06-01: Web onboarding app scaffold
+- [x] 06-02: Backend logic and JSON orchestrator
 
 ---
 
@@ -80,6 +89,7 @@
 **Goal:** Package `marketing-get-shit-done` for NPM. Implement a smart agentic patch engine that installs and updates the MGSD protocol on top of any existing GSD install — without touching client customizations in `.mgsd-local/`.
 **Requirements Mapped:** NPX-01, NPX-02, PATCH-01
 **Depends on:** Phase 6
+**Status:** ✅ Complete
 **Success Criteria:**
 1. `npx marketing-get-shit-done` runs an interactive CLI wizard (mirrors GSD's install UX) — asks install location, GSD co-existence option, project name — then installs the full MGSD protocol.
 2. The CLI correctly detects an existing GSD install and injects MGSD commands into the existing `.agent/` structure non-destructively.
@@ -89,4 +99,10 @@
 6. A `VERSION` file and changelog entry are generated/updated on every install and update.
 
 **Plans:**
-- [ ] TBD (run `/gsd-plan-phase 7` to break down)
+- [x] 07-01: Install Wizard
+- [x] 07-02: Update logic and diff preview
+
+</details>
+
+## v1.1.0 — Future Integrations
+- [ ] TBD (run `/gsd-new-milestone` to define new features)

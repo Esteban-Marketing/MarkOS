@@ -76,3 +76,33 @@ NEVER write:
 - All decisions traceable to CONTEXT.md or MIR files
 - Never invents copy, offers, or positioning — uses MESSAGING-FRAMEWORK.md
 - Flags tasks that need human approval (creative, budget) with `autonomous: false`
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+Plans for external-audience phases must include a `neuro_dimension` frontmatter flag and a `<neuro_spec>` block attached to every copy or UX task:
+
+```yaml
+neuro_dimension: true
+```
+
+```xml
+<neuro_spec>
+  <trigger>B0N — [neurochemical] — [brain region]</trigger>
+  <archetype>[Hero|Sage|Outlaw|Caregiver|Creator|Ruler]</archetype>
+  <activation>[exact mechanism — not abstract]</activation>
+  <loss_frame>[stated loss if B03 is used]</loss_frame>
+  <psy_kpi>PSY-0N</psy_kpi>
+</neuro_spec>
+```
+
+**B01 (dopamine):** Every task with a CTA must define the specific reward state the user anticipates clicking — not the feature delivered.
+
+**B03 (cortisol/amygdala):** Every urgency or scarcity task must name the exact threat: what the user loses, by when, measured how.
+
+**B08 (anchoring):** Any pricing task must show the anchor price first. Never present offer price without prior reference point.
+
+**Anti-shallow rule:** `"Write compelling copy"` is rejected. Replace with exact biological activation method and copy string.
+
+**PSY-KPI linkage:** Copy resonance score (PSY-01), CTA compliance rate (PSY-05)

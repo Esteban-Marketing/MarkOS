@@ -24,3 +24,21 @@ Define precise PostHog events, GA events, and pixel configurations for campaign 
 ## Constraints
 - Requires Gate 2 files to be complete
 - Produces specifications — does not implement code
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+For campaigns with `neuro_dimension: true`, include PSY-KPI measurement events in the tracking spec alongside standard conversion events:
+
+| PSY-KPI | What to Track | Event Name Pattern |
+|---------|--------------|-------------------|
+| PSY-01 (copy resonance) | Time-on-page + scroll depth at CTA | `neuro_psy01_copy_engagement` |
+| PSY-03 (curiosity activation) | Click-through rate from hook element | `neuro_psy03_hook_ctr` |
+| PSY-04 (urgency perception) | CTA click within 60s of loss-frame exposure | `neuro_psy04_urgency_cta` |
+| PSY-05 (CTA compliance) | CTA click / CTA view rate | `neuro_psy05_cta_compliance` |
+| PSY-07 (tribal resonance) | Return visit rate within 7 days of tribal-label exposure | `neuro_psy07_tribal_return` |
+
+**Property requirements:** Each neuro event must include `trigger_code: "B0N"` and `funnel_stage: "..."` as PostHog properties to enable biological signal segmentation.
+
+**Gate check:** Neuro events must be specified before PLAN.md approval (tracked alongside Gate 2 TRACKING.md requirements)

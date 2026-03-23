@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Intelligence Onboarding</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+    <div class="onboarding-wrapper">
+        <header class="onboarding-header">
+            <img src="" alt="Logo" class="onboarding-logo" id="brandLogo">
+            <h1 class="onboarding-title" id="formTitle">Client Intelligence Onboarding</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="step-indicator">Step <span id="currentStepNum">1</span> of 6</div>
+        </header>
+
+        <main class="onboarding-card">
+            
+            <!-- Step 1: Company & Brand -->
+            <section class="step-section active" data-step="1">
+                <h2 class="step-title">Company & Brand</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="companyName">Company Name *</label>
+                    <input type="text" id="companyName" class="form-input" required placeholder="e.g. Acme Corp">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="industry">Industry *</label>
+                    <input type="text" id="industry" class="form-input" required placeholder="e.g. B2B SaaS, E-commerce">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="country">Primary Geographic Market *</label>
+                    <input type="text" id="country" class="form-input" required placeholder="e.g. United States, Global">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="founded">Founding Year *</label>
+                    <input type="text" id="founded" class="form-input" required placeholder="e.g. 2018">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="mission">Mission Statement *</label>
+                    <textarea id="mission" class="form-textarea" required placeholder="In one sentence, what is your company's mission?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Key Brand Values (Top 3) *</label>
+                    <input type="text" id="brandValue1" class="form-input" required placeholder="Value 1 (e.g. Innovation)" style="margin-bottom: 0.5rem;">
+                    <input type="text" id="brandValue2" class="form-input" required placeholder="Value 2 (e.g. Transparency)" style="margin-bottom: 0.5rem;">
+                    <input type="text" id="brandValue3" class="form-input" required placeholder="Value 3 (e.g. Customer Success)">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="toneOfVoice">Primary Tone of Voice *</label>
+                    <select id="toneOfVoice" class="form-select" required>
+                        <option value="">Select a tone</option>
+                        <option value="Formal">Formal & Professional</option>
+                        <option value="Balanced">Balanced & Accessible</option>
+                        <option value="Casual">Casual & Conversational</option>
+                        <option value="Playful">Playful & Irreverent</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="primaryLanguage">Primary Language</label>
+                    <input type="text" id="primaryLanguage" class="form-input" placeholder="e.g. English (US)">
+                </div>
+            </section>
+
+            <!-- Step 2: Product / Service -->
+            <section class="step-section" data-step="2">
+                <h2 class="step-title">Product & Service</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="productName">Primary Product / Service Name *</label>
+                    <input type="text" id="productName" class="form-input" required placeholder="e.g. SuperApp Platform">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="productCategory">Product Category *</label>
+                    <input type="text" id="productCategory" class="form-input" required placeholder="e.g. CRM Software">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="primaryBenefit">Primary Benefit *</label>
+                    <textarea id="primaryBenefit" class="form-textarea" required placeholder="What is the #1 outcome your customers get?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Top Features (Top 3) *</label>
+                    <input type="text" id="productFeature1" class="form-input" required placeholder="Feature 1" style="margin-bottom: 0.5rem;">
+                    <input type="text" id="productFeature2" class="form-input" required placeholder="Feature 2" style="margin-bottom: 0.5rem;">
+                    <input type="text" id="productFeature3" class="form-input" required placeholder="Feature 3">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="priceRange">Pricing / Price Range</label>
+                    <input type="text" id="priceRange" class="form-input" placeholder="e.g. $99/mo to $499/mo">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="mainObjection">Main Objection Heard from Prospects *</label>
+                    <textarea id="mainObjection" class="form-textarea" required placeholder="Why do people say no? (e.g. 'It's too expensive', 'Too hard to implement')"></textarea>
+                </div>
+            </section>
+
+            <!-- Step 3: Audience -->
+            <section class="step-section" data-step="3">
+                <h2 class="step-title">Primary Audience</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="segmentName">Segment Target Name *</label>
+                    <input type="text" id="segmentName" class="form-input" required placeholder="e.g. Mid-Market CTOs">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="ageRange">Demographic / Age Range</label>
+                    <input type="text" id="ageRange" class="form-input" placeholder="e.g. 35-50">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="jobTitle">Typical Job Title / Role *</label>
+                    <input type="text" id="jobTitle" class="form-input" required placeholder="e.g. Marketing Director">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Top Pain Points (Top 3) *</label>
+                    <input type="text" id="painPoint1" class="form-input" required placeholder="Pain 1 (e.g. Manual data entry)" style="margin-bottom: 0.5rem;">
+                    <input type="text" id="painPoint2" class="form-input" required placeholder="Pain 2" style="margin-bottom: 0.5rem;">
+                    <input type="text" id="painPoint3" class="form-input" required placeholder="Pain 3">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="onlineHangouts">Where do they spend time online? *</label>
+                    <input type="text" id="onlineHangouts" class="form-input" required placeholder="e.g. LinkedIn, specific subreddits, specialized forums">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="vocabulary">Vocabulary & Lingo</label>
+                    <textarea id="vocabulary" class="form-textarea" placeholder="Keywords or specific jargon they use when discussing their problems"></textarea>
+                </div>
+            </section>
+
+            <!-- Step 4: Competition -->
+            <section class="step-section" data-step="4">
+                <h2 class="step-title">Competitive Landscape</h2>
+                <p class="form-helper" style="margin-bottom: 1.5rem;">List up to 3 major competitors.</p>
+                
+                <div id="competitorsContainer">
+                    <div class="repeatable-item">
+                        <div class="repeatable-title">Competitor 1 *</div>
+                        <div class="form-group">
+                            <input type="text" id="comp1Name" class="form-input" required placeholder="Competitor Name">
+                        </div>
+                        <div class="form-group">
+                            <input type="url" id="comp1Url" class="form-input" placeholder="Website URL (e.g. https://...)">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="comp1Diff" class="form-input" required placeholder="Our #1 differentiator against them">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <input type="text" id="comp1Gap" class="form-input" required placeholder="What are they missing in their messaging?">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-add-item" id="addCompetitorBtn">+ Add Another Competitor</button>
+            </section>
+
+            <!-- Step 5: Market Context -->
+            <section class="step-section" data-step="5">
+                <h2 class="step-title">Market Context</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="marketMaturity">Market Maturity *</label>
+                    <select id="marketMaturity" class="form-select" required>
+                        <option value="">Select maturity stage</option>
+                        <option value="Emerging">Emerging (New Category)</option>
+                        <option value="Growth">Growth (Expanding rapidly)</option>
+                        <option value="Mature">Mature (Established players)</option>
+                        <option value="Declining">Declining (Shrinking market)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="biggestTrend">Biggest Macro Trend *</label>
+                    <textarea id="biggestTrend" class="form-textarea" required placeholder="What shift in the world/industry is affecting your business right now?"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="seasonalPatterns">Seasonal Patterns</label>
+                    <input type="text" id="seasonalPatterns" class="form-input" placeholder="e.g. Q4 spike, quiet in Summer">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="regulatoryConcern">Top Regulatory / Compliance Concern</label>
+                    <input type="text" id="regulatoryConcern" class="form-input" placeholder="e.g. GDPR compliance, FDA rules (leave blank if N/A)">
+                </div>
+            </section>
+
+            <!-- Step 6: Existing Content -->
+            <section class="step-section" data-step="6">
+                <h2 class="step-title">Existing Content & Channels</h2>
+                
+                <div class="form-group">
+                    <label class="form-label" for="bestPieceUrl">Best Performing Content Piece (URL)</label>
+                    <input type="url" id="bestPieceUrl" class="form-input" placeholder="https://...">
+                    <p class="form-helper">Share the link to an article, video, or post that worked well.</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Active Marketing Channels *</label>
+                    <div class="checkbox-grid">
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="LinkedIn" class="checkbox-input"> LinkedIn</label>
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="Instagram" class="checkbox-input"> Instagram</label>
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="Twitter" class="checkbox-input"> Twitter / X</label>
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="Facebook" class="checkbox-input"> Facebook</label>
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="YouTube" class="checkbox-input"> YouTube</label>
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="TikTok" class="checkbox-input"> TikTok</label>
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="Email" class="checkbox-input"> Email / Newsletter</label>
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="Blog" class="checkbox-input"> Blog / SEO</label>
+                        <label class="checkbox-label"><input type="checkbox" name="activeChannels" value="Podcast" class="checkbox-input"> Podcast</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="monthlyOutput">Estimated Content Output *</label>
+                    <select id="monthlyOutput" class="form-select" required>
+                        <option value="">Select volume</option>
+                        <option value="Low">Low (1-3 pieces/mo)</option>
+                        <option value="Medium">Medium (1-3 pieces/week)</option>
+                        <option value="High">High (Daily publishing)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="bestFormat">Best Performing Format</label>
+                    <select id="bestFormat" class="form-select">
+                        <option value="">Select format</option>
+                        <option value="Long-form Video">Long-form Video (YouTube)</option>
+                        <option value="Short-form Video">Short-form Video (Reels/TikTok)</option>
+                        <option value="Text Posts">Text-only Social Posts</option>
+                        <option value="Articles">Articles / Blog Posts</option>
+                        <option value="Carousels">Carousels / Slides</option>
+                        <option value="Audio">Audio / Podcasts</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Navigation Buttons -->
+            <div class="button-group" id="navButtons">
+                <button type="button" class="btn-secondary" id="btnBack" disabled>Back</button>
+                <button type="button" class="btn-primary" id="btnNext">Save & Continue</button>
+            </div>
+
+            <!-- Completion Screen -->
+            <section class="completion-screen" id="completionScreen" style="display: none;">
+                <div class="completion-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h2 class="completion-title" id="completionTitle">Intelligence Gathered</h2>
+                <p class="completion-message" id="completionMessage">Generating onboarding-seed.json... your backend orchestrator will take it from here!</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn-primary" onclick="window.close()" id="btnCloseWindow" style="display:none">Close Window</button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    
+    <script src="onboarding.js"></script>
+</body>
+</html>

@@ -11,6 +11,9 @@ authoritative : YES — source of truth for all audience-related decisions
 
 ---
 
+<!-- SOURCED_FROM → MGSD-RES-AUD-01 (AUDIENCE-RESEARCH.md § Primary Segments, § Language & Vocabulary, § Channel Preferences) -->
+<!-- AGENT: Before filling this file, read RESEARCH/AUDIENCE-RESEARCH.md in full -->
+
 ## 1. ICP Overview
 
 > ICP = Ideal Customer Profile. This is not an aspiration — it is a description of the customer most likely to buy, most likely to stay, and most likely to generate referrals.

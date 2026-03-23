@@ -1,6 +1,33 @@
+---
+token_id: MGSD-REF-OPS-03
+document_class: REF
+domain: OPS
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+  - MGSD-REF-OPS-01 # mir-gates.md — gates verified against these patterns
+downstream:
+  - MGSD-AGT-EXE-02  # mgsd-verifier.md — primary consumer
+  - MGSD-SKL-VER-01  # mgsd-verify-work/SKILL.md — entry point skill
+mir_gate_required: false
+---
+
 # Verification Patterns — Marketing Deliverable Verification
 
+<!-- TOKEN: MGSD-REF-OPS-03 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines the 7-dimension framework used by mgsd-verifier.md to evaluate completed marketing phases. All verification agents load this file before producing VERIFICATION.md. -->
+
 How MGSD verifies marketing work is complete and correct.
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-01 | mir-gates.md | MIR gate statuses checked in Dimension 1 |
+| MGSD-AGT-EXE-02 | agents/mgsd-verifier.md | Agent that executes these patterns |
+| MGSD-REF-CNT-01 | ui-brand.md | Verification report formatting standards |
 
 ## Verification Dimensions
 

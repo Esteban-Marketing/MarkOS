@@ -1,4 +1,31 @@
+---
+token_id: MGSD-REF-OPS-11
+document_class: REF
+domain: OPS
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+downstream:
+  - MGSD-REF-OPS-12  # phase-argument-parsing.md — parsers handle X.Y format
+  - MGSD-AGT-STR-02  # mgsd-planner.md — planner inserts decimal phases
+  - MGSD-AGT-EXE-01  # mgsd-executor.md — executor routes decimal phase execution
+mir_gate_required: false
+---
+
 # Decimal Phase Calculation for MGSD
+
+<!-- TOKEN: MGSD-REF-OPS-11 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines the X.Y decimal phase naming syntax, when to use it, and how to calculate the decimal suffix. Decimal phases close verification gaps without renumbering existing roadmap items. -->
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-12 | phase-argument-parsing.md | Argument parser that recognizes X.Y format |
+| MGSD-AGT-STR-02 | agents/mgsd-planner.md | Planner agent that creates decimal phases |
+| MGSD-REF-OPS-01 | mir-gates.md | MIR gates that may trigger decimal phase creation |
 
 Decimal phases (X.Y) are used to close gaps identified during verification without disrupting the main roadmap sequence.
 

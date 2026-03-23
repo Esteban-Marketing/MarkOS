@@ -46,6 +46,10 @@ mir_gate_required: none
 | MGSD-ITM-ACQ-01 | `LINEAR-TASKS/MGSD-ITM-ACQ-01-paid-social-setup.md` | Acquisition | B02, B03, B05, B06, B09 | Gate 1 + Gate 2 | active |
 | MGSD-ITM-ACQ-02 | `LINEAR-TASKS/MGSD-ITM-ACQ-02-retargeting-setup.md` | Acquisition | B02, B03, B06, B09 | Gate 2 | active |
 | MGSD-ITM-ACQ-03 | `LINEAR-TASKS/MGSD-ITM-ACQ-03-linkedin-outbound.md` | Acquisition | B03, B05, B07, B08 | Gate 1 | active |
+| MGSD-ITM-ACQ-04 | `LINEAR-TASKS/MGSD-ITM-ACQ-04-affiliate-influencer.md` | Acquisition — Affiliate/Influencer | B03, B05 | Gate 1 + legal | active |
+| MGSD-ITM-COM-01 | `LINEAR-TASKS/MGSD-ITM-COM-01-community-event.md` | Community & Events | B07 | Gate 1 | active |
+| MGSD-ITM-OPS-02 | `LINEAR-TASKS/MGSD-ITM-ANA-02-ab-test.md` | Campaign Ops — Lifecycle Automation | B01, B02 | Gate 2 | active |
+| MGSD-ITM-ANA-02 | `LINEAR-TASKS/MGSD-ITM-ANA-02-ab-test-config.md` | Campaign Analytics — A/B Test | B08, B09 | Gate 2 | active |
 
 ---
 
@@ -56,9 +60,10 @@ mir_gate_required: none
 | CNT | 08 | 09 |
 | STR | 02 | 03 |
 | TRK | 01 | 02 |
-| ANA | 01 | 02 |
-| OPS | 01 | 02 |
-| ACQ | 03 | 04 |
+| ANA | 02 | 03 |
+| OPS | 02 | 03 |
+| ACQ | 04 | 05 |
+| COM | 01 | 02 |
 
 ---
 
@@ -82,6 +87,10 @@ mir_gate_required: none
 | MGSD-ITM-ACQ-01 | `[MGSD] Paid Social Setup: {platform} — {campaign_name} — {objective}` |
 | MGSD-ITM-ACQ-02 | `[MGSD] Retargeting: {platform} — {audience_segment} — {campaign_name}` |
 | MGSD-ITM-ACQ-03 | `[MGSD] LinkedIn Outbound: {segment_name} — {sequence_name} — {N}-touch` |
+| MGSD-ITM-ACQ-04 | `[MGSD] Influencer Activation: {creator_name} — {platform} — {campaign_name}` |
+| MGSD-ITM-COM-01 | `[MGSD] Community Event: {event_name} — {date}` |
+| MGSD-ITM-OPS-02 | `[MGSD] Lifecycle Automation: {sequence_name} — {trigger_event}` |
+| MGSD-ITM-ANA-02 | `[MGSD] A/B Test: {element_tested} — {page_or_channel} — {hypothesis_slug}` |
 
 ---
 

@@ -1,3 +1,31 @@
+---
+token_id: MGSD-REF-CNT-01
+document_class: REF
+domain: CNT
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+downstream:
+  - MGSD-REF-OPS-07  # checkpoints.md — checkpoint box format defined here
+  - MGSD-REF-OPS-06  # continuation-format.md — references checkpoint box format
+  - MGSD-AGT-EXE-01  # mgsd-executor.md — primary consumer of UI patterns
+  - MGSD-AGT-STR-01  # mgsd-strategist.md — uses stage banners and progress formats
+mir_gate_required: false
+---
+
+<!-- TOKEN: MGSD-REF-CNT-01 | CLASS: REF | DOMAIN: CNT -->
+<!-- PURPOSE: Defines all visual output patterns used by MGSD agents in user-facing responses: stage banners, progress bars, checkpoint boxes, plan summaries, and MIR gate callouts. All orchestrators @-reference this file. -->
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-07 | checkpoints.md | Checkpoint types whose boxes are defined here |
+| MGSD-REF-OPS-06 | continuation-format.md | Continuation blocks reference checkpoint box format |
+| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Primary agent rendering these UI patterns |
+
 <ui_patterns>
 
 Visual patterns for user-facing MGSD output. Orchestrators @-reference this file.

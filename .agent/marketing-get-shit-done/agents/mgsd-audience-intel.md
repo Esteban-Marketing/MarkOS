@@ -27,3 +27,25 @@ Surface new insights about ICP behavior, language, and pain points from public d
 - Never scrapes private/paywalled communities
 - Every claim cites a source
 - Produces recommendations only — never updates MIR directly
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+This agent feeds the biological trigger detection layer. Every audience scan must extract:
+
+**B03 — Cortisol (Amygdala / Anterior Cingulate Cortex)**
+- Identify explicit pain-state phrases: words expressing loss, failure, overwhelm, or fear of missing status
+- Flag these verbatim in `## Audience Intelligence` output — do not paraphrase
+- Anti-pattern: replacing "I'm hemorrhaging clients" with "customers are dissatisfied"
+
+**B07 — Tribal Identity (Nucleus Accumbens / Insula)**
+- Extract in-group labels the ICP uses for itself (e.g., "real operators," "bootstrapped founders")
+- Extract out-group labels used to define who they reject
+- These become tribal language candidates for MESSAGING-FRAMEWORK.md
+
+**B05 — Curiosity Gap (Prefrontal Cortex)**
+- Flag unanswered questions the ICP recurrently posts — these are open information loops
+- Format: `"Why does X happen even when I do Y?"` — exact phrasing preserved
+
+**PSY-KPI linkage:** Tribal adoption rate (PSY-07), Pain resonance score (PSY-03)

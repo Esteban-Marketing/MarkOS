@@ -1,4 +1,32 @@
+---
+token_id: MGSD-REF-OPS-14
+document_class: REF
+domain: OPS
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+  - MGSD-REF-OPS-13 # git-integration.md — general commit conventions
+  - MGSD-REF-OPS-05 # planning-config.md — commit_docs flag governs this behavior
+downstream:
+  - MGSD-AGT-STR-02  # mgsd-planner.md — planner commits PLAN.md files
+  - MGSD-AGT-EXE-01  # mgsd-executor.md — executor commits phase artifacts
+mir_gate_required: false
+---
+
 # Git Planning Commits for MGSD
+
+<!-- TOKEN: MGSD-REF-OPS-14 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines when and how agents commit planning documents (.planning/ files) to git. Controlled by commit_docs config flag. Specifies commit message format for planning artifacts distinct from code commits. -->
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-13 | git-integration.md | General commit conventions this extends |
+| MGSD-REF-OPS-05 | planning-config.md | commit_docs key that governs this behavior |
+| MGSD-AGT-STR-02 | agents/mgsd-planner.md | Planner agent committing PLAN.md artifacts |
 
 ## When to Commit Planning Documents
 

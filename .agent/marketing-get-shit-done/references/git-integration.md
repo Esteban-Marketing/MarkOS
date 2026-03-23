@@ -1,4 +1,31 @@
+---
+token_id: MGSD-REF-OPS-13
+document_class: REF
+domain: OPS
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+  - MGSD-REF-OPS-14 # git-planning-commit.md — planning-specific commit rules
+downstream:
+  - MGSD-AGT-EXE-01  # mgsd-executor.md — agent issuing git commits after execution
+  - MGSD-REF-OPS-05  # planning-config.md — commit_docs flag controls auto-commit behavior
+mir_gate_required: false
+---
+
 # Git Integration — Commit Conventions for MGSD
+
+<!-- TOKEN: MGSD-REF-OPS-13 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines the `mktg` commit prefix convention, commit message format, and branch naming rules for all MGSD-generated git operations. Agents must follow this spec when issuing commits. -->
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-14 | git-planning-commit.md | Supplemental rules for planning document commits |
+| MGSD-REF-OPS-05 | planning-config.md | commit_docs config flag referenced here |
+| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Primary agent issuing MGSD commits |
 
 ## Commit Prefix Convention
 

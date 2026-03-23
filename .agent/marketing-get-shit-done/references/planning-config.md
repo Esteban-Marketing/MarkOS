@@ -1,4 +1,31 @@
+---
+token_id: MGSD-REF-OPS-05
+document_class: REF
+domain: OPS
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+downstream:
+  - MGSD-AGT-EXE-01  # mgsd-executor.md — reads config before execution
+  - MGSD-AGT-STR-01  # mgsd-strategist.md — reads config for discipline status
+  - MGSD-AGT-EXE-02  # mgsd-verifier.md — reads workflow.verifier flag
+mir_gate_required: false
+---
+
 # Planning Config — MGSD Configuration Schema
+
+<!-- TOKEN: MGSD-REF-OPS-05 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines the .planning/config.json schema with all MGSD behavioral toggles. Agents read this before executing any phase to determine workflow flags, discipline states, and model profiles. -->
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-09 | model-profiles.md | Model profile values referenced in model_profile key |
+| MGSD-REF-OPS-10 | model-profile-resolution.md | Resolution order for model profile cascade |
+| MGSD-REF-OPS-01 | mir-gates.md | mir_gate_enforcement flag controls gate behavior |
 
 ## File Location
 

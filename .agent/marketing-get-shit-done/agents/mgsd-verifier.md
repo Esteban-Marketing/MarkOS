@@ -88,3 +88,23 @@ End response with one of:
 - `## VERIFICATION STATUS: passed`
 - `## VERIFICATION STATUS: human_needed`
 - `## VERIFICATION STATUS: gaps_found`
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+### Dimension 8: Neuro-Spec Execution
+
+For phases with `neuro_dimension: true` in any plan:
+- Every task with a `<neuro_spec>` block has a corresponding SUMMARY.md Self-Check entry for neuro execution
+- `<activation>` method was implemented (not approximated) — Self-Check entry = PASSED
+- B03 tasks include a loss frame in delivered copy — verifiable in output files
+
+**Verification.md scoring:** Add Dimension 8 to the results table:
+```
+| 8 | Neuro-Spec Execution | ✓/✗ | {N} neuro tasks checked, {N} PASSED |
+```
+
+**Failure escalation:** Dimension 8 FAIL → status: `gaps_found` (requires re-execution, not just human review)
+
+**PSY-KPI linkage:** Cross-reference SUMMARY.md neuro Self-Check entries against PSY-01 (copy resonance score) and PSY-05 (CTA compliance) defined in neuromarketing.md. If campaign has live data within 30 days, flag PSY-KPI delta against baseline for human review.

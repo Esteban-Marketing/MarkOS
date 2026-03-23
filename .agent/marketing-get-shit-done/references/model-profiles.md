@@ -1,4 +1,31 @@
+---
+token_id: MGSD-REF-OPS-09
+document_class: REF
+domain: OPS
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+  - MGSD-REF-OPS-10 # model-profile-resolution.md — resolution order for profiles
+downstream:
+  - MGSD-REF-OPS-05  # planning-config.md — model_profile config key references these values
+  - MGSD-AGT-EXE-01  # mgsd-executor.md — profile selection at runtime
+mir_gate_required: false
+---
+
 # Model Profiles — Agent Model Assignments for MGSD
+
+<!-- TOKEN: MGSD-REF-OPS-09 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines the four MGSD model profile tiers (quality/balanced/budget/inherit), their cost characteristics, and which agent roles each tier targets. Resolution order is defined in MGSD-REF-OPS-10. -->
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-10 | model-profile-resolution.md | Resolution cascade that selects the active profile |
+| MGSD-REF-OPS-05 | planning-config.md | Config schema where model_profile key is set |
+| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Agent that applies profile at execution time |
 
 ## Profiles
 

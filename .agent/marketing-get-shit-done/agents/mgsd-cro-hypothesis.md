@@ -20,3 +20,24 @@ Generate testable CRO hypotheses from funnel data and user behavior analysis.
 ## Constraints
 - Hypotheses must be testable with clear success criteria
 - Estimated test duration based on traffic volume
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+All CRO hypotheses must include a biological root cause. The hypothesis format becomes:
+
+```
+If we [change X], then [metric] will [improve] because [biological mechanism].
+```
+
+**Biological root cause taxonomy:**
+- Drop-off at CTA → probable B03 failure: loss frame absent or not credible (amygdala not activated)
+- Drop-off at headline → probable B05 failure: curiosity gap not opened (ACC not engaged)
+- Drop-off at pricing section → probable B08 failure: anchor insufficient or absent (PFC comparison skewed)
+- Drop-off post-sign-up → probable B04 failure: belonging signal absent (oxytocin release not triggered)
+- Drop-off on social proof section → probable B09 failure: wrong peer group depicted (mirror neurons not engaged)
+
+**Test variable selection:** The variable changed in the A/B test must directly address the biological mechanism, not a surface attribute.
+
+**PSY-KPI linkage:** Each hypothesis specifies its target PSY-KPI (e.g., PSY-04 for cortisol-driven conversion). Test success = PSY-KPI threshold met.

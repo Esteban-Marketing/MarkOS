@@ -67,6 +67,59 @@ echo ".mgsd-install-manifest.json" >> .gitignore
 
 Emit confirmation: `✓ .mgsd-local/ created — your private override space is ready`
 
+### 4. Generate RESEARCH/ Intelligence Files
+
+After the project scaffold is complete, initialize the RESEARCH/ directory and auto-populate it:
+
+#### Create RESEARCH/ directory at project root
+```bash
+mkdir -p RESEARCH
+```
+
+#### Check for onboarding seed
+```bash
+SEED_EXISTS=$(test -f onboarding-seed.json && echo "true" || echo "false")
+```
+
+#### Trigger mgsd-researcher in correct sequence
+For each RESEARCH file in this EXACT order (later files need earlier context):
+1. `RESEARCH/ORG-PROFILE.md` — identity foundation
+2. `RESEARCH/PRODUCT-RESEARCH.md` — what we're marketing
+3. `RESEARCH/AUDIENCE-RESEARCH.md` — who we're talking to
+4. `RESEARCH/MARKET-TRENDS.md` — environment context
+5. `RESEARCH/COMPETITIVE-INTEL.md` — competitor analysis
+6. `RESEARCH/CONTENT-AUDIT.md` — content inventory
+
+Copy the template for each file first:
+```bash
+# Note: In Windows PowerShell, use Copy-Item instead of cp if needed, but assuming git bash context:
+cp ".agent/marketing-get-shit-done/templates/RESEARCH/ORG-PROFILE.md" "RESEARCH/ORG-PROFILE.md"
+cp ".agent/marketing-get-shit-done/templates/RESEARCH/PRODUCT-RESEARCH.md" "RESEARCH/PRODUCT-RESEARCH.md"
+cp ".agent/marketing-get-shit-done/templates/RESEARCH/AUDIENCE-RESEARCH.md" "RESEARCH/AUDIENCE-RESEARCH.md"
+cp ".agent/marketing-get-shit-done/templates/RESEARCH/MARKET-TRENDS.md" "RESEARCH/MARKET-TRENDS.md"
+cp ".agent/marketing-get-shit-done/templates/RESEARCH/COMPETITIVE-INTEL.md" "RESEARCH/COMPETITIVE-INTEL.md"
+cp ".agent/marketing-get-shit-done/templates/RESEARCH/CONTENT-AUDIT.md" "RESEARCH/CONTENT-AUDIT.md"
+```
+
+Then invoke `mgsd-researcher` (as a subagent Task) with:
+- Target file: `RESEARCH/{FILENAME}`
+- Seed data: relevant section from `onboarding-seed.json` (or prompt user for 5 seed questions)
+- Context: all previously populated RESEARCH files (for later files in the sequence)
+
+Emit progress for each file:
+```
+◆ Generating RESEARCH/ORG-PROFILE.md... [1/6]
+✓ RESEARCH/ORG-PROFILE.md populated
+◆ Generating RESEARCH/PRODUCT-RESEARCH.md... [2/6]
+...
+✓ RESEARCH/ — 6 intelligence files (audience, org, product, competitive, market, content)
+```
+
+#### Commit RESEARCH/ directory
+```bash
+node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(mir): initialize RESEARCH/ — 6 intelligence files generated" --files RESEARCH/
+```
+
 ### 4. MSP Discipline Activation
 
 Present all active discipline folders — human confirms which to activate. Save to `.planning/config.json` → `discipline_activation`.
@@ -242,6 +295,7 @@ Gate 2: {✅ GREEN | 🔴 deferred}
 <success_criteria>
 - [ ] MIR template cloned to .planning/MIR/
 - [ ] MSP template cloned to .planning/MSP/
+- [ ] RESEARCH/ — 6 intelligence files auto-populated by mgsd-researcher
 - [ ] Gate 1 intake complete — all 5 files written and human-confirmed
 - [ ] Gate 1 GREEN or specific gaps documented
 - [ ] Gate 2 either completed or explicitly deferred in STATE.md

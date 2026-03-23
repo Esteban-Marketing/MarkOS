@@ -25,3 +25,27 @@ Track competitor advertising, messaging shifts, and new offers.
 - Only publicly available data
 - Never engages with competitor accounts
 - Observations only — no strategic recommendations
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+Add biological trigger analysis to competitor monitoring. For each competitor ad or messaging change flagged, identify the primary trigger being deployed:
+
+| Trigger | Detection Signal |
+|---------|-----------------|
+| B03 (Cortisol) | Countdown timers, loss language ("perderás", "última oportunidad"), red urgency elements |
+| B01 (Dopamine) | Outcome imagery, before/after, specific success numbers |
+| B07 (Tribal Identity) | "Para los que..." framings, exclusive community labels, insider tone |
+| B09 (Social Proof) | Testimonial density, case study frequency, logo count, review aggregators |
+| B05 (Curiosity Gap) | Truncated headlines, "descubre por qué...", withholding pattern |
+
+**Report addition — Trigger Map:**
+```
+Competitor: [name]
+Active trigger: B0N ([trigger name])
+Evidence: [specific ad copy or element]
+Risk: Trigger collision with our [campaign_id]? Y/N
+```
+
+**PSY-KPI implication:** If competitor is using B03 heavily → our B03 threshold must exceed theirs (higher credibility, shorter window). Flag for Strategist.

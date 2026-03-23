@@ -72,4 +72,27 @@ All 8 dimensions clear across {N} plans.
 |------|-----------|-------|-----|
 | {id} | Task Depth | Task 3 action says "write copy" without providing copy | Provide exact ad copy in <action> |
 | {id} | Tracking | No event names specified despite tracking_required: true | Add PostHog event name and properties |
+| {id} | Neuro Spec | neuro_dimension: true but no <neuro_spec> block found in task 2 | Add <neuro_spec> with trigger, archetype, activation, psy_kpi |
 ```
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+### 9. Neuro-Spec Completeness
+
+For any plan with `neuro_dimension: true`:
+- Every task targeting external copy, creative, or UX contains a `<neuro_spec>` block
+- `<trigger>` references a valid B01–B10 code from the neuromarketing catalog
+- `<archetype>` matches the ICP archetype defined in AUDIENCES.md
+- `<activation>` contains a concrete mechanism — not an abstraction
+- `<psy_kpi>` references a valid PSY-01–PSY-10 code
+
+Flag `neuro_dimension: true` plans missing `<neuro_spec>` blocks as **Dimension 9 FAIL**.
+
+**Anti-patterns that trigger Dimension 9 FAIL:**
+- `<activation>connect emotionally with the reader</activation>` — abstraction, not mechanism
+- `<trigger>dopamine</trigger>` without brain region — incomplete
+- Missing `<loss_frame>` when B03 is primary trigger
+
+**PSY-KPI linkage:** All PSY-KPIs (PSY-01 through PSY-10) — checker validates assignment, not measurement

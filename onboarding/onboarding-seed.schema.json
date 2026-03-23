@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MGSD Onboarding Seed",
+  "type": "object",
+  "required": ["metadata", "company", "product", "audience", "competition", "market", "content"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "generated": { "type": "string", "format": "date-time" },
+        "version": { "type": "string" },
+        "completeness_score": { "type": "number", "minimum": 0, "maximum": 6 }
+      }
+    },
+    "company": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "industry": { "type": "string" },
+        "country": { "type": "string" },
+        "founded": { "type": "string" },
+        "mission": { "type": "string" },
+        "brand_values": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
+        "tone_of_voice": { "type": "string", "enum": ["Formal", "Balanced", "Casual", "Playful"] },
+        "primary_language": { "type": "string" }
+      }
+    },
+    "product": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "primary_benefit": { "type": "string" },
+        "top_features": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
+        "price_range": { "type": "string" },
+        "main_objection": { "type": "string" }
+      }
+    },
+    "audience": {
+      "type": "object",
+      "properties": {
+        "segment_name": { "type": "string" },
+        "age_range": { "type": "string" },
+        "job_title": { "type": "string" },
+        "pain_points": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
+        "online_hangouts": { "type": "string" },
+        "vocabulary": { "type": "string" }
+      }
+    },
+    "competition": {
+      "type": "object",
+      "properties": {
+        "competitors": {
+          "type": "array",
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "url": { "type": "string" },
+              "differentiator": { "type": "string" },
+              "gap": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "market": {
+      "type": "object",
+      "properties": {
+        "maturity": { "type": "string", "enum": ["Emerging", "Growth", "Mature", "Declining"] },
+        "biggest_trend": { "type": "string" },
+        "seasonal_patterns": { "type": "string" },
+        "regulatory_concern": { "type": "string" }
+      }
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "best_piece_url": { "type": "string" },
+        "active_channels": { "type": "array", "items": { "type": "string" } },
+        "monthly_output": { "type": "string" },
+        "best_format": { "type": "string" }
+      }
+    }
+  }
+}

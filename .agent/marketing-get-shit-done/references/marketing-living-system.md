@@ -1,9 +1,39 @@
+---
+token_id: MGSD-REF-OPS-02
+document_class: REF
+domain: OPS
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000   # MGSD-INDEX.md — master registry
+  - MGSD-REF-OPS-01 # mir-gates.md — gate enforcement
+downstream:
+  - MGSD-AGT-STR-01 # mgsd-strategist.md
+  - MGSD-AGT-EXE-01 # mgsd-executor.md
+  - MGSD-AGT-EXE-02 # mgsd-verifier.md
+mir_gate_required: false
+---
+
 # Marketing Living System: Optimization & Enhancement Roadmap
+
+<!-- TOKEN: MGSD-REF-OPS-02 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Cross-protocol structural audit identifying gaps between GSD and MGSD. Used by agents to understand protocol integration points. -->
 
 **Version:** 1.0.0
 **Protocols Covered:** `get-shit-done` (GSD), `marketing-get-shit-done` (MGSD)
 **Scope:** Human-AI Agent collaboration enhancements at the protocol intersection
-**Date:** 2026-03-22
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-01 | mir-gates.md | Gate enforcement rules referenced in GAP analysis |
+| MGSD-REF-NEU-01 | neuromarketing.md | Biological trigger layer referenced in gap proposals |
+| MGSD-AGT-STR-01 | agents/mgsd-strategist.md | Primary consumer of cross-protocol gap data |
+| MGSD-REF-OPS-03 | verification-patterns.md | Verification standards cited in this document |
+
+---
 
 ---
 

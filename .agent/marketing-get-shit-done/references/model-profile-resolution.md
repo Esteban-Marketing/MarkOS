@@ -1,4 +1,31 @@
+---
+token_id: MGSD-REF-OPS-10
+document_class: REF
+domain: OPS
+version: "1.0.0"
+status: active
+upstream:
+  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+  - MGSD-REF-OPS-09 # model-profiles.md — profile tier definitions
+downstream:
+  - MGSD-REF-OPS-05  # planning-config.md — config schema that triggers resolution
+  - MGSD-AGT-EXE-01  # mgsd-executor.md — agent performing runtime resolution
+mir_gate_required: false
+---
+
 # Model Profile Resolution for MGSD Agents
+
+<!-- TOKEN: MGSD-REF-OPS-10 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines the 4-level cascade order for resolving which model profile applies to any given agent call: agent-explicit → phase config → global config → inherit default. -->
+
+## See Also
+
+| TOKEN_ID | File | Relationship |
+|----------|------|--------------|
+| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
+| MGSD-REF-OPS-09 | model-profiles.md | Profile tier definitions resolved by this cascade |
+| MGSD-REF-OPS-05 | planning-config.md | Config schema that sources resolution inputs |
+| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Agent that executes the resolution at runtime |
 
 ## Resolution Order
 

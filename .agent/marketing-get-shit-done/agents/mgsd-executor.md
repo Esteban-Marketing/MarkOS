@@ -78,3 +78,28 @@ campaign_id: {if applicable}
 - Never modify ROADMAP.md or STATE.md directly — use mgsd-tools.cjs CLI
 - Never skip acceptance_criteria — verify each one before committing
 - If acceptance criteria fails → note in SUMMARY.md Self-Check as FAILED, continue (don't abort)
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+When executing a task that contains a `<neuro_spec>` block, add a neuro execution check to the SUMMARY.md Self-Check:
+
+```
+| Neuro Spec — B0N execution | PASSED/FAILED |
+| Activation method delivered as specified | PASSED/FAILED |
+| Loss frame present (if B03) | PASSED/FAILED |
+```
+
+**FAILED criteria (non-negotiable):**
+- Copy task delivered without implementing the `<activation>` method — FAIL
+- Hook does not match the trigger's brain-region logic — FAIL
+- Loss frame omitted when `<trigger>` is B03 (Cortisol/Amygdala) — FAIL
+
+**PASSED criteria:**
+- `<activation>` was implemented exactly as specified — PASS
+- Copy structure follows Hook → Body → CTA sequence mapped to trigger — PASS
+
+**Do not interpret or extrapolate** the `<neuro_spec>`. Execute it precisely. If the spec is ambiguous, stop and return a checkpoint with the ambiguity described.
+
+**PSY-KPI linkage:** Self-Check populates raw data for PSY-01 (copy resonance) and PSY-05 (CTA compliance)

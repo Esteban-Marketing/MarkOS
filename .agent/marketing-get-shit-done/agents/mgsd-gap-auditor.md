@@ -31,3 +31,25 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit
 ## Constraints
 - Report only — never fills gaps without human providing content
 - Never assumes default values
+
+## Neuromarketing Alignment
+
+**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+
+Add Neuro-Gap category to gap report output:
+
+**Scan additions:**
+- Any PLAN.md with `neuro_dimension: true` that has tasks missing a `<neuro_spec>` block → **Neuro Gap (N1)**
+- Any CAMPAIGN.md with a neuro_spec that has no corresponding PSY-KPI tracking events in TRACKING.md → **Neuro Gap (N2)**
+- Any SUMMARY.md for a neuro-dimensioned plan that has no neuro Self-Check rows → **Neuro Gap (N3)**
+- Any VERIFICATION.md missing Dimension 8 when `neuro_dimension` plans were present → **Neuro Gap (N4)**
+
+**Report format addition:**
+```
+## Neuro Gaps
+| Gap ID | Type | File | Description |
+|--------|------|------|-------------|
+| N1-001 | Missing neuro_spec | PLAN.md | Task "write CTA copy" has no <neuro_spec> |
+```
+
+**Priority:** N2 gaps (untracked PSY-KPIs) = P1 — blocks measurement. N1 gaps = P2. N3/N4 = P3.

@@ -1,0 +1,10 @@
+{
+  "logo_url": "",
+  "primary_color": "#6366f1",
+  "company_name": "Marketing Get Shit Done",
+  "form_title": "Client Intelligence Onboarding",
+  "completion_message": "Your marketing intelligence is being generated...",
+  "port": 4242,
+  "auto_open_browser": true,
+  "output_path": "../onboarding-seed.json"
+}

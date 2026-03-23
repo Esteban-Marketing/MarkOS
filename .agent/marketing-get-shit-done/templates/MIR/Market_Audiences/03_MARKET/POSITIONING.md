@@ -10,6 +10,9 @@ authoritative : YES for strategic positioning decisions
 
 ---
 
+<!-- SOURCED_FROM → MGSD-RES-ORG-01 (ORG-PROFILE.md § Market Position, § Strategic Goals) -->
+<!-- AGENT: Before filling this file, read RESEARCH/ORG-PROFILE.md § Market Position -->
+
 ## 1. Positioning Statement
 
 > Internal use only. Precise and specific.

@@ -1,0 +1,29 @@
+{
+  "name": "marketing-get-shit-done",
+  "version": "1.0.0",
+  "description": "The Marketing Get Shit Done (MGSD) protocol — agentic marketing execution alongside GSD",
+  "keywords": ["marketing", "ai", "agents", "protocol", "mgsd", "gsd", "get-shit-done"],
+  "homepage": "https://github.com/your-org/marketing-get-shit-done",
+  "license": "MIT",
+  "engines": { "node": ">=18.0.0" },
+  "bin": {
+    "marketing-get-shit-done": "./bin/install.cjs",
+    "mgsd": "./bin/install.cjs"
+  },
+  "files": [
+    "bin/",
+    ".agent/marketing-get-shit-done/",
+    "onboarding/",
+    "VERSION",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "test": "node --test test/**/*.test.js",
+    "test:install": "node --test test/install.test.js",
+    "test:patch": "node --test test/update.test.js",
+    "test:onboarding": "node --test test/onboarding-server.test.js",
+    "test:protocol": "node --test test/protocol.test.js",
+    "prepublishOnly": "node -e \"console.log('Publishing marketing-get-shit-done v' + require('./package.json').version)\""
+  }
+}

@@ -5,6 +5,7 @@ Create executable phase plans (PLAN.md files) for a marketing roadmap phase. Def
 <required_reading>
 @.agent/marketing-get-shit-done/references/ui-brand.md
 @.agent/marketing-get-shit-done/references/mir-gates.md
+@.agent/marketing-get-shit-done/references/neuromarketing.md
 </required_reading>
 
 <available_agent_types>
@@ -299,6 +300,20 @@ Every task MUST include these fields:
    - mir_files_referenced: [list of MIR files this plan uses]
    - tracking_required: {true/false}
    - requires_human_approval: {true/false — for creative and budget decisions}
+   - neuro_dimension: {true/false — set true when plan targets external audience}
+
+5. **Neuromarketing spec (`<neuro_spec>` block) — REQUIRED when `neuro_dimension: true`:**
+   Read `.agent/marketing-get-shit-done/references/neuromarketing.md` before writing any plan targeting an external audience.
+
+   Every task that produces external-facing copy or campaign assets MUST include:
+   - `<trigger>B0N — trigger name</trigger>`
+   - `<archetype>Archetype — one-line justification against ICP</archetype>`
+   - `<funnel_stage>awareness | consideration | decision | onboarding | retention</funnel_stage>`
+   - `<activation_method>concrete copy/UX mechanism — no abstract descriptions</activation_method>`
+   - `<psy_kpi>KPI name from neuromarketing framework</psy_kpi>`
+   - `<failure_mode>how to detect if this trigger fails to activate</failure_mode>`
+
+   **Forbidden without neuro_spec:** any copy, ad creative, email subject, or landing page CTA.
 </deep_work_rules>
 
 <quality_gate>
@@ -310,6 +325,7 @@ Every task MUST include these fields:
 - [ ] Wave dependencies correctly identified
 - [ ] Checkpoint tasks marked autonomous: false for creative/budget decisions
 - [ ] must_haves derived from phase goal with measurable thresholds
+- [ ] Every plan with neuro_dimension: true has a valid `<neuro_spec>` block per trigger catalog
 </quality_gate>
 ",
   subagent_type="mgsd-planner",
@@ -417,6 +433,30 @@ Return ## PLANNING COMPLETE with what changed.
 After planner returns → spawn checker again, increment iteration_count.
 
 **If iteration_count >= 3:** Display remaining issues, offer: 1) Force proceed, 2) Provide guidance and retry, 3) Abandon.
+
+## 10.5. Neuro Audit (Optional Quality Gate)
+
+**Skip if:** All plans have `neuro_dimension: false` OR `--skip-neuro` flag set.
+
+**If any plan has `neuro_dimension: true`:**
+
+Display:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ MGSD ► NEURO AUDIT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+◆ Spawning neuro auditor...
+```
+
+Spawn `mgsd-neuro-auditor` with:
+- All `neuro_dimension: true` PLAN.md files in phase directory
+- `{context_path}`, `{research_path}`, MIR AUDIENCES.md
+
+Handle return:
+- `## NEURO AUDIT: PASSED` → Continue to step 11
+- `## NEURO AUDIT: WARNINGS` → Display warnings; offer: 1) Accept warnings, 2) Send back to planner for revisions
+- `## NEURO AUDIT: REWRITE REQUIRED` → Send back to planner with neuro issues as additional revision context (counts toward iteration limit)
 
 ## 11. Requirements Coverage Gate
 

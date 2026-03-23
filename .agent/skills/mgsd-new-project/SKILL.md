@@ -39,3 +39,72 @@ This skill reads from and scaffolds the following template directories:
 <!-- OVERRIDABLE: .mgsd-local/MIR/Operations/ overrides .agent/marketing-get-shit-done/templates/MIR/Operations/ -->
 <!-- OVERRIDABLE: .mgsd-local/MSP/ overrides .agent/marketing-get-shit-done/templates/MSP/ -->
 <!-- OVERRIDABLE: .mgsd-local/config/config.json overrides .agent/marketing-get-shit-done/templates/config.json -->
+
+## What Gets Created
+- MIR/ — Marketing Intelligence Repository templates
+- MSP/ — Marketing Strategy Pipeline templates
+- .mgsd-local/ — Client override space
+- `RESEARCH/` — 6 intelligence files auto-populated by mgsd-researcher
+
+## Auto-Generation Sequence
+
+After the `.mgsd-local/` scaffold step completes, the following steps are executed:
+
+### Create RESEARCH/ directory at project root
+```bash
+mkdir -p RESEARCH
+```
+
+### Check for onboarding seed
+```bash
+SEED_EXISTS=$(test -f onboarding-seed.json && echo "true" || echo "false")
+```
+
+### Trigger mgsd-researcher in correct sequence
+For each RESEARCH file in this EXACT order (later files need earlier context):
+1. `RESEARCH/ORG-PROFILE.md` — identity foundation
+2. `RESEARCH/PRODUCT-RESEARCH.md` — what we're marketing
+3. `RESEARCH/AUDIENCE-RESEARCH.md` — who we're talking to
+4. `RESEARCH/MARKET-TRENDS.md` — environment context
+5. `RESEARCH/COMPETITIVE-INTEL.md` — competitor analysis
+6. `RESEARCH/CONTENT-AUDIT.md` — content inventory
+
+Copy the template for each file first:
+```bash
+cp ".agent/marketing-get-shit-done/templates/RESEARCH/{FILENAME}" "RESEARCH/{FILENAME}"
+```
+
+Then invoke `mgsd-researcher` (as a subagent Task) with:
+- Target file: `RESEARCH/{FILENAME}`
+- Seed data: relevant section from `onboarding-seed.json` (or prompt user for 5 seed questions)
+- Context: all previously populated RESEARCH files
+
+Emit progress for each file:
+```
+◆ Generating RESEARCH/ORG-PROFILE.md... [1/6]
+```
+
+### Completion Output
+Ensure the "Project Ready" summary output contains:
+```
+✓ RESEARCH/ — 6 intelligence files (audience, org, product, competitive, market, content)
+```
+
+## Step N: Launch Client Intelligence Onboarding
+
+After the project scaffold is created, offer to launch the onboarding form:
+
+Ask the user: "Launch the MGSD web onboarding form to collect client intelligence? (Recommended — powers your entire RESEARCH/, MIR/, and MSP/ with tailored data)"
+Options:
+- "Launch form (recommended)" → run onboarding server + open browser
+- "Skip — I'll fill in manually" → skip to completion
+
+If "Launch form":
+```bash
+node "onboarding/bin/serve-onboarding.cjs"
+```
+Wait for server to complete (it auto-shuts down after submission).
+Then trigger `mgsd-onboarder` to process the seed file.
+
+If "Skip":
+Notify: "You can run `node onboarding/bin/serve-onboarding.cjs` at any time to generate your intelligence seed."
