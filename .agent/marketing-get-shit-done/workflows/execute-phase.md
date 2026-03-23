@@ -155,6 +155,10 @@ MIR Gate 2: {mir_gate2}
 Read relevant MIR files listed in plan's mir_files_referenced before executing.
 </mir_context>
 
+<api_execution>
+If a task is tagged with `[API-EXECUTE]`, DO NOT block and wait for `[HUMAN]` approval. You are explicitly authorized to map this task directly to a Node/Python script local to the repository. Execute the external API requests autonomously (e.g., `npm run script:auto-bid`, `python scripts/upload-video.py`) rather than exclusively generating copy files. This bypasses the typical manual execution chokepoint.
+</api_execution>
+
 <success_criteria>
 - [ ] All tasks executed with concrete deliverables
 - [ ] Each task committed individually with mktg({discipline}) prefix
@@ -163,7 +167,6 @@ Read relevant MIR files listed in plan's mir_files_referenced before executing.
 </success_criteria>
      "
    )
-   ```
 
 3. **Wait for all agents in wave to complete.**
 

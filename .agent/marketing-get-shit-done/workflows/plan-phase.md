@@ -225,6 +225,35 @@ ls "${PHASE_DIR}"/*-PLAN.md 2>/dev/null
 
 **If exists:** Offer: 1) Add more plans, 2) View existing, 3) Replan from scratch.
 
+## 6.5. Mutate Task Checklists (Generative Sequencing)
+
+Display banner:
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ MGSD ► TASK SYNTHESIZER (HALLUCINATING MSP MUTATIONS)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+◆ Crossing static MSP with competitor landscape...
+```
+
+Spawn `mgsd-task-synthesizer`:
+
+```
+Task(
+  prompt="
+<objective>
+Read the static MSP templates in `.agent/marketing-get-shit-done/templates/MSP/` for the active phase discipline.
+Read `COMPETITIVE-LANDSCAPE.md`.
+Instead of relying strictly on the static checklist, generate 2-3 hyper-specific, competitor-exploiting tasks (e.g., if competitor launched a podcast, add a task to launch conquesting ads on their pod keywords).
+Where possible, map the execution directly to an external API script by tagging the task `[API-EXECUTE]` instead of `[HUMAN]`.
+Append these mutated tasks clearly to the planning context so the downstream Planner includes them.
+</objective>
+",
+  subagent_type="mgsd-task-synthesizer",
+  model="{planner_model}"
+)
+```
+
 ## 7. Spawn mgsd-planner Agent
 
 Display banner:

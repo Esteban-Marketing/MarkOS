@@ -10,6 +10,7 @@
   </team>
   
   <team id="execution">
+    <agent id="mgsd-task-synthesizer">Reads static MSP templates + COMPETITIVE-LANDSCAPE.md and dynamically hallucinates competitor-exploiting tasks into the roadmap.</agent>
     <agent id="mgsd-planner">Converts MIR + MSP context into actionable PLAN.md.</agent>
     <agent id="mgsd-plan-checker">Pre-execution quality gate validator.</agent>
     <agent id="mgsd-executor">Runs PLAN.md tasks, makes atomic commits, handles repo changes.</agent>
@@ -43,8 +44,9 @@
   <step>AI: `mgsd-behavioral-scraper` -> embeds ongoing market sentiment into Chroma VectorDB natively.</step>
   <step>AI: `mgsd-onboarder` -> builds contextual skeleton.</step>
   <step>AI: `mgsd-strategist` -> queries Chroma DB and maps triggers and audience gaps.</step>
+  <step>AI: `mgsd-task-synthesizer` -> crosses static MSPs with live competitor gaps to generate mutated tasks.</step>
   <step>AI: `mgsd-planner` -> builds tasks into `.planning/`.</step>
-  <step>AI: `mgsd-executor` -> loops through tasks atomically.</step>
+  <step>AI: `mgsd-executor` -> loops through tasks atomically, triggering external scripts for `[API-EXECUTE]` tags.</step>
   <step>Human: Unblocks executing loops if `[HUMAN]` requires auth/billing/external action.</step>
   <step>AI: `mgsd-verifier` -> ensures constraints passed.</step>
   <step>AI: `mgsd-data-scientist` -> post-execution audit; halts iteration and pivots ROADMAP.md if CAC targets fail.</step>
