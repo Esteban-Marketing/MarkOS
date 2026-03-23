@@ -5,5 +5,8 @@
 <file path="ARCHITECTURE.md">Component interactions, MIR/MSP boundaries.</file>
 <file path="STATE.md">Current milestone, active phases, tech debt.</file>
 <file path="CONVENTIONS.md">Execution rules, development guidelines.</file>
+<file path="TEAM.md">Hybrid Human + AI role topology and execution handoffs.</file>
+<file path="TEMPLATES.md">Tokenized MIR, MSP, and ITM mapping.</file>
+<file path="WORKFLOWS.md">Token-efficient machine readable workflow loops.</file>
 </map>
 </mgsd_context>

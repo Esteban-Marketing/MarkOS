@@ -33,3 +33,8 @@
 ## 4. Algorithmic QA & Ranking Loops
 - [ ] Monitor SERP volatility daily for the top 10 target keywords.
 - [ ] Execute bi-weekly content decay audits; refresh articles dropping out of Top 3 ranking bands.
+
+## 5. CRO & Growth Hacking (Organic Viral Loops)
+- [ ] Deploy 'Content Upgrades' (Checklists, Templates) gated behind email capture on the Top 5 performing organic pages to capture LTV intent.
+- [ ] Embed interactive 'Viral Mechanisms' (Calculators, Quizzes) mapped to the `{{PRIMARY_KEYWORD}}`.
+- [ ] Audit organic page readability: ensure the first 100 words leverage the **Curiosity Gap** and **Zeigarnik Effect** to maximize user 'Time on Page' (critical for SEO dwell-time ranking metrics).

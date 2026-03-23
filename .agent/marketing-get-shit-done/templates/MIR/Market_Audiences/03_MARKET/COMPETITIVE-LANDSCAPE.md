@@ -36,10 +36,15 @@ primary_channels  : "[Where they market — organic, paid, SEO, referral]"
 strengths         : "[What they genuinely do well]"
 weaknesses        : "[Where they fall short]"
 threat_level      : "[HIGH | MEDIUM | LOW]"
+psychological_angle: "[e.g. They sell 'peace of mind' / They sell 'status']"
+neuromarketing_trigger: "[e.g. Heavy use of Authority bias / Heavy use of FOMO]"
 ```
 
 **Key differentiator vs. this business:**
 [FILL — what do we do that they don't? What do they do that we don't?]
+
+**Psychographic Gap to Exploit:**
+[FILL — What psychological desire are they failing to address that we can conquer? e.g. "They focus purely on utility; we can attack the 'prestige' angle."]
 
 ---
 

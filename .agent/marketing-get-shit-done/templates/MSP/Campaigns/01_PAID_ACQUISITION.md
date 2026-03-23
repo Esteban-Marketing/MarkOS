@@ -34,3 +34,8 @@
 - [ ] Track 3-day and 7-day Blended ROAS vs. Target `{{CAC_LIMIT}}`.
 - [ ] Terminate any ad variant explicitly costing > 1.5x of the acceptable `{{CPA_GOAL}}`.
 - [ ] Algorithmically scale daily budgets on winning ad sets precisely by 20% every 48 hours.
+
+## 5. Neuromarketing & CRO Integration
+- [ ] A/B test purely Psychological Hooks in ad copy at the MOF layer: **Authority vs. Social Proof**.
+- [ ] Inject **Loss Aversion (Scarcity/Urgency)** strictly into BOF retargeting sequences.
+- [ ] Implement Post-Purchase Upsell flows mapped to maximize the average initial order value and establish `{{LTV_TARGET}}` vectors.
