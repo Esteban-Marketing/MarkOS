@@ -248,12 +248,20 @@ All MGSD agents that load template files MUST follow this resolution order:
 - `MIR/**/*` — the live project MIR (distinguishable from template MIR by location)
 - `MSP/**/*` — the live project MSP
 
-### Overridable Template Paths
-| Protocol Default | Client Override Path |
-|-----------------|---------------------|
-| `.agent/marketing-get-shit-done/templates/MIR/` | `.mgsd-local/MIR/` |
-| `.agent/marketing-get-shit-done/templates/MSP/` | `.mgsd-local/MSP/` |
-| `.agent/marketing-get-shit-done/templates/config.json` | `.mgsd-local/config/config.json` |
+## Overridable Paths Registry
+
+Complete list of files/directories clients can place in `.mgsd-local/` to override protocol defaults.
+Any file placed here **will not be touched** by `mgsd update` or GSD patches.
+
+| Client Override Path | Overrides Protocol File | Consumed By |
+|---------------------|------------------------|-------------|
+| `.mgsd-local/MIR/Core_Strategy/*.md` | `templates/MIR/Core_Strategy/*.md` | mgsd-new-project, mgsd-plan-phase |
+| `.mgsd-local/MIR/Market_Audiences/*.md` | `templates/MIR/Market_Audiences/*.md` | mgsd-new-project, mgsd-research-phase |
+| `.mgsd-local/MIR/Products/*.md` | `templates/MIR/Products/*.md` | mgsd-new-project, mgsd-plan-phase |
+| `.mgsd-local/MIR/Campaigns_Assets/*.md` | `templates/MIR/Campaigns_Assets/*.md` | mgsd-execute-phase |
+| `.mgsd-local/MIR/Operations/*.md` | `templates/MIR/Operations/*.md` | mgsd-execute-phase, mgsd-linear-sync |
+| `.mgsd-local/MSP/<discipline>/*.md` | `templates/MSP/<discipline>/*.md` | mgsd-plan-phase, mgsd-execute-phase |
+| `.mgsd-local/config/config.json` | `templates/config.json` | All agents (project config) |
 
 ---
 
