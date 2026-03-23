@@ -21,6 +21,7 @@
 ## 2. Deal Flow & Contract Allocation
 - [ ] Negotiate specific deliverables (e.g., 60s Integration vs. Dedicated Video vs. 1 IG Story). 
 - [ ] Lock down IP rights granting permission to run whitelisted spark ads natively through their account.
+- [ ] AI Virtual Creator Allocation: Partner with Virtual Influencer agencies or syndicate in-house branded AI avatars for low-cost, high-yield product placement.
 - [ ] Execute legal compliance paperwork (W9s/Contracts) and payout logistics.
 - [ ] Generate dynamic, unique tracking codes and UTM URLs natively tracking back to the core database.
 

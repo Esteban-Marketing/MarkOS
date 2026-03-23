@@ -1,4 +1,4 @@
-# 🏗️ {{COMPANY_NAME}} - SEO & Organic Infrastructure
+# 🏗️ {{COMPANY_NAME}} - SEO & GEO (Generative Engine Optimization) Infrastructure
 
 <!-- mgsd-token: MSP -->
 > [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Campaigns/02_SEO_ORGANIC.md to customize it safely.
@@ -12,6 +12,7 @@
 - **Primary Keyword Target:** `{{PRIMARY_KEYWORD}}`
 - **Domain Authority (DA) Goal:** `{{DOMAIN_AUTHORITY_TARGET}}`
 - **Target Market Location:** `{{GEOLOCATION}}`
+- **Target LLM Engine:** (ChatGPT, Perplexity, SGE, Claude)
 
 ## 1. Technical Triage & Indexing
 - [ ] Perform absolute crawl analysis using Screaming Frog or equivalent to parse 404s and redirect chains.
@@ -24,6 +25,11 @@
 - [ ] Inject LSI (Latent Semantic Indexing) keywords uniformly across meta descriptions, schema markups, and body text.
 - [ ] Deploy strict Internal Linking mapping (minimum 3 incoming, 3 outgoing internal links per pillar page).
 - [ ] Synthesize URL slugs. Ensure absolute lowercase dash-delimited structures natively.
+
+## 2.5. GEO (Generative Engine Optimization) Readiness
+- [ ] Inject 'Citation-Friendly' statistics, quotes, and primary source data into articles to increase LLM 'Information Gain' scores.
+- [ ] Implement robust semantic Schema.org JSON-LD markups so LLMs easily parse entity relationships.
+- [ ] Format key sections as direct Q&A (Markdown tables or bulleted lists) engineered for AI Overviews (SGE) and Perplexity scraping.
 
 ## 3. Backlink Velocity Outreach
 - [ ] Identify Top 50 Domain Authority targets currently linking to `{{COMPETITORS}}`.
