@@ -233,6 +233,30 @@ graph TD
 
 ---
 
+## Override Resolution Protocol
+
+All MGSD agents that load template files MUST follow this resolution order:
+
+1. Check `.mgsd-local/<relative-template-path>` first
+2. If found → use it and log: `[override] Using .mgsd-local/<path>`
+3. If not found → use `.agent/marketing-get-shit-done/templates/<relative-path>`
+4. Log fallback: `[override] No .mgsd-local/<path> — using protocol default`
+
+### Protected Paths (never touched by updates or patches)
+- `.mgsd-local/**/*` — all client overrides
+- `RESEARCH/**/*` — all generated research files
+- `MIR/**/*` — the live project MIR (distinguishable from template MIR by location)
+- `MSP/**/*` — the live project MSP
+
+### Overridable Template Paths
+| Protocol Default | Client Override Path |
+|-----------------|---------------------|
+| `.agent/marketing-get-shit-done/templates/MIR/` | `.mgsd-local/MIR/` |
+| `.agent/marketing-get-shit-done/templates/MSP/` | `.mgsd-local/MSP/` |
+| `.agent/marketing-get-shit-done/templates/config.json` | `.mgsd-local/config/config.json` |
+
+---
+
 ## MIR Domain Index Map
 
 | Domain Folder | Domain Index | Gate |

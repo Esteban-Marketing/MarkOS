@@ -1,114 +1,250 @@
 ---
-description: Initialize a new marketing project with MIR scaffolding, MSP discipline activation, and roadmap creation
+description: Initialize a new marketing project with full Gate 1 intake questionnaire, MIR scaffolding, MSP discipline activation, and roadmap creation
 ---
 
 # /mgsd-new-project
 
 <purpose>
-Initialize a new marketing project: gather business context, scaffold MIR repository, activate MSP disciplines, create PROJECT.md + ROADMAP.md + STATE.md.
+Initialize a new single-client MGSD project from scratch. Clones MIR and MSP templates, runs a structured Gate 1 intake questionnaire with human-confirmed answers written directly to MIR files, activates MSP disciplines, and creates PROJECT.md + ROADMAP.md + STATE.md. No campaign work until Gate 1 is GREEN.
 </purpose>
 
 ## Process
 
-### 1. Get Context
+### 1. Initialize
 
 ```bash
 INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init new-project --raw)
 ```
 
-If `.planning/PROJECT.md` already exists → show warning, ask if user wants to reinitialize.
+If `.planning/PROJECT.md` already exists → show warning, ask if user wants to reinitialize or resume filling existing MIR (resume → skip to Step 4).
 
-### 2. Discovery
+### 2. Clone Templates
 
-@-reference `.agent/marketing-get-shit-done/references/questioning.md`
+Copy MIR and MSP templates into the project planning directory:
 
-Use adaptive questioning to gather:
-- Business identity (company, industry, target market)
-- Marketing objective
-- Budget
-- Current channels and tech stack
-- Brand voice (if exists)
-- Target audience
-- Previous campaign history
+```bash
+node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" template clone \
+  --source templates/MIR \
+  --dest .planning/MIR
 
-Continue until the context checklist in `questioning.md` is >80% covered.
+node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" template clone \
+  --source templates/MSP \
+  --dest .planning/MSP
+```
 
-### 3. MIR Scaffolding
+Initialize STATE.md:
+```bash
+node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" state init --gate1 red --gate2 red
+```
 
-The MIR templates exist at `.agent/marketing-get-shit-done/templates/MIR/`.
-Copy the MIR structure to the project's marketing repository.
+### 3. Create .mgsd-local/ Override Directory
 
-Key files to populate from discovery answers:
-- `Core_Strategy/01_COMPANY/PROFILE.md` (business identity)
-- `Core_Strategy/02_BRAND/VOICE-TONE.md` (brand voice if provided)
-- `Market_Audiences/03_MARKET/AUDIENCES.md` (ICP definitions)
-- `Products/04_PRODUCTS/CATALOG.md` (products/services)
+Create the client override space at the project root:
+
+```bash
+mkdir -p .mgsd-local/MIR/Core_Strategy
+mkdir -p .mgsd-local/MIR/Market_Audiences
+mkdir -p .mgsd-local/MIR/Products
+mkdir -p .mgsd-local/MIR/Campaigns_Assets
+mkdir -p .mgsd-local/MIR/Operations
+mkdir -p .mgsd-local/MSP
+mkdir -p .mgsd-local/config
+```
+
+Copy the override README:
+```bash
+cp ".agent/marketing-get-shit-done/templates/local-override/README.md" ".mgsd-local/README.md"
+```
+
+Add .mgsd-local/ to .gitignore (append if .gitignore exists, create if not):
+```bash
+echo "" >> .gitignore
+echo "# MGSD client overrides (private — do not commit)" >> .gitignore
+echo ".mgsd-local/" >> .gitignore
+echo "onboarding-seed.json" >> .gitignore
+echo ".mgsd-install-manifest.json" >> .gitignore
+```
+
+Emit confirmation: `✓ .mgsd-local/ created — your private override space is ready`
 
 ### 4. MSP Discipline Activation
 
-Present all 13 disciplines from `.agent/marketing-get-shit-done/templates/MSP/README.md`:
+Present all active discipline folders — human confirms which to activate. Save to `.planning/config.json` → `discipline_activation`.
 
 ```
-╔══════════════════════════════════════════════════════════════╗
-║  CHECKPOINT: Discipline Activation                           ║
-╚══════════════════════════════════════════════════════════════╝
+Which marketing disciplines are active for this project?
+→ Confirm activation: list numbers (e.g. "1, 2, 4, 6")
 
-Which marketing disciplines should be active for this project?
-
-| # | Discipline | Recommendation |
-|---|-----------|---------------|
-| 01 | Advertising | [Based on discovery] |
-| 02 | Content Marketing | [Based on discovery] |
-| ... | ... | ... |
-
-→ Confirm activation: list numbers (e.g., "1, 2, 6, 11")
+| # | Discipline | Folder |
+|---|-----------|--------|
+| 1 | Paid Acquisition | MSP/Campaigns/01_PAID_ACQUISITION |
+| 2 | SEO / Organic | MSP/Campaigns/02_SEO_ORGANIC |
+| 3 | Lifecycle Email | MSP/Campaigns/03_LIFECYCLE_EMAIL |
+| 4 | Content & Social | MSP/Campaigns/04_CONTENT_SOCIAL |
+| 5 | Affiliate / Influencer | MSP/Campaigns/05_AFFILIATE_INFLUENCER |
+| 6 | Strategy | MSP/Strategy/ |
+| 7 | Inbound | MSP/Inbound/ |
+| 8 | Outbound | MSP/Outbound/ |
+| 9 | Community & Events | MSP/Community_Events/ |
+| 10 | Social | MSP/Social/ |
 ```
 
-Save selections to `.planning/config.json` → `discipline_activation`.
+### 5. Gate 1 Intake Questionnaire
 
-### 5. Create Planning Files
+@-reference `.agent/marketing-get-shit-done/references/questioning.md`
+
+Walk through each block in order. Write answers directly to the corresponding MIR file after each block. Human confirms accuracy before continuing to the next block.
+
+**Human verification checkpoint after EACH block below.**
+
+---
+
+**Block 1: Company Identity** → `Core_Strategy/01_COMPANY/PROFILE.md`
+
+```
+Q1.  Legal company name?
+Q2.  Primary industry / niche?
+Q3.  Geographic market (country / city / global)?
+Q4.  Business model (B2B / B2C / B2B2C / marketplace)?
+Q5.  Company size (employees, revenue tier if shareable)?
+Q6.  Primary website URL?
+Q7.  Social media handles (by platform)?
+Q8.  Who is the human marketing lead for this account ({{LEAD_AGENT}} name)?
+```
+
+Write answers → confirm with human → mark file `status: partial` or `status: complete`.
+
+---
+
+**Block 2: Brand Voice & Tone** → `Core_Strategy/02_BRAND/VOICE-TONE.md`
+
+```
+Q9.  Describe the brand's tone in 5 adjectives:
+Q10. List 10 words or phrases the brand NEVER uses:
+Q11. What CTA phrases does the brand use? (e.g. "Book a call", "See results")
+Q12. Tone by channel:
+     a) Social media (Instagram, LinkedIn)?
+     b) Email?
+     c) Paid ads?
+     d) Website?
+Q13. Any language / cultural considerations?
+```
+
+Write answers → confirm → mark status.
+
+---
+
+**Block 3: Messaging Framework** → `Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md`
+
+```
+Q14. In one sentence: what transformation does your product/service deliver?
+Q15. What are the top 3 problems your ICP faces? (use their exact language)
+Q16. What are your top 3 value propositions?
+Q17. What are the 5 most common objections from leads? Answer to each?
+Q18. Give 5 proven headline formulas that have worked (or describe ones to test):
+Q19. What proof / social proof assets do you have? (testimonials, case studies, data)
+```
+
+Write answers → confirm → mark status.
+
+---
+
+**Block 4: Audience Definition** → `Market_Audiences/03_MARKET/AUDIENCES.md`
+
+```
+Q20. Describe ICP-1 (primary target): job title, company size, industry, geography
+Q21. What does ICP-1 fear most professionally?
+Q22. What does ICP-1 want most professionally?
+Q23. Where does ICP-1 spend time online?
+Q24. What communities, forums, or publications does ICP-1 read?
+Q25. Do you have a secondary ICP (ICP-2)? If yes, describe similarly.
+```
+
+Write answers → confirm → mark status.
+
+---
+
+**Block 5: Product & Offer Catalog** → `Products/04_PRODUCTS/CATALOG.md`
+
+```
+Q26. List all products/services: name, price, one-sentence description
+Q27. What is your lead/entry offer?
+Q28. What is your core offer (primary revenue driver)?
+Q29. Upsell or ascension path?
+Q30. Any current promotions or limited-time offers?
+```
+
+Write answers → confirm → mark status.
+
+### 6. Gate 1 Verification
+
+```bash
+GATE1=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit --gate 1 --raw)
+```
+
+**If gate1.ready: true:**
+```
+✅ GATE 1 GREEN — Identity foundation complete
+
+  ✓ Core_Strategy/01_COMPANY/PROFILE.md
+  ✓ Core_Strategy/02_BRAND/VOICE-TONE.md
+  ✓ Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md
+  ✓ Market_Audiences/03_MARKET/AUDIENCES.md
+  ✓ Products/04_PRODUCTS/CATALOG.md
+```
+
+**If gate1.ready: false:** Return to intake for the specific missing fields only. Do not re-run completed blocks.
+
+### 7. Gate 2 Prompt
+
+After Gate 1 is GREEN, prompt for Gate 2:
+
+```
+Gate 2 covers: tracking, automation, ad accounts, and KPI targets.
+Campaigns cannot launch until Gate 2 is GREEN.
+
+Continue to Gate 2 setup now ("now") or defer to later ("defer")?
+→ Run /mgsd-health at any time to check gate status.
+```
+
+If "defer" → set `gate2: deferred` in STATE.md and proceed.
+If "now" → run Gate 2 intake (see `references/mir-gates.md §Gate 2` for required files). Walk through each Gate 2 file using the same block/confirm pattern.
+
+### 8. Create Planning Files
 
 Using MGSD templates:
 
 1. **PROJECT.md** — from `templates/project.md`, populated with discovery answers
-2. **REQUIREMENTS.md** — from `templates/requirements.md`, with marketing requirements
-3. **ROADMAP.md** — from `templates/roadmap.md`, with initial phases
-4. **STATE.md** — from `templates/state.md`, with current gate status
-5. **config.json** — from `templates/config.json`
+2. **REQUIREMENTS.md** — from `templates/requirements.md`
+3. **ROADMAP.md** — from `templates/roadmap.md`, with initial milestone
+4. **STATE.md** — gate status current
+5. **config.json** — with activated disciplines
 
-### 6. MIR Gate Check
-
-```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit
-```
-
-Display gate status:
-```
-Gate 1 (Identity): ✗ RED — 3 files need content
-Gate 2 (Execution): ✗ RED — tracking not configured
-
-→ MIR completion is Phase 1's recommended first task.
-```
-
-### 7. Commit and Next Steps
+### 9. Commit and Next Steps
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(init): initialize marketing project"
+node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(init): initialize MGSD project — Gate 1 ${GATE1_STATUS}"
 ```
 
-Display Next Up block:
 ```
-▶ Next Up
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ MGSD ► PROJECT INITIALIZED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**Phase 1** — Start with /mgsd-discuss-phase 1
+Gate 1: {✅ GREEN | 🔴 RED}
+Gate 2: {✅ GREEN | 🔴 deferred}
 
-`/mgsd-discuss-phase 1`
+/mgsd-progress         → see project dashboard
+/mgsd-new-milestone    → define first marketing milestone
+/mgsd-discuss-phase 1  → start planning Phase 1
 ```
 
 <success_criteria>
-- .planning/PROJECT.md exists with populated business identity
-- .planning/ROADMAP.md exists with at least 3 phases
-- .planning/STATE.md exists with current gate status
-- .planning/config.json exists with discipline activation
-- MIR gate status displayed
+- [ ] MIR template cloned to .planning/MIR/
+- [ ] MSP template cloned to .planning/MSP/
+- [ ] Gate 1 intake complete — all 5 files written and human-confirmed
+- [ ] Gate 1 GREEN or specific gaps documented
+- [ ] Gate 2 either completed or explicitly deferred in STATE.md
+- [ ] Disciplines activated in config.json
+- [ ] PROJECT.md, ROADMAP.md, STATE.md committed
 </success_criteria>
