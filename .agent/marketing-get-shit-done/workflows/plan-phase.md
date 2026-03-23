@@ -314,6 +314,9 @@ Every task MUST include these fields:
    - `<failure_mode>how to detect if this trigger fails to activate</failure_mode>`
 
    **Forbidden without neuro_spec:** any copy, ad creative, email subject, or landing page CTA.
+
+6. **Episodic Memory Retrieval (`<rag_context>` block) — REQUIRED:**
+   Agents MUST query the Chroma VectorDB (per `.protocol-lore/MEMORY.md`) for historical success/failure sequences before drafting any plan. You must explicitly state the retrieved memory that influenced your campaign structure.
 </deep_work_rules>
 
 <quality_gate>
@@ -434,7 +437,7 @@ After planner returns → spawn checker again, increment iteration_count.
 
 **If iteration_count >= 3:** Display remaining issues, offer: 1) Force proceed, 2) Provide guidance and retry, 3) Abandon.
 
-## 10.5. Neuro Audit (Optional Quality Gate)
+## 10.5. The Red Team Debate Protocol (Adversarial Swarm)
 
 **Skip if:** All plans have `neuro_dimension: false` OR `--skip-neuro` flag set.
 
@@ -443,20 +446,20 @@ After planner returns → spawn checker again, increment iteration_count.
 Display:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► NEURO AUDIT
+ MGSD ► ADVERSARIAL SWARM DEBATE INITIATED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-◆ Spawning neuro auditor...
+◆ Spawning Blue Team (mgsd-campaign-architect) vs Red Team (mgsd-neuro-auditor)...
 ```
 
-Spawn `mgsd-neuro-auditor` with:
-- All `neuro_dimension: true` PLAN.md files in phase directory
-- `{context_path}`, `{research_path}`, MIR AUDIENCES.md
+Forced 2-Round Execution:
+**Round 1:** `mgsd-campaign-architect` proposes the campaign hooks, copy, and psychological triggers defined in the PLAN.md.
+**Round 2:** `mgsd-neuro-auditor` actively attempts to tear down the proposal using cognitive gap failures, `AUDIENCES.md` VectorDB grievances, and neuromarketing anti-patterns.
+**Resolution:** The Architect must concede and dynamically rewrite the `PLAN.md` strings to satisfy the Auditor's attack vector.
 
 Handle return:
-- `## NEURO AUDIT: PASSED` → Continue to step 11
-- `## NEURO AUDIT: WARNINGS` → Display warnings; offer: 1) Accept warnings, 2) Send back to planner for revisions
-- `## NEURO AUDIT: REWRITE REQUIRED` → Send back to planner with neuro issues as additional revision context (counts toward iteration limit)
+- `## DEBATE CONCLUDED: COMPROMISE REACHED` → PLAN.md updated with unbreakable copy. Continue to step 11.
+- `## DEBATE DEADLOCKED` → Architect and Auditor cannot agree. Display transcript to user and send back to `mgsd-planner` for a massive rewrite. (Counts toward iteration limit).
 
 ## 11. Requirements Coverage Gate
 
