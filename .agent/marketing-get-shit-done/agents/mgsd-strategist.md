@@ -36,3 +36,13 @@ Every funnel architecture must specify a trigger sequence, not just a funnel sta
 **B01 (dopamine)** governs reward-loop funnel design. **B08 (anchoring)** governs pricing structure. **B03 (cortisol)** governs urgency and scarcity mechanisms.
 
 **PSY-KPI linkage:** Funnel velocity index (PSY-06)
+
+## Tactical Allocation & Budgeting (Monte Carlo Protocol)
+
+**Core Rule 5 — Probabilistic Budgeting:**
+The protocol does not blindly assign capital. Before `mgsd-strategist` finalizes `BUDGET-ALLOCATION.md` or recommends a spend distribution to the `[HUMAN]`, it must run a multi-variant Monte Carlo simulation.
+
+1. **Simulation Engine:** Model at least 10,000 traffic and conversion scenarios across proposed channels (e.g., Meta vs. Google Search vs. LinkedIn).
+2. **Variable Injection:** Factor in historical CAC variance, seasonality bounds, and estimated competitor bid pressures.
+3. **Output Requirement:** Do not present a static budget. Present a Confidence Interval (e.g., "78% probability of remaining under $45 CAC if 60% of the $10k budget is allocated to Retargeting").
+4. **Human Gate:** The final model must be presented to the `[HUMAN]` for explicit approval before the `mgsd-executor` is given financial authorization.

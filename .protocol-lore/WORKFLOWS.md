@@ -7,6 +7,7 @@
   <loop id="sync">mgsd-linear-sync pulls linear issue updates to phase tracking.</loop>
   <loop id="chroma_rag_ingest">mgsd-behavioral-scraper queries live sentiment (X/Reddit), embeds text, and loads into Chroma VectorDB natively.</loop>
   <loop id="quantitative_pivot">mgsd-data-scientist monitors post-execution conversions. If CAC > threshold, halts roadmap and injects Urgent Pivot Phase.</loop>
+  <loop id="defcon_blitz">mgsd-behavioral-scraper or webhook detects competitor threat (e.g. price slash), instantly injects Phase X.1 'Counter-Positioning Blitz', halting executor and alerting [HUMAN].</loop>
 </execution_loops>
 
 <gate_enforcement>
