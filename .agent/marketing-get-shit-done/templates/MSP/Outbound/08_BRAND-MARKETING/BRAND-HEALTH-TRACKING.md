@@ -1,5 +1,9 @@
 # BRAND-HEALTH-TRACKING.md — Brand Equity Measurement
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/08_BRAND-MARKETING/BRAND-HEALTH-TRACKING.md to customize it safely.
+
+
 ```
 status      : empty
 last_updated: YYYY-MM-DD

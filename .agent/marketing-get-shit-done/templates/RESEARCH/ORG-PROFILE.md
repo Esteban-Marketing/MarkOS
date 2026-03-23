@@ -12,6 +12,10 @@ feeds_into:
 
 # Org Profile
 
+<!-- mgsd-token: RESEARCH -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/RESEARCH/ORG-PROFILE.md to customize it safely.
+
+
 <!-- AGENT: Populate from onboarding-seed.json (company section) + founder/team interviews if available.
      This is the identity foundation for all brand voice and strategy decisions.
      Output: processed identity analysis, not a company bio. -->

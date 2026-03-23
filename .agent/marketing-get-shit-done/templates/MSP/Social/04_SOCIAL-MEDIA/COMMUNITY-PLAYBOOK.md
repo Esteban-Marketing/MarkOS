@@ -1,5 +1,9 @@
 # COMMUNITY-PLAYBOOK.md — Engagement & Conversation Rules
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/04_SOCIAL-MEDIA/COMMUNITY-PLAYBOOK.md to customize it safely.
+
+
 ```
 status      : empty
 last_updated: YYYY-MM-DD

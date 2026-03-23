@@ -1,5 +1,9 @@
 # Organic Social Media Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/04_SOCIAL-MEDIA/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Organic Social Media
 activation    : [ACTIVE | INACTIVE | FUTURE]

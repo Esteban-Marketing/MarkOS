@@ -1,5 +1,9 @@
 # 📱 {{COMPANY_NAME}} - Content & Social Distribution Grid
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Campaigns/04_CONTENT_SOCIAL.md to customize it safely.
+
+
 **Dependencies:** MIR Audience Research (`{{MIR_STRATEGY_FILE}}`)
 **Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-content-creator)
 **Linear Project Manager:** `mgsd-linear-manager`

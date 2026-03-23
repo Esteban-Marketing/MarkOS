@@ -1,5 +1,9 @@
 # Product Marketing Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/09_PRODUCT-MARKETING/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Product Marketing
 activation    : [ACTIVE | INACTIVE | FUTURE]

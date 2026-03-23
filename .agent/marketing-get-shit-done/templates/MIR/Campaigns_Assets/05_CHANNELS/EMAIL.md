@@ -1,5 +1,9 @@
 # EMAIL.md — Email Marketing Infrastructure & Strategy
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/05_CHANNELS/EMAIL.md to customize it safely.
+
+
 ```
 file_purpose  : Define the email marketing setup: ESP, lists, active sequences,
                 and performance benchmarks.

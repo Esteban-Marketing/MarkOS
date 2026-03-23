@@ -1,5 +1,9 @@
 # CRISIS-PLAYBOOK.md — Crisis Communication Protocol
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/07_PR-COMMUNICATIONS/CRISIS-PLAYBOOK.md to customize it safely.
+
+
 ```
 status      : empty
 last_updated: YYYY-MM-DD

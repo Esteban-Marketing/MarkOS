@@ -1,5 +1,9 @@
 # FUNNEL-OWNERSHIP-MAP.md — Discipline × Funnel Stage Ownership
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/FUNNEL-OWNERSHIP-MAP.md to customize it safely.
+
+
 ```
 file_purpose  : Declare which marketing discipline owns each stage of the
                 customer funnel. Eliminates confusion, gaps, and duplication

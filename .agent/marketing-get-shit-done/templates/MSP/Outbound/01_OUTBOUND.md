@@ -1,5 +1,9 @@
 # 📤 {{COMPANY_NAME}} - Outbound Marketing Pipeline
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/01_OUTBOUND.md to customize it safely.
+
+
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`), MIR Gate 1 + Gate 2 required
 **Assigned Agents:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-campaign-architect, mgsd-copy-drafter)
 **Linear Project Manager:** `mgsd-linear-manager`

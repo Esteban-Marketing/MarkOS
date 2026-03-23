@@ -1,5 +1,9 @@
 # PAID-MEDIA.md — Ad Accounts, Pixels, CAPI & Tracking Config
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/05_CHANNELS/PAID-MEDIA.md to customize it safely.
+
+
 ```
 file_purpose  : Define the complete paid media infrastructure: account IDs,
                 tracking setup, pixel configuration, and CAPI parameters.

@@ -1,5 +1,9 @@
 # SOCIAL-POST-TEMPLATE.md — Organic Social Copy Framework
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/TEMPLATES/SOCIAL-POST.md to customize it safely.
+
+
 ```
 file_purpose  : Structural templates for organic social posts by platform and format.
                 Agents: use these as structural specs when briefing content.

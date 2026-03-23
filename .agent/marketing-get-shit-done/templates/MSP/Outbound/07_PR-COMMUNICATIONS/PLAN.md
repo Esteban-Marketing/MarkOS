@@ -1,5 +1,9 @@
 # PR & Communications Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/07_PR-COMMUNICATIONS/PLAN.md to customize it safely.
+
+
 ```
 discipline    : PR & Communications
 activation    : [ACTIVE | INACTIVE | FUTURE]

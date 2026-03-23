@@ -12,6 +12,10 @@ feeds_into:
 
 # Audience Research
 
+<!-- mgsd-token: RESEARCH -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/RESEARCH/AUDIENCE-RESEARCH.md to customize it safely.
+
+
 <!-- AGENT: Populate this file from onboarding-seed.json (audience section) + direct research.
      Output must be insight-dense processed analysis — not raw notes or bullet dumps.
      Every insight: {finding} | Source: {origin} | Confidence: High/Med/Low | Implication: {strategic consequence} -->

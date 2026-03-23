@@ -1,5 +1,9 @@
 # REPORTING-CADENCE.md — When and What to Report
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/09_ANALYTICS/REPORTING-CADENCE.md to customize it safely.
+
+
 ```
 file_purpose  : Define the reporting schedule, report content, and delivery format.
 status        : empty

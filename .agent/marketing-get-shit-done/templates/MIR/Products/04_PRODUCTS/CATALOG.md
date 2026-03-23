@@ -1,5 +1,9 @@
 # CATALOG.md — Products & Services Catalog
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Products/04_PRODUCTS/CATALOG.md to customize it safely.
+
+
 ```
 file_purpose  : Complete inventory of everything this business sells.
                 Governs what can be promoted, how it's described, and

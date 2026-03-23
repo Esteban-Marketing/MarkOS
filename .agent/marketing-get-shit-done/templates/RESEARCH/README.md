@@ -1,5 +1,7 @@
 # RESEARCH/ Templates
 
+<!-- mgsd-token: RESEARCH -->
+
 Six canonical research files that form the intelligence foundation of every MGSD project.
 
 ## Directory Role

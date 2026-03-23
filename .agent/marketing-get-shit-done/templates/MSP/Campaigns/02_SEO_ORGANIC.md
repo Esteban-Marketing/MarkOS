@@ -1,5 +1,9 @@
 # 🏗️ {{COMPANY_NAME}} - SEO & Organic Infrastructure
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Campaigns/02_SEO_ORGANIC.md to customize it safely.
+
+
 **Dependencies:** MIR Content Strategy (`{{MIR_STRATEGY_FILE}}`)
 **Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-content-creator)
 **Linear Project Manager:** `mgsd-linear-manager`

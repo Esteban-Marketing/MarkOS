@@ -1,5 +1,9 @@
 # 🧭 {{COMPANY_NAME}} - Marketing Strategy Pipeline
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/01_STRATEGY.md to customize it safely.
+
+
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`), MIR Gate 1 required
 **Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist)
 **Linear Project Manager:** `mgsd-linear-manager`

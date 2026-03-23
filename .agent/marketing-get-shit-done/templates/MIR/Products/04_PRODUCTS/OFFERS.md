@@ -1,5 +1,9 @@
 # OFFERS.md — Active Promotions, Bundles & Limited-Time Offers
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Products/04_PRODUCTS/OFFERS.md to customize it safely.
+
+
 ```
 file_purpose  : Track all active, scheduled, and historical offers.
                 Prevents stale offers from being promoted and ensures

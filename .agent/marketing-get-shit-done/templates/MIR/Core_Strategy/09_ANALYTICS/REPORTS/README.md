@@ -1,5 +1,7 @@
 # REPORTS — Historical Report Archive
 
+<!-- mgsd-token: MIR -->
+
 ```
 file_purpose  : Directory for all historical performance reports.
                 Naming convention enforced to allow agents to locate

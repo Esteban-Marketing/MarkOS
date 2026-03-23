@@ -1,5 +1,9 @@
 # PERFORMANCE-DASHBOARD.md — Cross-Discipline KPI Scorecard
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/PERFORMANCE-DASHBOARD.md to customize it safely.
+
+
 ```
 file_purpose  : Single-view performance tracking across all active disciplines.
                 Updated monthly. The executive summary of marketing health.

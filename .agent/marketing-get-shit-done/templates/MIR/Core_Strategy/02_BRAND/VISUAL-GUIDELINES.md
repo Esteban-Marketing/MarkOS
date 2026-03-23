@@ -1,5 +1,9 @@
 # VISUAL-GUIDELINES.md — Imagery, Layout & Design Direction
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/02_BRAND/VISUAL-GUIDELINES.md to customize it safely.
+
+
 ```
 file_purpose  : Define the visual direction for photography, illustration, video,
                 and layout. Used when briefing the designer and when sourcing assets.

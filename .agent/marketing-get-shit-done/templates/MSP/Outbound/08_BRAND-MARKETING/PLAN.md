@@ -1,5 +1,9 @@
 # Brand Marketing Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/08_BRAND-MARKETING/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Brand Marketing
 activation    : [ACTIVE | INACTIVE | FUTURE]

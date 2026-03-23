@@ -1,5 +1,9 @@
 # AUDIENCES.md — Ideal Customer Profiles, Personas & Segments
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Market_Audiences/03_MARKET/AUDIENCES.md to customize it safely.
+
+
 ```
 file_purpose  : Define exactly who this business sells to. Governs all targeting,
                 messaging, and funnel decisions. This is the most campaign-critical

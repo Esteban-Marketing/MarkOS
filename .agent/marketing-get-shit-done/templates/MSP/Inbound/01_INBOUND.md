@@ -1,5 +1,9 @@
 # 📥 {{COMPANY_NAME}} - Inbound Marketing Pipeline
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/01_INBOUND.md to customize it safely.
+
+
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`), MIR Gate 1 required
 **Assigned Agents:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-content-creator, mgsd-seo-planner)
 **Linear Project Manager:** `mgsd-linear-manager`

@@ -1,5 +1,9 @@
 # ANNUAL-CALENDAR.md — Year-View Marketing Calendar
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/ANNUAL-CALENDAR.md to customize it safely.
+
+
 ```
 file_purpose  : Map all planned marketing activity across the year.
                 Provides a single view of what is happening, when, and across

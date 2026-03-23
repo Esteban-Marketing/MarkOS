@@ -1,5 +1,9 @@
 # CUSTOMER-JOURNEY.md — Awareness to Retention Map
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Products/04_PRODUCTS/CUSTOMER-JOURNEY.md to customize it safely.
+
+
 ```
 file_purpose  : Map the complete path a customer travels from first awareness
                 to loyal client. Governs funnel architecture, content strategy,

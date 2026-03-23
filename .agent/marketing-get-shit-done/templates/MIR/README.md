@@ -1,4 +1,6 @@
 # Marketing Intelligence Repository (MIR)
+
+<!-- mgsd-token: MIR -->
 ### Template v1.0 — maintained by esteban.marketing
 
 > **The single source of truth for every business that markets online.**

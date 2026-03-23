@@ -1,5 +1,9 @@
 # STRATEGIC-GOALS.md — Annual Marketing Goals
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/STRATEGIC-GOALS.md to customize it safely.
+
+
 ```
 file_purpose  : Define every marketing goal with precision: what is being measured,
                 the current baseline, the target, the timeline, the owner,

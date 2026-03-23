@@ -1,5 +1,7 @@
 # CONTENT-LIBRARY — Index of Existing Assets
 
+<!-- mgsd-token: MIR -->
+
 ```
 file_purpose  : Track all existing content assets owned by this business.
                 Prevents duplication. Surfaces reusable assets for campaigns.

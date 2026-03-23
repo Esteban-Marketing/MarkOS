@@ -1,5 +1,9 @@
 # INDUSTRY.md — Market Definition & Dynamics
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Market_Audiences/03_MARKET/INDUSTRY.md to customize it safely.
+
+
 ```
 file_purpose  : Define the market context: size, trends, and structural dynamics.
                 Informs positioning, messaging, and opportunity identification.

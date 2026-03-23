@@ -1,5 +1,9 @@
 # TEAM.md — Key People, Roles & Decision Authority
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/01_COMPANY/TEAM.md to customize it safely.
+
+
 ```
 file_purpose  : Document who the key people are on both the client and agency side,
                 their decision authority, and how they prefer to communicate.

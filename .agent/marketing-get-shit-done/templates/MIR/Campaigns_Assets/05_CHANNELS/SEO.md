@@ -1,5 +1,9 @@
 # SEO.md — Search Engine Optimization
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/05_CHANNELS/SEO.md to customize it safely.
+
+
 ```
 file_purpose  : Document SEO infrastructure, keyword strategy, and current rankings.
 status        : empty

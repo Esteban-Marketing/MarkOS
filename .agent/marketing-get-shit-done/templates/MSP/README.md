@@ -1,4 +1,6 @@
 # Marketing Strategic Plans (MSP)
+
+<!-- mgsd-token: MSP -->
 ### Template v1.0 — maintained by esteban.marketing
 
 > **The strategic layer of the marketing system.**

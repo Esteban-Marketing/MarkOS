@@ -1,5 +1,9 @@
 # Advertising Plan — Paid Media Strategy
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/01_ADVERTISING/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Advertising (Paid Media)
 activation    : [ACTIVE | INACTIVE | FUTURE]

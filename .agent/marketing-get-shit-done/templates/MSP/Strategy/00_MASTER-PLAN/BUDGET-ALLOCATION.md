@@ -1,5 +1,9 @@
 # BUDGET-ALLOCATION.md — Marketing Budget Structure
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/BUDGET-ALLOCATION.md to customize it safely.
+
+
 ```
 file_purpose  : Define the total marketing budget and how it is distributed
                 across disciplines, quarters, and categories.

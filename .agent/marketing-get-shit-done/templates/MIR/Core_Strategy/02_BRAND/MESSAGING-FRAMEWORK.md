@@ -1,5 +1,9 @@
 # MESSAGING-FRAMEWORK.md — Core Value Propositions & Messaging Architecture
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md to customize it safely.
+
+
 ```
 file_purpose  : Define the structured messaging system: what we say, why it matters,
                 to whom, and in what format. All copy derives from this architecture.

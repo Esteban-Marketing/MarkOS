@@ -1,5 +1,9 @@
 # PRICING.md — Pricing Structure & Logic
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Products/04_PRODUCTS/PRICING.md to customize it safely.
+
+
 ```
 file_purpose  : Define all pricing, tiers, and billing logic.
                 Governs what can be stated in marketing and what requires

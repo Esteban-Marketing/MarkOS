@@ -1,5 +1,7 @@
 # CHANGELOG.md — Repository Change History
 
+<!-- mgsd-token: MIR -->
+
 ```
 file_purpose  : Log all significant changes to this repository over time.
                 Provides audit trail for both humans and AI agents.

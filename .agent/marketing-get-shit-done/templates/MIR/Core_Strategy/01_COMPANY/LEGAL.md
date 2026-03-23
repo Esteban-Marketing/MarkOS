@@ -1,5 +1,9 @@
 # LEGAL.md — Legal Entity, Compliance & Restrictions
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/01_COMPANY/LEGAL.md to customize it safely.
+
+
 ```
 file_purpose  : Define the legal entity, compliance requirements, and marketing
                 restrictions that apply to this business. Prevents agents from 

@@ -1,5 +1,9 @@
 # KPI-FRAMEWORK.md — KPIs, Targets & Measurement Logic
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/09_ANALYTICS/KPI-FRAMEWORK.md to customize it safely.
+
+
 ```
 file_purpose  : Define every KPI used to measure marketing performance.
                 Establishes baseline, targets, and the PostHog-first measurement

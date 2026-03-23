@@ -1,5 +1,9 @@
 # CONTACTS.md — Vendor, Platform & Stakeholder Directory
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Operations/10_OPERATIONS/CONTACTS.md to customize it safely.
+
+
 ```
 file_purpose  : Master directory of all contacts relevant to this project.
                 Prevents time wasted searching for support channels.

@@ -9,6 +9,10 @@ feeds_into:
 
 # Content Audit
 
+<!-- mgsd-token: RESEARCH -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/RESEARCH/CONTENT-AUDIT.md to customize it safely.
+
+
 <!-- AGENT: Populate from onboarding-seed.json + direct research.
      Output must be insight-dense processed analysis — not raw notes or bullet dumps.
      Every insight: {finding} | Source: {origin} | Confidence: High/Med/Low | Implication: {strategic consequence} -->

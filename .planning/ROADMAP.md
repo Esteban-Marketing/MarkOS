@@ -105,4 +105,18 @@
 </details>
 
 ## v1.1.0 — Future Integrations
-- [ ] TBD (run `/gsd-new-milestone` to define new features)
+
+## Phase 8: Protocol Hardening, Tokenization & Hybrid Team
+**Goal:** Document, tokenize, and categorize the MGSD protocol to harden, close gaps, remove inconsistencies, and improve the performance of the agents running this protocol to completely own and manage the hybrid (human + AI) team and their tasks.
+**Requirements Mapped:** HRD-01, TOK-01, HYB-01
+**Depends on:** Phase 7
+**Success Criteria:**
+1. All MGSD templates (MIR, MSP, RESEARCH) use a unified, strict tokenization taxonomy for robust context retrieval.
+2. The protocol clearly categorizes tasks by "AI-owned", "Human-owned", and "Hybrid", with clear handoff protocols.
+3. Documentation gaps and inconsistencies between tools and templates are resolved.
+4. Agent prompts and skill instructions are updated to leverage the new tokenized categories to act as managers rather than just executors.
+
+**Plans:**
+- [ ] 08-01: Documentation Hardening & Audit
+- [ ] 08-02: Template Tokenization & Categorization
+- [ ] 08-03: Hybrid Team Task Delegation Workflow

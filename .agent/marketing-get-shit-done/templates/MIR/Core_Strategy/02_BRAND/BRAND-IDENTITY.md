@@ -1,5 +1,9 @@
 # BRAND-IDENTITY.md — Visual Identity System
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/02_BRAND/BRAND-IDENTITY.md to customize it safely.
+
+
 ```
 file_purpose  : Define the visual identity parameters that govern all marketing assets.
                 Used to produce accurate creative briefs for the designer and for 

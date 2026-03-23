@@ -109,6 +109,12 @@ verified: {date}
 | 6 | Budget | ✓ | Within allocation |
 | 7 | Linear Sync | ✓ | 12/12 tickets synced |
 
+## Hybrid Team Tracking
+**AI-Owned Tasks Executed:** {Count}
+**Human-Owned Tasks Executed:** {Count}
+**Estimated Human Hours Saved:** {Hours} (Assuming 1.5h per AI Task)
+**Human Hand-off Contexts:** {e.g. creative approval, strategic context, budget limits}
+
 ## Human Verification Items
 {Items requiring manual platform checks}
 

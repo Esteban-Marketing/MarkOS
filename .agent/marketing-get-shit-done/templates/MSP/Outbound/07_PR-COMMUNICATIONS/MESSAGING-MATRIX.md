@@ -1,5 +1,9 @@
 # MESSAGING-MATRIX.md — Official Stances & Talking Points
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/07_PR-COMMUNICATIONS/MESSAGING-MATRIX.md to customize it safely.
+
+
 ```
 status      : empty
 last_updated: YYYY-MM-DD

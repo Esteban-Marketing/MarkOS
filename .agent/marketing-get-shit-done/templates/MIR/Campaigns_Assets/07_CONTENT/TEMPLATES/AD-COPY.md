@@ -1,5 +1,9 @@
 # AD-COPY-TEMPLATE.md — Paid Ad Copy Framework
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/TEMPLATES/AD-COPY.md to customize it safely.
+
+
 ```
 file_purpose  : Reusable structural templates for paid ad copy.
                 AI agents: use these structures when drafting copy briefs.

@@ -138,6 +138,7 @@ Deviations are normal — handle via rules below.
 2. **MCP tools:** If GEMINI.md or project instructions reference MCP tools (e.g. jCodeMunch for code navigation), prefer them over Grep/Glob when available. Fall back to Grep/Glob if MCP tools are not accessible.
 3. Per task:
    - **MANDATORY read_first gate:** If the task has a `<read_first>` field, you MUST read every listed file BEFORE making any edits. This is not optional. Do not skip files because you "already know" what's in them — read them. The read_first files establish ground truth for the task.
+   - **Hybrid Team Handoff:** If the task title contains `[HUMAN]`, STOP execution for this task. Run `node .agent/get-shit-done/bin/gsd-tools.cjs pause-work "Handoff to human for task: [Task Name]"`. Tell the user they must complete the task and run `/gsd-resume-work` to continue. Treat this task as successful once resumed. Tasks with `[AI]` execute autonomously.
    - `type="auto"`: if `tdd="true"` → TDD execution. Implement with deviation rules + auth gates. Verify done criteria. Commit (see task_commit). Track hash for Summary.
    - `type="checkpoint:*"`: STOP → checkpoint_protocol → wait for user → continue only after confirmation.
    - **MANDATORY acceptance_criteria check:** After completing each task, if it has `<acceptance_criteria>`, verify EVERY criterion before moving to the next task. Use grep, file reads, or CLI commands to confirm each criterion. If any criterion fails, fix the implementation before proceeding. Do not skip criteria or mark them as "will verify later".

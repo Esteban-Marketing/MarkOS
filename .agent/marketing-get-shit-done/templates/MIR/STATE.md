@@ -1,5 +1,7 @@
 # STATE.md — Live Project Status
 
+<!-- mgsd-token: MIR -->
+
 > **This is the most current file in the repository.**
 > Update this file whenever anything significant changes.
 > AI agents: read this before taking action. It tells you what is active, what is blocked, and what is current.

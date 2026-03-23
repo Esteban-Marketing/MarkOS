@@ -1,5 +1,9 @@
 # DIGITAL-PRESENCE.md — Complete Digital Footprint
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/05_CHANNELS/DIGITAL-PRESENCE.md to customize it safely.
+
+
 ```
 file_purpose  : Master index of every URL, handle, profile, and listing
                 this business owns or operates. Used by agents to reference

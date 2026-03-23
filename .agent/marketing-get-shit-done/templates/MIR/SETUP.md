@@ -1,5 +1,7 @@
 # SETUP.md — Quick-Start Guide for New Projects
 
+<!-- mgsd-token: MIR -->
+
 > **Read this when starting a new project from the MIR template.**
 
 ---

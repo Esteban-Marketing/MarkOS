@@ -1,5 +1,9 @@
 # MARKETING-PLAN.md — Master Marketing Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/MARKETING-PLAN.md to customize it safely.
+
+
 ```
 file_purpose  : The single governing document for the entire marketing program.
                 Defines strategy, priorities, discipline mix, and the logic

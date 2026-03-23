@@ -1,5 +1,9 @@
 # Partnerships & Affiliates Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/10_PARTNERSHIPS-AFFILIATES/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Partnerships & Affiliates
 activation    : [ACTIVE | INACTIVE | FUTURE]

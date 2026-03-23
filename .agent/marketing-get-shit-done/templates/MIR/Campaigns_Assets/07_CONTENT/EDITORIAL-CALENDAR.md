@@ -1,5 +1,9 @@
 # EDITORIAL-CALENDAR.md — Content Schedule
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/EDITORIAL-CALENDAR.md to customize it safely.
+
+
 ```
 file_purpose  : Track planned and published content across all channels.
 status        : empty

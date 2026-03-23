@@ -1,5 +1,9 @@
 # FOUNDING-STORY.md — Origin, Motivation & Trajectory
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/01_COMPANY/FOUNDING-STORY.md to customize it safely.
+
+
 ```
 file_purpose  : The narrative of how and why this business exists. Used to inform
                 brand storytelling, about pages, founder-led content, and PR.

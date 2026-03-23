@@ -1,5 +1,9 @@
 # LANDING-PAGE-TEMPLATE.md — Page Copy Structure
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/TEMPLATES/LANDING-PAGE.md to customize it safely.
+
+
 ```
 file_purpose  : Structural template for Vibe code landing pages.
                 Defines copy zones, hierarchy, and required elements.

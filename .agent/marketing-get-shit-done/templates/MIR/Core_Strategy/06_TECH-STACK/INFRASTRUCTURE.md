@@ -1,5 +1,9 @@
 # INFRASTRUCTURE.md — Complete Platform & Tools Registry
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/06_TECH-STACK/INFRASTRUCTURE.md to customize it safely.
+
+
 ```
 file_purpose  : Master index of every platform and tool used by this project.
                 Access management reference. Prevents tool sprawl and ensures

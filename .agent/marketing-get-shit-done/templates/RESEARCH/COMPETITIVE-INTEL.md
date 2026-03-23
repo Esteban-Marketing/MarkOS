@@ -10,6 +10,10 @@ feeds_into:
 
 # Competitive Intel
 
+<!-- mgsd-token: RESEARCH -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/RESEARCH/COMPETITIVE-INTEL.md to customize it safely.
+
+
 <!-- AGENT: Populate from onboarding-seed.json + direct research.
      Output must be insight-dense processed analysis — not raw notes or bullet dumps.
      Every insight: {finding} | Source: {origin} | Confidence: High/Med/Low | Implication: {strategic consequence} -->

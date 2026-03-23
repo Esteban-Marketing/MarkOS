@@ -1,5 +1,9 @@
 # INTEGRATIONS.md — System Connections & Data Flows
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/06_TECH-STACK/INTEGRATIONS.md to customize it safely.
+
+
 ```
 file_purpose  : Map how all systems connect. Shows data flow direction,
                 what triggers what, and where each system is authoritative.

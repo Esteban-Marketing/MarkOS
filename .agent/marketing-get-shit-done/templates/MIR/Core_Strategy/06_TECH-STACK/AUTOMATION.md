@@ -1,5 +1,9 @@
 # AUTOMATION.md — n8n / Make Workflow Specifications
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/06_TECH-STACK/AUTOMATION.md to customize it safely.
+
+
 ```
 file_purpose  : Document all automation workflows: triggers, logic, data flows,
                 and system connections. All lead routing and data sync passes

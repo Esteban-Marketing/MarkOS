@@ -1,5 +1,9 @@
 # VOICE-TONE.md — Language Personality & Style Rules
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/02_BRAND/VOICE-TONE.md to customize it safely.
+
+
 ```
 file_purpose  : Define exactly how this brand communicates in writing.
                 Governs all copy, messaging, and agent-generated text.

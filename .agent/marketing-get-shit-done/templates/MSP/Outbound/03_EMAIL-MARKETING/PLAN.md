@@ -1,5 +1,9 @@
 # Email Marketing Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/03_EMAIL-MARKETING/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Email Marketing
 activation    : [ACTIVE | INACTIVE | FUTURE]

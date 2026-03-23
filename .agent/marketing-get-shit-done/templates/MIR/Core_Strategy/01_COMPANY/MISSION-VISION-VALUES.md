@@ -1,5 +1,9 @@
 # MISSION-VISION-VALUES.md — Strategic North Star
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md to customize it safely.
+
+
 ```
 file_purpose  : Define the why, the what, and the how of this business at a strategic level.
                 Used to align all marketing messaging and strategic decisions.

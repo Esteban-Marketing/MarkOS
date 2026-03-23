@@ -1,5 +1,7 @@
 # SETUP.md — Quick-Start Guide for the MSP
 
+<!-- mgsd-token: MSP -->
+
 > **Read this when starting a Marketing Strategic Plan for a new project.**
 > The MSP is always created alongside — and after — the MIR (Marketing Intelligence Repository).
 > The MIR must reach Gate 1 status before the MSP can be meaningfully written.

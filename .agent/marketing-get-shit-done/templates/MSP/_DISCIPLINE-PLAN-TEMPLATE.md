@@ -1,4 +1,8 @@
 # _DISCIPLINE-PLAN-TEMPLATE.md
+
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/_DISCIPLINE-PLAN-TEMPLATE.md to customize it safely.
+
 ### Base Template — Copy this when creating any discipline PLAN.md
 
 > **How to use:** Copy this file to the target discipline folder, rename to `PLAN.md`,

@@ -1,5 +1,7 @@
 # STATE.md — MSP Live Status
 
+<!-- mgsd-token: MSP -->
+
 ```
 project_id        : P[N]
 project_name      : [Full business name]

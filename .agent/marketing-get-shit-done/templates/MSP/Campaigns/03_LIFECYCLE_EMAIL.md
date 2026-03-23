@@ -1,5 +1,9 @@
 # 🔄 {{COMPANY_NAME}} - Lifecycle & Retention Loop
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Campaigns/03_LIFECYCLE_EMAIL.md to customize it safely.
+
+
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`)
 **Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-content-creator)
 **Linear Project Manager:** `mgsd-linear-manager`

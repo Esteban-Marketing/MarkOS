@@ -1,5 +1,9 @@
 # TRACKING.md — PostHog Event Schema, Pixels & Attribution Config
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/06_TECH-STACK/TRACKING.md to customize it safely.
+
+
 ```
 file_purpose  : Complete specification of the tracking implementation:
                 PostHog event schema, property standards, pixel config,

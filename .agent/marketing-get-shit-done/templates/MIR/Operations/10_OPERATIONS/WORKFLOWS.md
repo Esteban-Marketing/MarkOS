@@ -1,5 +1,9 @@
 # WORKFLOWS.md — Standard Operating Procedures
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Operations/10_OPERATIONS/WORKFLOWS.md to customize it safely.
+
+
 ```
 file_purpose  : Document recurring operational tasks as step-by-step procedures.
                 Ensures consistent execution regardless of who (or what) does the work.

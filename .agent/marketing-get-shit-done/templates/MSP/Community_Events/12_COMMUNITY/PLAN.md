@@ -1,5 +1,9 @@
 # Community Marketing Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Community_Events/12_COMMUNITY/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Community Marketing
 activation    : [ACTIVE | INACTIVE | FUTURE]

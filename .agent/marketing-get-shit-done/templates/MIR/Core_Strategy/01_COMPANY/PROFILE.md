@@ -1,5 +1,9 @@
 # PROFILE.md — Master Company Profile
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/01_COMPANY/PROFILE.md to customize it safely.
+
+
 ```
 file_purpose  : The single most-read file in this repository. A complete, structured
                 declaration of who this business is. All marketing derives from this.

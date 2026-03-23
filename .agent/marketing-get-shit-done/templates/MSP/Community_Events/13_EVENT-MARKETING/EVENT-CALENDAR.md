@@ -1,5 +1,9 @@
 # EVENT-CALENDAR.md — Scheduled Events & Sponsorships
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Community_Events/13_EVENT-MARKETING/EVENT-CALENDAR.md to customize it safely.
+
+
 ```
 status      : empty
 last_updated: YYYY-MM-DD

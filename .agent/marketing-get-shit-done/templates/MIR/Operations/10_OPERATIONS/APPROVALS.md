@@ -1,5 +1,9 @@
 # APPROVALS.md — Decision & Sign-Off Authority Matrix
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Operations/10_OPERATIONS/APPROVALS.md to customize it safely.
+
+
 ```
 file_purpose  : Define who approves what, at what threshold, and in what timeframe.
                 Prevents unauthorized action and clarifies escalation paths.

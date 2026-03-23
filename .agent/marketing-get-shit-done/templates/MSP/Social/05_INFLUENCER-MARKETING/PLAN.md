@@ -1,5 +1,9 @@
 # Influencer Marketing Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/05_INFLUENCER-MARKETING/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Influencer Marketing
 activation    : [ACTIVE | INACTIVE | FUTURE]

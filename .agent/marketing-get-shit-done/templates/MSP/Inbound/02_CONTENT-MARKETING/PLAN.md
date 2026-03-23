@@ -1,5 +1,9 @@
 # Content Marketing Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/02_CONTENT-MARKETING/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Content Marketing
 activation    : [ACTIVE | INACTIVE | FUTURE]

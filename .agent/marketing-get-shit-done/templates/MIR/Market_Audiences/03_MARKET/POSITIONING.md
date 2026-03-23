@@ -1,5 +1,9 @@
 # POSITIONING.md — Market Position & Differentiation Strategy
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Market_Audiences/03_MARKET/POSITIONING.md to customize it safely.
+
+
 ```
 file_purpose  : Define how this business is positioned in the market relative to
                 alternatives, and why that position is defensible and valuable.

@@ -1,5 +1,9 @@
 # CONTENT-STRATEGY.md — Content Pillars, Formats & Objectives
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/CONTENT-STRATEGY.md to customize it safely.
+
+
 ```
 file_purpose  : Define the strategic framework for all content produced:
                 what topics, what formats, what platforms, what goals.

@@ -1,5 +1,9 @@
 # CONTENT-PILLARS.md — Pillar Definitions & Rationale
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/02_CONTENT-MARKETING/CONTENT-PILLARS.md to customize it safely.
+
+
 ```
 status      : empty
 last_updated: YYYY-MM-DD

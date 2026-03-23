@@ -1,5 +1,7 @@
 # PROJECT.md — Project Identity & Constraints
 
+<!-- mgsd-token: MIR -->
+
 ```
 file_purpose  : Define the identity of this project instance, its stakeholders,
                 operational constraints, and relationship to the agency.

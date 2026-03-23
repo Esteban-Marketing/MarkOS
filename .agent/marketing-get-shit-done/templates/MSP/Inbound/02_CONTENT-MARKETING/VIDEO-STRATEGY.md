@@ -1,5 +1,9 @@
 # VIDEO-STRATEGY.md — Video Content Direction
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/02_CONTENT-MARKETING/VIDEO-STRATEGY.md to customize it safely.
+
+
 ```
 status      : empty
 last_updated: YYYY-MM-DD

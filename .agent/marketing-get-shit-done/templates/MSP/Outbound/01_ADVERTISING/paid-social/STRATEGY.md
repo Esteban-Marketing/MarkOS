@@ -1,5 +1,9 @@
 # [Sub-Channel] Strategy
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/01_ADVERTISING/paid-social/STRATEGY.md to customize it safely.
+
+
 ```
 status      : empty
 parent_plan : Outbound/01_ADVERTISING/PLAN.md

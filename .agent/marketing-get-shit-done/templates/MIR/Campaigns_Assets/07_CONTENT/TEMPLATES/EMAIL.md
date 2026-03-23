@@ -1,5 +1,9 @@
 # EMAIL-TEMPLATE.md — Email Copy Structure Framework
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/TEMPLATES/EMAIL.md to customize it safely.
+
+
 ```
 file_purpose  : Structural templates for email sequences and campaigns.
                 Agents: use these when specifying email content briefs.

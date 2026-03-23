@@ -1,5 +1,9 @@
 # COMPETITIVE-LANDSCAPE.md — Competitor Profiles & Positioning Gaps
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md to customize it safely.
+
+
 ```
 file_purpose  : Map the competitive environment. Identify what competitors do,
                 how they position, and where gaps exist for differentiation.

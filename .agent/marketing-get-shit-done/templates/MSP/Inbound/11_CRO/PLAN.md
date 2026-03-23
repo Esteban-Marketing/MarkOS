@@ -1,5 +1,9 @@
 # Conversion Rate Optimization Plan
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/11_CRO/PLAN.md to customize it safely.
+
+
 ```
 discipline    : Conversion Rate Optimization (CRO)
 activation    : [ACTIVE | INACTIVE | FUTURE]

@@ -1,5 +1,9 @@
 # 🎪 {{COMPANY_NAME}} - Community & Events Pipeline
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Community_Events/01_COMMUNITY_EVENTS.md to customize it safely.
+
+
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`), MIR Gate 1 required
 **Assigned Agents:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-content-creator, mgsd-calendar-builder)
 **Linear Project Manager:** `mgsd-linear-manager`

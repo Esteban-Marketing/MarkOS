@@ -1,5 +1,9 @@
 # AGENTS.md — AI Agent Operating Rules
 
+<!-- mgsd-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/00_META/AGENTS.md to customize it safely.
+
+
 ```
 file_purpose  : Mandatory operating protocol for ALL AI agents working on this project.
                 This file must be read FIRST before any other file in this repository.

@@ -1,5 +1,9 @@
 # GO-TO-MARKET.md — Product Launch Playbook
 
+<!-- mgsd-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/09_PRODUCT-MARKETING/GO-TO-MARKET.md to customize it safely.
+
+
 ```
 status      : empty
 last_updated: YYYY-MM-DD
