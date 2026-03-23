@@ -30,6 +30,7 @@
 **Goal:** Align all `mgsd-*` skills to the new exhaustive template structures and establish the `.mgsd-local/` client-override directory so that future patches never touch client customizations.
 **Requirements Mapped:** SKL-01
 **Depends on:** Phase 3
+**Status:** ✅ Complete
 **Success Criteria:**
 1. `mgsd-new-project`, `mgsd-plan-phase`, `mgsd-execute-phase`, and all related skills resolve template paths correctly against the Phase 3 expanded structure.
 2. `.mgsd-local/` override directory convention is defined, documented, and referenced in all relevant agents and hooks — client files placed here survive both GSD and MGSD patch updates.
@@ -37,7 +38,9 @@
 4. `mgsd-new-project` scaffold creates `.mgsd-local/` with an onboarding README on first run.
 
 **Plans:**
-- [ ] TBD (run `/gsd-plan-phase 4` to break down)
+- [x] 04-01: Audit and align standard skills
+- [x] 04-02: `.mgsd-local` scaffold integration
+- [x] 04-03: Self-documentation and Verification
 
 ---
 
