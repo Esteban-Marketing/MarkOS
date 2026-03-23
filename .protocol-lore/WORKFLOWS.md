@@ -5,6 +5,8 @@
   <loop id="autonomous">mgsd-autonomous iterates phases sequentially. Calls discuss->plan->execute.</loop>
   <loop id="research">mgsd-research-phase builds MIR data independently of execution.</loop>
   <loop id="sync">mgsd-linear-sync pulls linear issue updates to phase tracking.</loop>
+  <loop id="chroma_rag_ingest">mgsd-behavioral-scraper queries live sentiment (X/Reddit), embeds text, and loads into Chroma VectorDB natively.</loop>
+  <loop id="quantitative_pivot">mgsd-data-scientist monitors post-execution conversions. If CAC > threshold, halts roadmap and injects Urgent Pivot Phase.</loop>
 </execution_loops>
 
 <gate_enforcement>

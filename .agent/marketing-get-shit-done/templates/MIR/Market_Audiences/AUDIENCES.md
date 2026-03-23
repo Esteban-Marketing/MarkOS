@@ -28,3 +28,9 @@
 ## 4. Regulation & Compliance Restraints
 *Does this audience operate in a highly regulated space (e.g., Finance, Healthcare, Gov)?*
 * **Compliance Checks Required:** [None / HIPAA / FINRA / GDPR / FTC guidelines to strictly obey in copy]
+
+## 5. Live Vectorized Sentiment (Chroma DB Integration)
+<!-- mgsd-behavioral-scraper will serialize and embed raw social scrapes (Reddit/X) here natively as context payloads -->
+* **Vector DB Target:** `chromadb://collections/mgsd-audience-sentiment`
+* **Latest Trending Grievances:** (Injected dynamically per query by `mgsd-strategist` reading the DB).
+* **High-Volatility Topics:** (Keywords currently accelerating in market chatboards).

@@ -18,7 +18,13 @@
   <team id="content_creative">
     <agent id="mgsd-content-brief">Generates the constraints and briefs for content.</agent>
     <agent id="mgsd-copy-drafter">Operates long and short-form copy writing.</agent>
+    <agent id="mgsd-creative-director">Visual alignment judge. Audits UX/Asset generation against Brand Voice.</agent>
     <agent id="mgsd-content-creator">Generates channel-specific content enforcing tone.</agent>
+  </team>
+  
+  <team id="reaction_reconnaissance">
+    <agent id="mgsd-behavioral-scraper">Pulls real-world external sentiment (Reddit/Discord) and pipes embeddings into Chroma VectorDB.</agent>
+    <agent id="mgsd-data-scientist">Ingests CAC/LTV reporting post-execution. Force-injects Pivot Phases on anomalies.</agent>
   </team>
   
   <team id="verification_audit">
@@ -34,11 +40,13 @@
 </roster>
 
 <lifecycle>
+  <step>AI: `mgsd-behavioral-scraper` -> embeds ongoing market sentiment into Chroma VectorDB natively.</step>
   <step>AI: `mgsd-onboarder` -> builds contextual skeleton.</step>
-  <step>AI: `mgsd-strategist` -> maps triggers and audience gaps.</step>
+  <step>AI: `mgsd-strategist` -> queries Chroma DB and maps triggers and audience gaps.</step>
   <step>AI: `mgsd-planner` -> builds tasks into `.planning/`.</step>
   <step>AI: `mgsd-executor` -> loops through tasks atomically.</step>
   <step>Human: Unblocks executing loops if `[HUMAN]` requires auth/billing/external action.</step>
   <step>AI: `mgsd-verifier` -> ensures constraints passed.</step>
+  <step>AI: `mgsd-data-scientist` -> post-execution audit; halts iteration and pivots ROADMAP.md if CAC targets fail.</step>
 </lifecycle>
 </mgsd_team>
