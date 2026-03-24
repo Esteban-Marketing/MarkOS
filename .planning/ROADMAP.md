@@ -120,3 +120,21 @@
 - [ ] 08-01: Documentation Hardening & Audit
 - [ ] 08-02: Template Tokenization & Categorization
 - [ ] 08-03: Hybrid Team Task Delegation Workflow
+
+---
+
+## Phase 9: Protocol Pillars Analysis
+**Goal:** Analyze and validate the implementation of the 4 recent foundational pillars (Reaction Squad, Adversarial Debate/Episodic Memory, Generative Task Synthesis, and Event-Driven Defcon) to ensure the model and protocol are perfectly optimized for a hybrid (agentic + human) marketing team.
+**Requirements Mapped:** HYB-02, PTL-01
+**Depends on:** Phase 8
+**Success Criteria:**
+1. The new Reaction Squad (`mgsd-data-scientist`, `mgsd-behavioral-scraper`) is fully integrated without conflict.
+2. The Red Team Debate & VectorDB Episodic Memory correctly retrieve historical context before execution.
+3. The `mgsd-task-synthesizer` cleanly generates non-hallucinated tasks and maps them to `[API-EXECUTE]`.
+4. The Event-Driven Defcon Layer & Monte Carlo Budgeting appropriately trigger fail-safes without stranding the executor.
+
+**Plans:**
+- [ ] 09-01: Audit reaction agents against live metrics
+- [ ] 09-02: Validate Red Team Debate rules
+- [ ] 09-03: Stress-test generative task synthesis
+- [ ] 09-04: Execute Defcon trigger override test
