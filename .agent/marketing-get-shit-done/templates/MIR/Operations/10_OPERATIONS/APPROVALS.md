@@ -1,8 +1,13 @@
 # APPROVALS.md — Decision & Sign-Off Authority Matrix
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Operations/10_OPERATIONS/APPROVALS.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Operations/10_OPERATIONS/APPROVALS.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This matrix is a hard constraint on autonomy. `mgsd-executor` MUST pause if any action falls under Section 5 (Prohibited Actions). Escalation thresholds (Section 2) MUST trigger immediate notifications to `{{LEAD_AGENT}}`. `mgsd-analyst` MUST monitor performance triggers in Section 2.
+
+**Dependencies:** WORKFLOWS (`WORKFLOWS.md`), MISSION (`../../Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md`)
+**Assigned Agent:** `mgsd-executor`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Define who approves what, at what threshold, and in what timeframe.

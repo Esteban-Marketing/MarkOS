@@ -1,0 +1,16 @@
+# MGSD gitignore
+
+# Environment secrets — never commit these
+.env
+.env.local
+.env.*.local
+
+# Node modules
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+tmp/

@@ -1,1 +1,1 @@
-Agent instructions: Before modifying the MGSD protocol, read `.protocol-lore/INDEX.md` for condensed architectural state and conventions.
+Agent instructions: Before starting any task, read `.protocol-lore/QUICKSTART.md` for high-efficiency agent-boot and protocol-lore/INDEX.md for condensed architectural state.

@@ -1,19 +1,26 @@
-# CAMPAIGN.md — [Campaign Name]
+# _CAMPAIGN-TEMPLATE.md — Campaign Blueprint & Execution Source of Truth
 
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/08_CAMPAIGNS/_CAMPAIGN-TEMPLATE.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Campaigns_Assets/08_CAMPAIGNS/_CAMPAIGN-TEMPLATE.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This is the execution source of truth for all initiatives. 
+> - `mgsd-strategist` MUST load this file after the MIR boot sequence.
+> - `mgsd-copy-drafter` MUST derive all ad copy from the specified MIR messaging frameworks.
+> - `mgsd-executor` MUST NOT launch without all Section 6 (Launch Checklist) items passing.
+> - Campaigns derive from MIR — they MUST NOT contradict established core strategy.
 
+**Dependencies:** CORE-STRATEGY (`../../Core_Strategy/`), PRODUCTS (`../../Products/04_PRODUCTS/`), MARKET-AUDIENCES (`../../Market_Audiences/03_MARKET/`), BRAND-IDENTITY (`../../Core_Strategy/02_BRAND/BRAND-IDENTITY.md`)
+**Assigned Agent:** `mgsd-strategist`, `mgsd-executor`
+**Linear Project Manager:** `mgsd-linear-manager`
+
+```yaml
+file_purpose  : Provide a standardized blueprint for planning, executing, and tracking campaigns.
+                Ensures all campaigns are aligned with the core marketing strategy.
+status        : template
+last_updated  : YYYY-MM-DD
+authoritative : YES for campaign-level execution
 ```
-campaign_id       : [client-slug]-[initiative]-[YYMM]
-project_id        : P[N]
-campaign_name     : "[Full campaign name]"
-status            : [PLANNING | ACTIVE | PAUSED | COMPLETE | ARCHIVED]
-last_updated      : YYYY-MM-DD
-updated_by        : [Name]
-```
-
-> **AI agents:** Load this file after the MIR boot sequence. This is the campaign source of truth. The MIR repository is the business source of truth. Campaigns derive from MIR — they do not contradict it.
 
 ---
 

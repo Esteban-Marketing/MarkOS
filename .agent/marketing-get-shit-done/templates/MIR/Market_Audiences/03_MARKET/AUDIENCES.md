@@ -1,8 +1,13 @@
 # AUDIENCES.md — Ideal Customer Profiles, Personas & Segments
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Market_Audiences/03_MARKET/AUDIENCES.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Market_Audiences/03_MARKET/AUDIENCES.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This is the "Identity Anchor" for targeting. `mgsd-analyst` MUST use Section 2 (Psychographic Profile) to validate all campaign hooks. `mgsd-media-buyer` MUST use Section 2 (Targeting Parameters) as the source of truth for platform audience configuration. `mgsd-copy-drafter` MUST ensure all copy aligns with the defined segments.
+
+**Dependencies:** PROFILE (`../../Core_Strategy/01_COMPANY/PROFILE.md`), RESEARCH (`../../Research/AUDIENCE-RESEARCH.md`), CUSTOMER-JOURNEY (`../../Products/04_PRODUCTS/CUSTOMER-JOURNEY.md`)
+**Assigned Agent:** `mgsd-analyst`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Define exactly who this business sells to. Governs all targeting,

@@ -1,0 +1,123 @@
+#!/usr/bin/env node
+// write-mir.cjs — Writes approved draft content into MIR template files
+// Also updates MIR/STATE.md status rows from "empty" → "complete"
+// mgsd-onboarding v2.0
+
+'use strict';
+
+const fs   = require('fs');
+const path = require('path');
+
+// ── Section → MIR file mapping ─────────────────────────────────────────────
+// Maps draft section keys → relative paths within the MIR directory
+const SECTION_FILE_MAP = {
+  company_profile:  'Core_Strategy/01_COMPANY/PROFILE.md',
+  mission_values:   'Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md',
+  audience:         'Market_Audiences/03_MARKET/AUDIENCES.md',
+  competitive:      'Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md',
+  brand_voice:      'Core_Strategy/02_BRAND/VOICE-TONE.md',
+};
+
+// Maps section key → STATE.md file column to update from empty → complete
+const STATE_ROW_PATTERNS = {
+  company_profile:  'Core_Strategy/01_COMPANY/PROFILE.md',
+  mission_values:   'Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md',
+  audience:         'Market_Audiences/03_MARKET/AUDIENCES.md',
+  competitive:      'Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md',
+  brand_voice:      'Core_Strategy/02_BRAND/VOICE-TONE.md',
+};
+
+/**
+ * Write approved drafts into MIR template files.
+ *
+ * @param {string} mirPath  — absolute path to the MIR directory
+ * @param {object} approvedDrafts — { section_key: "markdown content", ... }
+ * @returns {object} { written: string[], errors: string[] }
+ */
+function writeDrafts(mirPath, approvedDrafts) {
+  const written = [];
+  const errors  = [];
+
+  for (const [section, content] of Object.entries(approvedDrafts)) {
+    const relPath = SECTION_FILE_MAP[section];
+    if (!relPath) {
+      errors.push(`Unknown section key: ${section}`);
+      continue;
+    }
+
+    const filePath = path.join(mirPath, relPath);
+    const dir = path.dirname(filePath);
+
+    try {
+      // Ensure directory exists
+      fs.mkdirSync(dir, { recursive: true });
+
+      // Build file header
+      const header = `<!-- mgsd-generated: ${new Date().toISOString()} -->
+<!-- status: complete -->
+<!-- source: onboarding-agent -->
+
+`;
+      fs.writeFileSync(filePath, header + content, 'utf8');
+      written.push(relPath);
+    } catch (err) {
+      errors.push(`Failed to write ${relPath}: ${err.message}`);
+    }
+  }
+
+  return { written, errors };
+}
+
+/**
+ * Update STATE.md rows matching written files from "empty" → "complete"
+ *
+ * @param {string} statePath  — absolute path to MIR/STATE.md
+ * @param {string[]} writtenFiles — list of relative file paths that were written
+ */
+function updateStateFile(statePath, writtenFiles) {
+  if (!fs.existsSync(statePath)) return;
+
+  let content = fs.readFileSync(statePath, 'utf8');
+  const today = new Date().toISOString().split('T')[0];
+
+  for (const relPath of writtenFiles) {
+    // Match table rows containing this file path and "empty" status
+    // Row format: | `path/to/FILE.md` | `empty` | — |  Notes |
+    const escapedPath = relPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(
+      `(\\|\\s*\`${escapedPath}\`\\s*\\|\\s*)\`empty\`(\\s*\\|\\s*)—(\\s*\\|)`,
+      'g'
+    );
+    content = content.replace(
+      pattern,
+      `$1\`complete\`$2${today}$3`
+    );
+  }
+
+  fs.writeFileSync(statePath, content, 'utf8');
+}
+
+/**
+ * Main entry point: write drafts + update state
+ *
+ * @param {string} mirPath       — absolute path to MIR directory
+ * @param {object} approvedDrafts — { section_key: "content" }
+ * @returns {object} { written, stateUpdated, errors }
+ */
+function applyDrafts(mirPath, approvedDrafts) {
+  const { written, errors } = writeDrafts(mirPath, approvedDrafts);
+
+  const statePath = path.join(mirPath, 'STATE.md');
+  let stateUpdated = false;
+
+  try {
+    updateStateFile(statePath, written);
+    stateUpdated = true;
+  } catch (err) {
+    errors.push(`STATE.md update failed: ${err.message}`);
+  }
+
+  return { written, stateUpdated, errors };
+}
+
+module.exports = { applyDrafts, writeDrafts, updateStateFile };

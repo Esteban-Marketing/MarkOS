@@ -1,7 +1,10 @@
 # _DISCIPLINE-PLAN-TEMPLATE.md
 
 <!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/_DISCIPLINE-PLAN-TEMPLATE.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MSP/_DISCIPLINE-PLAN-TEMPLATE.md` to customize it safely.
+
+> [!IMPORTANT]
+> **AGENT LOGIC**: This template is used by `mgsd-planner` to create `PLAN.md` files. Consistency across disciplines is mandatory. Do not remove sections.
 
 ### Base Template — Copy this when creating any discipline PLAN.md
 

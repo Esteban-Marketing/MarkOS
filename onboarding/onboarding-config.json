@@ -1,10 +1,13 @@
 {
-  "logo_url": "",
-  "primary_color": "#6366f1",
-  "company_name": "Marketing Get Shit Done",
-  "form_title": "Client Intelligence Onboarding",
-  "completion_message": "Your marketing intelligence is being generated...",
   "port": 4242,
   "auto_open_browser": true,
-  "output_path": "../onboarding-seed.json"
+  "output_path": "../onboarding-seed.json",
+  "form_title": "Client Intelligence Onboarding",
+  "completion_message": "MIR templates populated. AI agents are now context-aware.",
+  "logo_url": "",
+  "primary_color": "#6366f1",
+  "chroma_host": "http://localhost:8000",
+  "project_slug": "",
+  "mir_output_path": ".agent/marketing-get-shit-done/templates/MIR",
+  "msp_output_path": ".agent/marketing-get-shit-done/templates/MSP"
 }

@@ -1,10 +1,10 @@
-# Audiences
+# AUDIENCES.md — Ideal Customer Profiles, Personas & Segments
 
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Market_Audiences/AUDIENCES.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Market_Audiences/AUDIENCES.md` to customize it safely.
 
-<!-- SOURCED_FROM → MGSD-RES-AUD-01 (AUDIENCE-RESEARCH.md § Primary Segments, § Language & Vocabulary, § Channel Preferences) -->
-<!-- AGENT: Before filling this file, read RESEARCH/AUDIENCE-RESEARCH.md in full -->
+> [!IMPORTANT]
+> **AGENT LOGIC**: Before filling this file, read `RESEARCH/AUDIENCE-RESEARCH.md` in full. This file governs targeting for all `mgsd-copy-drafter` and `mgsd-ad-copy` tasks.
 
 ## 1. Primary Audience Segments
 *Define the core segments with demographic and firmographic baselines.*

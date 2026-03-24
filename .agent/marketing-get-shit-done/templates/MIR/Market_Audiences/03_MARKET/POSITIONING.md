@@ -1,16 +1,13 @@
 # POSITIONING.md — Market Position & Differentiation Strategy
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Market_Audiences/03_MARKET/POSITIONING.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Market_Audiences/03_MARKET/POSITIONING.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This is the "Competitive North Star". `mgsd-copywriter` MUST adhere to Section 5 (Positioning Guardrails) for all public-facing copy. `mgsd-analyst` MUST use Section 1 (Positioning Statement) to audit all creative briefs for strategic alignment.
 
-```
-file_purpose  : Define how this business is positioned in the market relative to
-                alternatives, and why that position is defensible and valuable.
-status        : empty
-last_updated  : YYYY-MM-DD
-authoritative : YES for strategic positioning decisions
-```
+**Dependencies:** AUDIENCES (`AUDIENCES.md`), COMPETITION (`COMPETITIVE-LANDSCAPE.md`)
+**Assigned Agent:** `mgsd-analyst`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ---
 

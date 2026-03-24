@@ -1,8 +1,13 @@
 # MESSAGING-FRAMEWORK.md — Core Value Propositions & Messaging Architecture
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This file is the "Message House" that anchors all external communication. `mgsd-copywriter` MUST derive all ad scripts and landing page copy from Section 1 and Section 3. `mgsd-analyst` MUST use Section 8 (Objection Responses) when training or configuring AI chat/outbound systems.
+
+**Dependencies:** PROFILE (`../01_COMPANY/PROFILE.md`), AUDIENCES (`../../Market_Audiences/03_MARKET/AUDIENCES.md`)
+**Assigned Agent:** `mgsd-copywriter`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Define the structured messaging system: what we say, why it matters,

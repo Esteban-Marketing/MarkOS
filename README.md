@@ -14,13 +14,12 @@ npx marketing-get-shit-done
 npx marketing-get-shit-done update
 ```
 
-## What It Does
+## Quickstart
 
-- **MIR** (Marketing Intelligence Repository) — Brand, audience, product, and operations strategy documents
-- **MSP** (Marketing Strategy Playbook) — Executable discipline modules (SEO, Social, Ads, Email, etc.)
-- **RESEARCH/** — 6 auto-generated intelligence files (audience, org, product, competitive, market, content)
-- **Web Onboarding** — Step-by-step form that seeds the entire RESEARCH/ → MIR/ → MSP/ pipeline
-- **Patch Engine** — Updates never overwrite your customizations (`.mgsd-local/` protected)
+- **Human**: Follow the [Install](#install) instructions then run `npx mgsd`.
+- **Agent**: Read [QUICKSTART.md](.protocol-lore/QUICKSTART.md) first, then [MGSD-INDEX.md](.agent/marketing-get-shit-done/MGSD-INDEX.md).
+
+## What It Does
 
 ## GSD Co-existence
 

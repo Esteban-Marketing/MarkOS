@@ -1,8 +1,13 @@
 # WORKFLOWS.md — Standard Operating Procedures
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Operations/10_OPERATIONS/WORKFLOWS.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Operations/10_OPERATIONS/WORKFLOWS.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: These SOPs are executable directives. `mgsd-executor` MUST follow the checkboxes in sequence. If a step cannot be completed (e.g., "Meta CAPI receiving test"), the agent MUST flag the task as BLOCKED and specify exactly which SOP step failed.
+
+**Dependencies:** APPROVALS (`APPROVALS.md`), CAMPAIGN (`../../Campaigns_Assets/08_CAMPAIGNS/_CAMPAIGN-TEMPLATE.md`)
+**Assigned Agent:** `mgsd-executor`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Document recurring operational tasks as step-by-step procedures.

@@ -1,14 +1,20 @@
 # CONTENT-STRATEGY.md — Content Pillars, Formats & Objectives
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/CONTENT-STRATEGY.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Campaigns_Assets/07_CONTENT/CONTENT-STRATEGY.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This strategy is the constraint for all creative work. `mgsd-content-manager` MUST ensure every content piece maps to a Pillar ID (Section 2). `mgsd-executor` MUST verify layout and font compliance with `BRAND-IDENTITY.md` before scheduling. No content produced should deviate from the Pillars defined below.
+
+**Dependencies:** BRAND-IDENTITY (`../../Core_Strategy/02_BRAND/BRAND-IDENTITY.md`), AUDIENCES (`../../Market_Audiences/03_MARKET/AUDIENCES.md`), EDITORIAL-CALENDAR (`EDITORIAL-CALENDAR.md`)
+**Assigned Agent:** `mgsd-content-manager`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Define the strategic framework for all content produced:
                 what topics, what formats, what platforms, what goals.
 status        : empty
 last_updated  : YYYY-MM-DD
+authoritative : YES for content planning
 ```
 
 ---

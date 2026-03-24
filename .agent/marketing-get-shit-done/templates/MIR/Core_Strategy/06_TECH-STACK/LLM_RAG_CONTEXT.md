@@ -1,7 +1,13 @@
 # 🤖 {{COMPANY_NAME}} - LLM RAG & Agent Context Knowledge Base
 
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/06_TECH-STACK/LLM_RAG_CONTEXT.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/06_TECH-STACK/LLM_RAG_CONTEXT.md` to customize it safely.
+
+> [!IMPORTANT]
+> **AGENT LOGIC**: This file defines the external-facing persona. `mgsd-content-creator` MUST adhere to the `Primary Persona Override` and `Restricted Topics` (Section 1) to maintain brand safety across all LLM-generated output.
+
+> [!IMPORTANT]
+> **HARDENING PATTERN**: This document is hardened. Any LLM-generated output MUST be reviewed by a human `mgsd-strategist` before external publication.
 
 **Dependencies:** Core Positioning (`{{MIR_STRATEGY_FILE}}`)
 **Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist)

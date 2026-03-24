@@ -1,9 +1,20 @@
-# Value Proposition
+# VALUE-PROP.md — Core Value Proposition & Messaging
 
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/VALUE-PROP.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/VALUE-PROP.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: Before filling this file, read `RESEARCH/ORG-PROFILE.md` AND `RESEARCH/AUDIENCE-RESEARCH.md`. The `mgsd-strategist` MUST ensure the proposition maps directly to audience pain points.
 
-<!-- SOURCED_FROM → MGSD-RES-ORG-01 (ORG-PROFILE.md § Core Value Proposition) -->
-<!-- SOURCED_FROM → MGSD-RES-AUD-01 (AUDIENCE-RESEARCH.md § Psychographic Profile) -->
-<!-- AGENT: Before filling this file, read RESEARCH/ORG-PROFILE.md AND RESEARCH/AUDIENCE-RESEARCH.md -->
+---
+
+## 1. The Core Promise
+*Define the singular, most powerful benefit offered to the customer.*
+
+## 2. Supporting Value Pillars
+*   **Pillar 1**: [Description]
+*   **Pillar 2**: [Description]
+*   **Pillar 3**: [Description]
+
+## 3. The "Anti-Value" (What we don't do)
+*Define what this business intentionally avoids to maintain its unique value.*

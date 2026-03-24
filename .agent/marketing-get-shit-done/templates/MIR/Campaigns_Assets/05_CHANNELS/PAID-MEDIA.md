@@ -1,8 +1,13 @@
 # PAID-MEDIA.md — Ad Accounts, Pixels, CAPI & Tracking Config
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/05_CHANNELS/PAID-MEDIA.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Campaigns_Assets/05_CHANNELS/PAID-MEDIA.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This is the "Tracking & Attribution" source of truth. `mgsd-media-buyer` MUST use Section 7 (UTM Parameter Standards) for all campaign launches. `mgsd-analyst` MUST use Section 6 (Attribution Model) to validate conversion data in performance reports.
+
+**Dependencies:** AUDIENCES (`../../Market_Audiences/03_MARKET/AUDIENCES.md`), BUDGET (`../../Operations/08_BUDGET/MCB-BUDGET.md`)
+**Assigned Agent:** `mgsd-media-buyer`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Define the complete paid media infrastructure: account IDs,

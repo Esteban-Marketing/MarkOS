@@ -1,8 +1,13 @@
 # TEAM.md — Key People, Roles & Decision Authority
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/01_COMPANY/TEAM.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/01_COMPANY/TEAM.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This governs human-in-the-loop (HITL) escalations. `mgsd-linear-manager` MUST use the communication preferences in Section 1 when assigning tasks requiring human feedback. `mgsd-strategist` MUST NOT bypass the `Decision Authority Matrix` (Section 3).
+
+**Dependencies:** APPROVALS (`../../Operations/10_OPERATIONS/APPROVALS.md`), CONTACTS (`../../Operations/10_OPERATIONS/CONTACTS.md`)
+**Assigned Agent:** `mgsd-strategist`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Document who the key people are on both the client and agency side,

@@ -1,0 +1,141 @@
+#!/usr/bin/env node
+// chroma-client.cjs — ChromaDB connection & collection helpers
+// mgsd-onboarding v2.0
+
+'use strict';
+
+const { ChromaClient } = require('chromadb');
+
+let chromaHost = 'http://localhost:8000';
+let _client = null;
+
+function getClient() {
+  if (!_client) {
+    _client = new ChromaClient({ path: chromaHost });
+  }
+  return _client;
+}
+
+/**
+ * Configure the ChromaDB host (called from server.cjs with config values)
+ */
+function configure(host) {
+  chromaHost = host || 'http://localhost:8000';
+  _client = null; // reset so next getClient() uses new host
+}
+
+/**
+ * Test connectivity to ChromaDB
+ * Returns { ok: true } or { ok: false, error: string }
+ */
+async function healthCheck() {
+  try {
+    const client = getClient();
+    await client.heartbeat();
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+}
+
+/**
+ * Upsert all seed sections as separate named collections.
+ * Each collection is keyed by: mgsd-{slug}-{section}
+ * @param {string} slug    — project/client slug (kebab-case)
+ * @param {object} seed    — full onboarding-seed.json object
+ */
+async function upsertSeed(slug, seed) {
+  const client = getClient();
+
+  const sections = [
+    { name: 'company',     data: seed.company     || {} },
+    { name: 'product',     data: seed.product     || {} },
+    { name: 'audience',    data: seed.audience    || {} },
+    { name: 'competition', data: seed.competition || {} },
+    { name: 'market',      data: seed.market      || {} },
+    { name: 'content',     data: seed.content     || {} },
+  ];
+
+  const results = [];
+
+  for (const section of sections) {
+    const collectionName = `mgsd-${slug}-${section.name}`;
+    const docText = JSON.stringify(section.data, null, 2);
+    const docId   = `${slug}-${section.name}-v1`;
+
+    try {
+      // Get or create collection
+      const collection = await client.getOrCreateCollection({ name: collectionName });
+
+      // Upsert the document (overwrite if same id)
+      await collection.upsert({
+        ids:       [docId],
+        documents: [docText],
+        metadatas: [{ slug, section: section.name, generated: new Date().toISOString() }],
+      });
+
+      results.push({ section: section.name, status: 'ok', collection: collectionName });
+    } catch (err) {
+      results.push({ section: section.name, status: 'error', error: err.message });
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Retrieve context for a project section from ChromaDB
+ * @param {string} slug       — project slug
+ * @param {string} section    — e.g. 'company', 'audience'
+ * @param {string} query      — natural language query for similarity search
+ * @param {number} nResults   — how many results to return
+ */
+async function getContext(slug, section, query = 'summary', nResults = 1) {
+  try {
+    const client = getClient();
+    const collectionName = `mgsd-${slug}-${section}`;
+    const collection = await client.getCollection({ name: collectionName });
+    const results = await collection.query({ queryTexts: [query], nResults });
+    return results.documents[0] || [];
+  } catch (err) {
+    // Collection may not exist yet — return empty
+    return [];
+  }
+}
+
+/**
+ * Store generated draft content in ChromaDB for future retrieval
+ * @param {string} slug    — project slug
+ * @param {string} section — e.g. 'company_profile_draft'
+ * @param {string} content — markdown content to store
+ */
+async function storeDraft(slug, section, content) {
+  try {
+    const client = getClient();
+    const collectionName = `mgsd-${slug}-drafts`;
+    const collection = await client.getOrCreateCollection({ name: collectionName });
+    await collection.upsert({
+      ids:       [`${slug}-draft-${section}`],
+      documents: [content],
+      metadatas: [{ slug, section, stored_at: new Date().toISOString() }],
+    });
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  }
+}
+
+/**
+ * Remove all collections for a project (clean slate)
+ */
+async function clearProject(slug) {
+  const client = getClient();
+  const allCollections = await client.listCollections();
+  const toDelete = allCollections.filter(c => c.name.startsWith(`mgsd-${slug}-`));
+  for (const col of toDelete) {
+    await client.deleteCollection({ name: col.name });
+  }
+  return { deleted: toDelete.map(c => c.name) };
+}
+
+module.exports = { configure, healthCheck, upsertSeed, getContext, storeDraft, clearProject };

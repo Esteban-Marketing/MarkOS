@@ -1,8 +1,13 @@
 # AUTOMATION.md — n8n / Make Workflow Specifications
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/06_TECH-STACK/AUTOMATION.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/06_TECH-STACK/AUTOMATION.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: These workflows define the project's nervous system. `mgsd-executor` MUST verify that any manual execution or fix aligns with the `Step-by-step logic` defined in Section 2. If a workflow fails, the agent MUST consult the `Automation Testing Protocol` (Section 7) before attempting a restart.
+
+**Dependencies:** Infrastructure (`INFRASTRUCTURE.md`), Tracking (`TRACKING.md`), Research (`RESEARCH/TECH-AUDIT.md`)
+**Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist)
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Document all automation workflows: triggers, logic, data flows,
@@ -10,6 +15,8 @@ file_purpose  : Document all automation workflows: triggers, logic, data flows,
                 through the middleware layer defined here.
 status        : empty
 last_updated  : YYYY-MM-DD
+authoritative : YES — all automation logic derives from this file
+```
 authoritative : YES — all automation architecture derives from this file
 ```
 

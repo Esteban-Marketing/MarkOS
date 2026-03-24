@@ -1,8 +1,13 @@
 # PRICING.md — Pricing Structure & Logic
-
 <!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Products/04_PRODUCTS/PRICING.md to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Products/04_PRODUCTS/PRICING.md` to customize it safely.
 
+> [!IMPORTANT]
+> **AGENT LOGIC**: This file is the absolute source of truth for all financial claims. `mgsd-auditor` MUST flag any ad copy or landing page that contradicts the price points or billing terms listed here. `mgsd-copy-drafter` MUST consult Section 6 before stating any prices in public-facing copy.
+
+**Dependencies:** CATALOG (`CATALOG.md`), OFFERS (`OFFERS.md`), APPROVALS (`../../Operations/10_OPERATIONS/APPROVALS.md`)
+**Assigned Agent:** `mgsd-product-manager`
+**Linear Project Manager:** `mgsd-linear-manager`
 
 ```
 file_purpose  : Define all pricing, tiers, and billing logic.

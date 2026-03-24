@@ -16,7 +16,10 @@ entry_point: true
 
 ## [AGENT] How to Use This Index
 
-This file is `MGSD-IDX-000`. It is the mandatory first read in any autonomous session operating within `.agent/marketing-get-shit-done/`. Every TOKEN_ID in the corpus is registered here. When a document references another by TOKEN_ID, resolve the path from the `File` column below. When a new file is created, it must be registered here before it can be referenced by other documents. Retired TOKEN_IDs are listed in `## Retired Tokens` and must not be reused.
+> [!IMPORTANT]
+> **AGENT BOOT SEQUENCE**: Read `.protocol-lore/QUICKSTART.md` first. This file (`MGSD-IDX-000`) is the mandatory *second* read.
+
+This file is `MGSD-IDX-000`. It is the mandatory entry point for technical domain mapping within `.agent/marketing-get-shit-done/`. Every Token_ID in the corpus is registered here. When a document references another by Token_ID, resolve the path from the `File` column below.
 
 **TOKEN_ID structure:** `MGSD-[CLASS]-[DOMAIN]-[SEQ]`
 - CLASS: `AGT` agent · `REF` reference · `SKL` skill · `MIR` MIR template · `MSP` MSP matrix · `WFL` workflow · `TPL` generic template · `IDX` index
