@@ -66,6 +66,22 @@ async function loadConfig() {
   }
 }
 
+let isChromaOffline = false;
+
+async function loadStatus() {
+  try {
+    const res = await fetch('/status');
+    if (res.ok) {
+      const status = await res.json();
+      if (!status.chromadb) {
+        isChromaOffline = true;
+      }
+    }
+  } catch (err) {
+    isChromaOffline = true;
+  }
+}
+
 // ── Navigation ────────────────────────────────────────────────────────────────
 function updateUI() {
   stepSections.forEach(section => {
@@ -82,7 +98,14 @@ function updateUI() {
   btnBack.disabled = (currentStep === 1);
 
   if (currentStep === 6) {
-    btnNext.innerText = 'Generate AI Drafts →';
+    if (isChromaOffline) {
+      btnNext.innerText = '⚠️ Vector DB Offline (Cannot Generate AI Drafts)';
+      btnNext.disabled = true;
+      btnNext.style.backgroundColor = '#6b7280';
+    } else {
+      btnNext.innerText = 'Generate AI Drafts →';
+      btnNext.disabled = false;
+    }
   } else if (currentStep === 7) {
     // Navigation hidden on step 7 — handled by draft cards + publish button
     navButtons.style.display = 'none';
@@ -525,6 +548,7 @@ document.addEventListener('focusout', (e) => {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   await loadConfig();
+  await loadStatus();
   restoreDraft();
   updateUI();
 });

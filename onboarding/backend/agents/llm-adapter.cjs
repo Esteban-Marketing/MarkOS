@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-// llm-adapter.cjs — Unified LLM call wrapper (OpenAI)
-// Reads OPENAI_API_KEY from .env or environment.
-// mgsd-onboarding v2.0
+// llm-adapter.cjs — Unified Multi-Model LLM call wrapper
+// Supports OpenAI, Anthropic, and Gemini keys from .env.
+// mgsd-onboarding v2.1
 
 'use strict';
 
 const path = require('path');
 
-// Load .env from project root (two levels up from onboarding/backend/agents/)
+// Load .env from project root 
 try {
   require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 } catch (e) {
@@ -21,46 +21,124 @@ let _openai = null;
 function getOpenAI() {
   if (!_openai) {
     const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      throw new Error(
-        'OPENAI_API_KEY is not set. Create a .env file at the project root with:\n  OPENAI_API_KEY=sk-...'
-      );
-    }
+    if (!apiKey) throw new Error('OPENAI_API_KEY is not set');
     _openai = new OpenAI({ apiKey });
   }
   return _openai;
 }
 
+// ── Native Fetch Adapters ───────────────────────────────────────────────────
+
+async function callAnthropic(systemPrompt, userPrompt, options) {
+  const model = options.model || process.env.ANTHROPIC_MODEL || 'claude-3-5-haiku-20241022';
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set');
+
+  const payload = {
+    model,
+    max_tokens: options.max_tokens || 1200,
+    temperature: options.temperature ?? 0.4,
+    system: systemPrompt,
+    messages: [ { role: 'user', content: userPrompt } ]
+  };
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Anthropic Error: ${res.status} ${err}`);
+  }
+  
+  const data = await res.json();
+  return data.content[0].text;
+}
+
+async function callGemini(systemPrompt, userPrompt, options) {
+  const model = options.model || process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error('GEMINI_API_KEY is not set');
+
+  // Using the new v1alpha endpoint for standard chat
+  // Alternatively fallback to v1beta 
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  const payload = {
+    system_instruction: {
+      parts: { text: systemPrompt }
+    },
+    contents: [
+      { parts: [{ text: userPrompt }] }
+    ],
+    generationConfig: {
+      temperature: options.temperature ?? 0.4,
+      maxOutputTokens: options.max_tokens || 1200
+    }
+  };
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Gemini Error: ${res.status} ${err}`);
+  }
+
+  const data = await res.json();
+  return data.candidates[0].content.parts[0].text;
+}
+
+async function callOpenAI(systemPrompt, userPrompt, options) {
+  const model = options.model || process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  const openai = getOpenAI();
+  const response = await openai.chat.completions.create({
+    model,
+    temperature: options.temperature ?? 0.4,
+    max_tokens: options.max_tokens || 1200,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user',   content: userPrompt   },
+    ],
+  });
+  return response.choices?.[0]?.message?.content?.trim() || '';
+}
+
 /**
- * Call the LLM with a system prompt and user prompt.
- * Returns the generated text string.
- *
- * @param {string} systemPrompt  — Tight role + constraints prompt
- * @param {string} userPrompt    — The actual content/context to generate from
- * @param {object} options       — Optional overrides: { model, temperature, max_tokens }
+ * Call the LLM with a system/user prompt automatically determining the provider.
+ * Priority: 1. provider option 2. ANTHROPIC key 3. OPENAI key 4. GEMINI key
  */
 async function call(systemPrompt, userPrompt, options = {}) {
-  const model       = options.model       || process.env.OPENAI_MODEL || 'gpt-4o-mini';
-  const temperature = options.temperature ?? 0.4;
-  const max_tokens  = options.max_tokens  || 1200;
-
   try {
-    const openai = getOpenAI();
-    const response = await openai.chat.completions.create({
-      model,
-      temperature,
-      max_tokens,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user',   content: userPrompt   },
-      ],
-    });
+    let text = '';
+    const provider = options.provider || 
+                     (process.env.ANTHROPIC_API_KEY ? 'anthropic' : 
+                     (process.env.OPENAI_API_KEY ? 'openai' : 
+                     (process.env.GEMINI_API_KEY ? 'gemini' : null)));
 
-    const text = response.choices?.[0]?.message?.content?.trim() || '';
-    return { ok: true, text };
+    if (!provider) {
+      throw new Error('No LLM API keys found in .env (OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY)');
+    }
 
+    if (provider === 'anthropic') {
+      text = await callAnthropic(systemPrompt, userPrompt, options);
+    } else if (provider === 'gemini') {
+      text = await callGemini(systemPrompt, userPrompt, options);
+    } else {
+      text = await callOpenAI(systemPrompt, userPrompt, options);
+    }
+
+    return { ok: true, text, provider };
   } catch (err) {
-    // Return structured error so callers can surface placeholder content
     return {
       ok: false,
       error: err.message,

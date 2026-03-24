@@ -131,9 +131,11 @@ const server = http.createServer(async (req, res) => {
       fs.writeFileSync(outputPath, JSON.stringify(seed, null, 2));
       console.log(`\n✓ onboarding-seed.json written to: ${outputPath}`);
 
-      // Determine project slug from company name
-      const slug = config.project_slug ||
+      // Determine project slug from company name, appended with partial UUID to prevent collisions
+      const crypto = require('crypto');
+      const baseSlug = config.project_slug ||
         (seed.company?.name || 'mgsd-client').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const slug = `${baseSlug}-${crypto.randomUUID().slice(0, 8)}`;
 
       // Run orchestrator
       console.log('\n🤖 Running AI draft generation...');

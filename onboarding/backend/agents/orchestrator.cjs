@@ -8,6 +8,25 @@ const mirFiller  = require('./mir-filler.cjs');
 const mspFiller  = require('./msp-filler.cjs');
 const chroma     = require('../chroma-client.cjs');
 
+// ── Rate Limits & Retries ───────────────────────────────────────────────────
+async function executeWithRetry(fn, name, retries = 3, baseDelay = 1500) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fn();
+      if (!res.ok) throw new Error(res.error);
+      return res;
+    } catch (e) {
+      if (i === retries - 1) {
+        console.error(`[orchestrator] ${name} failed after ${retries} retries: ${e.message}`);
+        return { ok: false, error: e.message, text: `[DRAFT UNAVAILABLE — ${e.message}]` };
+      }
+      const wait = baseDelay * Math.pow(2, i);
+      console.warn(`[orchestrator] ${name} failed (rate limit/error), retrying in ${wait}ms...`);
+      await new Promise(r => setTimeout(r, wait));
+    }
+  }
+}
+
 /**
  * Run all draft-generation agents for a given seed.
  * Persists results to ChromaDB.
@@ -31,29 +50,17 @@ async function orchestrate(seed, slug) {
     errors.push({ phase: 'chroma-upsert', error: err.message });
   }
 
-  // ── 2. Run MIR agents in parallel ─────────────────────────────────────────
+  // ── 2. Run MIR agents (Batched to prevent 429s) ──────────────────────────
   console.log('[orchestrator] Generating MIR drafts...');
-  const [
-    companyProfileResult,
-    missionValuesResult,
-    audienceResult,
-    competitiveResult,
-  ] = await Promise.all([
-    mirFiller.generateCompanyProfile(seed),
-    mirFiller.generateMissionVisionValues(seed),
-    mirFiller.generateAudienceProfile(seed),
-    mirFiller.generateCompetitiveLandscape(seed),
-  ]);
+  const companyProfileResult = await executeWithRetry(() => mirFiller.generateCompanyProfile(seed), 'Company Profile');
+  const missionValuesResult  = await executeWithRetry(() => mirFiller.generateMissionVisionValues(seed), 'Mission/Values');
+  const audienceResult       = await executeWithRetry(() => mirFiller.generateAudienceProfile(seed), 'Audience Profile');
+  const competitiveResult    = await executeWithRetry(() => mirFiller.generateCompetitiveLandscape(seed), 'Competitive Landscape');
 
-  // ── 3. Run MSP agents in parallel ─────────────────────────────────────────
+  // ── 3. Run MSP agents ─────────────────────────────────────────────────────
   console.log('[orchestrator] Generating MSP drafts...');
-  const [
-    brandVoiceResult,
-    channelStrategyResult,
-  ] = await Promise.all([
-    mspFiller.generateBrandVoice(seed),
-    mspFiller.generateChannelStrategy(seed),
-  ]);
+  const brandVoiceResult      = await executeWithRetry(() => mspFiller.generateBrandVoice(seed), 'Brand Voice');
+  const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed), 'Channel Strategy');
 
   // ── 4. Collect all drafts ─────────────────────────────────────────────────
   const drafts = {
