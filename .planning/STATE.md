@@ -21,4 +21,5 @@ Plan: 4 of 4
 ### Roadmap Evolution
 
 - Phase 1-7 (v1.0.0) successfully archived on 2026-03-23.
+- SOP-006: AI-Enhanced Client Onboarding (ChromaDB + AI Drafts) implemented and committed on 2026-03-24.
 - Ready to initialize v1.1 via `mgsd-new-milestone`.
