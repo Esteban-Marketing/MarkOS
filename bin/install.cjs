@@ -176,11 +176,74 @@ async function run() {
   console.log(`  Docs:     .agent/marketing-get-shit-done/MGSD-INDEX.md\n`);
 
   if (launchOnboarding.trim().toLowerCase() === 'y') {
-    console.log('Starting client onboarding form...\n');
+    // ── 1. Interactive .env Setup ───────────────────────────────────────────
+    const envPath = path.join(CWD, '.env');
+    let hasKeys = false;
+    if (fs.existsSync(envPath)) {
+      const envContent = fs.readFileSync(envPath, 'utf8');
+      if (envContent.includes('OPENAI_API_KEY') || 
+          envContent.includes('ANTHROPIC_API_KEY') || 
+          envContent.includes('GEMINI_API_KEY')) {
+        hasKeys = true;
+      }
+    }
+
+    if (!hasKeys) {
+      console.log('\n[!] No AI Keys detected in .env');
+      console.log('To power the MGSD AI agents, you need at least one API key.');
+      console.log('  1) OpenAI');
+      console.log('  2) Anthropic');
+      console.log('  3) Google Gemini');
+      console.log('  4) Skip for now (will fail to generate AI drafts)');
+      
+      const providerChoice = await ask('Select provider (1-4): ');
+      
+      let keyFormat = '';
+      if (providerChoice.trim() === '1') {
+        const key = await ask('Paste OPENAI_API_KEY (sk-...): ');
+        if (key) keyFormat = `\nOPENAI_API_KEY=${key.trim()}\nOPENAI_MODEL=gpt-4o-mini\n`;
+      } else if (providerChoice.trim() === '2') {
+        const key = await ask('Paste ANTHROPIC_API_KEY (sk-ant-...): ');
+        if (key) keyFormat = `\nANTHROPIC_API_KEY=${key.trim()}\nANTHROPIC_MODEL=claude-3-5-haiku-20241022\n`;
+      } else if (providerChoice.trim() === '3') {
+        const key = await ask('Paste GEMINI_API_KEY (AIza...): ');
+        if (key) keyFormat = `\nGEMINI_API_KEY=${key.trim()}\nGEMINI_MODEL=gemini-2.5-flash\n`;
+      }
+
+      if (keyFormat) {
+        fs.appendFileSync(envPath, keyFormat);
+        console.log('✓ API Key saved to .env securely.');
+      }
+    }
+
+    // ── 2. Vector Memory Daemon ─────────────────────────────────────────────
+    console.log('\n[>] Booting Vector Memory (ChromaDB) in background...');
+    try {
+      // Spawn detached python process
+      const { spawn } = require('child_process');
+      const pyCmd = process.platform === 'win32' ? 'python' : 'python3';
+      const chromaProcess = spawn(pyCmd, ['-m', 'chromadb.cli.cli', 'run'], {
+        detached: true,
+        stdio: 'ignore'
+      });
+      chromaProcess.unref(); // Allow node to exit independently of this process
+      
+      // Wait 2s for boot
+      await new Promise(r => setTimeout(r, 2000));
+      console.log('✓ Vector memory listening on port 8000');
+    } catch (err) {
+      console.log('⚠ Could not start ChromaDB automatically. You may need to run: python -m chromadb.cli.cli run');
+    }
+
+    // ── 3. Server Handoff ───────────────────────────────────────────────────
+    console.log('\n🚀 Starting MGSD Orchestrator Sequence...\n');
     rl.close();
-    require(path.join(CWD, 'onboarding', 'bin', 'serve-onboarding.cjs'));
+    
+    // Redirect to V2 Server
+    require(path.join(CWD, 'onboarding', 'backend', 'server.cjs'));
+
   } else {
-    console.log('Run `node onboarding/bin/serve-onboarding.cjs` to start onboarding later.\n');
+    console.log('Run `node onboarding/backend/server.cjs` to fully launch the system later.\n');
     rl.close();
   }
 }
