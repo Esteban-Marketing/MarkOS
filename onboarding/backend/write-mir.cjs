@@ -1,14 +1,41 @@
 #!/usr/bin/env node
-// write-mir.cjs — Writes approved draft content into MIR template files
-// Also updates MIR/STATE.md status rows from "empty" → "complete"
-// mgsd-onboarding v2.0
-
+/**
+ * write-mir.cjs — MIR/MSP File Persistence & STATE.md Stamping
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   Writes approved AI drafts into the persistent `.mgsd-local/` directory.
+ *   Ensures that base templates are NEVER modified, preserving the upgrade path.
+ *
+ * KEY BEHAVIORS:
+ *   1. JIT-Cloning: If `.mgsd-local/MIR/` is missing, copies the entire template
+ *      structure from `.agent/.../templates/MIR/` before writing.
+ *   2. Fuzzy Merging: Uses a multi-step regex approach to inject draft content
+ *      into specific `<!-- SECTION: ... -->` blocks within markdown files.
+ *   3. STATE.md Stamping: After a successful file write, scans `STATE.md` and
+ *      updates the corresponding row from `(empty)` to `(complete)`.
+ *
+ * FILE MAPPING (SECTION_FILE_MAP):
+ *   Maps internal draft keys (e.g., 'company_profile') to relative file paths.
+ *   This mapping is the source of truth for where drafts are persisted.
+ *
+ * EXPORTS:
+ *   applyDrafts(slug, drafts, mirPath) → Promise<void>
+ *
+ * RELATED FILES:
+ *   onboarding/backend/server.cjs          (caller — POST /approve handler)
+ *   .agent/.../templates/MIR/              (source of base templates)
+ *   .mgsd-local/MIR/                       (persistent client data - gitignored)
+ *   .planning/STATE.md                     (phase completion tracker)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 'use strict';
 
 const fs   = require('fs');
 const path = require('path');
 
-// ── Section → MIR file mapping ─────────────────────────────────────────────
+// ── Section → MIR/MSP File Mapping ───────────────────────────────────────────
+// These paths are relative to the project root or the provided LOCAL_MIR_PATH.
+// Note: channel_strategy points to a different top-level directory (MSP).
 // Maps draft section keys → relative paths within the MIR directory
 const SECTION_FILE_MAP = {
   company_profile:  'Core_Strategy/01_COMPANY/PROFILE.md',

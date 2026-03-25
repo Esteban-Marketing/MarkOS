@@ -1,12 +1,41 @@
 #!/usr/bin/env node
-// chroma-client.cjs — ChromaDB connection & collection helpers
-// mgsd-onboarding v2.0
-
+/**
+ * chroma-client.cjs — ChromaDB HTTP Client (MGSD Vector Memory)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   Thin wrapper around the ChromaDB HTTP API for MGSD's vector memory layer.
+ *   All ChromaDB interaction (health, storage, retrieval) routes through this file.
+ *
+ * HOST RESOLUTION:
+ *   1. configure(host) call overrides the default host at boot time.
+ *   2. Default host: http://localhost:8000
+ *   3. If CHROMA_CLOUD_URL is set in .env, configure() is called with that value.
+ *   4. If CHROMA_CLOUD_TOKEN is set, all requests include Authorization+x-chroma-token headers.
+ *
+ * COLLECTION NAMING:
+ *   Every project gets its own isolated ChromaDB collection: `mgsd-{project_slug}`
+ *   project_slug is read from .mgsd-project.json by server.cjs and passed into storeDraft().
+ *
+ * EXPORTS:
+ *   configure(host)                        → void (set chromaHost)
+ *   healthCheck()                          → Promise<{ ok, message }>
+ *   storeDraft(slug, section, text)        → Promise<void>
+ *   getDrafts(slug)                        → Promise<{section: text}>
+ *   upsertSeed(slug, seed)                 → Promise<results[]>
+ *
+ * RELATED FILES:
+ *   bin/ensure-chroma.cjs                  (starts/checks local daemon)
+ *   onboarding/backend/server.cjs          (calls configure() at boot)
+ *   onboarding/backend/agents/orchestrator.cjs (calls storeDraft after generation)
+ *   .mgsd-project.json                     (source of project_slug)
+ *   .protocol-lore/MEMORY.md              (vector memory architecture)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 'use strict';
 
 const { ChromaClient } = require('chromadb');
 
-let chromaHost = 'http://localhost:8000';
+let chromaHost = 'http://localhost:8000'; // Overridden by configure() at server boot
 let _client = null;
 
 function getClient() {

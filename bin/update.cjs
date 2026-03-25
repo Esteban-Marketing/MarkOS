@@ -1,12 +1,36 @@
 #!/usr/bin/env node
-// marketing-get-shit-done updater v1.0.0
-// Applies patches safely: skips .mgsd-local/, detects client modifications, shows diffs
+/**
+ * update.cjs — MGSD Safe Update & Patch Engine
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   Applies updates from the MGSD package to a project while preserving client
+ *   modifications and `.mgsd-local/` overrides. Idempotent and SHA256-safe.
+ *
+ * UPDATE FLOW:
+ *   1. Local Manifest Check: Reads `.mgsd-install-manifest.json` for current state.
+ *   2. File Scan: Compares every file in the package to the installed version.
+ *   3. Override Protection: Skips any file that has a corresponding `.mgsd-local/` override.
+ *   4. Conflict Detection:
+ *        - If installed hash === manifest hash: Update is safe (no client edits).
+ *        - If installed hash !== manifest hash: Client modified the file.
+ *        - If client modified AND update changed: Prompt for diff resolution.
+ *   5. Simple Diff: Shows a line-level comparison for conflicted files.
+ *   6. Version Step: Updates `VERSION` and manifest `last_updated` timestamp.
+ *
+ * RELATED FILES:
+ *   bin/install.cjs                       (Created the initial manifest)
+ *   .mgsd-install-manifest.json          (Source of truth for file hashes)
+ *   .mgsd-local/                         (The "holy ground" that update never touches)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+'use strict';
 
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const readline = require('readline');
 
+// ── Environment Settings ───────────────────────────────────────────────────
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 const NEW_VERSION = fs.readFileSync(path.join(PKG_DIR, 'VERSION'), 'utf8').trim();

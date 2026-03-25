@@ -1,13 +1,46 @@
 #!/usr/bin/env node
-// mir-filler.cjs — Generates MIR draft content from onboarding seed
-// Uses tight, parametrized prompts. Returns structured draft object.
-// mgsd-onboarding v2.0
-
+/**
+ * mir-filler.cjs — MIR (Marketing Intelligence Repository) Draft Generators
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   Generates AI draft content for each MIR section from onboarding seed data.
+ *   Each function calls llm-adapter.call() with a structured marketing prompt
+ *   and returns a standardized { ok, text, provider } response object.
+ *
+ * SECTION-TO-FILE MAP:
+ *   generateCompanyProfile      → .mgsd-local/MIR/Core_Strategy/01_COMPANY/PROFILE.md
+ *   generateMissionVisionValues → .mgsd-local/MIR/Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md
+ *   generateAudienceProfile     → .mgsd-local/MIR/Market_Audiences/03_MARKET/AUDIENCES.md
+ *   generateCompetitiveLandscape → .mgsd-local/MIR/Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md
+ *
+ * INPUT:
+ *   seed — parsed JSON from onboarding-seed.schema.json. Expected fields:
+ *     seed.company.{name, industry, founded, country, mission, brand_values, tone_of_voice}
+ *     seed.product.{name, category, primary_benefit, top_features, price_range}
+ *     seed.audience.{segment_name, job_title, pain_points}
+ *     seed.market.{maturity, biggest_trend}
+ *     seed.competitive.{top_competitors, positioning_gap}
+ *
+ * EXPORTS:
+ *   generateCompanyProfile(seed)      → Promise<{ ok, text, provider }>
+ *   generateMissionVisionValues(seed) → Promise<{ ok, text, provider }>
+ *   generateAudienceProfile(seed)     → Promise<{ ok, text, provider }>
+ *   generateCompetitiveLandscape(seed) → Promise<{ ok, text, provider }>
+ *
+ * RELATED FILES:
+ *   onboarding/backend/agents/llm-adapter.cjs    (LLM API surface)
+ *   onboarding/backend/agents/orchestrator.cjs   (calls all generators)
+ *   onboarding/backend/write-mir.cjs             (writes output to MIR files)
+ *   onboarding/onboarding-seed.schema.json        (input data shape)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 'use strict';
 
 const llm = require('./llm-adapter.cjs');
 
 // ─── SYSTEM PROMPT (shared across all MIR sections) ───────────────────────────
+// Instructs the LLM to produce structured MIR content, avoid hallucinated data,
+// and format output as clean markdown for direct insertion into .md files.
 const SYSTEM_PROMPT = `You are an expert B2B and B2C marketing strategist. Your job is to fill in structured marketing intelligence documents (MIR — Marketing Intelligence Repository) based on raw client onboarding data.
 
 RULES:

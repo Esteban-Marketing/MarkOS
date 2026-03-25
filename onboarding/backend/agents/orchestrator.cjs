@@ -1,6 +1,42 @@
 #!/usr/bin/env node
-// orchestrator.cjs — Reads onboarding seed, runs all MIR/MSP agents, stores drafts
-// mgsd-onboarding v2.0
+/**
+ * orchestrator.cjs — MGSD Draft Generation Orchestrator
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   Coordinates all AI draft generators and persists results to ChromaDB.
+ *   Called by `onboarding/backend/server.cjs` when handling POST /submit.
+ *
+ * EXECUTION FLOW:
+ *   Step 1 — Store raw seed JSON in ChromaDB for RAG retrieval later.
+ *   Step 2 — Run MIR generators sequentially (batched to avoid LLM rate limits):
+ *              generateCompanyProfile, generateMissionVisionValues,
+ *              generateAudienceProfile, generateCompetitiveLandscape
+ *   Step 3 — Run MSP generators:
+ *              generateBrandVoice, generateChannelStrategy
+ *   Step 3.5 — Run Neuro-Auditor validation if skill file exists.
+ *   Step 4 — Collect all draft texts into a {section_key: text} map.
+ *   Step 5 — Store each draft in ChromaDB under mgsd-{slug} collection.
+ *
+ * RETRY STRATEGY (executeWithRetry):
+ *   - 3 attempts with exponential backoff (1.5s, 3s, 6s)
+ *   - Prevents cascade failures on transient LLM 429 rate limit errors
+ *   - Returns { ok: false, text: "[DRAFT UNAVAILABLE...]" } on all retries exhausted
+ *
+ * EXPORTS:
+ *   orchestrate(seed, slug) → Promise<{ drafts, chromaResults, errors }>
+ *     drafts          — { company_profile, mission_values, audience, competitive, brand_voice, channel_strategy }
+ *     chromaResults   — array of Chroma store operation results
+ *     errors          — array of { phase, error } objects for failed steps
+ *
+ * RELATED FILES:
+ *   onboarding/backend/server.cjs               (caller — POST /submit handler)
+ *   onboarding/backend/agents/mir-filler.cjs    (MIR section generators)
+ *   onboarding/backend/agents/msp-filler.cjs    (MSP section generators)
+ *   onboarding/backend/agents/llm-adapter.cjs   (LLM call wrapper)
+ *   onboarding/backend/chroma-client.cjs        (ChromaDB operations)
+ *   onboarding/backend/write-mir.cjs            (writes approved drafts → MIR files)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 
 'use strict';
 

@@ -1,23 +1,54 @@
 #!/usr/bin/env node
-// llm-adapter.cjs — Unified Multi-Model LLM call wrapper
-// Supports OpenAI, Anthropic, and Gemini keys from .env.
-// mgsd-onboarding v2.1
-
+/**
+ * llm-adapter.cjs — Unified Multi-Model LLM Call Wrapper
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   Single entry point for all LLM calls in the MGSD onboarding pipeline.
+ *   Abstracts away provider-specific APIs so all agents use the same interface.
+ *
+ * PROVIDER PRIORITY (auto-detected from .env):
+ *   1. `options.provider`   — explicit override per call
+ *   2. ANTHROPIC_API_KEY    — Claude (claude-3-5-haiku-20241022 default)
+ *   3. OPENAI_API_KEY       — GPT-4o-mini (uses `openai` npm package)
+ *   4. GEMINI_API_KEY       — Gemini 2.5 Flash (native fetch)
+ *
+ * EXPORTS:
+ *   call(systemPrompt, userPrompt, options) → Promise<{ ok, text, provider, error? }>
+ *
+ * OPTIONS:
+ *   provider    {string}  — force a specific provider ('openai' | 'anthropic' | 'gemini')
+ *   model       {string}  — override the default model name
+ *   max_tokens  {number}  — max completion tokens (default: 1200)
+ *   temperature {number}  — sampling temperature (default: 0.4)
+ *
+ * RELATED FILES:
+ *   onboarding/backend/agents/mir-filler.cjs    (calls this for MIR generation)
+ *   onboarding/backend/agents/msp-filler.cjs    (calls this for MSP generation)
+ *   onboarding/backend/agents/orchestrator.cjs   (drives all agent calls)
+ *   .env                                         (API key source)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 'use strict';
 
 const path = require('path');
 
-// Load .env from project root 
+// Load .env from the project root (3 levels up from agents/).
+// Wrapped in try/catch because dotenv is optional — callers may inject env vars externally.
 try {
   require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 } catch (e) {
   // dotenv optional — env vars may be set externally
 }
 
+// ── OpenAI SDK (lazy-initialized singleton to avoid repeated auth) ───────────
 const { OpenAI } = require('openai');
 
 let _openai = null;
 
+/**
+ * Returns a singleton OpenAI client, initialized on first call.
+ * Throws if OPENAI_API_KEY is not set.
+ */
 function getOpenAI() {
   if (!_openai) {
     const apiKey = process.env.OPENAI_API_KEY;

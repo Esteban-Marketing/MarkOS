@@ -32,3 +32,38 @@ If you are lost or memory is sparse, follow this search priority:
 ## 5. Override Logic
 Always check for overrides in `.mgsd-local/` before using protocol defaults. 
 `[override]` logs are mandatory when a local file is detected.
+
+## 6. Codebase File Map (Key Files)
+| File | Purpose |
+|------|---------|
+| `bin/install.cjs` | First-run installer. Writes `.mgsd-install-manifest.json`. |
+| `bin/update.cjs` | SHA256 idempotent updater. Preserves user-patched files. |
+| `bin/ensure-chroma.cjs` | Auto-healing ChromaDB daemon. Call before any vector op. |
+| `onboarding/backend/server.cjs` | HTTP server. Ports: GET /, /config, /status; POST /submit, /approve, /regenerate. |
+| `onboarding/backend/agents/orchestrator.cjs` | Runs all LLM draft generators → stores in Chroma. |
+| `onboarding/backend/agents/mir-filler.cjs` | Generates MIR (Brand/Audience/Competitive) drafts. |
+| `onboarding/backend/agents/msp-filler.cjs` | Generates MSP (Brand Voice / Channel Strategy) drafts. |
+| `onboarding/backend/agents/llm-adapter.cjs` | Unified OpenAI/Anthropic/Gemini call wrapper. |
+| `onboarding/backend/write-mir.cjs` | JIT clones templates → fuzzy-merges drafts → updates STATE.md. |
+| `onboarding/backend/chroma-client.cjs` | ChromaDB HTTP client. Namespace: `mgsd-{project_slug}`. |
+| `.mgsd-project.json` | Persistent project slug (ChromaDB namespace). Written once on first submit. |
+| `.mgsd-local/MIR/` | Client MIR override layer. NEVER commits to git. |
+| `.protocol-lore/CODEBASE-MAP.md` | Full XML directory tree for deep LLM navigation. |
+
+## 7. New-Session Cheat Sheet
+```
+# Start the onboarding server:
+node onboarding/backend/server.cjs
+
+# Run all tests:
+node --test test/
+
+# Check ChromaDB health:
+node bin/ensure-chroma.cjs
+
+# Find client project slug:
+cat .mgsd-project.json
+
+# Find client MIR overrides:
+ls .mgsd-local/MIR/
+```

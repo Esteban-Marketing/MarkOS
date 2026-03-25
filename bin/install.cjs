@@ -1,28 +1,48 @@
 #!/usr/bin/env node
-// marketing-get-shit-done installer v1.0.0
+/**
+ * install.cjs — MGSD Interactive Installer & GSD Co-existence Wizard
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   Handles the first-run setup of the MGSD protocol in a new or existing project.
+ *   Ensures parallel co-existence with the `get-shit-done` (GSD) protocol.
+ *
+ * INSTALLATION FLOW:
+ *   1. Detection: Checks for existing GSD or MGSD installations in `.agent/`.
+ *   2. User Prompt: Asks for installation scope (Project Local vs Global Home).
+ *   3. Template Copy: Deep-copies `.agent/marketing-get-shit-done/` templates.
+ *   4. GSD Integration: If GSD exists, merges ITM templates but keeps files isolated.
+ *   5. Vector Boot: Delegates to `bin/ensure-chroma.cjs` to start the local DB.
+ *   6. Manifest: Writes `.mgsd-install-manifest.json` for idempotent updates later.
+ *
+ * COMMANDS:
+ *   npx marketing-get-shit-done          → runs interactive install
+ *   npx marketing-get-shit-done update   → delegates to `bin/update.cjs`
+ *
+ * RELATED FILES:
+ *   bin/update.cjs             (Handles idempotent SHA256 patches)
+ *   bin/ensure-chroma.cjs      (Handles vector memory boot)
+ *   README.md                  (User-facing install guide)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+'use strict';
 
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 const { execSync, exec } = require('child_process');
 
-const PKG_DIR = path.resolve(__dirname, '..');
+// ── Environment Settings ───────────────────────────────────────────────────
+const PKG_DIR = path.resolve(__dirname, '..'); // Root of the npm package
 const VERSION = fs.readFileSync(path.join(PKG_DIR, 'VERSION'), 'utf8').trim();
-const CWD = process.cwd();
+const CWD = process.cwd(); // Target project directory
 
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-const ask = (q) => new Promise(resolve => rl.question(q, resolve));
-
-function banner(text) {
-  console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(` ${text}`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-}
-
+// ── Detection Logic ────────────────────────────────────────────────────────
+/** @returns {boolean} true if GSD protocol is already active in this project */
 function detectGSD(targetDir) {
   return fs.existsSync(path.join(targetDir, '.agent', 'get-shit-done', 'VERSION'));
 }
 
+/** @returns {boolean} true if MGSD protocol is already active in this project */
 function detectExistingMGSD(targetDir) {
   return fs.existsSync(path.join(targetDir, '.agent', 'marketing-get-shit-done', 'VERSION'));
 }

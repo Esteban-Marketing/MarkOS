@@ -1,7 +1,26 @@
 #!/usr/bin/env node
-// msp-filler.cjs — Generates MSP strategy drafts from onboarding seed
-// mgsd-onboarding v2.0
-
+/**
+ * msp-filler.cjs — MSP (Marketing Strategy Plan) Draft Generators
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   Generates AI draft content for each MSP section from onboarding seed data.
+ *   These are strategic outputs (how to market) vs MIR (what we know).
+ *
+ * SECTION-TO-FILE MAP:
+ *   generateBrandVoice      → .mgsd-local/MIR/Core_Strategy/02_BRAND/VOICE-TONE.md
+ *   generateChannelStrategy → .mgsd-local/MSP/Strategy/00_MASTER-PLAN/CHANNEL-STRATEGY.md
+ *
+ * EXPORTS:
+ *   generateBrandVoice(seed)      → Promise<{ ok, text, provider }>
+ *   generateChannelStrategy(seed) → Promise<{ ok, text, provider }>
+ *
+ * RELATED FILES:
+ *   onboarding/backend/agents/llm-adapter.cjs    (LLM API surface)
+ *   onboarding/backend/agents/orchestrator.cjs   (calls all generators)
+ *   onboarding/backend/agents/mir-filler.cjs     (MIR counterpart)
+ *   onboarding/onboarding-seed.schema.json        (input data shape)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 'use strict';
 
 const llm = require('./llm-adapter.cjs');

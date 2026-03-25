@@ -1,15 +1,37 @@
 #!/usr/bin/env node
-// server.cjs — MGSD Enhanced Onboarding Backend Server v2.0
-// Serves the onboarding UI + handles AI agent orchestration + ChromaDB persistence
-//
-// Endpoints:
-//   GET  /              → serves index.html
-//   GET  /status        → ChromaDB health + MIR gate status
-//   POST /submit        → persists seed + runs AI agents → returns drafts
-//   POST /regenerate    → regenerates a single draft section
-//   POST /approve       → writes approved drafts to MIR/MSP files
-//   GET  /config        → serves current config to browser
-
+/**
+ * server.cjs — MGSD Onboarding Backend & AI Orchestration Server
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * PURPOSE:
+ *   HTTP interface for the client onboarding form. Handles local file serving,
+ *   AI draft generation via the Orchestrator, and persistent MIR/MSP writing.
+ *
+ * ENDPOINTS:
+ *   GET  /              → serves `onboarding/index.html`
+ *   GET  /config        → returns `onboarding-config.json` + environment status
+ *   GET  /status        → returns ChromaDB heartbeat + MIR STATE.md progress
+ *   POST /submit        → PERSISTS seed JSON → RUNS AI AGENTS → returns draft snippets
+ *   POST /regenerate    → re-runs a specific agent for a single section
+ *   POST /approve       → triggers `write-mir.cjs` to write drafts to `.mgsd-local/`
+ *
+ * INITIALIZATION SEQUENCE:
+ *   1. Load `.env` from project root.
+ *   2. Load `onboarding-config.json`.
+ *   3. Configure `chroma-client.cjs` with host.
+ *   4. Run `bin/ensure-chroma.cjs` heartbeat to revive daemon if dead.
+ *
+ * PERSISTENCE RULES:
+ *   - project_slug is written to `.mgsd-project.json` on the first POST /submit.
+ *   - This slug becomes the permanent namespace for ChromaDB collections.
+ *   - Drafts are stored in ChromaDB before being approved by the human.
+ *
+ * RELATED FILES:
+ *   onboarding/backend/agents/orchestrator.cjs  (Parallel draft generation)
+ *   onboarding/backend/write-mir.cjs            (Fuzzy MIR file management)
+ *   onboarding/backend/chroma-client.cjs        (Vector storage)
+ *   bin/ensure-chroma.cjs                       (Auto-healing daemon)
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
 'use strict';
 
 const http    = require('http');
@@ -17,7 +39,7 @@ const fs      = require('fs');
 const path    = require('path');
 const { exec } = require('child_process');
 
-// Load .env from project root
+// Load .env from project root (2 levels up from backend/).
 try {
   require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 } catch (e) {}
@@ -36,14 +58,14 @@ const MIR_TEMPLATE_PATH = path.join(
 
 const LOCAL_MIR_PATH = path.join(PROJECT_ROOT, '.mgsd-local/MIR');
 
-// ── Load Config ──────────────────────────────────────────────────────────────
+// ── Default Configuration ───────────────────────────────────────────────────
 let config = {
   port: 4242,
   auto_open_browser: true,
   output_path: '../onboarding-seed.json',
   chroma_host: 'http://localhost:8000',
   project_slug: 'mgsd-client',
-  mir_output_path: null, // defaults to LOCAL_MIR_PATH
+  mir_output_path: null, // Defaults to LOCAL_MIR_PATH in .mgsd-local/
 };
 
 try {
