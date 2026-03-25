@@ -62,3 +62,9 @@ Check for .planning/STATE.md - loads context if project already initialized
 - [ ] Parallel agents completed without errors
 - [ ] User knows next steps
 </success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>

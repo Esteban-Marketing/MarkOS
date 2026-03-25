@@ -24,3 +24,15 @@ Roadmap and state are resolved in-workflow via `init phase-op` and targeted read
 Execute the remove-phase workflow from @.agent/get-shit-done/workflows/remove-phase.md end-to-end.
 Preserve all validation gates (future phase check, work check), renumbering logic, and commit.
 </process>
+
+<success_criteria>
+- [ ] The core objective stated in the context or workflow was perfectly achieved.
+- [ ] Required output files or state updates are correctly written to disk.
+- [ ] Operations are atomic and accurately logged.
+</success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>

@@ -122,3 +122,9 @@ Ask user:
 - [ ] Conflicts resolved with user input
 - [ ] Status reported for each file
 </success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>

@@ -16,6 +16,16 @@ const fs = require('fs');
 const CWD = process.cwd();
 const MGSD_ROOT = path.resolve(CWD, '.agent/marketing-get-shit-done');
 
+// ─── Auto-Healing ChromaDB ───────────────────────────────────────────────────
+// Integrated as part of v1.1 Hardening — ensures daemon is alive for vector ops.
+const CHROMADB_DAEMON_FILE = path.join(CWD, 'bin/ensure-chroma.cjs');
+async function bootstrapChroma() {
+  if (fs.existsSync(CHROMADB_DAEMON_FILE)) {
+    const { ensureChroma } = require(CHROMADB_DAEMON_FILE);
+    await ensureChroma();
+  }
+}
+
 // ─── Bootstrap check ─────────────────────────────────────────────────────────
 
 function checkSetup() {
@@ -82,6 +92,10 @@ if (!command) {
   console.log('  slug <text>                Generate URL slug');
   console.log('  timestamp [format]         Current timestamp');
   console.log('  verify-path <path>         Check if path exists');
+  console.log('');
+  console.log('Documentation:');
+  console.log('  Read .protocol-lore/INDEX.md for full architecture map.');
+  console.log('  Read .protocol-lore/DEFCON.md for emergency escalation rules.');
   process.exit(0);
 }
 
@@ -212,3 +226,13 @@ switch (command) {
     process.stderr.write('Run mgsd-tools without arguments for usage.\n');
     process.exit(1);
 }
+
+// ─── Execution ───────────────────────────────────────────────────────────────
+
+(async () => {
+  // Commands that require ChromaDB daemon to be running
+  const vectorCommands = ['init', 'mir-audit'];
+  if (vectorCommands.includes(command)) {
+    await bootstrapChroma();
+  }
+})();

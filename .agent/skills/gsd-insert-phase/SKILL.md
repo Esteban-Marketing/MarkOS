@@ -26,3 +26,15 @@ Roadmap and state are resolved in-workflow via `init phase-op` and targeted tool
 Execute the insert-phase workflow from @.agent/get-shit-done/workflows/insert-phase.md end-to-end.
 Preserve all validation gates (argument parsing, phase verification, decimal calculation, roadmap updates).
 </process>
+
+<success_criteria>
+- [ ] The core objective stated in the context or workflow was perfectly achieved.
+- [ ] Required output files or state updates are correctly written to disk.
+- [ ] Operations are atomic and accurately logged.
+</success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>

@@ -18,6 +18,18 @@ Execute the `/mgsd-new-project` workflow exactly as documented in the workflow f
 Rely on the workflow for specific logic regarding discovery, MIR scaffolding, and file generation.
 </process>
 
+<success_criteria>
+- [ ] The core objective stated in the context or workflow was perfectly achieved.
+- [ ] Required output files or state updates are correctly written to disk.
+- [ ] Operations are atomic and accurately logged.
+</success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>
+
 ## Template Paths
 
 This skill reads from and scaffolds the following template directories:

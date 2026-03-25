@@ -52,6 +52,7 @@ function cmdInit(cwd, command, args, raw) {
     roadmap_path: roadmapExists ? toPosixPath(path.relative(cwd, pp.roadmap)) : null,
     requirements_path: fs.existsSync(pp.requirements) ? toPosixPath(path.relative(cwd, pp.requirements)) : null,
     project_path: projectExists ? toPosixPath(path.relative(cwd, pp.project)) : null,
+    project_valid: false, // Default, will be overridden by findPhaseInternal if phase is found
   };
 
   switch (command) {
@@ -111,6 +112,8 @@ function cmdInit(cwd, command, args, raw) {
         incomplete_plans: phaseInfo ? phaseInfo.incomplete_plans : [],
         plan_count: phaseInfo ? phaseInfo.plans.length : 0,
         incomplete_count: phaseInfo ? phaseInfo.incomplete_plans.length : 0,
+        verification_passed: phaseInfo ? phaseInfo.verification_passed : false,
+        project_valid: phaseInfo ? phaseInfo.project_valid : false,
       }, raw);
       break;
     }

@@ -35,11 +35,17 @@ Load all context in one call:
 INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init plan-phase "$PHASE" --raw)
 ```
 
-Parse JSON for: `researcher_model`, `planner_model`, `checker_model`, `research_enabled`, `plan_checker_enabled`, `commit_docs`, `phase_found`, `phase_dir`, `phase_number`, `phase_name`, `phase_slug`, `padded_phase`, `has_research`, `has_context`, `has_plans`, `plan_count`, `planning_exists`, `roadmap_exists`, `phase_req_ids`, `mir_gate1`, `mir_gate2`, `discipline_activation`.
+Parse JSON for: `researcher_model`, `planner_model`, `checker_model`, `research_enabled`, `plan_checker_enabled`, `commit_docs`, `phase_found`, `phase_dir`, `phase_number`, `phase_name`, `phase_slug`, `padded_phase`, `has_research`, `has_context`, `has_plans`, `plan_count`, `planning_exists`, `roadmap_exists`, `phase_req_ids`, `mir_gate1`, `mir_gate2`, `discipline_activation`, `project_valid`.
 
 **File paths:** `state_path`, `roadmap_path`, `requirements_path`, `context_path`, `research_path`, `verification_path`, `uat_path` (null if not exist).
 
 **If `planning_exists` is false:** Error — run `/mgsd-new-project` first.
+
+### 1.5. Prerequisite Enforcement (v1.1 Hardening)
+
+**If `project_valid` is false:**
+Error — `PROJECT.md` is missing, too short, or contains `[FILL]`.
+Planning requires a grounded business identity. Run `/mgsd-mir-audit` to find identity gaps.
 
 ## 2. Parse Arguments
 

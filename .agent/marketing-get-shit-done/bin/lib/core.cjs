@@ -208,12 +208,32 @@ function findPhaseInternal(cwd, phase) {
     const summaries = phaseFiles.filter(f => f.endsWith('-SUMMARY.md') || f === 'SUMMARY.md').sort();
     const hasResearch = phaseFiles.some(f => f.endsWith('-RESEARCH.md') || f === 'RESEARCH.md');
     const hasContext = phaseFiles.some(f => f.endsWith('-CONTEXT.md') || f === 'CONTEXT.md');
+    
+    // v1.1 Hardening: Detect plan verification status
+    const verificationFile = phaseFiles.find(f => f.endsWith('-VERIFICATION.md') || f === 'VERIFICATION.md');
+    let verificationPassed = false;
+    if (verificationFile) {
+      const vContent = safeReadFile(path.join(phaseDir, verificationFile));
+      if (vContent && (vContent.includes('status: passed') || vContent.includes('## VERIFICATION PASSED'))) {
+        verificationPassed = true;
+      }
+    }
 
     const completedPlanIds = new Set(summaries.map(s => s.replace('-SUMMARY.md', '').replace('SUMMARY.md', '')));
     const incompletePlans = plans.filter(p => {
       const planId = p.replace('-PLAN.md', '').replace('PLAN.md', '');
       return !completedPlanIds.has(planId);
     });
+
+    // v1.1 Hardening: Deep PROJECT.md check
+    const projectPath = path.join(cwd, '.planning', 'PROJECT.md');
+    let projectValid = false;
+    if (fs.existsSync(projectPath)) {
+      const pContent = safeReadFile(projectPath);
+      if (pContent && pContent.length > 200 && !pContent.includes('[FILL]')) {
+        projectValid = true;
+      }
+    }
 
     return {
       found: true,
@@ -226,6 +246,8 @@ function findPhaseInternal(cwd, phase) {
       incomplete_plans: incompletePlans,
       has_research: hasResearch,
       has_context: hasContext,
+      verification_passed: verificationPassed,
+      project_valid: projectValid,
     };
   } catch {
     return null;

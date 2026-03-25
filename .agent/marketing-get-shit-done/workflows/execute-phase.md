@@ -31,10 +31,21 @@ Load all context in one call:
 INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init execute-phase "${PHASE_ARG}" --raw)
 ```
 
-Parse JSON for: `executor_model`, `verifier_model`, `commit_docs`, `parallelization`, `phase_found`, `phase_dir`, `phase_number`, `phase_name`, `phase_slug`, `plans`, `incomplete_plans`, `plan_count`, `incomplete_count`, `state_exists`, `roadmap_exists`, `phase_req_ids`, `mir_gate1`, `mir_gate2`.
+Parse JSON for: `executor_model`, `verifier_model`, `commit_docs`, `parallelization`, `phase_found`, `phase_dir`, `phase_number`, `phase_name`, `phase_slug`, `plans`, `incomplete_plans`, `plan_count`, `incomplete_count`, `state_exists`, `roadmap_exists`, `phase_req_ids`, `mir_gate1`, `mir_gate2`, `verification_passed`, `project_valid`.
 
 **If `phase_found` is false:** Error — phase directory not found. Run `/mgsd-plan-phase {N}` first.
 **If `plan_count` is 0:** Error — no plans found. Run `/mgsd-plan-phase {N}`.
+
+### 1.5. Prerequisite Enforcement (v1.1 Hardening)
+
+**If `project_valid` is false:**
+Error — `PROJECT.md` is missing, too short, or contains `[FILL]`.
+Execution requires a grounded business identity. Run `/mgsd-mir-audit` to find identity gaps.
+
+**If `verification_passed` is false:**
+Error — Phase plans have not passed verification or `VERIFICATION.md` is missing.
+**Bullet-proof rule**: Never execute unverified marketing plans.
+Run `/mgsd-plan-phase {PHASE_NUMBER}` (without `--skip-verify`) to generate a passing verification report.
 
 **REQUIRED — Sync chain flag with intent.** If user invoked manually (no `--auto`), clear stale chain flag:
 ```bash

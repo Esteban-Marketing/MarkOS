@@ -39,3 +39,9 @@ Project state and roadmap are loaded in-workflow using targeted reads.
 - User prompted for feedback
 - User knows next steps (discuss context, plan phase, or correct assumptions)
   </success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>

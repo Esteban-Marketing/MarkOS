@@ -119,6 +119,12 @@ Output: Milestone archived (roadmap + requirements), PROJECT.md evolved, git tag
 - User knows next steps (including need for fresh requirements)
   </success_criteria>
 
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>
+
 <critical_rules>
 
 - **Load workflow first:** Read complete-milestone.md before executing

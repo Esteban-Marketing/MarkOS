@@ -79,3 +79,9 @@ Generate 3-4 **phase-specific** gray areas, not generic categories.
 - CONTEXT.md captures decisions, not vague vision
 - User knows next steps
 </success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>
