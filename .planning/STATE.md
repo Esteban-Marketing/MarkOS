@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: TBD
+milestone_name: "v1.1 Hardening"
 status: completed
-last_updated: "2026-03-23T21:40:00.000Z"
+last_updated: "2026-03-25T16:00:00.000Z"
 progress:
   total_phases: 1
   completed_phases: 1

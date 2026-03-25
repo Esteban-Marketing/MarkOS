@@ -101,10 +101,10 @@ Options:
 
 If "Launch form":
 ```bash
-node "onboarding/bin/serve-onboarding.cjs"
+node "onboarding/backend/server.cjs"
 ```
 Wait for server to complete (it auto-shuts down after submission).
 Then trigger `mgsd-onboarder` to process the seed file.
 
 If "Skip":
-Notify: "You can run `node onboarding/bin/serve-onboarding.cjs` at any time to generate your intelligence seed."
+Notify: "You can run `node onboarding/backend/server.cjs` at any time to generate your intelligence seed."

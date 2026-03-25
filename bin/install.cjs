@@ -217,23 +217,8 @@ async function run() {
     }
 
     // ── 2. Vector Memory Daemon ─────────────────────────────────────────────
-    console.log('\n[>] Booting Vector Memory (ChromaDB) in background...');
-    try {
-      // Spawn detached python process
-      const { spawn } = require('child_process');
-      const pyCmd = process.platform === 'win32' ? 'python' : 'python3';
-      const chromaProcess = spawn(pyCmd, ['-m', 'chromadb.cli.cli', 'run'], {
-        detached: true,
-        stdio: 'ignore'
-      });
-      chromaProcess.unref(); // Allow node to exit independently of this process
-      
-      // Wait 2s for boot
-      await new Promise(r => setTimeout(r, 2000));
-      console.log('✓ Vector memory listening on port 8000');
-    } catch (err) {
-      console.log('⚠ Could not start ChromaDB automatically. You may need to run: python -m chromadb.cli.cli run');
-    }
+    const { ensureChroma } = require('./ensure-chroma.cjs');
+    await ensureChroma();
 
     // ── 3. Server Handoff ───────────────────────────────────────────────────
     console.log('\n🚀 Starting MGSD Orchestrator Sequence...\n');

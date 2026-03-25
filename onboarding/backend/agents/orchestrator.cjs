@@ -62,6 +62,28 @@ async function orchestrate(seed, slug) {
   const brandVoiceResult      = await executeWithRetry(() => mspFiller.generateBrandVoice(seed), 'Brand Voice');
   const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed), 'Channel Strategy');
 
+  // ── 3.5. Neuro-Auditor Validation ─────────────────────────────────────────
+  console.log('[orchestrator] Running Neuro-Auditor verification...');
+  const llm = require('./llm-adapter.cjs');
+  const fs = require('fs');
+  const path = require('path');
+  try {
+    const auditorPath = path.resolve(__dirname, '../../../.agent/marketing-get-shit-done/agents/mgsd-neuro-auditor.md');
+    if (fs.existsSync(auditorPath) && audienceResult.ok && brandVoiceResult.ok) {
+      const systemPrompt = fs.readFileSync(auditorPath, 'utf8');
+      const userPrompt = `Review the following Audience logic and Brand Voice for psychological archetype alignment:\n\nAUDIENCE:\n${audienceResult.text}\n\nBRAND VOICE:\n${brandVoiceResult.text}\n\nOutput ONLY a concise 2-sentence verification summary (e.g. "Archetype alignment confirmed. The Rebel brand voice accurately attacks the Target Audience's core fear of conformity.") No preamble or pleasantries.`;
+      
+      const auditResult = await executeWithRetry(() => llm.call(systemPrompt, userPrompt), 'Neuro-Auditor');
+      if (auditResult && auditResult.ok) {
+        const blockquote = `\n\n> 🧠 **Neuro-Auditor Verification:**\n> ${auditResult.text.replace(/\n/g, '\n> ')}\n`;
+        audienceResult.text += blockquote;
+        brandVoiceResult.text += blockquote;
+      }
+    }
+  } catch (e) {
+    console.warn(`[orchestrator] Neuro-auditor skipped: ${e.message}`);
+  }
+
   // ── 4. Collect all drafts ─────────────────────────────────────────────────
   const drafts = {
     company_profile:    companyProfileResult.text,

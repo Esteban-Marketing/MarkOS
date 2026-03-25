@@ -44,6 +44,21 @@ const DRAFT_CARDS = [
 
 // ── Config Init ───────────────────────────────────────────────────────────────
 async function loadConfig() {
+  // Setup privacy notice dismiss
+  const privacyNotice = document.getElementById('privacyNotice');
+  const dismissPrivacy = document.getElementById('dismissPrivacy');
+  if (privacyNotice && dismissPrivacy) {
+    if (localStorage.getItem('mgsd_privacy_dismissed') === 'true') {
+      privacyNotice.style.display = 'none';
+    } else {
+      dismissPrivacy.addEventListener('click', () => {
+        privacyNotice.classList.add('dismissed');
+        localStorage.setItem('mgsd_privacy_dismissed', 'true');
+        setTimeout(() => privacyNotice.style.display = 'none', 300);
+      });
+    }
+  }
+
   try {
     const res = await fetch('/config');
     if (res.ok) {

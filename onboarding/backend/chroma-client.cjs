@@ -11,7 +11,18 @@ let _client = null;
 
 function getClient() {
   if (!_client) {
-    _client = new ChromaClient({ path: chromaHost });
+    const opts = { path: chromaHost };
+    const cloudToken = process.env.CHROMA_CLOUD_TOKEN;
+    if (cloudToken) {
+      // Many hosted vector services accept Bearer token or x-chroma-token
+      opts.fetchOptions = {
+        headers: {
+          'Authorization': `Bearer ${cloudToken}`,
+          'x-chroma-token': cloudToken
+        }
+      };
+    }
+    _client = new ChromaClient(opts);
   }
   return _client;
 }

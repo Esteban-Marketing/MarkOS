@@ -34,6 +34,8 @@ const MIR_TEMPLATE_PATH = path.join(
   '.agent/marketing-get-shit-done/templates/MIR'
 );
 
+const LOCAL_MIR_PATH = path.join(PROJECT_ROOT, '.mgsd-local/MIR');
+
 // ── Load Config ──────────────────────────────────────────────────────────────
 let config = {
   port: 4242,
@@ -41,7 +43,7 @@ let config = {
   output_path: '../onboarding-seed.json',
   chroma_host: 'http://localhost:8000',
   project_slug: 'mgsd-client',
-  mir_output_path: null, // defaults to MIR_TEMPLATE_PATH
+  mir_output_path: null, // defaults to LOCAL_MIR_PATH
 };
 
 try {
@@ -54,7 +56,7 @@ chroma.configure(config.chroma_host);
 
 const mirOutputPath = config.mir_output_path
   ? path.resolve(PROJECT_ROOT, config.mir_output_path)
-  : MIR_TEMPLATE_PATH;
+  : LOCAL_MIR_PATH;
 
 // ── MIME Types ───────────────────────────────────────────────────────────────
 const MIME = {
@@ -131,11 +133,32 @@ const server = http.createServer(async (req, res) => {
       fs.writeFileSync(outputPath, JSON.stringify(seed, null, 2));
       console.log(`\n✓ onboarding-seed.json written to: ${outputPath}`);
 
-      // Determine project slug from company name, appended with partial UUID to prevent collisions
+      // Determine project slug deterministically. Preserve UUIDs so vector memory is permanent.
       const crypto = require('crypto');
-      const baseSlug = config.project_slug ||
-        (seed.company?.name || 'mgsd-client').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const slug = `${baseSlug}-${crypto.randomUUID().slice(0, 8)}`;
+      const projectConfigPath = path.resolve(PROJECT_ROOT, '.mgsd-project.json');
+      let slug = null;
+
+      if (fs.existsSync(projectConfigPath)) {
+        try {
+          const pConfig = JSON.parse(fs.readFileSync(projectConfigPath, 'utf8'));
+          if (pConfig.project_slug) slug = pConfig.project_slug;
+        } catch (e) {}
+      }
+
+      if (!slug) {
+        const baseSlug = config.project_slug ||
+          (seed.company?.name || 'mgsd-client').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        slug = `${baseSlug}-${crypto.randomUUID().slice(0, 8)}`;
+        
+        // Persist the slug natively so agents can find it
+        try {
+          const configObj = fs.existsSync(projectConfigPath) 
+            ? JSON.parse(fs.readFileSync(projectConfigPath, 'utf8')) 
+            : {};
+          configObj.project_slug = slug;
+          fs.writeFileSync(projectConfigPath, JSON.stringify(configObj, null, 2), 'utf8');
+        } catch (e) {}
+      }
 
       // Run orchestrator
       console.log('\n🤖 Running AI draft generation...');
@@ -195,7 +218,7 @@ const server = http.createServer(async (req, res) => {
     try {
       const { approvedDrafts, slug } = await readBody(req);
 
-      const { written, stateUpdated, errors } = writeMIR.applyDrafts(mirOutputPath, approvedDrafts);
+      const { written, stateUpdated, errors } = writeMIR.applyDrafts(mirOutputPath, MIR_TEMPLATE_PATH, approvedDrafts);
 
       console.log(`\n✓ MIR files written: ${written.join(', ')}`);
       console.log(`  STATE.md updated: ${stateUpdated}`);
@@ -233,29 +256,37 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-// ── Port Fallback ────────────────────────────────────────────────────────────
-server.on('error', (e) => {
-  if (e.code === 'EADDRINUSE') {
-    const fallback = config.port + 1;
-    console.log(`Port ${config.port} in use, trying ${fallback}...`);
-    server.listen(fallback);
-  }
-});
+// ── Boot Sequence ────────────────────────────────────────────────────────────
+const ensureChromaPath = path.resolve(__dirname, '../../bin/ensure-chroma.cjs');
+let bootDB = Promise.resolve();
+if (fs.existsSync(ensureChromaPath)) {
+  bootDB = require(ensureChromaPath).ensureChroma();
+}
 
-server.listen(config.port, '127.0.0.1', () => {
-  const addr = server.address();
-  const url  = `http://127.0.0.1:${addr.port}`;
-  console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(` MGSD Onboarding v2.0 → ${url}`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(' ✓ ChromaDB integration active');
-  console.log(' ✓ OpenAI AI draft generation ready');
-  console.log(' Ensure OPENAI_API_KEY is set in .env');
-  console.log(' Complete the form → get AI drafts → publish\n');
+bootDB.then(() => {
+  server.on('error', (e) => {
+    if (e.code === 'EADDRINUSE') {
+      const fallback = config.port + 1;
+      console.log(`Port ${config.port} in use, trying ${fallback}...`);
+      server.listen(fallback);
+    }
+  });
 
-  if (config.auto_open_browser) {
-    const cmd = process.platform === 'win32' ? `start ${url}` :
-                process.platform === 'darwin' ? `open ${url}` : `xdg-open ${url}`;
-    exec(cmd, (err) => { if (err) console.log(`Open manually: ${url}`); });
-  }
+  server.listen(config.port, '127.0.0.1', () => {
+    const addr = server.address();
+    const url  = `http://127.0.0.1:${addr.port}`;
+    console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log(` MGSD Onboarding v2.0 → ${url}`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log(' ✓ ChromaDB integration active');
+    console.log(' ✓ OpenAI AI draft generation ready');
+    console.log(' Ensure OPENAI_API_KEY is set in .env');
+    console.log(' Complete the form → get AI drafts → publish\n');
+
+    if (config.auto_open_browser) {
+      const cmd = process.platform === 'win32' ? `start ${url}` :
+                  process.platform === 'darwin' ? `open ${url}` : `xdg-open ${url}`;
+      exec(cmd, (err) => { if (err) console.log(`Open manually: ${url}`); });
+    }
+  });
 });

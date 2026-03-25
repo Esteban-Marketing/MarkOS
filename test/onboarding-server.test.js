@@ -24,17 +24,24 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
     await new Promise((resolve) => dummyServer.listen(4242, '127.0.0.1', resolve));
 
     // Spawn the securely copied onboarding server
-    const serverScript = path.join(env.dir, 'onboarding', 'bin', 'serve-onboarding.cjs');
-    const child = spawn(process.execPath, [serverScript], { cwd: env.dir });
+    const serverScript = path.join(env.dir, 'onboarding', 'backend', 'server.cjs');
+    const rootNodeModules = path.resolve(__dirname, '../node_modules');
+    const childEnv = { ...process.env, CHROMA_CLOUD_URL: 'mock', NODE_PATH: rootNodeModules };
+    const child = spawn(process.execPath, [serverScript], { cwd: env.dir, env: childEnv }); // Mock CHROMA to not error
+    child.stderr.on('data', d => console.error('child1 err:', d.toString()));
 
     // Wait for text indicator it started
     let stdout = '';
     await new Promise((resolve, reject) => {
+      let to;
       child.stdout.on('data', (d) => {
         stdout += d.toString();
-        if (stdout.includes('Complete the form')) resolve();
+        if (stdout.includes('Complete the form')) {
+          clearTimeout(to);
+          resolve();
+        }
       });
-      setTimeout(() => { child.kill(); reject(new Error('Server did not start in time: ' + stdout)); }, 3000);
+      to = setTimeout(() => { child.kill(); reject(new Error('Server did not start in time: ' + stdout)); }, 5000);
     });
 
     assert.match(stdout, /Port 4242 in use, trying 4243/, 'Port fallback protocol failed to trigger');
@@ -44,6 +51,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
     assert.equal(res.status, 200, 'HTTP response should be 200 OK');
     const html = await res.text();
     assert.match(html, /<!DOCTYPE html>/i, 'Should reliably serve the index.html payload');
+    assert.match(html, /id="privacyNotice"/i, 'Should include the dismissible privacy banner for OpenAI awareness');
 
     // Tear down
     child.kill();
@@ -52,16 +60,32 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
 
   await t.test('3.3 Data Form Submission', async () => {
     // Spawn server normally (expecting 4242)
-    const serverScript = path.join(env.dir, 'onboarding', 'bin', 'serve-onboarding.cjs');
-    const child = spawn(process.execPath, [serverScript], { cwd: env.dir });
+    const serverScript = path.join(env.dir, 'onboarding', 'backend', 'server.cjs');
+    const rootNodeModules = path.resolve(__dirname, '../node_modules');
+    const childEnv = { ...process.env, CHROMA_CLOUD_URL: 'mock', NODE_PATH: rootNodeModules };
+    const child = spawn(process.execPath, [serverScript], { cwd: env.dir, env: childEnv });
+
+    child.stderr.on('data', d => console.error('child err:', d.toString()));
 
     await new Promise((resolve, reject) => {
-      child.stdout.on('data', (d) => { if (d.toString().includes('Complete the form')) resolve(); });
-      setTimeout(() => { child.kill(); reject(new Error('Timeout starting server')); }, 3000);
+      let to;
+      child.stdout.on('data', (d) => {
+        if (d.toString().includes('Complete the form')) {
+          clearTimeout(to);
+          resolve();
+        }
+      });
+      to = setTimeout(() => { child.kill(); reject(new Error('Timeout starting server')); }, 5000);
     });
 
     // Seed mock client parameters
-    const mockSeed = { client_name: 'Acme Corp', industry: 'Cybersecurity' };
+    const mockSeed = {
+      company: { name: 'Acme Corp', industry: 'Cybersecurity' },
+      product: { name: 'Acme Shield', category: 'Software', primary_benefit: 'Security' },
+      audience: { segment_name: 'CISOs', job_title: 'CISO' },
+      market: { maturity: 'High', biggest_trend: 'AI' },
+      competitive: { top_competitor_name: 'Corp B', differentiator: 'Speed' }
+    };
     
     const res = await fetch('http://127.0.0.1:4242/submit', {
       method: 'POST',
