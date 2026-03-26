@@ -156,8 +156,8 @@
 2. Centralized telemetry dashboard reports AI-vs-human execution metrics.
 
 **Plans:**
-- [ ] 10-01: Cross-client vector segregation logic
-- [ ] 10-02: Execution telemetry and dashboard wiring
+- [ ] 10-01: Vercel Multi-Tenant Architecture Readiness
+- [ ] 10-02: PostHog Telemetry Integration (Frontend + Backend)
 
 ---
 
