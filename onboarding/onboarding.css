@@ -577,6 +577,7 @@ h1.onboarding-title {
 .p-8 { padding: 2rem !important; }
 .text-2xl { font-size: 2rem !important; }
 .d-none { display: none !important; }
+.model-hidden { display: none !important; } /* toggled by onBusinessModelChange() */
 .d-flex { display: flex !important; }
 .gap-md { gap: 0.75rem !important; }
 .justify-center { justify-content: center !important; }

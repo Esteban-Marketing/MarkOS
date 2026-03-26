@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "MGSD Onboarding Seed",
+  "title": "MGSD Onboarding Seed v2.1",
   "type": "object",
   "required": ["metadata", "company", "product", "audience", "competition", "market", "content"],
   "properties": {
@@ -14,6 +14,7 @@
     },
     "company": {
       "type": "object",
+      "required": ["business_model"],
       "properties": {
         "name": { "type": "string" },
         "industry": { "type": "string" },
@@ -22,7 +23,12 @@
         "mission": { "type": "string" },
         "brand_values": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
         "tone_of_voice": { "type": "string", "enum": ["Formal", "Balanced", "Casual", "Playful"] },
-        "primary_language": { "type": "string" }
+        "primary_language": { "type": "string" },
+        "business_model": {
+          "type": "string",
+          "enum": ["B2B", "B2C", "B2B2C", "DTC", "Marketplace", "SaaS", "Agents-aaS"],
+          "description": "Primary go-to-market model. Drives example selection for all LLM prompt injections."
+        }
       }
     },
     "product": {
@@ -33,7 +39,26 @@
         "primary_benefit": { "type": "string" },
         "top_features": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
         "price_range": { "type": "string" },
-        "main_objection": { "type": "string" }
+        "main_objection": { "type": "string" },
+        "pricing_model": {
+          "type": "string",
+          "enum": ["One-time", "Subscription", "Usage-based", "Freemium", "Hybrid"],
+          "description": "Always collected. Affects copywriting tone and channel strategy."
+        },
+        "sales_cycle": {
+          "type": "string",
+          "enum": ["Short (<30d)", "Medium (30-90d)", "Long (90d+)", "Enterprise (180d+)"],
+          "description": "Conditional: B2B, B2B2C, SaaS, Agents-aaS only."
+        },
+        "avg_order_value": {
+          "type": "string",
+          "enum": ["<$50", "$50-$200", "$200-$1000", "$1000+"],
+          "description": "Conditional: B2C, DTC only. Drives paid acquisition strategy."
+        },
+        "consumption_metric": {
+          "type": "string",
+          "description": "Conditional: SaaS (Usage-based), Agents-aaS. e.g. 'API calls', 'tasks run', 'seats'."
+        }
       }
     },
     "audience": {
@@ -44,7 +69,28 @@
         "job_title": { "type": "string" },
         "pain_points": { "type": "array", "items": { "type": "string" }, "maxItems": 3 },
         "online_hangouts": { "type": "string" },
-        "vocabulary": { "type": "string" }
+        "vocabulary": { "type": "string" },
+        "decision_maker": {
+          "type": "string",
+          "description": "Conditional: B2B, B2B2C, SaaS, Agents-aaS. Who approves the purchase? e.g. 'Economic Buyer', 'Champion', 'Technical Evaluator'."
+        },
+        "purchase_frequency": {
+          "type": "string",
+          "enum": ["One-time", "Occasional", "Regular", "Habitual"],
+          "description": "Conditional: B2C, DTC, Marketplace. How often does this audience buy?"
+        },
+        "lifestyle_triggers": {
+          "type": "string",
+          "description": "Conditional: B2C, DTC. Life events or moments that trigger the purchase decision."
+        },
+        "supply_side": {
+          "type": "string",
+          "description": "Conditional: Marketplace only. Description of the seller/creator/service-provider side."
+        },
+        "demand_side": {
+          "type": "string",
+          "description": "Conditional: Marketplace only. Description of the buyer/consumer side."
+        }
       }
     },
     "competition": {

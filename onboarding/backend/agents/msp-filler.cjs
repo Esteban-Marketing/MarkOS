@@ -23,7 +23,14 @@
  */
 'use strict';
 
-const llm = require('./llm-adapter.cjs');
+const path = require('path');
+const llm  = require('./llm-adapter.cjs');
+const { resolveExample } = require('./example-resolver.cjs');
+
+// ─── EXAMPLE BASE PATHS ────────────────────────────────────────────────────────
+const TMPL_ROOT      = path.resolve(__dirname, '..', '..', '..', '..', '.agent', 'marketing-get-shit-done', 'templates');
+const CORE_STRAT_DIR = path.join(TMPL_ROOT, 'MIR', 'Core_Strategy');
+const MSP_STRAT_DIR  = path.join(TMPL_ROOT, 'MSP', 'Strategy');
 
 const SYSTEM_PROMPT = `You are a senior marketing strategist specializing in channel strategy, brand voice, and go-to-market execution. Your outputs go directly into a Marketing Strategy Platform (MSP) that guides AI agents and human marketers. 
 
@@ -36,15 +43,18 @@ RULES:
 async function generateBrandVoice(seed) {
   const { company, audience } = seed;
 
+  const exampleBlock = resolveExample('BRAND-VOICE', company.business_model || '', '', CORE_STRAT_DIR);
+
   const prompt = `Create the Brand Voice & Tone Guide for:
 
-Company: ${company.name} (${company.industry})
+Company: ${company.name} (${company.industry}) — Business Model: ${company.business_model || 'Not specified'}
 Declared Tone: ${company.tone_of_voice}
 Brand Values: ${company.brand_values?.join(', ')}
 Mission: ${company.mission}
 Primary Audience: ${audience.segment_name} — ${audience.job_title}
 Audience Vocabulary: ${audience.vocabulary || 'Not specified'}
 
+${exampleBlock}
 Write:
 ## Brand Voice in One Sentence
 [A single, memorable sentence that captures the brand's voice]
@@ -70,9 +80,11 @@ Create 4 dimensions using this format:
 async function generateChannelStrategy(seed) {
   const { audience, content, company, market } = seed;
 
+  const exampleBlock = resolveExample('CHANNEL-STRATEGY', company.business_model || '', '', MSP_STRAT_DIR);
+
   const prompt = `Recommend a channel priority strategy for:
 
-Company: ${company.name} (${company.industry})
+Company: ${company.name} (${company.industry}) — Business Model: ${company.business_model || 'Not specified'}
 Market Maturity: ${market.maturity}
 Biggest Trend: ${market.biggest_trend}
 
@@ -85,6 +97,7 @@ CURRENT CHANNELS (self-reported):
 - Monthly Output: ${content.monthly_output}
 - Best Performing Format: ${content.best_format || 'Not specified'}
 
+${exampleBlock}
 Write:
 ## Channel Priority Stack
 Rank channels 1-5 in execution priority. For each:

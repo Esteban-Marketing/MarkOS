@@ -81,6 +81,33 @@ async function loadConfig() {
   }
 }
 
+// ── Business Model Conditional Fields ────────────────────────────────────────
+// Maps each business_model to the CSS data-model-group values that should show.
+const MODEL_GROUPS = {
+  'B2B':        ['b2b-group'],
+  'B2C':        ['b2c-group'],
+  'B2B2C':      ['b2b-group'],
+  'DTC':        ['b2c-group'],
+  'Marketplace':['marketplace-group'],
+  'SaaS':       ['b2b-group', 'aas-group'],
+  'Agents-aaS': ['b2b-group', 'aas-group'],
+};
+
+function onBusinessModelChange() {
+  const model  = document.getElementById('businessModel')?.value || '';
+  const active = MODEL_GROUPS[model] || [];
+
+  document.querySelectorAll('.model-conditional').forEach(el => {
+    const group = el.getAttribute('data-model-group');
+    const show  = active.includes(group);
+    el.classList.toggle('model-hidden', !show);
+    // Clear hidden conditional fields so they don't pollute the seed
+    if (!show) {
+      el.querySelectorAll('input, select, textarea').forEach(field => { field.value = ''; });
+    }
+  });
+}
+
 let isChromaOffline = false;
 
 async function loadStatus() {
@@ -224,7 +251,7 @@ function restoreDraft() {
 function gatherFormData() {
   const data = {};
   document.querySelectorAll('input:not([type=checkbox]), textarea, select').forEach(input => {
-    data[input.id] = input.value;
+    if (input.id) data[input.id] = input.value;
   });
   data['activeChannels'] = Array.from(
     document.querySelectorAll('input[name="activeChannels"]:checked')
@@ -236,6 +263,7 @@ function buildSeed() {
   const d = gatherFormData();
 
   let score = 0;
+  if (d.businessModel)                     score++;
   if (d.companyName && d.mission)          score++;
   if (d.productName && d.primaryBenefit)   score++;
   if (d.segmentName && d.painPoint1)       score++;
@@ -246,7 +274,7 @@ function buildSeed() {
   const seed = {
     metadata: {
       generated:          new Date().toISOString(),
-      version:            '2.0',
+      version:            '2.1',
       completeness_score: score,
     },
     company: {
@@ -258,22 +286,34 @@ function buildSeed() {
       brand_values:     [d.brandValue1, d.brandValue2, d.brandValue3].filter(v => v),
       tone_of_voice:    d.toneOfVoice || '',
       primary_language: d.primaryLanguage || '',
+      business_model:   d.businessModel || '',
     },
     product: {
-      name:             d.productName || '',
-      category:         d.productCategory || '',
-      primary_benefit:  d.primaryBenefit || '',
-      top_features:     [d.productFeature1, d.productFeature2, d.productFeature3].filter(v => v),
-      price_range:      d.priceRange || '',
-      main_objection:   d.mainObjection || '',
+      name:              d.productName || '',
+      category:          d.productCategory || '',
+      primary_benefit:   d.primaryBenefit || '',
+      top_features:      [d.productFeature1, d.productFeature2, d.productFeature3].filter(v => v),
+      price_range:       d.priceRange || '',
+      main_objection:    d.mainObjection || '',
+      pricing_model:     d.pricingModel || '',
+      // Conditional fields — empty string if not shown for this model
+      sales_cycle:       d.salesCycle || '',
+      avg_order_value:   d.avgOrderValue || '',
+      consumption_metric:d.consumptionMetric || '',
     },
     audience: {
-      segment_name:    d.segmentName || '',
-      age_range:       d.ageRange || '',
-      job_title:       d.jobTitle || '',
-      pain_points:     [d.painPoint1, d.painPoint2, d.painPoint3].filter(v => v),
-      online_hangouts: d.onlineHangouts || '',
-      vocabulary:      d.vocabulary || '',
+      segment_name:       d.segmentName || '',
+      age_range:          d.ageRange || '',
+      job_title:          d.jobTitle || '',
+      pain_points:        [d.painPoint1, d.painPoint2, d.painPoint3].filter(v => v),
+      online_hangouts:    d.onlineHangouts || '',
+      vocabulary:         d.vocabulary || '',
+      // Conditional fields
+      decision_maker:     d.decisionMaker || '',
+      purchase_frequency: d.purchaseFrequency || '',
+      lifestyle_triggers: d.lifestyleTriggers || '',
+      supply_side:        d.supplySide || '',
+      demand_side:        d.demandSide || '',
     },
     competition: { competitors: [] },
     market: {
@@ -283,7 +323,7 @@ function buildSeed() {
       regulatory_concern: d.regulatoryConcern || '',
     },
     content: {
-      best_piece_url: d.bestPieceUrl || '',
+      best_piece_url:  d.bestPieceUrl || '',
       active_channels: d.activeChannels || [],
       monthly_output:  d.monthlyOutput || '',
       best_format:     d.bestFormat || '',

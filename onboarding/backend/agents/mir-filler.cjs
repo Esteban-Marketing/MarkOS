@@ -36,7 +36,14 @@
  */
 'use strict';
 
-const llm = require('./llm-adapter.cjs');
+const path = require('path');
+const llm  = require('./llm-adapter.cjs');
+const { resolveExample } = require('./example-resolver.cjs');
+
+// ─── EXAMPLE BASE PATHS ────────────────────────────────────────────────────────
+const TMPL_ROOT      = path.resolve(__dirname, '..', '..', '..', '..', '.agent', 'marketing-get-shit-done', 'templates');
+const AUDIENCES_DIR  = path.join(TMPL_ROOT, 'MIR', 'Market_Audiences');
+const CORE_STRAT_DIR = path.join(TMPL_ROOT, 'MIR', 'Core_Strategy');
 
 // ─── SYSTEM PROMPT (shared across all MIR sections) ───────────────────────────
 // Instructs the LLM to produce structured MIR content, avoid hallucinated data,
@@ -61,6 +68,7 @@ async function generateCompanyProfile(seed) {
 COMPANY DATA:
 - Name: ${company.name}
 - Industry: ${company.industry}
+- Business Model: ${company.business_model || 'Not specified'}
 - Founded: ${company.founded}
 - Geographic Market: ${company.country}
 - Mission: ${company.mission}
@@ -127,11 +135,15 @@ Inferred behaviors based on the values above.`;
 async function generateAudienceProfile(seed) {
   const { audience, product, company } = seed;
 
+  // Inject model-specific reference example before prompt instructions
+  const exampleBlock = resolveExample('AUDIENCES', company.business_model || '', '', AUDIENCES_DIR);
+
   const prompt = `Create a detailed Audience Profile document for:
 
-Company: ${company.name} (${company.industry})
+Company: ${company.name} (${company.industry}) — Business Model: ${company.business_model || 'Not specified'}
 Product: ${product.name} — ${product.primary_benefit}
 
+${exampleBlock}
 PRIMARY SEGMENT:
 - Segment Name: ${audience.segment_name}
 - Typical Job Title: ${audience.job_title}

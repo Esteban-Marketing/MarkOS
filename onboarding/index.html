@@ -36,6 +36,21 @@
             <!-- Step 1: Company & Brand -->
             <section class="step-section active" data-step="1">
                 <h2 class="step-title">Company &amp; Brand</h2>
+
+                <div class="form-group">
+                    <label class="form-label" for="businessModel">Business Model *</label>
+                    <select id="businessModel" class="form-select" required onchange="onBusinessModelChange()">
+                        <option value="">Select your model</option>
+                        <option value="B2B">B2B — Business to Business</option>
+                        <option value="B2C">B2C — Business to Consumer</option>
+                        <option value="B2B2C">B2B2C — Sell to businesses that serve consumers</option>
+                        <option value="DTC">DTC — Direct to Consumer (e-commerce)</option>
+                        <option value="Marketplace">Marketplace — Two-sided platform</option>
+                        <option value="SaaS">SaaS — Software as a Service</option>
+                        <option value="Agents-aaS">Agents-aaS — Autonomous AI Agents as a Service</option>
+                    </select>
+                    <p class="form-helper">This selects targeted examples for your AI-generated marketing documents.</p>
+                </div>
                 
                 <div class="form-group">
                     <label class="form-label" for="companyName">Company Name *</label>
@@ -126,6 +141,49 @@
                     <input type="text" id="priceRange" class="form-input" placeholder="e.g. $99/mo to $499/mo">
                 </div>
 
+                <div class="form-group">
+                    <label class="form-label" for="pricingModel">Pricing Model *</label>
+                    <select id="pricingModel" class="form-select" required>
+                        <option value="">Select pricing model</option>
+                        <option value="One-time">One-time purchase</option>
+                        <option value="Subscription">Subscription (monthly/annual)</option>
+                        <option value="Usage-based">Usage-based (pay-as-you-go)</option>
+                        <option value="Freemium">Freemium (free tier + paid upgrade)</option>
+                        <option value="Hybrid">Hybrid (combination)</option>
+                    </select>
+                </div>
+
+                <!-- B2B group: sales_cycle -->
+                <div class="form-group model-conditional model-hidden" data-model-group="b2b-group">
+                    <label class="form-label" for="salesCycle">Typical Sales Cycle</label>
+                    <select id="salesCycle" class="form-select">
+                        <option value="">Select sales cycle</option>
+                        <option value="Short (&lt;30d)">Short — Under 30 days</option>
+                        <option value="Medium (30-90d)">Medium — 30 to 90 days</option>
+                        <option value="Long (90d+)">Long — 90 days or more</option>
+                        <option value="Enterprise (180d+)">Enterprise — 6+ months</option>
+                    </select>
+                </div>
+
+                <!-- B2C group: avg_order_value -->
+                <div class="form-group model-conditional model-hidden" data-model-group="b2c-group">
+                    <label class="form-label" for="avgOrderValue">Average Order Value</label>
+                    <select id="avgOrderValue" class="form-select">
+                        <option value="">Select order value range</option>
+                        <option value="&lt;$50">Under $50</option>
+                        <option value="$50-$200">$50 – $200</option>
+                        <option value="$200-$1000">$200 – $1,000</option>
+                        <option value="$1000+">$1,000+</option>
+                    </select>
+                </div>
+
+                <!-- Agents-aaS / SaaS usage-based: consumption_metric -->
+                <div class="form-group model-conditional model-hidden" data-model-group="aas-group">
+                    <label class="form-label" for="consumptionMetric">Consumption Metric</label>
+                    <input type="text" id="consumptionMetric" class="form-input" placeholder="e.g. API calls, tasks run, seats, hours">
+                    <p class="form-helper">What unit does usage-based billing track?</p>
+                </div>
+
                 <div class="form-group mb-0">
                     <label class="form-label" for="mainObjection">Main Objection Heard from Prospects *</label>
                     <textarea id="mainObjection" class="form-textarea" required placeholder="Why do people say no? (e.g. 'It's too expensive', 'Too hard to implement')"></textarea>
@@ -163,9 +221,48 @@
                     <input type="text" id="onlineHangouts" class="form-input" required placeholder="e.g. LinkedIn, specific subreddits, specialized forums">
                 </div>
 
-                <div class="form-group mb-0">
+                <div class="form-group">
                     <label class="form-label" for="vocabulary">Vocabulary &amp; Lingo</label>
                     <textarea id="vocabulary" class="form-textarea" placeholder="Keywords or specific jargon they use when discussing their problems"></textarea>
+                </div>
+
+                <!-- B2B group: decision_maker -->
+                <div class="form-group model-conditional model-hidden" data-model-group="b2b-group">
+                    <label class="form-label" for="decisionMaker">Primary Decision Maker</label>
+                    <input type="text" id="decisionMaker" class="form-input" placeholder="e.g. Economic Buyer, Champion, Technical Evaluator, End User">
+                    <p class="form-helper">Who ultimately approves the purchase?</p>
+                </div>
+
+                <!-- B2C group: purchase_frequency -->
+                <div class="form-group model-conditional model-hidden" data-model-group="b2c-group">
+                    <label class="form-label" for="purchaseFrequency">Purchase Frequency</label>
+                    <select id="purchaseFrequency" class="form-select">
+                        <option value="">Select frequency</option>
+                        <option value="One-time">One-time</option>
+                        <option value="Occasional">Occasional (few times a year)</option>
+                        <option value="Regular">Regular (monthly)</option>
+                        <option value="Habitual">Habitual (weekly or more)</option>
+                    </select>
+                </div>
+
+                <!-- B2C group: lifestyle_triggers -->
+                <div class="form-group model-conditional model-hidden" data-model-group="b2c-group">
+                    <label class="form-label" for="lifestyleTriggers">Purchase Trigger / Life Event</label>
+                    <input type="text" id="lifestyleTriggers" class="form-input" placeholder="e.g. New baby, Starting a business, Seasonal holiday, Moving house">
+                    <p class="form-helper">What life event or moment drives someone to buy?</p>
+                </div>
+
+                <!-- Marketplace group: supply + demand side -->
+                <div class="form-group model-conditional model-hidden" data-model-group="marketplace-group">
+                    <label class="form-label" for="supplySide">Supply Side (Sellers / Creators)</label>
+                    <input type="text" id="supplySide" class="form-input" placeholder="e.g. Freelance designers, Local restaurants, Independent artists">
+                    <p class="form-helper">Who provides the product/service on your platform?</p>
+                </div>
+
+                <div class="form-group mb-0 model-conditional model-hidden" data-model-group="marketplace-group">
+                    <label class="form-label" for="demandSide">Demand Side (Buyers / Consumers)</label>
+                    <input type="text" id="demandSide" class="form-input" placeholder="e.g. Small business owners, Households, Music fans">
+                    <p class="form-helper">Who consumes or purchases on your platform?</p>
                 </div>
             </section>
 
