@@ -113,150 +113,18 @@ function json(res, statusCode, data) {
 // ── Server ───────────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
 
+  const handlers = require('./handlers.cjs');
+
   // CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204, { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type', 'Access-Control-Allow-Methods': 'GET, POST, OPTIONS' });
-    res.end();
-    return;
-  }
+  if (req.method === 'OPTIONS') return handlers.handleCorsPreflight(req, res);
 
-  // ── GET /config ────────────────────────────────────────────────────────────
-  if (req.method === 'GET' && req.url === '/config') {
-    json(res, 200, config);
-    return;
-  }
+  // ── Route matching ─────────────────────────────────────────────────────────
+  if (req.method === 'GET' && req.url === '/config') return handlers.handleConfig(req, res);
+  if (req.method === 'GET' && req.url === '/status') return handlers.handleStatus(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/submit')) return handlers.handleSubmit(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/regenerate')) return handlers.handleRegenerate(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/approve')) return handlers.handleApprove(req, res);
 
-  // ── GET /status ────────────────────────────────────────────────────────────
-  if (req.method === 'GET' && req.url === '/status') {
-    const chromaHealth = await chroma.healthCheck();
-
-    // Read MIR STATE.md and count complete/total
-    let mirGateStatus = { total: 0, complete: 0, gate1Ready: false };
-    try {
-      const stateContent = fs.readFileSync(path.join(mirOutputPath, 'STATE.md'), 'utf8');
-      const rows = stateContent.match(/\|\s*`[^`]+`\s*\|\s*`(empty|complete)`/g) || [];
-      mirGateStatus.total    = rows.length;
-      mirGateStatus.complete = rows.filter(r => r.includes('complete')).length;
-      // Gate 1 = 5 identity files complete
-      mirGateStatus.gate1Ready = mirGateStatus.complete >= 5;
-    } catch (e) {}
-
-    json(res, 200, { chromadb: chromaHealth, mir: mirGateStatus });
-    return;
-  }
-
-  // ── POST /submit ───────────────────────────────────────────────────────────
-  if (req.method === 'POST' && req.url === '/submit') {
-    try {
-      const seed = await readBody(req);
-      
-      // Write seed file
-      const outputPath = path.resolve(ONBOARDING_DIR, config.output_path);
-      fs.writeFileSync(outputPath, JSON.stringify(seed, null, 2));
-      console.log(`\n✓ onboarding-seed.json written to: ${outputPath}`);
-
-      // Determine project slug deterministically. Preserve UUIDs so vector memory is permanent.
-      const crypto = require('crypto');
-      const projectConfigPath = path.resolve(PROJECT_ROOT, '.mgsd-project.json');
-      let slug = null;
-
-      if (fs.existsSync(projectConfigPath)) {
-        try {
-          const pConfig = JSON.parse(fs.readFileSync(projectConfigPath, 'utf8'));
-          if (pConfig.project_slug) slug = pConfig.project_slug;
-        } catch (e) {}
-      }
-
-      if (!slug) {
-        const baseSlug = config.project_slug ||
-          (seed.company?.name || 'mgsd-client').toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        slug = `${baseSlug}-${crypto.randomUUID().slice(0, 8)}`;
-        
-        // Persist the slug natively so agents can find it
-        try {
-          const configObj = fs.existsSync(projectConfigPath) 
-            ? JSON.parse(fs.readFileSync(projectConfigPath, 'utf8')) 
-            : {};
-          configObj.project_slug = slug;
-          fs.writeFileSync(projectConfigPath, JSON.stringify(configObj, null, 2), 'utf8');
-        } catch (e) {}
-      }
-
-      // Run orchestrator
-      console.log('\n🤖 Running AI draft generation...');
-      const { drafts, chromaResults, errors } = await orchestrator.orchestrate(seed, slug);
-
-      json(res, 200, {
-        success: true,
-        seed_path: outputPath,
-        slug,
-        drafts,
-        chroma: chromaResults,
-        errors,
-      });
-    } catch (err) {
-      console.error('[POST /submit] Error:', err.message);
-      json(res, 500, { success: false, error: err.message });
-    }
-    return;
-  }
-
-  // ── POST /regenerate ───────────────────────────────────────────────────────
-  if (req.method === 'POST' && req.url === '/regenerate') {
-    try {
-      const { section, seed, slug } = await readBody(req);
-      
-      const mirFiller = require('./agents/mir-filler.cjs');
-      const mspFiller = require('./agents/msp-filler.cjs');
-
-      const generators = {
-        company_profile:  () => mirFiller.generateCompanyProfile(seed),
-        mission_values:   () => mirFiller.generateMissionVisionValues(seed),
-        audience:         () => mirFiller.generateAudienceProfile(seed),
-        competitive:      () => mirFiller.generateCompetitiveLandscape(seed),
-        brand_voice:      () => mspFiller.generateBrandVoice(seed),
-        channel_strategy: () => mspFiller.generateChannelStrategy(seed),
-      };
-
-      if (!generators[section]) {
-        json(res, 400, { error: `Unknown section: ${section}` });
-        return;
-      }
-
-      const result = await generators[section]();
-      if (result.ok && slug) {
-        await chroma.storeDraft(slug, section, result.text);
-      }
-
-      json(res, 200, { success: result.ok, content: result.text, error: result.error });
-    } catch (err) {
-      json(res, 500, { success: false, error: err.message });
-    }
-    return;
-  }
-
-  // ── POST /approve ──────────────────────────────────────────────────────────
-  if (req.method === 'POST' && req.url === '/approve') {
-    try {
-      const { approvedDrafts, slug } = await readBody(req);
-
-      const { written, stateUpdated, errors } = writeMIR.applyDrafts(mirOutputPath, MIR_TEMPLATE_PATH, approvedDrafts);
-
-      console.log(`\n✓ MIR files written: ${written.join(', ')}`);
-      console.log(`  STATE.md updated: ${stateUpdated}`);
-
-      // Store approved drafts in Chroma
-      for (const [section, content] of Object.entries(approvedDrafts)) {
-        await chroma.storeDraft(slug || 'mgsd-client', `approved-${section}`, content);
-      }
-
-      json(res, 200, { success: true, written, stateUpdated, errors });
-    } catch (err) {
-      console.error('[POST /approve] Error:', err.message);
-      json(res, 500, { success: false, error: err.message });
-    }
-    return;
-  }
 
   // ── Static File Serving ────────────────────────────────────────────────────
   let filePath = req.url === '/' ? '/index.html' : req.url;

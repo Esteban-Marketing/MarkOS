@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/config", "destination": "/api/config" },
+    { "source": "/status", "destination": "/api/status" },
+    { "source": "/submit", "destination": "/api/submit" },
+    { "source": "/regenerate", "destination": "/api/regenerate" },
+    { "source": "/approve", "destination": "/api/approve" },
+    { "source": "/", "destination": "/onboarding/index.html" },
+    { "source": "/(.*)", "destination": "/onboarding/$1" }
+  ]
+}

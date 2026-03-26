@@ -43,13 +43,21 @@
 const mirFiller  = require('./mir-filler.cjs');
 const mspFiller  = require('./msp-filler.cjs');
 const chroma     = require('../chroma-client.cjs');
+const telemetry  = require('./telemetry.cjs');
 
 // ── Rate Limits & Retries ───────────────────────────────────────────────────
-async function executeWithRetry(fn, name, retries = 3, baseDelay = 1500) {
+async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
+  telemetry.capture('agent_execution_started', { agent_name: name, project_slug: slug });
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fn();
       if (!res.ok) throw new Error(res.error);
+      telemetry.capture('agent_execution_completed', { 
+        agent_name: name, 
+        project_slug: slug,
+        token_usage: res.usage?.totalTokens || 0,
+        generation_time_ms: res.generationTimeMs || 0
+      });
       return res;
     } catch (e) {
       if (i === retries - 1) {
@@ -88,15 +96,15 @@ async function orchestrate(seed, slug) {
 
   // ── 2. Run MIR agents (Batched to prevent 429s) ──────────────────────────
   console.log('[orchestrator] Generating MIR drafts...');
-  const companyProfileResult = await executeWithRetry(() => mirFiller.generateCompanyProfile(seed), 'Company Profile');
-  const missionValuesResult  = await executeWithRetry(() => mirFiller.generateMissionVisionValues(seed), 'Mission/Values');
-  const audienceResult       = await executeWithRetry(() => mirFiller.generateAudienceProfile(seed), 'Audience Profile');
-  const competitiveResult    = await executeWithRetry(() => mirFiller.generateCompetitiveLandscape(seed), 'Competitive Landscape');
+  const companyProfileResult = await executeWithRetry(() => mirFiller.generateCompanyProfile(seed), 'Company Profile', slug);
+  const missionValuesResult  = await executeWithRetry(() => mirFiller.generateMissionVisionValues(seed), 'Mission/Values', slug);
+  const audienceResult       = await executeWithRetry(() => mirFiller.generateAudienceProfile(seed), 'Audience Profile', slug);
+  const competitiveResult    = await executeWithRetry(() => mirFiller.generateCompetitiveLandscape(seed), 'Competitive Landscape', slug);
 
   // ── 3. Run MSP agents ─────────────────────────────────────────────────────
   console.log('[orchestrator] Generating MSP drafts...');
-  const brandVoiceResult      = await executeWithRetry(() => mspFiller.generateBrandVoice(seed), 'Brand Voice');
-  const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed), 'Channel Strategy');
+  const brandVoiceResult      = await executeWithRetry(() => mspFiller.generateBrandVoice(seed), 'Brand Voice', slug);
+  const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed), 'Channel Strategy', slug);
 
   // ── 3.5. Neuro-Auditor Validation ─────────────────────────────────────────
   console.log('[orchestrator] Running Neuro-Auditor verification...');
@@ -109,7 +117,7 @@ async function orchestrate(seed, slug) {
       const systemPrompt = fs.readFileSync(auditorPath, 'utf8');
       const userPrompt = `Review the following Audience logic and Brand Voice for psychological archetype alignment:\n\nAUDIENCE:\n${audienceResult.text}\n\nBRAND VOICE:\n${brandVoiceResult.text}\n\nOutput ONLY a concise 2-sentence verification summary (e.g. "Archetype alignment confirmed. The Rebel brand voice accurately attacks the Target Audience's core fear of conformity.") No preamble or pleasantries.`;
       
-      const auditResult = await executeWithRetry(() => llm.call(systemPrompt, userPrompt), 'Neuro-Auditor');
+      const auditResult = await executeWithRetry(() => llm.call(systemPrompt, userPrompt), 'Neuro-Auditor', slug);
       if (auditResult && auditResult.ok) {
         const blockquote = `\n\n> 🧠 **Neuro-Auditor Verification:**\n> ${auditResult.text.replace(/\n/g, '\n> ')}\n`;
         audienceResult.text += blockquote;

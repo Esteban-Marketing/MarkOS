@@ -63,6 +63,13 @@ async function loadConfig() {
     const res = await fetch('/config');
     if (res.ok) {
       const config = await res.json();
+      if (config.posthog_api_key) {
+        posthog.init(config.posthog_api_key, { api_host: config.posthog_host });
+      }
+      if (window.posthog && posthog.capture) {
+        posthog.capture('onboarding_started', { url: window.location.href });
+      }
+
       if (config.primary_color) {
         document.documentElement.style.setProperty('--primary', config.primary_color);
       }
@@ -96,6 +103,10 @@ const MODEL_GROUPS = {
 function onBusinessModelChange() {
   const model  = document.getElementById('businessModel')?.value || '';
   const active = MODEL_GROUPS[model] || [];
+
+  if (window.posthog && posthog.capture && model) {
+    posthog.capture('business_model_selected', { business_model: model });
+  }
 
   document.querySelectorAll('.model-conditional').forEach(el => {
     const group = el.getAttribute('data-model-group');
@@ -369,6 +380,11 @@ async function handleDraftGeneration() {
     lastSlug = result.slug;
     draftContents = result.drafts || {};
 
+    if (window.posthog && posthog.capture) {
+      const businessModel = lastSeed?.company?.business_model || lastSeed?.company?.businessModel || 'B2B';
+      posthog.capture('onboarding_completed', { project_slug: lastSlug, business_model: businessModel });
+    }
+
     renderDraftCards(draftContents);
     localStorage.removeItem(STORAGE_KEY);
 
@@ -569,6 +585,9 @@ function addCompetitor() {
 btnNext.addEventListener('click', () => {
   if (validateCurrentStep()) {
     saveDraft();
+    if (window.posthog && posthog.capture) {
+      posthog.capture('onboarding_step_completed', { step: currentStep });
+    }
     showStep(currentStep + 1);
   }
 });

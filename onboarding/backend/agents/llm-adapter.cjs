@@ -89,7 +89,14 @@ async function callAnthropic(systemPrompt, userPrompt, options) {
   }
   
   const data = await res.json();
-  return data.content[0].text;
+  return { 
+    text: data.content[0].text,
+    usage: {
+      promptTokens: data.usage?.input_tokens || 0,
+      completionTokens: data.usage?.output_tokens || 0,
+      totalTokens: (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0)
+    }
+  };
 }
 
 async function callGemini(systemPrompt, userPrompt, options) {
@@ -126,7 +133,14 @@ async function callGemini(systemPrompt, userPrompt, options) {
   }
 
   const data = await res.json();
-  return data.candidates[0].content.parts[0].text;
+  return {
+    text: data.candidates[0].content.parts[0].text,
+    usage: {
+      promptTokens: data.usageMetadata?.promptTokenCount || 0,
+      completionTokens: data.usageMetadata?.candidatesTokenCount || 0,
+      totalTokens: data.usageMetadata?.totalTokenCount || 0
+    }
+  };
 }
 
 async function callOpenAI(systemPrompt, userPrompt, options) {
@@ -138,10 +152,17 @@ async function callOpenAI(systemPrompt, userPrompt, options) {
     max_tokens: options.max_tokens || 1200,
     messages: [
       { role: 'system', content: systemPrompt },
-      { role: 'user',   content: userPrompt   },
+      { role: 'user',   content: userPrompt },
     ],
   });
-  return response.choices?.[0]?.message?.content?.trim() || '';
+  return {
+    text: response.choices?.[0]?.message?.content?.trim() || '',
+    usage: {
+      promptTokens: response.usage?.prompt_tokens || 0,
+      completionTokens: response.usage?.completion_tokens || 0,
+      totalTokens: response.usage?.total_tokens || 0
+    }
+  };
 }
 
 /**
@@ -150,7 +171,8 @@ async function callOpenAI(systemPrompt, userPrompt, options) {
  */
 async function call(systemPrompt, userPrompt, options = {}) {
   try {
-    let text = '';
+    const start = Date.now();
+    let result = { text: '', usage: {} };
     const provider = options.provider || 
                      (process.env.ANTHROPIC_API_KEY ? 'anthropic' : 
                      (process.env.OPENAI_API_KEY ? 'openai' : 
@@ -161,14 +183,21 @@ async function call(systemPrompt, userPrompt, options = {}) {
     }
 
     if (provider === 'anthropic') {
-      text = await callAnthropic(systemPrompt, userPrompt, options);
+      result = await callAnthropic(systemPrompt, userPrompt, options);
     } else if (provider === 'gemini') {
-      text = await callGemini(systemPrompt, userPrompt, options);
+      result = await callGemini(systemPrompt, userPrompt, options);
     } else {
-      text = await callOpenAI(systemPrompt, userPrompt, options);
+      result = await callOpenAI(systemPrompt, userPrompt, options);
     }
 
-    return { ok: true, text, provider };
+    const elapsed = Date.now() - start;
+    return { 
+      ok: true, 
+      text: result.text, 
+      usage: result.usage, 
+      generationTimeMs: elapsed,
+      provider 
+    };
   } catch (err) {
     return {
       ok: false,
