@@ -19,9 +19,10 @@
  * EXPORTS:
  *   configure(host)                        → void (set chromaHost)
  *   healthCheck()                          → Promise<{ ok, message }>
- *   storeDraft(slug, section, text)        → Promise<void>
+ *   storeDraft(slug, section, text, meta)  → Promise<void>
  *   getDrafts(slug)                        → Promise<{section: text}>
  *   upsertSeed(slug, seed)                 → Promise<results[]>
+ *   upsertProjectMeta(slug, meta)          → Promise<void>
  *
  * RELATED FILES:
  *   bin/ensure-chroma.cjs                  (starts/checks local daemon)
@@ -103,22 +104,38 @@ async function upsertSeed(slug, seed) {
     const docText = JSON.stringify(section.data, null, 2);
     const docId   = `${slug}-${section.name}-v1`;
 
-    try {
-      // Get or create collection
-      const collection = await client.getOrCreateCollection({ name: collectionName });
+    // Attach business_model to every section's metadata for cross-client queries
+    const meta = {
+      slug,
+      section: section.name,
+      generated: new Date().toISOString(),
+    };
+    if (seed.company && seed.company.business_model) {
+      meta.business_model = seed.company.business_model;
+    }
 
-      // Upsert the document (overwrite if same id)
+    try {
+      const collection = await client.getOrCreateCollection({ name: collectionName });
       await collection.upsert({
         ids:       [docId],
         documents: [docText],
-        metadatas: [{ slug, section: section.name, generated: new Date().toISOString() }],
+        metadatas: [meta],
       });
-
       results.push({ section: section.name, status: 'ok', collection: collectionName });
     } catch (err) {
       results.push({ section: section.name, status: 'error', error: err.message });
     }
   }
+
+  // Also write a top-level project-meta document for fast lookup by slug
+  try {
+    const metaCollection = await client.getOrCreateCollection({ name: `mgsd-${slug}-meta` });
+    await metaCollection.upsert({
+      ids:       [`${slug}-project-meta`],
+      documents: [JSON.stringify({ slug, business_model: seed.company?.business_model || null })],
+      metadatas: [{ slug, business_model: seed.company?.business_model || null, updated_at: new Date().toISOString() }],
+    });
+  } catch (_) { /* non-fatal */ }
 
   return results;
 }
@@ -148,8 +165,9 @@ async function getContext(slug, section, query = 'summary', nResults = 1) {
  * @param {string} slug    — project slug
  * @param {string} section — e.g. 'company_profile_draft'
  * @param {string} content — markdown content to store
+ * @param {object} [meta]  — optional extra metadata (e.g. { business_model })
  */
-async function storeDraft(slug, section, content) {
+async function storeDraft(slug, section, content, meta = {}) {
   try {
     const client = getClient();
     const collectionName = `mgsd-${slug}-drafts`;
@@ -157,7 +175,7 @@ async function storeDraft(slug, section, content) {
     await collection.upsert({
       ids:       [`${slug}-draft-${section}`],
       documents: [content],
-      metadatas: [{ slug, section, stored_at: new Date().toISOString() }],
+      metadatas: [{ slug, section, stored_at: new Date().toISOString(), ...meta }],
     });
     return { ok: true };
   } catch (err) {

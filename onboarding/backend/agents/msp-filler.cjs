@@ -9,10 +9,12 @@
  * SECTION-TO-FILE MAP:
  *   generateBrandVoice      → .mgsd-local/MIR/Core_Strategy/02_BRAND/VOICE-TONE.md
  *   generateChannelStrategy → .mgsd-local/MSP/Strategy/00_MASTER-PLAN/CHANNEL-STRATEGY.md
+ *   generatePaidAcquisition → .mgsd-local/MSP/Campaigns/01_PAID_ACQUISITION.md
  *
  * EXPORTS:
- *   generateBrandVoice(seed)      → Promise<{ ok, text, provider }>
- *   generateChannelStrategy(seed) → Promise<{ ok, text, provider }>
+ *   generateBrandVoice(seed)       → Promise<{ ok, text, provider }>
+ *   generateChannelStrategy(seed)  → Promise<{ ok, text, provider }>
+ *   generatePaidAcquisition(seed)  → Promise<{ ok, text, provider }>
  *
  * RELATED FILES:
  *   onboarding/backend/agents/llm-adapter.cjs    (LLM API surface)
@@ -28,9 +30,10 @@ const llm  = require('./llm-adapter.cjs');
 const { resolveExample } = require('./example-resolver.cjs');
 
 // ─── EXAMPLE BASE PATHS ────────────────────────────────────────────────────────
-const TMPL_ROOT      = path.resolve(__dirname, '..', '..', '..', '..', '.agent', 'marketing-get-shit-done', 'templates');
-const CORE_STRAT_DIR = path.join(TMPL_ROOT, 'MIR', 'Core_Strategy');
-const MSP_STRAT_DIR  = path.join(TMPL_ROOT, 'MSP', 'Strategy');
+const TMPL_ROOT        = path.resolve(__dirname, '..', '..', '..', '..', '.agent', 'marketing-get-shit-done', 'templates');
+const CORE_STRAT_DIR   = path.join(TMPL_ROOT, 'MIR', 'Core_Strategy');
+const MSP_STRAT_DIR    = path.join(TMPL_ROOT, 'MSP', 'Strategy');
+const MSP_CAMPAIGNS_DIR = path.join(TMPL_ROOT, 'MSP', 'Campaigns');
 
 const SYSTEM_PROMPT = `You are a senior marketing strategist specializing in channel strategy, brand voice, and go-to-market execution. Your outputs go directly into a Marketing Strategy Platform (MSP) that guides AI agents and human marketers. 
 
@@ -116,4 +119,49 @@ Rank channels 1-5 in execution priority. For each:
   return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1000 });
 }
 
-module.exports = { generateBrandVoice, generateChannelStrategy };
+async function generatePaidAcquisition(seed) {
+  const { company, audience, market, product } = seed;
+
+  const exampleBlock = resolveExample('PAID-ACQUISITION', company.business_model || '', '', MSP_CAMPAIGNS_DIR);
+
+  const prompt = `Create the Paid Acquisition Pipeline plan for:
+
+Company: ${company.name} (${company.industry}) — Business Model: ${company.business_model || 'Not specified'}
+Primary Audience: ${audience.segment_name} — ${audience.job_title}
+Where They Spend Time Online: ${audience.online_hangouts}
+Top Pain Points: ${[audience.pain_point_1, audience.pain_point_2, audience.pain_point_3].filter(Boolean).join('; ')}
+Product Pricing Model: ${product?.pricing_model || 'Not specified'}
+Key Differentiator vs Competitors: ${company.differentiator || 'Not specified'}
+Market Maturity: ${market?.maturity || 'Not specified'}
+
+${exampleBlock}
+Write a complete Paid Acquisition Pipeline covering:
+
+## Phase Budget & Parameters
+- Target CAC Limits, CPA Bounds, LTV Goal, Daily Spend Threshold
+
+## 1. Audience Matrix
+- Cold audience targeting criteria (platform-specific)
+- Lookalike seeds
+- Retargeting layers (Day 0–3, Day 4–7, Day 8–14)
+
+## 2. Pipeline Execution: [Primary Channel]
+- Sprint 1 (TOF), Sprint 2 (MOF), Sprint 3 (BOF)
+- For each: format, copy angle, CTA, budget %, KPI
+
+## 3. Pipeline Execution: [Secondary Channel]
+- Key campaigns with budget and KPI
+
+## 4. Optimization Loop
+- Day 7, 14, 21 review gates with specific kill/scale criteria
+
+## Quick Wins (First 14 Days)
+3 specific, immediately actionable items
+
+## Channels to Avoid (For Now)
+[List with rationale tied to audience data]`;
+
+  return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1200 });
+}
+
+module.exports = { generateBrandVoice, generateChannelStrategy, generatePaidAcquisition };

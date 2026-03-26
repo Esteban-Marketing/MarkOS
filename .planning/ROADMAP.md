@@ -159,3 +159,42 @@
 - [ ] 10-01: Cross-client vector segregation logic
 - [ ] 10-02: Execution telemetry and dashboard wiring
 
+---
+
+## Phase 11: Rich Business-Model Examples (Tier 1)
+**Goal:** Enrich the MGSD protocol so every LLM agent executing a template fill receives a concrete, model-specific reference example alongside client data. business_model captured during onboarding, injected into every prompt.
+**Requirements Mapped:** EX-01
+**Depends on:** Phase 6 (Onboarding Engine)
+**Status:** ✅ Complete
+**Success Criteria:**
+1. `company.business_model` required field in seed schema v2.1 (7 enum values).
+2. Onboarding UI shows/hides conditional fields per model (no inline styles).
+3. 28 Tier 1 example files authored (AUDIENCES + ICPs + BRAND-VOICE + CHANNEL-STRATEGY × 7 models).
+4. `example-resolver.cjs` injects model-specific example into every filler LLM prompt.
+5. Graceful degradation: empty string returned if example file not found.
+
+**Plans:**
+- [x] 11-01: Seed schema v2.1 + onboarding UI enrichment
+- [x] 11-02: example-resolver.cjs utility
+- [x] 11-03: MIR Tier 1 example files (21 files)
+- [x] 11-04: MSP Tier 1 example files (7 CHANNEL-STRATEGY files)
+- [x] 11-05: Filler agent injection (mir-filler + msp-filler)
+
+---
+
+## Phase 12: Phase 11 Deferred Items Resolution
+**Goal:** Complete the three items deferred from Phase 11: ChromaDB business_model persistence, unit test suite for example-resolver, and Tier 2 paid acquisition examples for all 7 business models.
+**Requirements Mapped:** EX-02, TEST-01, CHROMA-02
+**Depends on:** Phase 11
+**Status:** ✅ Complete
+**Success Criteria:**
+1. `chroma-client.cjs` stores `business_model` in all section metadata and creates a top-level `mgsd-{slug}-meta` collection.
+2. `test/example-resolver.test.js` passes 8/8 tests covering all slug normalizations, graceful degradation, and injection format.
+3. 7 `_PAID-ACQUISITION-{model}.example.md` Tier 2 example files with full 4-sprint paid campaign structure.
+4. `generatePaidAcquisition()` wired into `msp-filler.cjs` with example injection.
+
+**Plans:**
+- [x] 12-01: chroma-client.cjs business_model persistence
+- [x] 12-02: test/example-resolver.test.js suite (8 tests, all pass)
+- [x] 12-03: Tier 2 PAID-ACQUISITION examples × 7 models
+- [x] 12-04: generatePaidAcquisition() injected into msp-filler.cjs
