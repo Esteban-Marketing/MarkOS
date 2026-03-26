@@ -737,14 +737,24 @@ function initOmniGate() {
       omniExtractedText = data.text;
       addLog('Extraction complete. [Done]');
       
-      // Temporary: Since LLM mapping is Wave 2 (Phase 13-02), we just dump the text and move to next step
-      // In the next wave, we'll POST this text to an LLM extractor.
+      addLog('Analyzing and scoring schema fields...');
+      const scoreRes = await fetch('/api/extract-and-score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: omniExtractedText })
+      });
+      const scoreData = await scoreRes.json();
+      
+      if (!scoreData.success) throw new Error(scoreData.error);
+      
+      // Temporary storage for testing/review during Wave 2
+      window.extractedSchema = scoreData.data;
+      window.fieldScores = scoreData.scores;
+      
+      addLog('Smart mapping complete. Moving to intelligent gap-fill mode...');
       setTimeout(() => {
-        addLog('Moving to intelligent gap-fill mode...');
-        setTimeout(() => {
-          showStep(1);
-        }, 1000);
-      }, 1000);
+        showStep(1);
+      }, 1500);
 
     } catch (err) {
       addLog(`Error: ${err.message}`);

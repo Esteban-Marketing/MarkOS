@@ -14,6 +14,10 @@ const docxParser = require('./parsers/docx-parser.cjs');
 const csvParser = require('./parsers/csv-parser.cjs');
 const textParser = require('./parsers/text-parser.cjs');
 
+// Extractors & Scorers
+const schemaExtractor = require('./extractors/schema-extractor.cjs');
+const confidenceScorer = require('./confidences/confidence-scorer.cjs');
+
 const ONBOARDING_DIR = path.resolve(__dirname, '..');
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 const CONFIG_PATH = path.join(ONBOARDING_DIR, 'onboarding-config.json');
@@ -282,6 +286,23 @@ async function handleExtractSources(req, res) {
   }
 }
 
+async function handleExtractAndScore(req, res) {
+  try {
+    const { text } = await readBody(req);
+    if (!text) {
+      return json(res, 400, { success: false, error: 'No text provided for extraction' });
+    }
+
+    const jsonMap = await schemaExtractor.extractToSchema(text);
+    const scoredMap = confidenceScorer.scoreFields(jsonMap);
+
+    json(res, 200, { success: true, data: jsonMap, scores: scoredMap });
+  } catch (err) {
+    console.error('[POST /api/extract-and-score] Error:', err.message);
+    json(res, 500, { success: false, error: err.message });
+  }
+}
+
 function handleCorsPreflight(req, res) {
   res.writeHead(204, { 
     'Access-Control-Allow-Origin': '*', 
@@ -298,5 +319,6 @@ module.exports = {
   handleRegenerate,
   handleApprove,
   handleExtractSources,
+  handleExtractAndScore,
   handleCorsPreflight
 };
