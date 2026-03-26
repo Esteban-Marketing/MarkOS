@@ -124,6 +124,10 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/submit')) return handlers.handleSubmit(req, res);
   if (req.method === 'POST' && req.url.startsWith('/api/extract-sources')) return handlers.handleExtractSources(req, res);
   if (req.method === 'POST' && req.url.startsWith('/api/extract-and-score')) return handlers.handleExtractAndScore(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/api/generate-question')) return handlers.handleGenerateQuestion(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/api/parse-answer')) return handlers.handleParseAnswer(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/api/spark-suggestion')) return handlers.handleSparkSuggestion(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/api/competitor-discovery')) return handlers.handleCompetitorDiscovery(req, res);
   if (req.method === 'POST' && req.url.startsWith('/regenerate')) return handlers.handleRegenerate(req, res);
   if (req.method === 'POST' && req.url.startsWith('/approve')) return handlers.handleApprove(req, res);
 

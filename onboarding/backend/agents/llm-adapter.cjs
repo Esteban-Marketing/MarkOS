@@ -165,9 +165,53 @@ async function callOpenAI(systemPrompt, userPrompt, options) {
   };
 }
 
+async function callOllama(systemPrompt, userPrompt, options) {
+  let model = options.model;
+  if (!model) {
+    try {
+      const configPath = path.resolve(__dirname, '../../onboarding-config.json');
+      const config = require(configPath);
+      model = config.ollama_model || 'llama3:8b';
+    } catch(e) {
+      model = 'llama3:8b';
+    }
+  }
+
+  const payload = {
+    model: model,
+    prompt: `${systemPrompt}\n\nUser: ${userPrompt}\n\nAssistant:`,
+    stream: false,
+    options: {
+      temperature: options.temperature ?? 0.4,
+      num_predict: options.max_tokens || 1200
+    }
+  };
+
+  const res = await fetch('http://localhost:11434/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Ollama Error: ${res.status} ${err}`);
+  }
+
+  const data = await res.json();
+  return {
+    text: data.response || '',
+    usage: {
+      promptTokens: data.prompt_eval_count || 0,
+      completionTokens: data.eval_count || 0,
+      totalTokens: (data.prompt_eval_count || 0) + (data.eval_count || 0)
+    }
+  };
+}
+
 /**
  * Call the LLM with a system/user prompt automatically determining the provider.
- * Priority: 1. provider option 2. ANTHROPIC key 3. OPENAI key 4. GEMINI key
+ * Priority: 1. provider option 2. ANTHROPIC key 3. OPENAI key 4. GEMINI key 5. OLLAMA
  */
 async function call(systemPrompt, userPrompt, options = {}) {
   try {
@@ -176,18 +220,18 @@ async function call(systemPrompt, userPrompt, options = {}) {
     const provider = options.provider || 
                      (process.env.ANTHROPIC_API_KEY ? 'anthropic' : 
                      (process.env.OPENAI_API_KEY ? 'openai' : 
-                     (process.env.GEMINI_API_KEY ? 'gemini' : null)));
-
-    if (!provider) {
-      throw new Error('No LLM API keys found in .env (OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY)');
-    }
+                     (process.env.GEMINI_API_KEY ? 'gemini' : 'ollama')));
 
     if (provider === 'anthropic') {
       result = await callAnthropic(systemPrompt, userPrompt, options);
     } else if (provider === 'gemini') {
       result = await callGemini(systemPrompt, userPrompt, options);
-    } else {
+    } else if (provider === 'openai') {
       result = await callOpenAI(systemPrompt, userPrompt, options);
+    } else if (provider === 'ollama') {
+      result = await callOllama(systemPrompt, userPrompt, options);
+    } else {
+      throw new Error('NO_AI_AVAILABLE');
     }
 
     const elapsed = Date.now() - start;
@@ -199,9 +243,18 @@ async function call(systemPrompt, userPrompt, options = {}) {
       provider 
     };
   } catch (err) {
+    // If it was explicitly an ollama connection refused error, it means we don't have AI available
+    if (err.message.includes('fetch failed') || err.message.includes('ECONNREFUSED')) {
+       return {
+         ok: false,
+         error: 'NO_AI_AVAILABLE',
+         text: `[DRAFT UNAVAILABLE — NO_AI_AVAILABLE]`,
+       };
+    }
+    
     return {
       ok: false,
-      error: err.message,
+      error: err.message === 'NO_AI_AVAILABLE' ? 'NO_AI_AVAILABLE' : err.message,
       text: `[DRAFT UNAVAILABLE — ${err.message}]`,
     };
   }

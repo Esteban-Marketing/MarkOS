@@ -5,7 +5,7 @@
 
 // ── Configuration & State ─────────────────────────────────────────────────────
 const STORAGE_KEY  = 'mgsd-onboarding-draft';
-const TOTAL_STEPS  = 7;
+const TOTAL_STEPS  = 3;
 let currentStep    = 0; // Starts at Step 0 (Omni-Input Gate)
 let lastSeed       = null;   // seed built on step 6 submit
 let lastSlug       = null;   // slug returned by server
@@ -89,35 +89,11 @@ async function loadConfig() {
   }
 }
 
-// ── Business Model Conditional Fields ────────────────────────────────────────
-// Maps each business_model to the CSS data-model-group values that should show.
-const MODEL_GROUPS = {
-  'B2B':        ['b2b-group'],
-  'B2C':        ['b2c-group'],
-  'B2B2C':      ['b2b-group'],
-  'DTC':        ['b2c-group'],
-  'Marketplace':['marketplace-group'],
-  'SaaS':       ['b2b-group', 'aas-group'],
-  'Agents-aaS': ['b2b-group', 'aas-group'],
-};
-
 function onBusinessModelChange() {
   const model  = document.getElementById('businessModel')?.value || '';
-  const active = MODEL_GROUPS[model] || [];
-
   if (window.posthog && posthog.capture && model) {
     posthog.capture('business_model_selected', { business_model: model });
   }
-
-  document.querySelectorAll('.model-conditional').forEach(el => {
-    const group = el.getAttribute('data-model-group');
-    const show  = active.includes(group);
-    el.classList.toggle('model-hidden', !show);
-    // Clear hidden conditional fields so they don't pollute the seed
-    if (!show) {
-      el.querySelectorAll('input, select, textarea').forEach(field => { field.value = ''; });
-    }
-  });
 }
 
 let isChromaOffline = false;
@@ -159,7 +135,7 @@ function updateUI() {
     return;
   }
 
-  if (currentStep === 6) {
+  if (currentStep === 2) {
     if (isChromaOffline) {
       btnNext.innerText = '⚠️ Vector DB Offline (Cannot Generate AI Drafts)';
       btnNext.disabled = true;
@@ -168,8 +144,8 @@ function updateUI() {
       btnNext.innerText = 'Generate AI Drafts →';
       btnNext.disabled = false;
     }
-  } else if (currentStep === 7) {
-    // Navigation hidden on step 7 — handled by draft cards + publish button
+  } else if (currentStep === 3) {
+    // Navigation hidden on step 3 — handled by draft cards + publish button
     navButtons.style.display = 'none';
     return;
   } else {
@@ -182,13 +158,19 @@ function showStep(stepIndex) {
   if (stepIndex < 0) return;
   if (stepIndex > TOTAL_STEPS) return;
 
-  if (stepIndex === 7) {
-    handleDraftGeneration();
+  if (stepIndex === 3) {
+    currentStep = 3;
+    updateUI();
+    switchTab('schema');
     return;
   }
 
   currentStep = stepIndex;
   updateUI();
+  
+  if (currentStep === 2) {
+    startInterview();
+  }
 }
 
 // ── Validation ────────────────────────────────────────────────────────────────
@@ -206,17 +188,6 @@ function validateCurrentStep() {
       input.addEventListener('input', () => input.classList.remove('invalid'), { once: true });
     }
   });
-
-  if (currentStep === 6) {
-    const checkboxes = currentSection.querySelectorAll('.checkbox-input');
-    const isChecked = Array.from(checkboxes).some(cb => cb.checked);
-    if (!isChecked) {
-      isValid = false;
-      const container = currentSection.querySelector('.checkbox-grid').parentElement;
-      container.style.color = '#ef4444';
-      setTimeout(() => { container.style.color = ''; }, 2000);
-    }
-  }
 
   return isValid;
 }
@@ -237,33 +208,9 @@ function restoreDraft() {
     Object.keys(data).forEach(id => {
       const el = document.getElementById(id);
       if (el) {
-        if (el.type === 'checkbox' || el.type === 'radio') {
-          el.checked = data[id];
-        } else {
-          el.value = data[id];
-        }
-      } else if (id === 'activeChannels') {
-        const checkboxes = document.querySelectorAll(`input[name="${id}"]`);
-        checkboxes.forEach(cb => {
-          if (data[id].includes(cb.value)) cb.checked = true;
-        });
+        el.value = data[id];
       }
     });
-
-    if (data.comp2Name) {
-      addCompetitor();
-      ['comp2Name','comp2Url','comp2Diff','comp2Gap'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = data[id] || '';
-      });
-    }
-    if (data.comp3Name) {
-      addCompetitor();
-      ['comp3Name','comp3Url','comp3Diff','comp3Gap'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = data[id] || '';
-      });
-    }
   } catch (e) {}
 }
 
@@ -273,100 +220,63 @@ function gatherFormData() {
   document.querySelectorAll('input:not([type=checkbox]), textarea, select').forEach(input => {
     if (input.id) data[input.id] = input.value;
   });
-  data['activeChannels'] = Array.from(
-    document.querySelectorAll('input[name="activeChannels"]:checked')
-  ).map(cb => cb.value);
   return data;
+}
+
+function getMissingFields(scoresObj, prefix = '') {
+  let missing = [];
+  for (const [key, meta] of Object.entries(scoresObj)) {
+    const path = prefix ? `${prefix}.${key}` : key;
+    if (meta && typeof meta === 'object' && meta.score !== undefined) {
+      if (meta.score === 'Red' || meta.score === 'Yellow') {
+        missing.push(path);
+      }
+    } else if (meta && typeof meta === 'object') {
+      missing = missing.concat(getMissingFields(meta, path));
+    }
+  }
+  return missing;
 }
 
 function buildSeed() {
   const d = gatherFormData();
+  const seed = window.extractedSchema || {};
+  
+  if (!seed.company) seed.company = {};
+  if (d.companyName) seed.company.name = d.companyName;
+  if (d.businessModel) seed.company.business_model = d.businessModel;
 
-  let score = 0;
-  if (d.businessModel)                     score++;
-  if (d.companyName && d.mission)          score++;
-  if (d.productName && d.primaryBenefit)   score++;
-  if (d.segmentName && d.painPoint1)       score++;
-  if (d.comp1Name   && d.comp1Diff)        score++;
-  if (d.marketMaturity && d.biggestTrend)  score++;
-  if (d.activeChannels.length > 0)         score++;
-
-  const seed = {
-    metadata: {
-      generated:          new Date().toISOString(),
-      version:            '2.1',
-      completeness_score: score,
-    },
-    company: {
-      name:             d.companyName || '',
-      industry:         d.industry || '',
-      country:          d.country || '',
-      founded:          d.founded || '',
-      mission:          d.mission || '',
-      brand_values:     [d.brandValue1, d.brandValue2, d.brandValue3].filter(v => v),
-      tone_of_voice:    d.toneOfVoice || '',
-      primary_language: d.primaryLanguage || '',
-      business_model:   d.businessModel || '',
-    },
-    product: {
-      name:              d.productName || '',
-      category:          d.productCategory || '',
-      primary_benefit:   d.primaryBenefit || '',
-      top_features:      [d.productFeature1, d.productFeature2, d.productFeature3].filter(v => v),
-      price_range:       d.priceRange || '',
-      main_objection:    d.mainObjection || '',
-      pricing_model:     d.pricingModel || '',
-      // Conditional fields — empty string if not shown for this model
-      sales_cycle:       d.salesCycle || '',
-      avg_order_value:   d.avgOrderValue || '',
-      consumption_metric:d.consumptionMetric || '',
-    },
-    audience: {
-      segment_name:       d.segmentName || '',
-      age_range:          d.ageRange || '',
-      job_title:          d.jobTitle || '',
-      pain_points:        [d.painPoint1, d.painPoint2, d.painPoint3].filter(v => v),
-      online_hangouts:    d.onlineHangouts || '',
-      vocabulary:         d.vocabulary || '',
-      // Conditional fields
-      decision_maker:     d.decisionMaker || '',
-      purchase_frequency: d.purchaseFrequency || '',
-      lifestyle_triggers: d.lifestyleTriggers || '',
-      supply_side:        d.supplySide || '',
-      demand_side:        d.demandSide || '',
-    },
-    competition: { competitors: [] },
-    market: {
-      maturity:           d.marketMaturity || '',
-      biggest_trend:      d.biggestTrend || '',
-      seasonal_patterns:  d.seasonalPatterns || '',
-      regulatory_concern: d.regulatoryConcern || '',
-    },
-    content: {
-      best_piece_url:  d.bestPieceUrl || '',
-      active_channels: d.activeChannels || [],
-      monthly_output:  d.monthlyOutput || '',
-      best_format:     d.bestFormat || '',
-    },
-  };
-
-  if (d.comp1Name) seed.competition.competitors.push({ name: d.comp1Name, url: d.comp1Url, differentiator: d.comp1Diff, gap: d.comp1Gap });
-  if (d.comp2Name) seed.competition.competitors.push({ name: d.comp2Name, url: d.comp2Url, differentiator: d.comp2Diff, gap: d.comp2Gap });
-  if (d.comp3Name) seed.competition.competitors.push({ name: d.comp3Name, url: d.comp3Url, differentiator: d.comp3Diff, gap: d.comp3Gap });
+  if (!seed.metadata) seed.metadata = { version: '2.1' };
+  seed.metadata.generated = new Date().toISOString();
+  
+  if (window.fieldScores) {
+    const missing = getMissingFields(window.fieldScores);
+    seed.metadata.completeness_score = missing.length === 0 ? 100 : Math.round(((30 - missing.length) / 30) * 100);
+  } else {
+    seed.metadata.completeness_score = 10;
+  }
 
   return seed;
 }
 
-// ── Step 7: Draft Generation ───────────────────────────────────────────────────
+// ── Step 3: Draft Generation & Final Submit ──────────────────────────────────
 async function handleDraftGeneration() {
   if (!validateCurrentStep()) return;
   saveDraft();
 
   lastSeed = buildSeed();
+  
+  if (lastSeed.metadata.completeness_score < 80) {
+      if (!confirm(`Your profile completeness is only ${lastSeed.metadata.completeness_score}%. The generated drafts may be low quality. Do you want to proceed?`)) {
+          return;
+      }
+  }
 
-  // Show step 7
-  currentStep = 7;
-  updateUI();
+  // Swap to drafts tab
+  document.getElementById('tabBtnSchema').classList.remove('active');
+  document.getElementById('tabContentSchema').classList.remove('active');
+  document.getElementById('tabBtnDrafts').classList.add('active');
+  document.getElementById('tabContentDrafts').classList.add('active');
 
   // Show loading overlay
   loadingOverlay.classList.add('active');
@@ -547,6 +457,123 @@ async function handlePublish() {
   }
 }
 
+// ── Tabs & Schema Grid ────────────────────────────────────────────────────────
+
+window.switchTab = function(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  
+  if (tabName === 'schema') {
+    document.getElementById('tabBtnSchema').classList.add('active');
+    document.getElementById('tabContentSchema').classList.add('active');
+    renderSchemaGrid(); // refresh it
+  } else {
+    document.getElementById('tabBtnDrafts').classList.add('active');
+    document.getElementById('tabContentDrafts').classList.add('active');
+  }
+};
+
+function renderSchemaGrid() {
+  const schemaGrid = document.getElementById('schemaGrid');
+  if (!schemaGrid) return;
+  schemaGrid.innerHTML = '';
+  
+  const seed = lastSeed || buildSeed();
+  
+  const renderField = (path, value, title) => {
+    const card = document.createElement('div');
+    card.className = 'schema-card';
+    
+    let sourceStr = 'File/Web';
+    let sourceCls = 'badge-source-web';
+    let isRed = false;
+
+    const pathKeys = path.split('.');
+    let scoreMeta = window.fieldScores;
+    for (let k of pathKeys) {
+        if(scoreMeta) scoreMeta = scoreMeta[k];
+    }
+    
+    if (scoreMeta && scoreMeta.score) {
+        if (scoreMeta.score === 'Green') sourceStr = 'Valid';
+        if (scoreMeta.score === 'Yellow') sourceStr = 'Partial';
+        if (scoreMeta.score === 'Red') { sourceStr = 'Missing'; isRed = true; }
+        
+        if (scoreMeta.source === 'User Chat') { sourceStr = 'Chat'; sourceCls = 'badge-source-chat'; }
+        else if (scoreMeta.source === 'Manual') { sourceStr = 'Manual'; sourceCls = 'badge-source-manual'; }
+        else if (scoreMeta.source === 'Extraction') { sourceStr = 'Web/File'; sourceCls = 'badge-source-web'; }
+    } else {
+        if (!value || value === '' || (Array.isArray(value) && value.length === 0)) {
+            sourceStr = 'Missing';
+            isRed = true;
+        }
+    }
+    
+    let displayValue = value;
+    if (Array.isArray(value)) displayValue = value.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(', ');
+    else if (typeof value === 'object' && value !== null) displayValue = JSON.stringify(value);
+
+    card.innerHTML = `
+      <div class="schema-card-header">
+        <span class="schema-title">${title}</span>
+        <span class="badge-source ${sourceCls} ${isRed ? 'badge-score-red' : ''}" id="badge-${path.replace(/\./g, '-')}">${sourceStr}</span>
+      </div>
+      <div class="schema-value" contenteditable="true" data-path="${path}">${escapeHtml(displayValue || '')}</div>
+    `;
+    
+    const valEl = card.querySelector('.schema-value');
+    valEl.addEventListener('blur', (e) => {
+        const newVal = e.target.innerText.trim();
+        updateSeedValue(path, newVal);
+        const badge = document.getElementById(`badge-${path.replace(/\./g, '-')}`);
+        if(badge) {
+            badge.className = 'badge-source badge-source-manual';
+            badge.innerText = 'Manual';
+        }
+    });
+
+    schemaGrid.appendChild(card);
+  };
+  
+  const categories = ['company', 'product', 'audience', 'competition', 'market', 'content'];
+  categories.forEach(cat => {
+    if (seed[cat]) {
+      Object.entries(seed[cat]).forEach(([k, v]) => {
+          renderField(`${cat}.${k}`, v, `${cat} - ${k.replace(/_/g, ' ')}`);
+      });
+    }
+  });
+}
+
+window.updateSeedValue = function(path, newValue) {
+    const keys = path.split('.');
+    let current = lastSeed;
+    if (!current) current = lastSeed = buildSeed();
+    
+    for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) current[keys[i]] = {};
+        current = current[keys[i]];
+    }
+    
+    let parsedVal = newValue;
+    try {
+        if ((newValue.startsWith('[') && newValue.endsWith(']')) || 
+            (newValue.startsWith('{') && newValue.endsWith('}'))) {
+            parsedVal = JSON.parse(newValue);
+        }
+    } catch(e) {}
+    
+    current[keys[keys.length - 1]] = parsedVal;
+    
+    if (!window.fieldScores) window.fieldScores = {};
+    let scoreCur = window.fieldScores;
+    for (let i = 0; i < keys.length - 1; i++) {
+        if (!scoreCur[keys[i]]) scoreCur[keys[i]] = {};
+        scoreCur = scoreCur[keys[i]];
+    }
+    scoreCur[keys[keys.length - 1]] = { score: 'Green', source: 'Manual' };
+};
+
 function showCompletionScreen(written) {
   document.querySelectorAll('.step-section').forEach(el => el.style.display = 'none');
   navButtons.style.display   = 'none';
@@ -561,33 +588,209 @@ function showCompletionScreen(written) {
   document.getElementById('btnCloseWindow').style.display = 'inline-block';
 }
 
-// ── Add Competitor ────────────────────────────────────────────────────────────
-function addCompetitor() {
-  if (competitorCount >= 3) return;
-  competitorCount++;
+// ── Conversational Interview Logic ──────────────────────────────────────────────
+async function startInterview() {
+  const container = document.getElementById('interviewContainer');
+  const inputEl = document.getElementById('interviewInput');
+  const btnSend = document.getElementById('btnSendAnswer');
+  const btnSkip = document.getElementById('btnSkipChat');
 
-  const div = document.createElement('div');
-  div.className = 'repeatable-item';
-  div.innerHTML = `
-    <div class="repeatable-title">Competitor ${competitorCount}</div>
-    <div class="form-group">
-      <input type="text" id="comp${competitorCount}Name" class="form-input" placeholder="Competitor Name">
-    </div>
-    <div class="form-group">
-      <input type="url" id="comp${competitorCount}Url" class="form-input" placeholder="Website URL (e.g. https://...)">
-    </div>
-    <div class="form-group">
-      <input type="text" id="comp${competitorCount}Diff" class="form-input" placeholder="Our #1 differentiator against them">
-    </div>
-    <div class="form-group" style="margin-bottom: 0;">
-      <input type="text" id="comp${competitorCount}Gap" class="form-input" placeholder="What are they missing in their messaging?">
-    </div>
-  `;
-  competitorsContainer.appendChild(div);
+  const seed = buildSeed(); // merges current schema and form values
+  
+  if (!window.chatStarted) {
+    container.innerHTML = `<div class="chat-msg agent">Hi! I'm reviewing what we have so far... give me a second.</div>`;
+    window.chatStarted = true;
+    
+    btnSend.onclick = handleSendAnswer;
+    btnSkip.onclick = () => {
+      showStep(3); // Skip straight to Draft Generation
+    };
+    
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSendAnswer();
+      }
+    });
 
-  if (competitorCount === 3) {
-    addCompetitorBtn.style.display = 'none';
+    try {
+      // 1. Check for competitor discovery
+      const hasCompetitors = seed.competition?.competitors?.length > 0;
+      if (!hasCompetitors) {
+        container.innerHTML += `<div class="chat-msg agent typing-indicator">Searching the web for competitors...</div>`;
+        container.scrollTop = container.scrollHeight;
+        
+        const compRes = await fetch('/api/competitor-discovery', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            companyName: seed.company?.name || 'Unknown',
+            industry: seed.company?.industry || seed.company?.business_model || ''
+          })
+        });
+
+        document.querySelector('.typing-indicator')?.remove();
+
+        const compData = await compRes.json();
+        if (compData.success && compData.enrichedData && compData.enrichedData.competitors) {
+          const comps = compData.enrichedData.competitors;
+          window._tempComps = comps;
+          
+          container.innerHTML += `
+            <div class="chat-msg agent" id="compCard">
+              <p>We did some quick research and found these likely competitors. Please review and edit if needed:</p>
+              <div style="margin-top:0.5rem; display:flex; flex-direction:column; gap:0.5rem;">
+                <input type="text" id="aiComp0" value="${escapeHtml(comps[0]?.name || '')}" class="form-input" style="padding:0.4rem; color: #000;">
+                <input type="text" id="aiComp1" value="${escapeHtml(comps[1]?.name || '')}" class="form-input" style="padding:0.4rem; color: #000;">
+                <input type="text" id="aiComp2" value="${escapeHtml(comps[2]?.name || '')}" class="form-input" style="padding:0.4rem; color: #000;">
+                <button class="btn-primary" id="btnConfirmComps" style="align-self: flex-start; padding: 0.5rem 1rem;">Confirm</button>
+              </div>
+            </div>`;
+          
+          container.scrollTop = container.scrollHeight;
+          btnSend.disabled = true;
+          inputEl.disabled = true;
+
+          // Attach confirmation event handler
+          document.getElementById('btnConfirmComps').onclick = async () => {
+            const confirmed0 = document.getElementById('aiComp0').value;
+            const confirmed1 = document.getElementById('aiComp1').value;
+            const confirmed2 = document.getElementById('aiComp2').value;
+
+            // Merge into local window.extractedSchema
+            if (!window.extractedSchema) window.extractedSchema = {};
+            if (!window.extractedSchema.competition) window.extractedSchema.competition = { competitors: [] };
+            
+            if (confirmed0) window.extractedSchema.competition.competitors.push({ name: confirmed0, differentiator: comps[0]?.differentiator || '' });
+            if (confirmed1) window.extractedSchema.competition.competitors.push({ name: confirmed1, differentiator: comps[1]?.differentiator || '' });
+            if (confirmed2) window.extractedSchema.competition.competitors.push({ name: confirmed2, differentiator: comps[2]?.differentiator || '' });
+
+            if (compData.enrichedData.biggest_trend) {
+                if (!window.extractedSchema.market) window.extractedSchema.market = {};
+                window.extractedSchema.market.biggest_trend = compData.enrichedData.biggest_trend;
+            }
+
+            document.getElementById('compCard').innerHTML = `<p>Competitors confirmed! Moving on...</p>`;
+            btnSend.disabled = false;
+            inputEl.disabled = false;
+            
+            // Now start the normal gap-filling
+            await proceedWithNextQuestion(buildSeed());
+          };
+          
+          return; // Wait for user interaction
+        }
+      }
+
+      // 2. Normal progression if no competitors found or already has them
+      await proceedWithNextQuestion(seed);
+
+    } catch (err) {
+      document.querySelector('.typing-indicator')?.remove();
+      container.innerHTML += `<div class="chat-msg agent" style="color:var(--danger)">Error connecting to AI: ${err.message}. You can skip to drafts.</div>`;
+    }
+    
+    container.scrollTop = container.scrollHeight;
   }
+}
+
+async function proceedWithNextQuestion(currentSeed) {
+  const container = document.getElementById('interviewContainer');
+  const btnSend = document.getElementById('btnSendAnswer');
+  const inputEl = document.getElementById('interviewInput');
+  
+  try {
+    const response = await fetch('/api/generate-question', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        schema: currentSeed,
+        scores: window.fieldScores || {}
+      })
+    });
+    
+    const resJSON = await response.json();
+    if (resJSON.success && resJSON.question) {
+      window.currentMissingFields = resJSON.missingFields || [];
+      container.innerHTML += `<div class="chat-msg agent">${resJSON.question}</div>`;
+    } else {
+      container.innerHTML += `<div class="chat-msg agent">It looks like we have everything we need! You can move to the next step to review your drafts.</div>`;
+      btnSend.disabled = true;
+      inputEl.disabled = true;
+    }
+  } catch (err) {
+    container.innerHTML += `<div class="chat-msg agent" style="color:var(--danger)">Error connecting to AI: ${err.message}. You can skip to drafts.</div>`;
+  }
+  container.scrollTop = container.scrollHeight;
+}
+
+async function handleSendAnswer() {
+  const container = document.getElementById('interviewContainer');
+  const inputEl = document.getElementById('interviewInput');
+  const answer = inputEl.value.trim();
+  const btnSend = document.getElementById('btnSendAnswer');
+  
+  if (!answer) return;
+  
+  // Add user message to chat
+  container.innerHTML += `<div class="chat-msg user">${escapeHtml(answer)}</div>`;
+  inputEl.value = '';
+  container.scrollTop = container.scrollHeight;
+  
+  btnSend.disabled = true;
+  inputEl.disabled = true;
+  container.innerHTML += `<div class="chat-msg agent typing-indicator">Thinking...</div>`;
+  container.scrollTop = container.scrollHeight;
+  
+  try {
+    const seed = buildSeed();
+    const response = await fetch('/api/parse-answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        schema: seed,
+        missingFields: window.currentMissingFields,
+        answer: answer
+        // Note: keeping context history minimal for this wave, just passing the updated schema back
+      })
+    });
+    
+    const resJSON = await response.json();
+    document.querySelector('.typing-indicator')?.remove();
+    
+    if (resJSON.success) {
+      // Update our stored extracted schema and scores!
+      window.extractedSchema = resJSON.updatedSchema;
+      window.fieldScores = resJSON.scores;
+      
+      // Determine next question
+      const qRes = await fetch('/api/generate-question', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          schema: window.extractedSchema,
+          scores: window.fieldScores
+        })
+      });
+      const qJSON = await qRes.json();
+      if (qJSON.success && qJSON.question) {
+        window.currentMissingFields = qJSON.missingFields || [];
+        container.innerHTML += `<div class="chat-msg agent">Got it! ${qJSON.question}</div>`;
+      } else {
+        container.innerHTML += `<div class="chat-msg agent">Awesome, I think I have a complete picture now! You can proceed to Drafts.</div>`;
+      }
+    } else {
+      container.innerHTML += `<div class="chat-msg agent" style="color:var(--danger)">I couldn't quite process that. Could you clarify?</div>`;
+    }
+  } catch (err) {
+    document.querySelector('.typing-indicator')?.remove();
+    container.innerHTML += `<div class="chat-msg agent" style="color:var(--danger)">Network error: ${err.message}</div>`;
+  }
+  
+  btnSend.disabled = false;
+  inputEl.disabled = false;
+  inputEl.focus();
+  container.scrollTop = container.scrollHeight;
 }
 
 // ── Events ────────────────────────────────────────────────────────────────────
@@ -602,8 +805,8 @@ btnNext.addEventListener('click', () => {
 });
 
 btnBack.addEventListener('click', () => {
-  if (currentStep === 7) {
-    currentStep = 6;
+  if (currentStep === 3) {
+    currentStep = 2;
     navButtons.style.display = 'flex';
     updateUI();
   } else {
@@ -613,20 +816,98 @@ btnBack.addEventListener('click', () => {
 
 btnPublish.addEventListener('click', handlePublish);
 
-addCompetitorBtn.addEventListener('click', addCompetitor);
-
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && currentStep < 6) {
+  if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && currentStep < 2) {
     e.preventDefault();
     btnNext.click();
   }
 });
 
 document.addEventListener('focusout', (e) => {
-  if (e.target.matches('input, textarea, select') && currentStep < 7) {
+  if (e.target.matches('input, textarea, select') && currentStep < 3) {
     saveDraft();
   }
 });
+
+// ── Spark Popover Logic ───────────────────────────────────────────────────────
+function initSparkButtons() {
+  const sparkPopover = document.getElementById('sparkPopover');
+  const sparkSuggestions = document.getElementById('sparkSuggestions');
+  const sparkLoading = document.getElementById('sparkLoading');
+
+  document.querySelectorAll('.spark-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const targetId = btn.getAttribute('data-target');
+      const targetInput = document.getElementById(targetId);
+      if (!targetInput) return;
+
+      const rect = btn.getBoundingClientRect();
+      sparkPopover.style.top = `${rect.bottom + window.scrollY + 5}px`;
+      sparkPopover.style.left = `${rect.left + window.scrollX - 250}px`;
+      sparkPopover.style.display = 'block';
+      
+      sparkSuggestions.innerHTML = '';
+      sparkSuggestions.style.display = 'none';
+      sparkLoading.style.display = 'block';
+      
+      try {
+        const seed = buildSeed();
+        const response = await fetch('/api/spark-suggestion', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fieldName: targetInput.previousElementSibling?.textContent || targetId,
+            currentState: seed
+          })
+        });
+        
+        const resJSON = await response.json();
+        sparkLoading.style.display = 'none';
+        
+        if (response.status === 503 || resJSON.error === 'NO_AI_AVAILABLE') {
+            btn.title = "Enable AI: add an API key or install Ollama";
+            btn.style.opacity = '0.5';
+            sparkPopover.style.display = 'none';
+            alert('AI Models unavailable. Fallback missing. Please check your .env or start Ollama local server.');
+            return;
+        }
+
+        if (resJSON.success && resJSON.suggestions) {
+          sparkSuggestions.style.display = 'flex';
+          resJSON.suggestions.forEach(sug => {
+            const row = document.createElement('div');
+            row.style.padding = '0.5rem';
+            row.style.background = 'rgba(255,255,255,0.05)';
+            row.style.borderRadius = '4px';
+            row.style.cursor = 'pointer';
+            row.style.fontSize = '0.9rem';
+            row.textContent = sug;
+            row.addEventListener('click', () => {
+              targetInput.value = sug;
+              sparkPopover.style.display = 'none';
+            });
+            row.addEventListener('mouseenter', () => row.style.background = 'rgba(255,255,255,0.1)');
+            row.addEventListener('mouseleave', () => row.style.background = 'rgba(255,255,255,0.05)');
+            sparkSuggestions.appendChild(row);
+          });
+        }
+      } catch (err) {
+        sparkLoading.style.display = 'none';
+        sparkSuggestions.style.display = 'block';
+        sparkSuggestions.innerHTML = `<div style="color:red; font-size: 0.9rem;">Error: ${err.message}</div>`;
+      }
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!sparkPopover.contains(e.target) && !e.target.classList.contains('spark-btn')) {
+      sparkPopover.style.display = 'none';
+    }
+  });
+}
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
@@ -635,6 +916,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   restoreDraft();
   updateUI();
   initOmniGate();
+  initSparkButtons();
 });
 
 // ── Step 0: Omni-Gate Logic ───────────────────────────────────────────────────
@@ -748,8 +1030,26 @@ function initOmniGate() {
       if (!scoreData.success) throw new Error(scoreData.error);
       
       // Temporary storage for testing/review during Wave 2
-      window.extractedSchema = scoreData.data;
-      window.fieldScores = scoreData.scores;
+      window.extractedSchema = scoreData.data || {};
+      window.fieldScores = scoreData.scores || {};
+      
+      // Pre-fill Step 1
+      if (window.extractedSchema?.company?.name) {
+        const cNameEl = document.getElementById('companyName');
+        if (cNameEl) cNameEl.value = window.extractedSchema.company.name;
+      }
+      if (window.extractedSchema?.company?.business_model) {
+        const bModelEl = document.getElementById('businessModel');
+        if (bModelEl) {
+          // find matching option
+          const val = window.extractedSchema.company.business_model;
+          Array.from(bModelEl.options).forEach(opt => {
+            if (opt.value.toLowerCase() === val.toLowerCase()) {
+              bModelEl.value = opt.value;
+            }
+          });
+        }
+      }
       
       addLog('Smart mapping complete. Moving to intelligent gap-fill mode...');
       setTimeout(() => {

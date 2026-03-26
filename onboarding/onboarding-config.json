@@ -9,5 +9,6 @@
   "chroma_host": "http://localhost:8000",
   "project_slug": "",
   "mir_output_path": ".agent/marketing-get-shit-done/templates/MIR",
-  "msp_output_path": ".agent/marketing-get-shit-done/templates/MSP"
+  "msp_output_path": ".agent/marketing-get-shit-done/templates/MSP",
+  "ollama_model": "llama3:8b"
 }

@@ -17,6 +17,10 @@ const textParser = require('./parsers/text-parser.cjs');
 // Extractors & Scorers
 const schemaExtractor = require('./extractors/schema-extractor.cjs');
 const confidenceScorer = require('./confidences/confidence-scorer.cjs');
+const { getGroupingPrompt } = require('./prompts/grouping-prompt.js');
+const { getSparkPrompt } = require('./prompts/spark-prompt.js');
+const { discoverCompetitors } = require('./enrichers/competitor-enricher.cjs');
+const llm = require('./agents/llm-adapter.cjs');
 
 const ONBOARDING_DIR = path.resolve(__dirname, '..');
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
@@ -303,6 +307,104 @@ async function handleExtractAndScore(req, res) {
   }
 }
 
+async function handleGenerateQuestion(req, res) {
+  try {
+    const { businessModel, missingFields } = await readBody(req);
+    if (!businessModel || !missingFields || missingFields.length === 0) {
+      return json(res, 400, { success: false, error: 'businessModel and missingFields are required.' });
+    }
+
+    const userPrompt = getGroupingPrompt(businessModel, missingFields.slice(0, 3)); // Only take up to 3 missing fields at once
+    const systemPrompt = "You are a conversational UI assistant generating single, friendly questions.";
+
+    const llmRes = await llm.call(systemPrompt, userPrompt, { temperature: 0.6 });
+    if (!llmRes.ok) throw new Error(llmRes.error);
+
+    json(res, 200, { success: true, question: llmRes.text.trim() });
+  } catch (err) {
+    console.error('[POST /api/generate-question] Error:', err.message);
+    json(res, 500, { success: false, error: err.message });
+  }
+}
+
+async function handleParseAnswer(req, res) {
+  try {
+    const { existingData, userAnswer } = await readBody(req);
+    if (!existingData || !userAnswer) {
+      return json(res, 400, { success: false, error: 'existingData and userAnswer required.' });
+    }
+
+    const jsonMap = await schemaExtractor.extractPartialToSchema(existingData, userAnswer);
+    const scoredMap = confidenceScorer.scoreFields(jsonMap);
+
+    json(res, 200, { success: true, data: jsonMap, scores: scoredMap });
+  } catch (err) {
+    console.error('[POST /api/parse-answer] Error:', err.message);
+    json(res, 500, { success: false, error: err.message });
+  }
+}
+
+async function handleSparkSuggestion(req, res) {
+  try {
+    const { fieldName, currentState } = await readBody(req);
+    if (!fieldName || !currentState) {
+      return json(res, 400, { success: false, error: 'fieldName and currentState are required' });
+    }
+
+    const contextString = JSON.stringify(currentState, null, 2);
+    const prompt = getSparkPrompt(fieldName, contextString);
+    
+    // Call LLM adapter
+    const llmRes = await llm.call(
+      "You are a helpful AI that strictly outputs JSON arrays of strings.",
+      prompt,
+      { max_tokens: 300, temperature: 0.7 }
+    );
+    
+    if (!llmRes.ok) {
+      if (llmRes.error === 'NO_AI_AVAILABLE') {
+        return json(res, 503, { success: false, error: 'NO_AI_AVAILABLE' });
+      }
+      throw new Error(llmRes.error);
+    }
+
+    let parsed = [];
+    try {
+      const jsonStart = llmRes.text.indexOf('[');
+      const jsonEnd = llmRes.text.lastIndexOf(']');
+      if (jsonStart >= 0 && jsonEnd > jsonStart) {
+        parsed = JSON.parse(llmRes.text.substring(jsonStart, jsonEnd + 1));
+      } else {
+        parsed = JSON.parse(llmRes.text);
+      }
+    } catch (e) {
+      throw new Error('LLM did not return a valid JSON array. Response: ' + llmRes.text);
+    }
+
+    json(res, 200, { success: true, suggestions: parsed });
+  } catch(err) {
+    console.error('[POST /api/spark-suggestion] Error:', err.message);
+    json(res, 500, { success: false, error: err.message });
+  }
+}
+
+async function handleCompetitorDiscovery(req, res) {
+  try {
+    const { companyName, industry } = await readBody(req);
+    const result = await discoverCompetitors(companyName, industry);
+    if (!result.success) {
+      if (result.reason === "No TAVILY_API_KEY provided") {
+        return json(res, 400, { success: false, reason: "No API Key" });
+      }
+      return json(res, 500, { success: false, error: result.reason });
+    }
+    json(res, 200, { success: true, enrichedData: result.enrichedData });
+  } catch (err) {
+    console.error('[POST /api/competitor-discovery] Error:', err.message);
+    json(res, 500, { success: false, error: err.message });
+  }
+}
+
 function handleCorsPreflight(req, res) {
   res.writeHead(204, { 
     'Access-Control-Allow-Origin': '*', 
@@ -320,5 +422,9 @@ module.exports = {
   handleApprove,
   handleExtractSources,
   handleExtractAndScore,
+  handleGenerateQuestion,
+  handleParseAnswer,
+  handleSparkSuggestion,
+  handleCompetitorDiscovery,
   handleCorsPreflight
 };
