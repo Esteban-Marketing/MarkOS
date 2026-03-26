@@ -198,3 +198,30 @@
 - [x] 12-02: test/example-resolver.test.js suite (8 tests, all pass)
 - [x] 12-03: Tier 2 PAID-ACQUISITION examples × 7 models
 - [x] 12-04: generatePaidAcquisition() injected into msp-filler.cjs
+
+---
+
+## Phase 13: Smart Onboarding Engine v2.0
+**Goal:** Replace the 7-step batch onboarding form with an intelligent, magic 0-party data pipeline. The system scrapes the client's website (Tavily), parses uploaded files (PDF/DOCX/CSV/TXT/MD), assigns LLM confidence scores to every schema field, and conducts a minimal conversational gap-fill interview — asking only Red/Yellow fields. Business-model-aware routing, "Skip Chat" bailout, AI Spark icon generation, and a full inline-editable Step 7 review dashboard complete the experience.
+**Requirements Mapped:** ONB-13-01 → ONB-13-20
+**Depends on:** Phase 6 (Onboarding Engine), Phase 12 (Deferred Items)
+**Status:** ⏳ Pending — Context locked (see 13-CONTEXT.md)
+**Success Criteria:**
+1. Step 0 Omni-Input Gate accepts URL + file drop as the single entry point.
+2. Tavily scrapes site (depth 2, 15 pages max), file parsers handle PDF/DOCX/TXT/MD/CSV.
+3. Terminal-style live extraction screen shown during processing.
+4. LLM confidence scorer maps all extracted data to `onboarding-seed.schema.json v2.1` with R/Y/G scores.
+5. Conversational interview asks only Red/Yellow fields using natural-language grouping.
+6. LLM cascade: BYOK → Ollama local → manual form (tier 3).
+7. AI Spark ✨ popover on all text inputs with 2-3 generated alternatives.
+8. "Skip Chat" button available throughout — renders pre-filled traditional form.
+9. Auto-enrichment: competitor discovery via Tavily after business model confirmed.
+10. Step 7 = full 30-field schema dashboard with inline editing, source badges, and confidence indicators.
+
+**Plans:**
+- [ ] 13-01: Step 0 Omni-Input Gate + Tavily scraper + file parsers
+- [ ] 13-02: Confidence scoring engine + LLM extraction pipeline
+- [ ] 13-03: Conversational interview engine + business model routing
+- [ ] 13-04: AI Spark icon + LLM cascade (BYOK → Ollama → manual)
+- [ ] 13-05: Auto-enrichment (competitor discovery) + "Skip Chat" bailout
+- [ ] 13-06: Step 7 full schema review dashboard + UI/UX polish
