@@ -122,6 +122,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && req.url === '/config') return handlers.handleConfig(req, res);
   if (req.method === 'GET' && req.url === '/status') return handlers.handleStatus(req, res);
   if (req.method === 'POST' && req.url.startsWith('/submit')) return handlers.handleSubmit(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/api/extract-sources')) return handlers.handleExtractSources(req, res);
   if (req.method === 'POST' && req.url.startsWith('/regenerate')) return handlers.handleRegenerate(req, res);
   if (req.method === 'POST' && req.url.startsWith('/approve')) return handlers.handleApprove(req, res);
 

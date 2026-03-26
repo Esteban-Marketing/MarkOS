@@ -6,11 +6,12 @@
 // ── Configuration & State ─────────────────────────────────────────────────────
 const STORAGE_KEY  = 'mgsd-onboarding-draft';
 const TOTAL_STEPS  = 7;
-let currentStep    = 1;
+let currentStep    = 0; // Starts at Step 0 (Omni-Input Gate)
 let lastSeed       = null;   // seed built on step 6 submit
 let lastSlug       = null;   // slug returned by server
 let approvedDrafts = {};     // { section_key: content }
 let draftContents  = {};     // { section_key: original content }
+let omniExtractedText = '';  // raw text extracted from Step 0
 
 // ── Elements ──────────────────────────────────────────────────────────────────
 const stepSections       = document.querySelectorAll('.step-section');
@@ -144,11 +145,19 @@ function updateUI() {
     }
   });
 
-  const percent = ((currentStep - 1) / TOTAL_STEPS) * 100;
+  const percent = currentStep === 0 ? 0 : ((currentStep - 1) / TOTAL_STEPS) * 100;
   progressFill.style.width = `${percent}%`;
-  currentStepNum.innerText = currentStep;
+  
+  if (currentStep > 0 && currentStep <= TOTAL_STEPS) {
+    currentStepNum.innerText = currentStep;
+  }
 
-  btnBack.disabled = (currentStep === 1);
+  btnBack.disabled = (currentStep === 1 || currentStep === 0);
+
+  if (currentStep === 0) {
+    navButtons.style.display = 'none'; // Use custom Omni-Gate buttons instead
+    return;
+  }
 
   if (currentStep === 6) {
     if (isChromaOffline) {
@@ -170,7 +179,7 @@ function updateUI() {
 }
 
 function showStep(stepIndex) {
-  if (stepIndex < 1) return;
+  if (stepIndex < 0) return;
   if (stepIndex > TOTAL_STEPS) return;
 
   if (stepIndex === 7) {
@@ -625,4 +634,122 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadStatus();
   restoreDraft();
   updateUI();
+  initOmniGate();
 });
+
+// ── Step 0: Omni-Gate Logic ───────────────────────────────────────────────────
+function initOmniGate() {
+  const dropzone = document.getElementById('omniDropzone');
+  const fileInput = document.getElementById('omniFileInput');
+  const filesList = document.getElementById('omniFilesList');
+  const btnExtract = document.getElementById('btnExtract');
+  const btnSkip = document.getElementById('btnSkipExtract');
+  const terminal = document.getElementById('omniTerminal');
+  const terminalLines = document.getElementById('terminalLines');
+  const omniUrl = document.getElementById('omniUrl');
+
+  let selectedFiles = [];
+
+  dropzone.addEventListener('click', () => fileInput.click());
+
+  dropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropzone.classList.add('dragover');
+  });
+
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files.length) {
+      handleFiles(Array.from(e.dataTransfer.files));
+    }
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) {
+      handleFiles(Array.from(e.target.files));
+    }
+  });
+
+  function handleFiles(files) {
+    selectedFiles = [...selectedFiles, ...files];
+    renderFiles();
+  }
+
+  function renderFiles() {
+    filesList.innerHTML = selectedFiles.map((f, i) => 
+      `<div>📄 ${f.name} <span style="color:var(--danger); cursor:pointer;" onclick="removeFile(${i})">✕</span></div>`
+    ).join('');
+  }
+
+  window.removeFile = (idx) => {
+    selectedFiles.splice(idx, 1);
+    renderFiles();
+  };
+
+  btnSkip.addEventListener('click', () => {
+    showStep(1);
+  });
+
+  btnExtract.addEventListener('click', async () => {
+    const url = omniUrl.value.trim();
+    if (!url && selectedFiles.length === 0) {
+      alert("Please provide a URL or upload documents first.");
+      return;
+    }
+
+    terminal.style.display = 'block';
+    terminalLines.innerHTML = '';
+    btnExtract.disabled = true;
+    btnSkip.disabled = true;
+    
+    const addLog = (msg) => {
+      const p = document.createElement('p');
+      p.textContent = `> ${msg}`;
+      terminalLines.appendChild(p);
+      terminal.scrollTop = terminal.scrollHeight;
+    };
+
+    addLog('Initializing Omni-Input Extractions...');
+    
+    const formData = new FormData();
+    if (url) {
+      formData.append('url', url);
+      addLog(`Connecting to ${new URL(url).hostname}...`);
+    }
+
+    selectedFiles.forEach(file => {
+      formData.append('files', file);
+      addLog(`Parsing ${file.name}...`);
+    });
+
+    try {
+      const res = await fetch('/api/extract-sources', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+
+      omniExtractedText = data.text;
+      addLog('Extraction complete. [Done]');
+      
+      // Temporary: Since LLM mapping is Wave 2 (Phase 13-02), we just dump the text and move to next step
+      // In the next wave, we'll POST this text to an LLM extractor.
+      setTimeout(() => {
+        addLog('Moving to intelligent gap-fill mode...');
+        setTimeout(() => {
+          showStep(1);
+        }, 1000);
+      }, 1000);
+
+    } catch (err) {
+      addLog(`Error: ${err.message}`);
+      btnExtract.disabled = false;
+      btnSkip.disabled = false;
+    }
+  });
+}

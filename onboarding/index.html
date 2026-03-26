@@ -36,8 +36,34 @@
 
         <main class="onboarding-card">
             
+            <!-- Step 0: Omni-Input Gate -->
+            <section class="step-section active" data-step="0">
+                <div class="omni-gate">
+                    <h2 class="step-title" style="font-size: 1.8rem; margin-bottom: 2rem; line-height: 1.4;">Give us your website URL,<br>or drag and drop your company docs here.<br><span style="color: var(--text-muted); font-size: 1.25rem; font-weight: normal;">We'll figure out the rest.</span></h2>
+                    
+                    <input type="url" id="omniUrl" class="omni-input" placeholder="https://yourwebsite.com">
+                    
+                    <div id="omniDropzone" class="omni-dropzone">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📄</div>
+                        <div>Drag &amp; Drop PDFs, DOCX, CSV, or Text files here</div>
+                        <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">or click to browse</div>
+                        <input type="file" id="omniFileInput" multiple accept=".pdf,.docx,.csv,.txt,.md" style="display: none;">
+                    </div>
+                    
+                    <div id="omniFilesList" style="margin-top: 1rem; text-align: left; font-size: 0.9rem; color: var(--text-main);"></div>
+
+                    <button type="button" class="btn-primary" id="btnExtract" style="margin-top: 2rem; font-size: 1.25rem; padding: 1rem 3rem;">Extract Context →</button>
+                    <button type="button" class="btn-secondary" id="btnSkipExtract" style="margin-top: 2rem; margin-left: 1rem; font-size: 1.25rem; padding: 1rem 2rem;">Skip / Manual →</button>
+                    
+                    <div id="omniTerminal" class="omni-terminal">
+                        <div id="terminalLines"></div>
+                        <div>&gt;<span class="cursor-blink">_</span></div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Step 1: Company & Brand -->
-            <section class="step-section active" data-step="1">
+            <section class="step-section" data-step="1">
                 <h2 class="step-title">Company &amp; Brand</h2>
 
                 <div class="form-group">

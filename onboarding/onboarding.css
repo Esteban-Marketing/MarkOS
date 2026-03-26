@@ -582,3 +582,14 @@ h1.onboarding-title {
 .gap-md { gap: 0.75rem !important; }
 .justify-center { justify-content: center !important; }
 .flex-wrap { flex-wrap: wrap !important; }
+
+/* ── Step 0: Omni-Gate ────────────────────────────── */
+.omni-gate { text-align: center; padding: 2rem; }
+.omni-input { width: 100%; max-width: 600px; padding: 1rem; font-size: 1.25rem; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 1rem; background: var(--bg-alt); color: var(--text-main); transition: border-color 0.2s; }
+.omni-input:focus { border-color: var(--primary); outline: none; }
+.omni-dropzone { border: 2px dashed var(--border); border-radius: 8px; padding: 2rem; margin-top: 1rem; cursor: pointer; transition: all 0.2s; }
+.omni-dropzone:hover, .omni-dropzone.dragover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
+.omni-terminal { text-align: left; background: #000; color: #0f0; font-family: monospace; padding: 1rem; border-radius: 8px; margin-top: 2rem; display: none; min-height: 150px; overflow-y: auto; max-height: 300px; }
+.omni-terminal p { margin: 0 0 0.5rem 0; }
+.cursor-blink { animation: blink 1s step-end infinite; }
+@keyframes blink { 50% { opacity: 0; } }

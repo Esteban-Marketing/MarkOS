@@ -2,9 +2,17 @@
 
 const fs = require('fs');
 const path = require('path');
+const { IncomingForm } = require('formidable');
 const orchestrator = require('./agents/orchestrator.cjs');
 const chroma = require('./chroma-client.cjs');
 const writeMIR = require('./write-mir.cjs');
+
+// Parsers & Scrapers
+const tavilyScraper = require('./scrapers/tavily-scraper.cjs');
+const pdfParser = require('./parsers/pdf-parser.cjs');
+const docxParser = require('./parsers/docx-parser.cjs');
+const csvParser = require('./parsers/csv-parser.cjs');
+const textParser = require('./parsers/text-parser.cjs');
 
 const ONBOARDING_DIR = path.resolve(__dirname, '..');
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
@@ -206,6 +214,74 @@ async function handleApprove(req, res) {
   }
 }
 
+async function handleExtractSources(req, res) {
+  try {
+    const config = getConfig();
+    const form = new IncomingForm({ maxTotalFileSize: 10 * 1024 * 1024, maxFiles: 5 }); // 10MB limit
+
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        return json(res, 400, { success: false, error: 'File upload error: ' + err.message });
+      }
+
+      let extractedText = '';
+
+      // 1. Scrape URL if provided
+      const url = fields.url && fields.url[0];
+      if (url) {
+        try {
+          // Assume tavily config exists in the onboarding-config
+          const scrapeData = await tavilyScraper.scrapeDomain(url, config.tavily_api_key || process.env.TAVILY_API_KEY);
+          extractedText += scrapeData + '\n';
+        } catch (e) {
+          console.warn(`Scrape failed for ${url}:`, e.message);
+          extractedText += `--- TAVILY SCRAPE FAILED FOR ${url} ---\n(User provided URL but scraping failed: ${e.message})\n\n`;
+        }
+      }
+
+      // 2. Parse dropped files if provided
+      const uploadedFiles = files['files[]'] || files['files'] || [];
+      const fileArray = Array.isArray(uploadedFiles) ? uploadedFiles : [uploadedFiles];
+      
+      for (const file of fileArray) {
+        try {
+          const buffer = fs.readFileSync(file.filepath);
+          const ext = path.extname(file.originalFilename).toLowerCase();
+          let parsedFileText = '';
+
+          switch (ext) {
+            case '.pdf':
+              parsedFileText = await pdfParser.parsePdf(buffer);
+              break;
+            case '.docx':
+              parsedFileText = await docxParser.parseDocx(buffer);
+              break;
+            case '.csv':
+              parsedFileText = csvParser.parseCsv(buffer);
+              break;
+            case '.txt':
+            case '.md':
+              parsedFileText = textParser.parseText(buffer);
+              break;
+            default:
+              console.warn(`Unsupported extraction extension: ${ext}`);
+          }
+          if (parsedFileText) {
+            extractedText += `\n[File: ${file.originalFilename}]\n${parsedFileText}\n`;
+          }
+        } catch (e) {
+          console.warn(`Failed to parse file ${file.originalFilename}:`, e.message);
+        }
+      }
+
+      json(res, 200, { success: true, text: extractedText.trim() });
+    });
+  } catch (err) {
+    console.error('[POST /api/extract-sources] Error:', err.message);
+    json(res, 500, { success: false, error: err.message });
+  }
+}
+
 function handleCorsPreflight(req, res) {
   res.writeHead(204, { 
     'Access-Control-Allow-Origin': '*', 
@@ -221,5 +297,6 @@ module.exports = {
   handleSubmit,
   handleRegenerate,
   handleApprove,
+  handleExtractSources,
   handleCorsPreflight
 };
