@@ -1,8 +1,10 @@
 ---
+phase: 10
+current_phase: 10 (scale-and-telemetry)
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: "v1.1 Hardening"
-status: completed
+status: plan
 last_updated: "2026-03-25T21:06:21.000Z"
 progress:
   total_phases: 12
@@ -13,8 +15,8 @@ progress:
 
 ## Current Position
 
-Phase: 12 (phase-11-deferred) — COMPLETE
-Plan: 4 of 4
+Phase: 10 (scale-and-telemetry) — PLANNING
+Plan: 0 of 2
 
 ## Accumulated Context
 
