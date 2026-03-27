@@ -1,44 +1,90 @@
-# Marketing Get Shit Done (MGSD)
+# MarkOS — Marketing Operating System
 
 [![npm](https://img.shields.io/npm/v/marketing-get-shit-done)](https://www.npmjs.com/package/marketing-get-shit-done)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Agentic marketing execution protocol.** MGSD installs alongside [Get Shit Done (GSD)](https://www.npmjs.com/package/get-shit-done-cc) for unified AI-powered development + marketing teams. It gives your AI agent a complete marketing operating system: brand intelligence, strategy plans, task templates, and a self-healing vector memory.
+> Marketing, structured.
 
----
+You've tried prompting your way to a marketing strategy. It doesn't work without structure.
 
-## Quick Start
+**MarkOS is the missing operating system** — protocol-grade marketing infrastructure for AI-ready teams, installed in one command.
 
-### Install
 ```bash
 npx marketing-get-shit-done install
 ```
 
-### Update
-```bash
-npx marketing-get-shit-done update
-```
+---
 
-### Start Client Onboarding
+## What Is a Marketing OS?
+
+Most AI marketing tools give you outputs. MarkOS gives you a system.
+
+| Without MarkOS | With MarkOS |
+|---|---|
+| Prompt → hope for consistency | Protocol → always on-brand |
+| Scattered docs and Notion pages | Structured MIR intelligence layer |
+| Different agents, no shared context | ChromaDB memory + override resolution |
+| Re-explain your brand every session | One-command deploy, persistent context |
+
+**MarkOS is not a writing tool.** It's the structured infrastructure that makes AI marketing agents effective.
+
+---
+
+## Install
+
+In ~60 seconds you get:
+- `.agent/marketing-get-shit-done/` — the full protocol engine
+- `.planning/MIR/` — 78-file Marketing Intelligence Repository (brand, audience, competitive)
+- `.planning/MSP/` — 80-file Marketing Strategy Plan (channels, campaigns, budgets)
+- `.protocol-lore/` — AI agent navigation knowledge base
+- A web onboarding form to fill your brand intelligence
+
 ```bash
+# Update when new protocol versions ship:
+npx marketing-get-shit-done update
+
+# Run the onboarding form to fill your brand intelligence:
 node onboarding/backend/server.cjs
 # Then open http://localhost:4242
 ```
 
 ---
 
-## What It Does
+## Three Layers
 
-MGSD provides AI agents with a **complete marketing operating system**:
+```
+MIR  (Marketing Intelligence Repository)
+  └─ Brand voice, audience profiles, competitive landscape, product facts
+     Ground truth. Never generated without approval. You own this.
 
-| Layer | What It Contains |
-|-------|-----------------|
-| **MIR** (Marketing Intelligence Repo) | Brand identity, audience profiles, competitive landscape, product facts |
-| **MSP** (Marketing Strategy Plan) | Channel strategy, campaign blueprints, budget models |
-| **ITM** (Issue Task Templates) | Pre-baked Linear.app tickets for every common marketing job |
-| **Agent Roster** | mgsd-strategist, mgsd-copy-drafter, mgsd-campaign-architect, mgsd-data-scientist |
-| **Onboarding Engine** | Web form → AI agents → approved MIR draft files |
-| **Vector Memory** | Per-project ChromaDB collections for episodic learning |
+MSP  (Marketing Strategy Plan)
+  └─ Channel strategy, campaign blueprints, KPI frameworks
+     Derived from MIR. Executable by AI agents.
+
+ITM  (Issue Task Templates)
+  └─ Pre-baked Linear.app tickets for every common marketing job
+     Drop into your project management system. Run.
+```
+
+---
+
+## Agents
+
+| Agent | What It Does |
+|-------|-------------|
+| `mgsd-strategist` | Creates discipline plans from MIR data |
+| `mgsd-copy-drafter` | Generates on-brand copy for any channel |
+| `mgsd-campaign-architect` | Builds campaign structures from MSP blueprints |
+| `mgsd-data-scientist` | Interprets KPI data and recommends pivots |
+
+---
+
+## What MarkOS Is Not
+
+- Not a content generator you use ad-hoc
+- Not a replacement for marketing judgment or strategy
+- Not a tool that works without your brand context (that's what onboarding is for)
+- Not managed — you own and version-control everything
 
 ---
 
