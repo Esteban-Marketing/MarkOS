@@ -15,8 +15,30 @@ progress:
 
 ## Current Position
 
-Phase: 13 (smart-onboarding) — PLANNED
-Plan: 6 of 6
+Phase: 16 (documentation-enrichment) — IN PROGRESS
+Plan: scaffold complete
+
+### MIR Gate Status
+MIR Gate 1: GREEN
+MIR Gate 2: GREEN
+
+### Scaffold Status
+- [x] .planning/MIR — 78 files cloned from templates/MIR
+- [x] .planning/MSP — 80 files cloned from templates/MSP
+- [x] .mgsd-local/MIR — Gate 1 + Gate 2 client files populated
+- [x] .mgsd-local/MSP — discipline directories + WINNERS catalogs
+- [x] RESEARCH/ — 6 intelligence files scaffolded
+- [x] .gitignore — .mgsd-local/, onboarding-seed.json, .mgsd-install-manifest.json excluded
+- [x] .planning/config.json — all 10 disciplines activated
+- [x] Gate 1 intake — PROFILE, VOICE-TONE, MESSAGING-FRAMEWORK, LEAN-CANVAS, JTBD-MATRIX
+- [x] Gate 2 intake — TRACKING, AUTOMATION, KPI-FRAMEWORK
+
+### Client: MarkOS
+Product: Marketing Operating System (npx one-command install)
+Model: SaaS — freemium + per seat + usage-based
+Stage: Pre-revenue | Geography: Global (English)
+90-day goals: 200 NPX installs, 10 paid pilots
+Budget: $0 (organic only)
 
 ## Accumulated Context
 

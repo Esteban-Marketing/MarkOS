@@ -10,5 +10,17 @@
     "verifier": true,
     "nyquist_validation": true,
     "_auto_chain_active": true
+  },
+  "discipline_activation": {
+    "paid_acquisition": true,
+    "seo_organic": true,
+    "lifecycle_email": true,
+    "content_social": true,
+    "affiliate_influencer": true,
+    "strategy": true,
+    "inbound": true,
+    "outbound": true,
+    "community_events": true,
+    "social": true
   }
 }
