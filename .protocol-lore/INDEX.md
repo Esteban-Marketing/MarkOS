@@ -11,4 +11,10 @@
 <file path="WORKFLOWS.md">Token-efficient machine readable workflow loops.</file>
 <file path="DEFCON.md">Risk management and escalation thresholds.</file>
 </map>
+<implementation_links>
+<link path="onboarding/backend/agents/orchestrator.cjs">Draft orchestration runtime.</link>
+<link path="onboarding/backend/agents/llm-adapter.cjs">Provider abstraction and fallback logic.</link>
+<link path="onboarding/backend/server.cjs">HTTP entrypoint and route wiring.</link>
+<link path="onboarding/backend/chroma-client.cjs">Vector memory persistence adapter.</link>
+</implementation_links>
 </mgsd_context>

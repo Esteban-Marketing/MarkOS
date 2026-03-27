@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * install.cjs — MGSD Interactive Installer & GSD Co-existence Wizard
+ * install.cjs — MarkOS Interactive Installer & GSD Co-existence Wizard
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
- *   Handles the first-run setup of the MGSD protocol in a new or existing project.
+ *   Handles the first-run setup of the MarkOS protocol in a new or existing project.
  *   Ensures parallel co-existence with the `get-shit-done` (GSD) protocol.
  *
  * INSTALLATION FLOW:
@@ -15,8 +15,8 @@
  *   6. Manifest: Writes `.mgsd-install-manifest.json` for idempotent updates later.
  *
  * COMMANDS:
- *   npx marketing-get-shit-done          → runs interactive install
- *   npx marketing-get-shit-done update   → delegates to `bin/update.cjs`
+ *   npx markos                    → runs interactive install
+ *   npx markos update             → delegates to `bin/update.cjs`
  *
  * RELATED FILES:
  *   bin/update.cjs             (Handles idempotent SHA256 patches)
@@ -77,20 +77,20 @@ function copyRecursive(src, dest) {
 }
 
 async function run() {
-  // Handle: npx marketing-get-shit-done update → defer to update.cjs
+  // Handle: npx markos update → defer to update.cjs
   if (process.argv[2] === 'update') {
     require('./update.cjs');
     return;
   }
 
-  banner(`MGSD Installer v${VERSION} — Marketing Get Shit Done`);
+  banner(`MarkOS Installer v${VERSION} — Marketing Operating System`);
 
   // Detect GSD
   const hasGSD = detectGSD(CWD);
   const hasMGSD = detectExistingMGSD(CWD);
 
   if (hasMGSD) {
-    console.log(`\n📦 MGSD is already installed in this project.`);
+    console.log(`\n📦 MarkOS is already installed in this project.`);
     const choice = await ask('Run update instead? (y/n): ');
     if (choice.trim().toLowerCase() === 'y') {
       require('./update.cjs');
@@ -102,9 +102,9 @@ async function run() {
   }
 
   if (hasGSD) {
-    console.log('\n✓ Existing GSD install detected — MGSD will be added alongside it.');
+    console.log('\n✓ Existing GSD install detected — MarkOS will be added alongside it.');
   } else {
-    console.log('\nℹ No GSD install found — MGSD will be installed standalone.');
+    console.log('\nℹ No GSD install found — MarkOS will be installed standalone.');
   }
 
   // Step 1: Install location
@@ -119,7 +119,7 @@ async function run() {
 
   // Step 2: Project name
   console.log('\n[2/5] Project marketing context');
-  const projectName = await ask('Project/client name for this MGSD install: ');
+  const projectName = await ask('Project/client name for this MarkOS install: ');
 
   // Step 3: Launch onboarding?
   console.log('\n[3/5] Client intelligence onboarding');
@@ -141,12 +141,12 @@ async function run() {
   }
 
   // Step 5: Install
-  banner('Installing MGSD...');
+  banner('Installing MarkOS...');
 
   const mgsdSrc = path.join(PKG_DIR, '.agent', 'marketing-get-shit-done');
   const mgsdDest = path.join(agentDir, 'marketing-get-shit-done');
   copyRecursive(mgsdSrc, mgsdDest);
-  console.log('✓ MGSD protocol files installed');
+  console.log('✓ MarkOS protocol files installed');
 
   // Copy onboarding
   const onboardingSrc = path.join(PKG_DIR, 'onboarding');
@@ -191,25 +191,28 @@ async function run() {
     const gsdSkillsDir = path.join(agentDir, 'skills');
     const mgsdSkillsDir = path.join(mgsdDest, 'skills');
     // Skills already in correct place — just confirm
-    console.log('✓ MGSD skills co-exist with GSD (no conflicts)');
+    console.log('✓ MarkOS skills co-exist with GSD (no conflicts)');
   }
 
   // Append to GEMINI.md / CLAUDE.md if present (never overwrite)
+  // TODO(MARKOS-LEGACY-PATH-MIGRATION): Keep legacy protocol path references
+  // until directory/index migration to `.agent/markos` and `MARKOS-INDEX.md` is completed.
   for (const aiMd of ['GEMINI.md', 'CLAUDE.md', 'AGENTS.md']) {
     const aiMdPath = path.join(CWD, aiMd);
     if (fs.existsSync(aiMdPath)) {
       const existing = fs.readFileSync(aiMdPath, 'utf8');
-      if (!existing.includes('MGSD')) {
-        fs.appendFileSync(aiMdPath, `\n\n## MGSD — Marketing Get Shit Done\n\nMGSD protocol installed at \`.agent/marketing-get-shit-done/\`.\nSee \`.agent/marketing-get-shit-done/MGSD-INDEX.md\` for full documentation.\n`);
-        console.log(`✓ MGSD section appended to ${aiMd}`);
+      if (!existing.includes('MarkOS')) {
+        fs.appendFileSync(aiMdPath, `\n\n## MarkOS — Marketing Operating System\n\nMarkOS protocol installed at \`.agent/marketing-get-shit-done/\`.\nSee \`.agent/marketing-get-shit-done/MGSD-INDEX.md\` for full documentation.\nMigration note: this path remains legacy until the MarkOS directory/index migration is applied.\n`);
+        console.log(`✓ MarkOS section appended to ${aiMd}`);
       }
     }
   }
 
-  banner(`MGSD v${VERSION} installed ✓`);
+  banner(`MarkOS v${VERSION} installed ✓`);
   console.log(`\n  Protocol: ${mgsdDest}`);
-  console.log(`  Update:   npx marketing-get-shit-done update`);
-  console.log(`  Docs:     .agent/marketing-get-shit-done/MGSD-INDEX.md\n`);
+  console.log(`  Update:   npx markos update`);
+  // Keep this docs path aligned with current runtime filesystem layout.
+  console.log(`  Docs:     .agent/marketing-get-shit-done/MGSD-INDEX.md  (temporary legacy path; will migrate to .agent/markos/MARKOS-INDEX.md in a future release)\n`);
 
   if (launchOnboarding.trim().toLowerCase() === 'y') {
     // ── 1. Interactive .env Setup ───────────────────────────────────────────
@@ -226,7 +229,7 @@ async function run() {
 
     if (!hasKeys) {
       console.log('\n[!] No AI Keys detected in .env');
-      console.log('To power the MGSD AI agents, you need at least one API key.');
+      console.log('To power the MarkOS AI agents, you need at least one API key.');
       console.log('  1) OpenAI');
       console.log('  2) Anthropic');
       console.log('  3) Google Gemini');
@@ -257,7 +260,7 @@ async function run() {
     await ensureChroma();
 
     // ── 3. Server Handoff ───────────────────────────────────────────────────
-    console.log('\n🚀 Starting MGSD Orchestrator Sequence...\n');
+    console.log('\n🚀 Starting MarkOS Orchestrator Sequence...\n');
     rl.close();
     
     // Redirect to V2 Server

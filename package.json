@@ -1,23 +1,24 @@
 {
-  "name": "marketing-get-shit-done",
-  "version": "1.0.0",
-  "description": "The Marketing Get Shit Done (MGSD) protocol — agentic marketing execution alongside GSD",
+  "name": "markos",
+  "version": "2.0.0",
+  "description": "MarkOS — the Marketing Operating System. Protocol-grade marketing infrastructure for AI-ready teams.",
   "keywords": [
     "marketing",
     "ai",
     "agents",
     "protocol",
-    "mgsd",
-    "gsd",
-    "get-shit-done"
+    "markos",
+    "marketing-os",
+    "operating-system",
+    "gsd"
   ],
-  "homepage": "https://github.com/your-org/marketing-get-shit-done",
+  "homepage": "https://markos.esteban.marketing",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
   },
   "bin": {
-    "marketing-get-shit-done": "./bin/install.cjs",
+    "markos": "./bin/install.cjs",
     "mgsd": "./bin/install.cjs"
   },
   "files": [
@@ -34,7 +35,7 @@
     "test:patch": "node --test test/update.test.js",
     "test:onboarding": "node --test test/onboarding-server.test.js",
     "test:protocol": "node --test test/protocol.test.js",
-    "prepublishOnly": "node -e \"console.log('Publishing marketing-get-shit-done v' + require('./package.json').version)\""
+    "prepublishOnly": "node -e \"console.log('Publishing markos v' + require('./package.json').version)\""
   },
   "dependencies": {
     "chromadb": "^3.4.0",

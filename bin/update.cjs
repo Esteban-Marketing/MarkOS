@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * update.cjs — MGSD Safe Update & Patch Engine
+ * update.cjs — MarkOS Safe Update & Patch Engine
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
- *   Applies updates from the MGSD package to a project while preserving client
+ *   Applies updates from the MarkOS package to a project while preserving client
  *   modifications and `.mgsd-local/` overrides. Idempotent and SHA256-safe.
  *
  * UPDATE FLOW:
@@ -87,11 +87,11 @@ function simpleDiff(oldContent, newContent) {
 }
 
 async function run() {
-  banner(`MGSD Update Engine v${NEW_VERSION}`);
+  banner(`MarkOS Update Engine v${NEW_VERSION}`);
 
   const manifest = readManifest();
   if (!manifest) {
-    console.error('\n✗ No .mgsd-install-manifest.json found. Run `npx marketing-get-shit-done` to install first.');
+    console.error('\n✗ No .mgsd-install-manifest.json found. Run `npx markos` to install first.');
     rl.close();
     return;
   }
@@ -108,7 +108,7 @@ async function run() {
 
   const installedDir = getInstalledDir(manifest);
   if (!installedDir || !fs.existsSync(installedDir)) {
-    console.error(`\n✗ Installed MGSD directory not found: ${installedDir}`);
+    console.error(`\n✗ Installed MarkOS directory not found: ${installedDir}`);
     rl.close();
     return;
   }
@@ -211,7 +211,7 @@ async function run() {
   };
   fs.writeFileSync(path.join(CWD, '.mgsd-install-manifest.json'), JSON.stringify(newManifest, null, 2));
 
-  banner(`MGSD updated to v${NEW_VERSION} ✓`);
+  banner(`MarkOS updated to v${NEW_VERSION} ✓`);
   console.log(`  ${applied} file(s) updated | ${skippedOverride} override(s) preserved\n`);
   rl.close();
 }

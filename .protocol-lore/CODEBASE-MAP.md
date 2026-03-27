@@ -2,6 +2,12 @@
 <purpose>LLM-navigable, token-efficient map of every source file in the MGSD repository.
 Read this file after QUICKSTART.md to locate any component without filesystem search.</purpose>
 <last_updated>2026-03-25</last_updated>
+<implementation_index>
+  <file path="onboarding/backend/agents/orchestrator.cjs">Draft generation orchestrator and retry boundaries.</file>
+  <file path="onboarding/backend/agents/llm-adapter.cjs">LLM provider routing, fallback behavior, output contract.</file>
+  <file path="onboarding/backend/server.cjs">HTTP onboarding runtime and endpoint surface.</file>
+  <file path="onboarding/backend/chroma-client.cjs">ChromaDB persistence and retrieval boundaries.</file>
+</implementation_index>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      ROOT

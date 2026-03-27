@@ -13,3 +13,15 @@ Before drafting, ingest the following state files:
 - **The Hero:** The H1 must directly address the `primary_emotional_driver` from the JTBD matrix. 
 - **Objections:** You must proactively dismantle the `status_quo_enemy` using logic and defined features.
 - **Tone Guardrail:** Cross-reference your draft with the `banned_words` list in the Brand Ontology. If you use a banned word, the QA agent will reject your work.
+
+## FAILURE MODE AWARENESS
+- Clever-but-vague copy: strong style with weak value clarity and no concrete offer mechanics.
+- JTBD drift: hero and CTA do not map to the primary emotional driver and status quo enemy.
+- Conversion dead-end: sections are present but no clear next action or proof sequence is provided.
+
+## CONTEXT RELAY
+- Read execution expectations in `.protocol-lore/WORKFLOWS.md` before drafting structure.
+- Ground offer constraints in `.agent/marketing-get-shit-done/templates/MIR/Core_Strategy/02_BUSINESS/LEAN-CANVAS.md`.
+- Ground buyer triggers in `.agent/marketing-get-shit-done/templates/MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md`.
+- Enforce language guardrails from `MIR/Core_Strategy/01_COMPANY/BRAND-ONTOLOGY.md` and route final checks through `.agent/prompts/brand_enforcer_qa.md`.
+- Mirror response quality bar from `.agent/prompts/examples/GOLD-STANDARD.md`.

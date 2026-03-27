@@ -17,7 +17,7 @@ test('Suite 1: Interactive Install Wizard', async (t) => {
       const { code, output } = await runCLI(INSTALL_SCRIPT, env.dir, ['1', 'TestClient', 'n', 'y']);
       
       assert.equal(code, 0, 'Exit code should be 0');
-      assert.match(output, /MGSD protocol files installed/);
+      assert.match(output, /MarkOS protocol files installed/);
       
       const mgsdDest = path.join(env.dir, '.agent', 'marketing-get-shit-done');
       assert.ok(fs.existsSync(mgsdDest), 'MGSD directory should safely copy into temp context');
@@ -42,7 +42,7 @@ test('Suite 1: Interactive Install Wizard', async (t) => {
       
       assert.equal(code, 0, 'Exit code should be 0');
       assert.match(output, /Existing GSD install detected/);
-      assert.match(output, /MGSD skills co-exist with GSD/);
+      assert.match(output, /MarkOS skills co-exist with GSD/);
       
       const mgsdDest = path.join(env.dir, '.agent', 'marketing-get-shit-done');
       assert.ok(fs.existsSync(mgsdDest), 'MGSD directory should install properly alongside existing GSD');
@@ -64,7 +64,7 @@ test('Suite 1: Interactive Install Wizard', async (t) => {
       const { code, output } = await runCLI(INSTALL_SCRIPT, env.dir, ['n']);
       
       assert.equal(code, 0, 'Exit code should be 0');
-      assert.match(output, /MGSD is already installed in this project\./);
+      assert.match(output, /MarkOS is already installed in this project\./);
       assert.match(output, /Run update instead\?/);
     } finally {
       env.cleanup();

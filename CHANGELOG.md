@@ -1,4 +1,13 @@
-# Changelog — marketing-get-shit-done
+# Changelog — MarkOS
+
+## v2.0.0 — 2026-03-27
+
+### MarkOS Rebrand (MGSD → MarkOS)
+- **BREAKING**: npm package renamed from `marketing-get-shit-done` to `markos`
+- **BREAKING**: Primary CLI command is now `npx markos install` / `npx markos update`
+- Legacy `mgsd` bin alias retained for backward compatibility
+- All internal branding updated to "MarkOS — Marketing Operating System"
+- Product identity: markos.esteban.marketing
 
 ## v1.1.0 — 2026-03-25
 

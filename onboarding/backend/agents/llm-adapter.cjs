@@ -213,10 +213,26 @@ async function callOllama(systemPrompt, userPrompt, options) {
  * Call the LLM with a system/user prompt automatically determining the provider.
  * Priority: 1. provider option 2. ANTHROPIC key 3. OPENAI key 4. GEMINI key 5. OLLAMA
  */
+/**
+ * @llm_context
+ * intent: Expose a stable provider-agnostic LLM contract so upstream generators can request
+ * text output without branching per vendor SDK.
+ * failure_boundaries:
+ * - Provider/API failures must never crash onboarding orchestration.
+ * - Returned object shape remains stable for both live and fallback responses.
+ */
 async function call(systemPrompt, userPrompt, options = {}) {
   try {
     const start = Date.now();
     let result = { text: '', usage: {} };
+    /**
+     * @llm_context
+     * intent: Resolve provider deterministically based on explicit override first, then
+     * configured API keys, and finally local Ollama fallback.
+     * failure_boundaries:
+     * - Missing cloud keys are expected and should fall through to remaining providers.
+     * - Unknown provider value is treated as fatal and handled by outer fallback.
+     */
     const provider = options.provider || 
                      (process.env.ANTHROPIC_API_KEY ? 'anthropic' : 
                      (process.env.OPENAI_API_KEY ? 'openai' : 
@@ -243,6 +259,14 @@ async function call(systemPrompt, userPrompt, options = {}) {
       provider 
     };
   } catch (err) {
+    /**
+     * @llm_context
+     * intent: Convert hard provider failures into a static but structured fallback payload so
+     * downstream steps can continue with visible degraded-mode output.
+     * failure_boundaries:
+     * - Fallback content is non-authoritative and should be treated as placeholder text.
+     * - `isFallback: true` signals caller to skip retries that cannot improve output.
+     */
     const fallbackText = getFallbackResponse(systemPrompt, userPrompt);
     
     return {

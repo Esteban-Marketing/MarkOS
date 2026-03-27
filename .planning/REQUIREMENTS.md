@@ -40,6 +40,34 @@
 - [x] **GRD-01**: Impose strict prerequisite state checks (`project_valid`, `verification_passed`) inside CLI workflows to halt agent misfires.
 - [x] **MEM-01**: Guarantee ChromeDB automated up-time on all vector commands implicitly without manual daemon tracking.
 
+## Milestone v2.0 Requirements — MarkOS Rebrand
+
+### NPM & CLI Identity (Phase 17)
+- [ ] **RBD-01**: npm package name changed from `marketing-get-shit-done` to `markos`. `npx markos install` and `npx markos update` work end-to-end.
+- [ ] **RBD-02**: Old `marketing-get-shit-done` npm package publishes deprecation notice redirecting to `markos`. Legacy `mgsd` bin alias retained for one major version.
+
+### Directory & File Structure (Phase 18)
+- [ ] **RBD-03**: `.agent/marketing-get-shit-done/` renamed to `.agent/markos/` — all 317+ files under the new path. 39 agent files, 25 skill dirs, 20 ITM templates, 1 workflow, 1 bin tool, and the master index all renamed from `mgsd-*`/`MGSD-*` to `markos-*`/`MARKOS-*`.
+- [ ] **RBD-04**: Root config files renamed: `.mgsd-project.json` → `.markos-project.json`, `.mgsd-install-manifest.json` → `.markos-install-manifest.json`.
+
+### Token System & Agent Identity (Phase 19)
+- [ ] **RBD-05**: All 100+ internal token IDs migrated from `MGSD-*` prefix to `MARKOS-*`. Master registry `MARKOS-INDEX.md` fully regenerated.
+- [ ] **RBD-06**: All agent/skill/hook frontmatter `name:` fields updated from `mgsd-*` to `markos-*`. Cross-references resolve correctly.
+
+### Code & Data Layer (Phase 20)
+- [ ] **RBD-07**: All hardcoded paths in 15+ backend `.cjs` files updated to reference `.agent/markos/`, `.markos-local/`, `.markos-project.json`.
+- [ ] **RBD-08**: ChromaDB namespace pattern changed from `mgsd-{slug}` to `markos-{slug}` with backward-compatible collection detection.
+- [ ] **RBD-09**: Telemetry env var supports both `MARKOS_TELEMETRY` (primary) and `MGSD_TELEMETRY` (legacy fallback). localStorage keys migrated.
+
+### Documentation & UI (Phase 21)
+- [ ] **RBD-10**: All public-facing docs (README, CHANGELOG, ARCH-DIAGRAM, TECH-MAP) fully MarkOS-branded. Install commands reference `npx markos`.
+- [ ] **RBD-11**: All protocol-lore files, MIR/MSP template override path notes, RESEARCH files, and onboarding UI updated. Zero legacy terms outside historical milestone records.
+
+### Migration & Backward Compat (Phase 22)
+- [ ] **RBD-12**: `bin/install.cjs` detects existing MGSD installs and auto-migrates directories, manifests, and config files to MarkOS equivalents.
+- [ ] **RBD-13**: `.mgsd-local/` auto-migrated to `.markos-local/` — client data preserved, never lost.
+- [ ] **RBD-14**: ChromaDB migration function copies `mgsd-*` collections to `markos-*` equivalents. End-to-end migration test passes.
+
 ## Out of Scope
 - Codebase management tools (covered by `gsd`), unless marketing specific (e.g., website repos).
 - Auto-overwriting client files during patch updates.

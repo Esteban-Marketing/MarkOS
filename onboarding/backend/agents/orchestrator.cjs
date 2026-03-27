@@ -49,6 +49,15 @@ const fs         = require('fs');
 const path       = require('path');
 
 // ── Rate Limits & Retries ───────────────────────────────────────────────────
+/**
+ * @llm_context
+ * intent: Execute a single generator with bounded retries so transient provider failures
+ * do not fail the entire onboarding orchestration.
+ * failure_boundaries:
+ * - Authentication and provider configuration errors are treated as fatal and not retried.
+ * - Retries are capped; exhausted retries degrade to a draft placeholder rather than throwing.
+ * - Fallback responses from llm-adapter are accepted as terminal to avoid wasted retries.
+ */
 async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
   telemetry.capture('agent_execution_started', { agent_name: name, project_slug: slug });
   
@@ -98,6 +107,15 @@ async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
  * @param {object} seed   — parsed onboarding-seed.json
  * @param {string} slug   — project slug (e.g. "acme-corp")
  */
+/**
+ * @llm_context
+ * intent: Coordinate the end-to-end onboarding draft pipeline and return usable output even
+ * when optional infrastructure (ChromaDB, neuro-auditor) is partially unavailable.
+ * failure_boundaries:
+ * - ChromaDB seed upsert/store failures are non-fatal and recorded in errors.
+ * - Individual generator failure becomes section-local placeholder text; other sections continue.
+ * - The function always returns a structured result object with drafts and error metadata.
+ */
 async function orchestrate(seed, slug) {
   console.log(`[orchestrator] Starting draft generation for: ${slug}`);
 
@@ -126,6 +144,14 @@ async function orchestrate(seed, slug) {
   const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed), 'Channel Strategy', slug);
 
   // ── 3.5. Neuro-Auditor Validation ─────────────────────────────────────────
+  /**
+   * @llm_context
+   * intent: Run a lightweight post-generation psychological alignment check when the auditor
+   * definition exists and required draft sections succeeded.
+   * failure_boundaries:
+   * - Missing auditor file or LLM failure must not block draft generation.
+   * - Audit output is additive; no core draft content is discarded on audit failure.
+   */
   console.log('[orchestrator] Running Neuro-Auditor verification...');
   try {
     const auditorPath = path.resolve(__dirname, '../../../.agent/marketing-get-shit-done/agents/mgsd-neuro-auditor.md');

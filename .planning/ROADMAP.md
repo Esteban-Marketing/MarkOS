@@ -271,7 +271,7 @@
 
 ## Phase 16: Documentation Enrichment
 **Goal:** Optimize the MGSD documentation for both human maintainers and autonomous LLM agents via inline notes, instruction precision, and context hardening.
-**Status:** 🏗️ In Progress
+**Status:** ✅ Complete
 **Success Criteria:**
 1. Codebase enriched with `/** @llm_context ... */` blocks in critical modules.
 2. All specialized prompts updated with Failure Mode Awareness and Context Relays.
@@ -279,4 +279,165 @@
 4. Gold-standard behavioral examples catalog created.
 
 **Plans:**
-- [ ] 16-01: Documentation & Context Enrichment
+- [x] 16-01: Documentation & Context Enrichment
+
+</details>
+
+---
+
+## v2.0.0 — MarkOS Rebrand (MGSD → MarkOS)
+
+> **Identity Migration:** Complete rebrand from "marketing-get-shit-done" / "MGSD" to **MarkOS** — the Marketing Operating System by esteban.marketing. Every command, agent, directory, config, token ID, and public reference is migrated. Zero legacy terms remain in the codebase.
+>
+> **Research:** [.planning/research/rebrand/RESEARCH-SUMMARY.md](.planning/research/rebrand/RESEARCH-SUMMARY.md)
+
+---
+
+### Phase 17: NPM Identity & CLI Rebrand
+**Goal:** Migrate the npm package identity, CLI bin entries, and install/update scripts from `marketing-get-shit-done`/`mgsd` to `markos`. Publish a deprecation bridge on the old package name.
+**Requirements Mapped:** RBD-01, RBD-02
+**Depends on:** Phase 16
+**Status:** ⬚ Not Started
+**Success Criteria:**
+1. `package.json` name changed to `markos`, bin entry `markos` → `./bin/install.cjs`.
+2. Legacy bin alias `mgsd` retained for one major version as backward compat.
+3. `npx markos install` and `npx markos update` work end-to-end.
+4. Old `marketing-get-shit-done` npm package publishes a deprecation notice pointing to `markos`.
+5. Keywords, homepage, description, and prepublishOnly script updated.
+6. `VERSION` bumped to `2.0.0`.
+
+**Plans:**
+- [ ] 17-01: Verify npm name availability (`npm view markos`) + reserve fallback
+- [ ] 17-02: Update package.json identity (name, bin, keywords, homepage, description, scripts)
+- [ ] 17-03: Update bin/install.cjs and bin/update.cjs display text, banner, and npx commands
+- [ ] 17-04: Publish deprecation bridge on old `marketing-get-shit-done` package
+
+---
+
+### Phase 18: Directory & File Structure Migration
+**Goal:** Rename all MGSD-branded directories and files to MarkOS equivalents using atomic `git mv` operations. This is the largest single change: 383+ files.
+**Requirements Mapped:** RBD-03, RBD-04
+**Depends on:** Phase 17
+**Status:** ⬚ Not Started
+**Success Criteria:**
+1. `.agent/marketing-get-shit-done/` → `.agent/markos/` (317 files).
+2. All 39 agent files renamed: `mgsd-*.md` → `markos-*.md`.
+3. All 25 skill directories renamed: `mgsd-*/` → `markos-*/`.
+4. 20 Linear task templates renamed: `MGSD-ITM-*.md` → `MARKOS-ITM-*.md`.
+5. 1 workflow file renamed: `mgsd-linear-sync.md` → `markos-linear-sync.md`.
+6. 1 bin file renamed: `mgsd-tools.cjs` → `markos-tools.cjs`.
+7. `MGSD-INDEX.md` → `MARKOS-INDEX.md`.
+8. `.mgsd-project.json` → `.markos-project.json`.
+9. `.mgsd-install-manifest.json` → `.markos-install-manifest.json`.
+10. Git history preserved via `git mv`.
+
+**Plans:**
+- [ ] 18-01: Rename `.agent/marketing-get-shit-done/` → `.agent/markos/` (top-level git mv)
+- [ ] 18-02: Rename all 39 agent files (`mgsd-*.md` → `markos-*.md`)
+- [ ] 18-03: Rename all 25 skill directories (`mgsd-*/` → `markos-*/`)
+- [ ] 18-04: Rename ITM templates, workflow file, bin tool, and index
+- [ ] 18-05: Rename root config files (`.mgsd-project.json`, `.mgsd-install-manifest.json`)
+
+---
+
+### Phase 19: Token System & Agent Identity Migration
+**Goal:** Migrate all 100+ internal token IDs from `MGSD-*` prefix to `MARKOS-*` and update the master registry (MARKOS-INDEX.md). Update all agent/skill/hook/workflow frontmatter `name:` fields.
+**Requirements Mapped:** RBD-05, RBD-06
+**Depends on:** Phase 18
+**Status:** ⬚ Not Started
+**Success Criteria:**
+1. `MARKOS-INDEX.md` fully regenerated with all `MARKOS-AGT-*`, `MARKOS-SKL-*`, `MARKOS-ITM-*`, `MARKOS-HKP-*`, `MARKOS-WFL-*`, `MARKOS-PRM-*`, `MARKOS-REF-*`, `MARKOS-TPL-*` token IDs.
+2. All 39 agent files have `name: markos-*` in frontmatter.
+3. All 25 skill SKILL.md files have `name: markos-*`.
+4. All 5 hook files have updated token IDs.
+5. All 7 prompt files have updated token IDs.
+6. All cross-references between agents resolve correctly.
+7. Validation: `grep -r "MGSD-" .agent/markos/` returns zero results.
+
+**Plans:**
+- [ ] 19-01: Scripted find-replace of all `MGSD-` → `MARKOS-` token prefixes across `.agent/markos/`
+- [ ] 19-02: Update all agent frontmatter `name:` fields (`mgsd-*` → `markos-*`)
+- [ ] 19-03: Update all skill SKILL.md frontmatter `name:` fields
+- [ ] 19-04: Regenerate MARKOS-INDEX.md master registry
+- [ ] 19-05: Cross-reference validation scan (zero MGSD- tokens remaining)
+
+---
+
+### Phase 20: Code Path, Config & Data Layer Updates
+**Goal:** Update all hardcoded paths in backend .cjs files, onboarding config, ChromaDB namespace patterns, telemetry identifiers, and localStorage keys to use MarkOS naming.
+**Requirements Mapped:** RBD-07, RBD-08, RBD-09
+**Depends on:** Phase 18
+**Status:** ⬚ Not Started
+**Success Criteria:**
+1. All 15+ backend `.cjs` files updated: path constants, string literals, comments referencing `mgsd`/`marketing-get-shit-done`.
+2. `onboarding-config.json` updated: `project_slug`, `mir_output_path`, `msp_output_path`.
+3. `chroma-client.cjs` namespace pattern changed: `mgsd-{slug}` → `markos-{slug}` (6 locations).
+4. `telemetry.cjs` updated: `MARKOS_TELEMETRY` env var (with `MGSD_TELEMETRY` fallback), `markos-backend-telemetry` as `$lib`.
+5. `onboarding.js` localStorage keys updated with migration from old keys.
+6. `write-mir.cjs` generated content stamps updated: `<!-- markos-generated -->` and `Generated by MarkOS AI`.
+7. `onboarding-seed.schema.json` title updated.
+8. All tests pass after changes.
+
+**Plans:**
+- [ ] 20-01: Update path-constants.cjs and all backend path references
+- [ ] 20-02: Update onboarding-config.json and handlers.cjs defaults
+- [ ] 20-03: Update chroma-client.cjs namespace pattern (with backward-compat detection)
+- [ ] 20-04: Update telemetry.cjs (dual env var support)
+- [ ] 20-05: Update onboarding.js localStorage keys (with migration)
+- [ ] 20-06: Update write-mir.cjs generated content stamps
+- [ ] 20-07: Run full test suite and fix breakages
+
+---
+
+### Phase 21: Documentation, UI & Public-Facing Rebrand
+**Goal:** Update all documentation, architecture diagrams, protocol-lore, onboarding UI, and public-facing content to reflect the MarkOS brand. Zero mentions of "MGSD" or "marketing-get-shit-done" remain outside of historical milestone records.
+**Requirements Mapped:** RBD-10, RBD-11
+**Depends on:** Phase 20
+**Status:** ⬚ Not Started
+**Success Criteria:**
+1. `README.md` fully MarkOS-branded: install commands, agent names, architecture, badge URLs.
+2. `CHANGELOG.md` updated with MarkOS header + v2.0.0 rebrand entry.
+3. `ARCH-DIAGRAM.md` and `TECH-MAP.md` fully updated.
+4. All 7 `.protocol-lore/` files updated (QUICKSTART, CONVENTIONS, ARCHITECTURE, WORKFLOWS, CODEBASE-MAP, TEMPLATES, MEMORY).
+5. `onboarding/index.html` title updated to "MarkOS Onboarding".
+6. `.planning/ROADMAP.md` title updated. `.planning/REQUIREMENTS.md` updated.
+7. All 60+ MIR/MSP template override path notes updated (`.mgsd-local/` → `.markos-local/`).
+8. RESEARCH/ files updated where they reference MGSD.
+9. `.mgsd-local/` client content updated where it references MGSD.
+10. Validation: `grep -r "mgsd\|marketing-get-shit-done" --include="*.md" --include="*.json" --include="*.js" --include="*.cjs" --include="*.html" --include="*.css"` returns only historical milestone files.
+
+**Plans:**
+- [ ] 21-01: Update README.md, CHANGELOG.md, VERSION
+- [ ] 21-02: Update ARCH-DIAGRAM.md and TECH-MAP.md
+- [ ] 21-03: Update all .protocol-lore/ files
+- [ ] 21-04: Scripted update of 60+ MIR/MSP template override path notes
+- [ ] 21-05: Update RESEARCH/ files and .mgsd-local/ client content (now .markos-local/)
+- [ ] 21-06: Update onboarding UI (index.html title, CSS if needed)
+- [ ] 21-07: Update .planning/ files (ROADMAP title, REQUIREMENTS)
+
+---
+
+### Phase 22: Migration Logic & Backward Compatibility
+**Goal:** Implement migration paths in install.cjs and update.cjs so existing MGSD installs seamlessly upgrade to MarkOS. Handle ChromaDB collection migration, `.mgsd-local/` → `.markos-local/` auto-migration, manifest migration, and .gitignore updates.
+**Requirements Mapped:** RBD-12, RBD-13, RBD-14
+**Depends on:** Phase 20, Phase 21
+**Status:** ⬚ Not Started
+**Success Criteria:**
+1. `bin/install.cjs` detects existing `.agent/marketing-get-shit-done/` and auto-migrates to `.agent/markos/`.
+2. `bin/update.cjs` detects old `.mgsd-install-manifest.json` and migrates to `.markos-install-manifest.json`.
+3. `.mgsd-local/` auto-migrated to `.markos-local/` (move, not copy — no data loss).
+4. `.mgsd-project.json` auto-migrated to `.markos-project.json`.
+5. ChromaDB migration function: detects `mgsd-*` collections, creates `markos-*` equivalents, copies data, deletes old.
+6. `.gitignore` updated to include both old and new patterns during transition.
+7. `onboarding.js` checks both old and new localStorage keys.
+8. PostHog telemetry supports both `MGSD_TELEMETRY` and `MARKOS_TELEMETRY` env vars.
+9. End-to-end test: old install → new update → verify everything migrated.
+
+**Plans:**
+- [ ] 22-01: install.cjs migration detection (old → new directory auto-rename)
+- [ ] 22-02: update.cjs manifest migration logic
+- [ ] 22-03: .mgsd-local/ → .markos-local/ auto-migration
+- [ ] 22-04: .mgsd-project.json → .markos-project.json migration
+- [ ] 22-05: ChromaDB collection migration function
+- [ ] 22-06: .gitignore dual-pattern support
+- [ ] 22-07: End-to-end migration test (old install → new update)

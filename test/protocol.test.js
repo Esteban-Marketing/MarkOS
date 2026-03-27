@@ -6,6 +6,19 @@ const fs = require('fs');
 const PROTOCOL_DIR = path.resolve(__dirname, '../.agent/marketing-get-shit-done');
 
 test('Suite 4: Protocol Integrity Checks', async (t) => {
+  await t.test('4.0 Package Identity & Version', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../package.json'), 'utf8'));
+    const rootVersion = fs.readFileSync(path.resolve(__dirname, '../VERSION'), 'utf8').trim();
+
+    assert.equal(pkg.name, 'markos', 'Package name must be markos');
+    assert.equal(pkg.version, rootVersion, 'Package version must match VERSION file');
+    assert.equal(pkg.bin.markos, './bin/install.cjs', 'Primary CLI should be markos');
+    const expectedBinPath = path.resolve(__dirname, '../bin/install.cjs');
+    assert.ok(fs.existsSync(expectedBinPath), 'markos bin script must exist at ./bin/install.cjs');
+    assert.equal(pkg.bin.mgsd, './bin/install.cjs', 'Legacy mgsd alias should be retained');
+    assert.equal(pkg.bin['marketing-get-shit-done'], undefined, 'Legacy package-name bin should be removed');
+    assert.ok(rootVersion.length > 0, 'Root VERSION file must contain a non-empty version string');
+  });
   await t.test('4.1 Required Components Exist', () => {
     // Validate structural requirements
     const requiredFiles = [
