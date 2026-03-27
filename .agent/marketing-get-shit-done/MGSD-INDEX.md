@@ -22,7 +22,7 @@ entry_point: true
 This file is `MGSD-IDX-000`. It is the mandatory entry point for technical domain mapping within `.agent/marketing-get-shit-done/`. Every Token_ID in the corpus is registered here. When a document references another by Token_ID, resolve the path from the `File` column below.
 
 **TOKEN_ID structure:** `MGSD-[CLASS]-[DOMAIN]-[SEQ]`
-- CLASS: `AGT` agent · `REF` reference · `SKL` skill · `MIR` MIR template · `MSP` MSP matrix · `WFL` workflow · `TPL` generic template · `IDX` index
+- CLASS: `AGT` agent · `PRM` prompt · `REF` reference · `SKL` skill · `MIR` MIR template · `MSP` MSP matrix · `WFL` workflow · `TPL` generic template · `IDX` index
 - DOMAIN: `NEU` neuromarketing · `STR` strategy · `EXE` execution · `ANA` analytics · `OPS` operations · `TRK` tracking · `CNT` content · `AUD` audience · `CAM` campaign
 - SEQ: zero-padded 2-digit integer, unique within CLASS+DOMAIN
 
@@ -99,6 +99,13 @@ This file is `MGSD-IDX-000`. It is the mandatory entry point for technical domai
 | MGSD-AGT-OPS-07 | `agents/mgsd-linear-manager.md` | AGT | OPS | Linear.app ticket creation and bidirectional sync |
 | MGSD-AGT-RES-01 | `agents/mgsd-researcher.md` | AGT | RES | Market Intelligence Agent — populates RESEARCH/ files from onboarding seed |
 | MGSD-AGT-ONB-01 | `agents/mgsd-onboarder.md` | AGT | ONB | Onboarding Orchestrator — reads seed, drives researcher, scaffolds MIR/MSP |
+| MGSD-PRM-OPS-01 | `prompts/telemetry_synthesizer.md` | PRM | OPS | Layer 0 Data Analyst; converts raw analytics into MIR insights |
+| MGSD-PRM-STR-01 | `prompts/cro_landing_page_builder.md` | PRM | STR | High-conversion wireframer and copywriter for owned properties |
+| MGSD-PRM-EXE-01 | `prompts/paid_media_creator.md` | PRM | EXE | Performance media creator (Meta/Google Ad copy) |
+| MGSD-PRM-CNT-01 | `prompts/email_lifecycle_strategist.md` | PRM | CNT | Retention and LTV-focused email strategist |
+| MGSD-PRM-CNT-02 | `prompts/seo_content_architect.md` | PRM | CNT | Inbound content creator focused on long-tail dominance |
+| MGSD-PRM-CNT-03 | `prompts/social_community_manager.md` | PRM | CNT | Organic social engagement and market polarization |
+| MGSD-PRM-OPS-02 | `prompts/brand_enforcer_qa.md` | PRM | OPS | Ruthless gatekeeper for brand and legal compliance |
 
 ---
 
@@ -266,6 +273,7 @@ Any file placed here **will not be touched** by `mgsd update` or GSD patches.
 | `.mgsd-local/MIR/Campaigns_Assets/*.md` | `templates/MIR/Campaigns_Assets/*.md` | mgsd-execute-phase |
 | `.mgsd-local/MIR/Operations/*.md` | `templates/MIR/Operations/*.md` | mgsd-execute-phase, mgsd-linear-sync |
 | `.mgsd-local/MSP/<discipline>/*.md` | `templates/MSP/<discipline>/*.md` | mgsd-plan-phase, mgsd-execute-phase |
+| `.mgsd-local/MSP/<discipline>/WINNERS/_CATALOG.md` | (None — local only) | mgsd-executor, mgsd-content-creator |
 | `.mgsd-local/config/config.json` | `templates/config.json` | All agents (project config) |
 
 ---
@@ -276,6 +284,7 @@ Any file placed here **will not be touched** by `mgsd update` or GSD patches.
 |---------------|-------------|------|
 | `templates/MIR/Core_Strategy/01_COMPANY/` | `_DOMAIN-INDEX.md` | Gate 1 |
 | `templates/MIR/Core_Strategy/02_BRAND/` | `_DOMAIN-INDEX.md` | Gate 1 |
+| `templates/MIR/Core_Strategy/02_BUSINESS/` | `_DOMAIN-INDEX.md` | Gate 1 |
 | `templates/MIR/Market_Audiences/03_MARKET/` | `_DOMAIN-INDEX.md` | Gate 1 |
 | `templates/MIR/Products/04_PRODUCTS/` | `_DOMAIN-INDEX.md` | Gate 1 |
 | `templates/MIR/Campaigns_Assets/05_CHANNELS/` | `_DOMAIN-INDEX.md` | Gate 2 |

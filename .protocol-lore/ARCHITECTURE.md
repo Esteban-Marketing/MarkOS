@@ -17,57 +17,53 @@ LLMs: read this to understand the data flow before modifying any layer of the sy
 </layer>
 
 <layer id="onboarding_engine">
-  <desc>Web-based client onboarding pipeline. Serves form → runs AI → writes MIR.</desc>
-  <file>onboarding/backend/server.cjs — HTTP server, routes, boot sequence, slug persistence</file>
-  <file>onboarding/backend/agents/orchestrator.cjs — parallel LLM generation, Chroma storage</file>
-  <file>onboarding/backend/agents/mir-filler.cjs — MIR draft generators (Company/Audience/Competitive)</file>
-  <file>onboarding/backend/agents/msp-filler.cjs — MSP draft generators (Brand Voice/Channels)</file>
-  <file>onboarding/backend/agents/llm-adapter.cjs — unified OpenAI/Anthropic/Gemini wrapper</file>
-  <file>onboarding/backend/chroma-client.cjs — ChromaDB HTTP client, per-project namespacing</file>
-  <file>onboarding/backend/write-mir.cjs — JIT clone, fuzzy-merge, STATE.md stamping</file>
+  <desc>Smart Onboarding Engine v2.0. Omni-input extraction pipeline.</desc>
+  <file>onboarding/backend/server.cjs — HTTP server, Omni-Input Gate (URL/Files)</file>
+  <file>onboarding/backend/agents/orchestrator.cjs — Parallel extraction, confidence scoring</file>
+  <file>onboarding/backend/agents/mir-filler.cjs — MIR draft generators (weighted by business_model)</file>
+  <file>onboarding/backend/agents/msp-filler.cjs — MSP draft generators (anchored to winners)</file>
+  <file>onboarding/backend/path-constants.cjs — Centralized path resolution ("dot-hell" prevention)</file>
 </layer>
 
 <layer id="data_isolation">
-  <desc>Strict separation between protocol engine and client data.</desc>
-  <layer id="protocol_layer">
-    <path>.agent/marketing-get-shit-done/templates/MIR/</path>
-    <rule>Base templates. Version-controlled. NEVER write client data here.</rule>
-    <rule>Overwritten on every `npx marketing-get-shit-done update`.</rule>
+  <desc>Strict separation between protocol engine, client logic, and data layers.</desc>
+  <layer id="execution_layer">
+    <path>.agent/prompts/</path>
+    <rule>Logic Layer. Holds specialized agent prompt templates (e.g., paid_media_creator.md).</rule>
+    <rule>Uses `{{ inject: [PATH] }}` syntax to pull context from Data Layer.</rule>
   </layer>
-  <layer id="client_data_layer">
+  <layer id="protocol_data_layer">
+    <path>.agent/marketing-get-shit-done/templates/MIR/</path>
+    <path>.agent/marketing-get-shit-done/templates/MSP/</path>
+    <rule>Base templates. Version-controlled. NEVER write client data here.</rule>
+  </layer>
+  <layer id="client_workspace">
     <path>.mgsd-local/MIR/</path>
-    <rule>Client override layer. Gitignored. Written by write-mir.cjs on POST /approve.</rule>
-    <rule>JIT-cloned from base templates on first write. Safe from updates forever.</rule>
-    <path>.mgsd-project.json</path>
-    <rule>Persistent project slug. Written once on first POST /submit. Never regenerated.</rule>
+    <path>.mgsd-local/MSP/</path>
+    <rule>Client State Layer. Gitignored. Stores project-specific strategy and approved assets.</rule>
+    <path>.mgsd-local/MSP/<discipline>/WINNERS/</path>
+    <rule>Historical Anchoring Layer. Agents MUST read catalogs here before generation.</rule>
   </layer>
 </layer>
 
 <components>
-  <comp id="mir">MIR (Marketing Intelligence Repo). Gates 1/2. Ground truth brand/audience/competitive facts.
-  Files: .mgsd-local/MIR/Core_Strategy/01_COMPANY/, 02_BRAND/, Market_Audiences/03_MARKET/, Products/04_PRODUCTS/</comp>
-  <comp id="msp">MSP (Marketing Strategy Plan). Strategic channel blueprints mapped from MIR.
-  Files: .mgsd-local/MSP/Strategy/, Channels/, Campaigns/</comp>
-  <comp id="orchestrator">execute-phase.md skill. Groups tasks → waves → spawns executor agents.</comp>
-  <comp id="executor">execute-plan.md skill. Handles file edits, commits. Auto-pauses on [HUMAN] tag.</comp>
-  <comp id="verifier">verification-patterns.md. 7-dimension Nyquist validation. Enforces MIR gates.</comp>
+  <comp id="mir">MIR (Marketing Intelligence Repo). Dual-engine strategy: Lean Canvas (Physics) + JTBD (Psychology).</comp>
+  <comp id="msp">MSP (Marketing Strategy Plan). Blueprint for execution channels. Anchored to local Winners Catalogs.</comp>
+  <comp id="prompts">Specialized Prompt Registry (.agent/prompts/). Decouples "What to do" from "Who is being served".</comp>
+  <comp id="orchestrator">execute-phase.md skill. Cross-discipline wave-based parallelization.</comp>
 </components>
 
 <flow>
-  <!-- Onboarding Flow -->
+  <!-- Onboarding Flow (v2.0) -->
   1. Human runs `npx marketing-get-shit-done install` → bin/install.cjs
-  2. install.cjs delegates to bin/ensure-chroma.cjs (boot ChromaDB daemon)
-  3. Human runs `node onboarding/backend/server.cjs` → boots HTTP server on port 4242
-  4. Human fills form at localhost:4242 → POST /submit
-  5. server.cjs writes .mgsd-project.json (slug) → calls orchestrator.cjs
-  6. orchestrator runs mir-filler + msp-filler in parallel → stores in ChromaDB
-  7. Human approves drafts → POST /approve
-  8. write-mir.cjs JIT-clones templates → fuzzy-merges drafts → stamps STATE.md
+  2. server.cjs receives Omni-Input (URL/Files) → orchestrator.cjs parallel extraction
+  3. LLM Scorer assigns confidence (R/Y/G) → server.cjs conducts gap-fill interview
+  4. Human approves → write-mir.cjs fuzzy-merges content into .mgsd-local/MIR/
 
-  <!-- Strategic Planning Flow (after onboarding complete) -->
-  9. Agent reads .mgsd-local/MIR/ (resolves [override] against .agent/templates/)
-  10. mgsd-plan-phase: researcher → planner → checker → PLAN.md
-  11. mgsd-execute-phase: waves → executor → commits
-  12. mgsd-verify-work: 7-dimension Nyquist audit → VERIFICATION.md
+  <!-- Execution Flow (v1.2) -->
+  5. Manager calls mgsd-plan-phase → creates waved PLAN.md
+  6. Creator Agent Boots → Reads .mgsd-local/MSP/*/WINNERS/_CATALOG.md ([ANCHOR])
+  7. Executor calls prompt registry → Injects {{ MIR }} + {{ MSP }} data into .agent/prompts/ logic
+  8. Final output Nyquist-verified against mir-gates.md requirements
 </flow>
 </mgsd_arch>

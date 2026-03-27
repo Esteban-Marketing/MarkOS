@@ -314,10 +314,29 @@ async function handleDraftGeneration() {
         <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚠️</div>
         <strong>Draft generation failed</strong><br>
         <small style="color: #6b7280">${err.message}</small><br><br>
-        <button class="btn-secondary" onclick="handleDraftGeneration()">Try Again</button>
+        <div style="display:flex; gap:1rem; justify-content:center;">
+          <button class="btn-secondary" onclick="handleDraftGeneration()">Try Again</button>
+          <button class="btn-secondary" onclick="proceedToManualEntry()">Skip to Manual Entry</button>
+        </div>
       </div>`;
   }
 }
+
+/**
+ * Fallback to manual entry if AI drafts fail.
+ */
+window.proceedToManualEntry = function() {
+    lastSlug = lastSlug || 'mgsd-client-' + Math.random().toString(36).substring(2, 7);
+    draftContents = {
+        company_profile: '[ENTER COMPANY PROFILE MANUALLY]',
+        mission_values: '[ENTER MISSION/VALUES MANUALLY]',
+        audience: '[ENTER AUDIENCE PERSONA MANUALLY]',
+        competitive: '[ENTER COMPETITIVE LANDSCAPE MANUALLY]',
+        brand_voice: '[ENTER BRAND VOICE MANUALLY]',
+        channel_strategy: '[ENTER CHANNEL STRATEGY MANUALLY]'
+    };
+    renderDraftCards(draftContents);
+};
 
 // ── Render Draft Cards ────────────────────────────────────────────────────────
 function renderDraftCards(drafts) {
@@ -470,6 +489,12 @@ window.switchTab = function(tabName) {
   } else {
     document.getElementById('tabBtnDrafts').classList.add('active');
     document.getElementById('tabContentDrafts').classList.add('active');
+    
+    // Trigger draft generation if we are on the drafts tab and they aren't loaded yet
+    const draftGrid = document.getElementById('draftGrid');
+    if (draftGrid && draftGrid.children.length <= 1) { 
+        handleDraftGeneration();
+    }
   }
 };
 
@@ -845,8 +870,21 @@ function initSparkButtons() {
       if (!targetInput) return;
 
       const rect = btn.getBoundingClientRect();
-      sparkPopover.style.top = `${rect.bottom + window.scrollY + 5}px`;
-      sparkPopover.style.left = `${rect.left + window.scrollX - 250}px`;
+      const popoverWidth = 300; // matches CSS width
+      
+      let topPos = rect.bottom + window.scrollY + 5;
+      let leftPos = rect.left + window.scrollX - (popoverWidth - rect.width);
+      
+      // Prevent bleeding off the left edge
+      if (leftPos < 10) leftPos = 10;
+      
+      // Prevent bleeding off the right edge
+      if (leftPos + popoverWidth > window.innerWidth - 10) {
+        leftPos = window.innerWidth - popoverWidth - 10;
+      }
+      
+      sparkPopover.style.top = `${topPos}px`;
+      sparkPopover.style.left = `${leftPos}px`;
       sparkPopover.style.display = 'block';
       
       sparkSuggestions.innerHTML = '';
@@ -1016,14 +1054,16 @@ function initOmniGate() {
       const data = await res.json();
       if (!data.success) throw new Error(data.error);
 
-      omniExtractedText = data.text;
       addLog('Extraction complete. [Done]');
       
       addLog('Analyzing and scoring schema fields...');
       const scoreRes = await fetch('/api/extract-and-score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: omniExtractedText })
+        body: JSON.stringify({ 
+          webText: data.webText,
+          fileText: data.fileText
+        })
       });
       const scoreData = await scoreRes.json();
       

@@ -41,9 +41,9 @@ const llm  = require('./llm-adapter.cjs');
 const { resolveExample } = require('./example-resolver.cjs');
 
 // ─── EXAMPLE BASE PATHS ────────────────────────────────────────────────────────
-const TMPL_ROOT      = path.resolve(__dirname, '..', '..', '..', '..', '.agent', 'marketing-get-shit-done', 'templates');
-const AUDIENCES_DIR  = path.join(TMPL_ROOT, 'MIR', 'Market_Audiences');
-const CORE_STRAT_DIR = path.join(TMPL_ROOT, 'MIR', 'Core_Strategy');
+const { TEMPLATES_DIR } = require('../path-constants.cjs');
+const AUDIENCES_DIR  = path.join(TEMPLATES_DIR, 'MIR', 'Market_Audiences');
+const CORE_STRAT_DIR = path.join(TEMPLATES_DIR, 'MIR', 'Core_Strategy');
 
 // ─── SYSTEM PROMPT (shared across all MIR sections) ───────────────────────────
 // Instructs the LLM to produce structured MIR content, avoid hallucinated data,
@@ -61,7 +61,10 @@ RULES:
 // ─── INDIVIDUAL SECTION GENERATORS ────────────────────────────────────────────
 
 async function generateCompanyProfile(seed) {
-  const { company, product, audience, market } = seed;
+  const company = seed.company || {};
+  const product = seed.product || {};
+  const audience = seed.audience || {};
+  const market = seed.market || {};
 
   const prompt = `Fill the Company Profile (PROFILE.md) for this client:
 
@@ -105,7 +108,8 @@ Be specific. Use real data from above. Do not repeat the input verbatim.`;
 }
 
 async function generateMissionVisionValues(seed) {
-  const { company } = seed;
+  const company = seed.company || {};
+  const product = seed.product || {};
 
   const prompt = `Generate the Mission, Vision, and Values section for:
 
@@ -133,7 +137,10 @@ Inferred behaviors based on the values above.`;
 }
 
 async function generateAudienceProfile(seed) {
-  const { audience, product, company } = seed;
+  const audience = seed.audience || {};
+  const product = seed.product || {};
+  const company = seed.company || {};
+  const market = seed.market || {};
 
   // Inject model-specific reference example before prompt instructions
   const exampleBlock = resolveExample('AUDIENCES', company.business_model || '', '', AUDIENCES_DIR);
@@ -169,7 +176,11 @@ Keep it practical — every point should directly inform a marketing decision.`;
 }
 
 async function generateCompetitiveLandscape(seed) {
-  const { competition, company, product } = seed;
+  const competition = seed.competition || {};
+  const company = seed.company || {};
+  const product = seed.product || {};
+  const audience = seed.audience || {};
+  const market = seed.market || {};
 
   const competitors = (competition.competitors || []).map((c, i) =>
     `Competitor ${i + 1}: ${c.name}\n  URL: ${c.url || 'N/A'}\n  Our Differentiator vs. Them: ${c.differentiator}\n  Their Messaging Gap: ${c.gap}`

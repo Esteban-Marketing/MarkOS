@@ -32,9 +32,25 @@ const readline = require('readline');
 const { execSync, exec } = require('child_process');
 
 // ── Environment Settings ───────────────────────────────────────────────────
-const PKG_DIR = path.resolve(__dirname, '..'); // Root of the npm package
-const VERSION = fs.readFileSync(path.join(PKG_DIR, 'VERSION'), 'utf8').trim();
+const PKG_DIR = path.resolve(__dirname, '..');
+const VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/marketing-get-shit-done/VERSION'), 'utf8').trim();
 const CWD = process.cwd(); // Target project directory
+
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+
+/**
+ * Prompts the user with a question and returns the answer as a Promise.
+ */
+const ask = (q) => new Promise(resolve => rl.question(q, resolve));
+
+/**
+ * Displays a styled banner in the console.
+ */
+function banner(text) {
+  console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(` ${text}`);
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+}
 
 // ── Detection Logic ────────────────────────────────────────────────────────
 /** @returns {boolean} true if GSD protocol is already active in this project */

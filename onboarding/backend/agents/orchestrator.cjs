@@ -44,14 +44,27 @@ const mirFiller  = require('./mir-filler.cjs');
 const mspFiller  = require('./msp-filler.cjs');
 const chroma     = require('../chroma-client.cjs');
 const telemetry  = require('./telemetry.cjs');
+const llm        = require('./llm-adapter.cjs');
+const fs         = require('fs');
+const path       = require('path');
 
 // ── Rate Limits & Retries ───────────────────────────────────────────────────
 async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
   telemetry.capture('agent_execution_started', { agent_name: name, project_slug: slug });
+  
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fn();
+      
+      // If the adapter returned a fallback, it already "failed gracefully" 
+      // and won't suddenly start working on retry. Fast-fail.
+      if (res.isFallback) {
+        console.warn(`[orchestrator] ${name} using fallback: ${res.error}`);
+        return res; 
+      }
+
       if (!res.ok) throw new Error(res.error);
+      
       telemetry.capture('agent_execution_completed', { 
         agent_name: name, 
         project_slug: slug,
@@ -60,12 +73,18 @@ async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
       });
       return res;
     } catch (e) {
-      if (i === retries - 1) {
-        console.error(`[orchestrator] ${name} failed after ${retries} retries: ${e.message}`);
+      const isRetryable = !e.message.includes('API_KEY') && 
+                         !e.message.includes('not set') && 
+                         !e.message.includes('401') && 
+                         !e.message.includes('403');
+      
+      if (i === retries - 1 || !isRetryable) {
+        console.error(`[orchestrator] ${name} failed ${!isRetryable ? '(fatal)' : 'after retries'}: ${e.message}`);
         return { ok: false, error: e.message, text: `[DRAFT UNAVAILABLE — ${e.message}]` };
       }
+      
       const wait = baseDelay * Math.pow(2, i);
-      console.warn(`[orchestrator] ${name} failed (rate limit/error), retrying in ${wait}ms...`);
+      console.warn(`[orchestrator] ${name} failed, retrying in ${wait}ms...`);
       await new Promise(r => setTimeout(r, wait));
     }
   }
@@ -108,9 +127,6 @@ async function orchestrate(seed, slug) {
 
   // ── 3.5. Neuro-Auditor Validation ─────────────────────────────────────────
   console.log('[orchestrator] Running Neuro-Auditor verification...');
-  const llm = require('./llm-adapter.cjs');
-  const fs = require('fs');
-  const path = require('path');
   try {
     const auditorPath = path.resolve(__dirname, '../../../.agent/marketing-get-shit-done/agents/mgsd-neuro-auditor.md');
     if (fs.existsSync(auditorPath) && audienceResult.ok && brandVoiceResult.ok) {

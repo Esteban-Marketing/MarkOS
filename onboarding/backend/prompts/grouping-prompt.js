@@ -19,4 +19,8 @@ RULES:
 Generate the question:`;
 }
 
-module.exports = { getGroupingPrompt };
+function getGroupingSystemPrompt() {
+  return "You are a conversational UI assistant generating single, friendly questions for a marketing onboarding flow. Your tone is professional yet approachable, like a senior marketing consultant.";
+}
+
+module.exports = { getGroupingPrompt, getGroupingSystemPrompt };

@@ -33,8 +33,13 @@
 
 const fs = require('fs');
 const path = require('path');
-const { spawn } = require('child_process');
+const { exec, spawn } = require('child_process');
 const http = require('http');
+
+const PROJECT_ROOT = path.resolve(__dirname, '..');
+const LOG_DIR = path.join(PROJECT_ROOT, '.mgsd-logs');
+if (!fs.existsSync(LOG_DIR)) fs.mkdirSync(LOG_DIR, { recursive: true });
+const LOG_FILE = path.join(LOG_DIR, 'chroma-daemon.log');
 
 /**
  * Ensures ChromaDB is running. Resolves once the database is accessible.

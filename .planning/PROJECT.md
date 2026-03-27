@@ -17,7 +17,7 @@ A protocol for agentic marketing execution, built as a parallel system to the de
 Standardization and automation of marketing ideation, planning, and execution via robust agentic workflows and Linear issue tracking.
 
 ## Context
-This project aims to instantiate the Marketing Get Shit Done (mgsd) protocol. Following the successful deployment of the core framework (v1.0), the protocol is now securely gating AI operations behind strict phase-check requirements to prevent hallucinatory drifts. All template footprints, research processes, and logic flows are unified, and the system is transitioning towards handling multiple distinct client vectors simultaneously.
+This project aims to instantiate the Marketing Get Shit Done (mgsd) protocol. Following the successful deployment of the core framework (v1.0), the protocol is now securely gating AI operations behind strict phase-check requirements (v1.1). Phase 15 has introduced a strict "Separation of Concerns" architecture, decoupling strategy data (MIR/MSP) from specialized execution logic (.agent/prompts/). The system is now optimized for scale with standardized prompt injection and historical winner anchoring.
 
 ## Requirements
 
@@ -32,6 +32,7 @@ This project aims to instantiate the Marketing Get Shit Done (mgsd) protocol. Fo
 - [x] Supported dual-protocol execution natively on the repository.
 - [x] Created NPX installer and patching engine for distribution.
 - [x] Enforced gating hooks preventing agent misfires on unchecked Phase plans.
+- [x] Implemented Strategic Enrichment (Phase 15): Dual-engine business framework (Lean Canvas/JTBD) and specialized agent prompt registry.
 
 ### Out of Scope
 - Building our own task tracker (relies on Linear integration).
@@ -63,4 +64,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-25 after milestone v1.1 hardening resolution*
+*Last updated: 2026-03-27 after Phase 15 strategic enrichment completion*

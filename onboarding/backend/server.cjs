@@ -38,23 +38,24 @@ const http    = require('http');
 const fs      = require('fs');
 const path    = require('path');
 const { exec } = require('child_process');
+const { readBody, json } = require('./utils.cjs');
+const handlers = require('./handlers.cjs');
 
-// Load .env from project root (2 levels up from backend/).
+const { 
+  PROJECT_ROOT, 
+  ONBOARDING_DIR, 
+  CONFIG_PATH, 
+  MIR_TEMPLATES 
+} = require('./path-constants.cjs');
+
+// Load .env from project root.
 try {
-  require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+  require('dotenv').config({ path: path.join(PROJECT_ROOT, '.env') });
 } catch (e) {}
 
 const orchestrator = require('./agents/orchestrator.cjs');
 const chroma       = require('./chroma-client.cjs');
 const writeMIR     = require('./write-mir.cjs');
-
-const ONBOARDING_DIR = path.resolve(__dirname, '..');
-const PROJECT_ROOT   = path.resolve(__dirname, '../..');
-const CONFIG_PATH    = path.join(ONBOARDING_DIR, 'onboarding-config.json');
-const MIR_TEMPLATE_PATH = path.join(
-  PROJECT_ROOT,
-  '.agent/marketing-get-shit-done/templates/MIR'
-);
 
 const LOCAL_MIR_PATH = path.join(PROJECT_ROOT, '.mgsd-local/MIR');
 
@@ -88,32 +89,10 @@ const MIME = {
   '.json': 'application/json',
 };
 
-// ── Body Parser Helper ───────────────────────────────────────────────────────
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = '';
-    req.on('data', chunk => body += chunk);
-    req.on('end', () => {
-      try { resolve(JSON.parse(body)); }
-      catch (e) { reject(new Error('Invalid JSON body')); }
-    });
-    req.on('error', reject);
-  });
-}
-
-function json(res, statusCode, data) {
-  res.writeHead(statusCode, {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  });
-  res.end(JSON.stringify(data, null, 2));
-}
+// (utils.cjs handles readBody and json)
 
 // ── Server ───────────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
-
-  const handlers = require('./handlers.cjs');
 
   // CORS preflight
   if (req.method === 'OPTIONS') return handlers.handleCorsPreflight(req, res);

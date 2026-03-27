@@ -30,10 +30,10 @@ const llm  = require('./llm-adapter.cjs');
 const { resolveExample } = require('./example-resolver.cjs');
 
 // ─── EXAMPLE BASE PATHS ────────────────────────────────────────────────────────
-const TMPL_ROOT        = path.resolve(__dirname, '..', '..', '..', '..', '.agent', 'marketing-get-shit-done', 'templates');
-const CORE_STRAT_DIR   = path.join(TMPL_ROOT, 'MIR', 'Core_Strategy');
-const MSP_STRAT_DIR    = path.join(TMPL_ROOT, 'MSP', 'Strategy');
-const MSP_CAMPAIGNS_DIR = path.join(TMPL_ROOT, 'MSP', 'Campaigns');
+const { TEMPLATES_DIR } = require('../path-constants.cjs');
+const CORE_STRAT_DIR   = path.join(TEMPLATES_DIR, 'MIR', 'Core_Strategy');
+const MSP_STRAT_DIR    = path.join(TEMPLATES_DIR, 'MSP', 'Strategy');
+const MSP_CAMPAIGNS_DIR = path.join(TEMPLATES_DIR, 'MSP', 'Campaigns');
 
 const SYSTEM_PROMPT = `You are a senior marketing strategist specializing in channel strategy, brand voice, and go-to-market execution. Your outputs go directly into a Marketing Strategy Platform (MSP) that guides AI agents and human marketers. 
 
@@ -44,7 +44,8 @@ RULES:
 4. Where data is missing, output "[REQUIRES HUMAN INPUT — reason]" as a placeholder.`;
 
 async function generateBrandVoice(seed) {
-  const { company, audience } = seed;
+  const company = seed.company || {};
+  const audience = seed.audience || {};
 
   const exampleBlock = resolveExample('BRAND-VOICE', company.business_model || '', '', CORE_STRAT_DIR);
 
@@ -81,7 +82,10 @@ Create 4 dimensions using this format:
 }
 
 async function generateChannelStrategy(seed) {
-  const { audience, content, company, market } = seed;
+  const company = seed.company || {};
+  const audience = seed.audience || {};
+  const content = seed.content || {};
+  const market = seed.market || {};
 
   const exampleBlock = resolveExample('CHANNEL-STRATEGY', company.business_model || '', '', MSP_STRAT_DIR);
 
@@ -120,7 +124,10 @@ Rank channels 1-5 in execution priority. For each:
 }
 
 async function generatePaidAcquisition(seed) {
-  const { company, audience, market, product } = seed;
+  const company = seed.company || {};
+  const audience = seed.audience || {};
+  const market = seed.market || {};
+  const product = seed.product || {};
 
   const exampleBlock = resolveExample('PAID-ACQUISITION', company.business_model || '', '', MSP_CAMPAIGNS_DIR);
 

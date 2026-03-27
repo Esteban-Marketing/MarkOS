@@ -5,6 +5,8 @@
   <gate level="1">
     <dir>MIR/Core_Strategy/01_COMPANY/ (Identity)</dir>
     <dir>MIR/Core_Strategy/02_BRAND/ (Voice & Visuals)</dir>
+    <file>MIR/Core_Strategy/02_BUSINESS/LEAN-CANVAS.md (Business Physics)</file>
+    <file>MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md (Psychology)</file>
     <dir>MIR/Market_Audiences/03_MARKET/ (Competitors & Demand)</dir>
     <dir>MIR/Products/04_PRODUCTS/ (Features & Hooks)</dir>
   </gate>

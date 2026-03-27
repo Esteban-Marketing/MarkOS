@@ -8,11 +8,11 @@ const { getPartialExtractionPrompt } = require('../prompts/partial-extraction-pr
 
 const SCHEMA_PATH = path.resolve(__dirname, '../../onboarding-seed.schema.json');
 
-async function extractToSchema(rawText, attempt = 1) {
+async function extractToSchema(webText, fileText, chatText, attempt = 1) {
   try {
     const schemaContent = fs.readFileSync(SCHEMA_PATH, 'utf8');
     
-    const userPrompt = getExtractionPrompt(schemaContent, rawText);
+    const userPrompt = getExtractionPrompt(schemaContent, webText, fileText, chatText);
     const systemPrompt = "You are a data mapper. Return ONLY valid JSON.";
 
     const res = await llm.call(systemPrompt, userPrompt, {
@@ -20,16 +20,17 @@ async function extractToSchema(rawText, attempt = 1) {
         temperature: 0.1 
     });
 
-    if (!res.ok) {
-        throw new Error(`LLM call failed: ${res.error}`);
+
+    if (res.isFallback) {
+        return {};
     }
 
     let jsonStr = res.text.trim();
     // Clean markdown formatting if present
-    if (jsonStr.startsWith('\`\`\`json')) {
-        jsonStr = jsonStr.replace(/^\`\`\`json/, '').replace(/\`\`\`$/, '').trim();
-    } else if (jsonStr.startsWith('\`\`\`')) {
-        jsonStr = jsonStr.replace(/^\`\`\`/, '').replace(/\`\`\`$/, '').trim();
+    if (jsonStr.startsWith('```json')) {
+        jsonStr = jsonStr.replace(/^```json/, '').replace(/```$/, '').trim();
+    } else if (jsonStr.startsWith('```')) {
+        jsonStr = jsonStr.replace(/^```/, '').replace(/```$/, '').trim();
     }
 
     return JSON.parse(jsonStr);
@@ -37,7 +38,7 @@ async function extractToSchema(rawText, attempt = 1) {
   } catch (err) {
       if (attempt === 1) {
           console.warn(`Extraction JSON.parse failed. Retrying... (${err.message})`);
-          return await extractToSchema(rawText, 2);
+          return await extractToSchema(webText, fileText, chatText, 2);
       }
       throw new Error(`Failed to parse LLM output into schema: ${err.message}`);
   }
@@ -55,15 +56,15 @@ async function extractPartialToSchema(existingData, userAnswer, attempt = 1) {
         temperature: 0.1 
     });
 
-    if (!res.ok) {
-        throw new Error(`LLM call failed: ${res.error}`);
+    if (res.isFallback) {
+        return existingData;
     }
 
     let jsonStr = res.text.trim();
-    if (jsonStr.startsWith('\`\`\`json')) {
-        jsonStr = jsonStr.replace(/^\`\`\`json/, '').replace(/\`\`\`$/, '').trim();
-    } else if (jsonStr.startsWith('\`\`\`')) {
-        jsonStr = jsonStr.replace(/^\`\`\`/, '').replace(/\`\`\`$/, '').trim();
+    if (jsonStr.startsWith('```json')) {
+        jsonStr = jsonStr.replace(/^```json/, '').replace(/```$/, '').trim();
+    } else if (jsonStr.startsWith('```')) {
+        jsonStr = jsonStr.replace(/^```/, '').replace(/```$/, '').trim();
     }
 
     return JSON.parse(jsonStr);
@@ -73,7 +74,7 @@ async function extractPartialToSchema(existingData, userAnswer, attempt = 1) {
           console.warn(`Extraction JSON.parse failed. Retrying partial... (${err.message})`);
           return await extractPartialToSchema(existingData, userAnswer, 2);
       }
-      throw new Error(`Failed to parse LLM output into schema: ${err.message}`);
+      return existingData; // On final error, just return identity to keep moving
   }
 }
 

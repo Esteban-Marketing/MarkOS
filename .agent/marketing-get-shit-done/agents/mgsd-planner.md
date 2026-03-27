@@ -17,6 +17,7 @@ Creates detailed PLAN.md files from marketing phase scope, campaign context, and
 - ROADMAP.md (phase goal)
 - MIR files relevant to phase discipline
 - STATE.md
+- WINNERS/_CATALOG.md (for the target discipline in .mgsd-local/)
 
 ## Planning Rules
 

@@ -17,8 +17,10 @@ Executes all tasks in a PLAN.md file. Commits each task atomically, creates SUMM
 4. Read config.json (discipline activation)
 5. Read CLAUDE.md/GEMINI.md (project-specific rules)
 6. Read all `<read_first>` MIR files from each task before executing that task
+7. Read the `WINNERS/_CATALOG.md` for the current discipline to anchor tone, structure, and high-performance patterns.
 
 ## Execution Rules
+- Before planning, read the `WINNERS/_CATALOG.md` for the current discipline to anchor tone, structure, and high-performance patterns.
 - Execute tasks in order (respecting any sequential dependencies within plan)
 - Commit each task individually: `mktg({discipline}): {task description}`
 - Use `--no-verify` flag if running in parallel wave (orchestrator validates hooks after)

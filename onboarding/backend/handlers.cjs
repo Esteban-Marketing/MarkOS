@@ -1,5 +1,11 @@
 'use strict';
 
+const {
+  PROJECT_ROOT,
+  ONBOARDING_DIR,
+  CONFIG_PATH,
+  MIR_TEMPLATES
+} = require('./path-constants.cjs');
 const fs = require('fs');
 const path = require('path');
 const { IncomingForm } = require('formidable');
@@ -7,28 +13,26 @@ const orchestrator = require('./agents/orchestrator.cjs');
 const chroma = require('./chroma-client.cjs');
 const writeMIR = require('./write-mir.cjs');
 
-// Parsers & Scrapers
-const tavilyScraper = require('./scrapers/tavily-scraper.cjs');
-const pdfParser = require('./parsers/pdf-parser.cjs');
-const docxParser = require('./parsers/docx-parser.cjs');
-const csvParser = require('./parsers/csv-parser.cjs');
-const textParser = require('./parsers/text-parser.cjs');
+const { readBody, json } = require('./utils.cjs');
 
 // Extractors & Scorers
 const schemaExtractor = require('./extractors/schema-extractor.cjs');
 const confidenceScorer = require('./confidences/confidence-scorer.cjs');
-const { getGroupingPrompt } = require('./prompts/grouping-prompt.js');
+const { getGroupingPrompt, getGroupingSystemPrompt } = require('./prompts/grouping-prompt.js');
 const { getSparkPrompt } = require('./prompts/spark-prompt.js');
 const { discoverCompetitors } = require('./enrichers/competitor-enricher.cjs');
-const llm = require('./agents/llm-adapter.cjs');
 
-const ONBOARDING_DIR = path.resolve(__dirname, '..');
-const PROJECT_ROOT = path.resolve(__dirname, '../..');
-const CONFIG_PATH = path.join(ONBOARDING_DIR, 'onboarding-config.json');
-const MIR_TEMPLATE_PATH = path.join(
-  PROJECT_ROOT,
-  '.agent/marketing-get-shit-done/templates/MIR'
-);
+const mirFiller = require('./agents/mir-filler.cjs');
+const mspFiller = require('./agents/msp-filler.cjs');
+
+// Scrapers & Parsers
+const tavilyScraper = require('./scrapers/tavily-scraper.cjs');
+const pdfParser     = require('./parsers/pdf-parser.cjs');
+const docxParser    = require('./parsers/docx-parser.cjs');
+const csvParser     = require('./parsers/csv-parser.cjs');
+const textParser    = require('./parsers/text-parser.cjs');
+
+const llm = require('./agents/llm-adapter.cjs');
 
 function getConfig() {
   let config = {
@@ -48,39 +52,7 @@ function getConfig() {
   return config;
 }
 
-function resolveMirOutputPath(config, slug) {
-  if (process.env.VERCEL) {
-    // Hosted mode dynamically writes to .mgsd-data/${slug}
-    return path.resolve(PROJECT_ROOT, `.mgsd-data/${slug}/MIR`);
-  }
-  return config.mir_output_path
-    ? path.resolve(PROJECT_ROOT, config.mir_output_path)
-    : path.join(PROJECT_ROOT, '.mgsd-local/MIR');
-}
-
-function readBody(req) {
-  return new Promise((resolve, reject) => {
-    // Vercel pre-parses req.body
-    if (req.body) return resolve(typeof req.body === 'string' ? JSON.parse(req.body) : req.body);
-    let body = '';
-    req.on('data', chunk => body += chunk);
-    req.on('end', () => {
-      try { resolve(body ? JSON.parse(body) : {}); }
-      catch (e) { reject(new Error('Invalid JSON body')); }
-    });
-    req.on('error', reject);
-  });
-}
-
-function json(res, statusCode, data) {
-  res.writeHead(statusCode, {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
-  });
-  res.end(JSON.stringify(data, null, 2));
-}
+// (utils.cjs handles readBody and json)
 
 async function handleConfig(req, res) {
   const config = getConfig();
@@ -94,7 +66,9 @@ async function handleStatus(req, res) {
 
   let mirGateStatus = { total: 0, complete: 0, gate1Ready: false };
   // Default to local MIR for status check if slug unknown
-  const mirOutputPath = resolveMirOutputPath(config, 'mgsd-client');
+  const mirOutputPath = config.mir_output_path
+    ? path.resolve(PROJECT_ROOT, config.mir_output_path)
+    : path.join(PROJECT_ROOT, '.mgsd-local/MIR');
   try {
     const stateContent = fs.readFileSync(path.join(mirOutputPath, 'STATE.md'), 'utf8');
     const rows = stateContent.match(/\|\s*`[^`]+`\s*\|\s*`(empty|complete)`/g) || [];
@@ -166,9 +140,6 @@ async function handleRegenerate(req, res) {
     chroma.configure(config.chroma_host);
     const { section, seed, slug } = await readBody(req);
     
-    const mirFiller = require('./agents/mir-filler.cjs');
-    const mspFiller = require('./agents/msp-filler.cjs');
-
     const generators = {
       company_profile: () => mirFiller.generateCompanyProfile(seed),
       mission_values: () => mirFiller.generateMissionVisionValues(seed),
@@ -206,7 +177,7 @@ async function handleApprove(req, res) {
       fs.mkdirSync(mirOutputPath, { recursive: true });
     }
 
-    const { written, stateUpdated, errors } = writeMIR.applyDrafts(mirOutputPath, MIR_TEMPLATE_PATH, approvedDrafts);
+    const { written, stateUpdated, errors } = writeMIR.applyDrafts(mirOutputPath, MIR_TEMPLATES, approvedDrafts);
 
     console.log(`\n✓ MIR files written: ${written.join(', ')}`);
     console.log(`  STATE.md updated: ${stateUpdated}`);
@@ -232,57 +203,43 @@ async function handleExtractSources(req, res) {
         return json(res, 400, { success: false, error: 'File upload error: ' + err.message });
       }
 
-      let extractedText = '';
+      const url = fields.url;
+      // 1. Parallel Scraping & Parsing
+      const scrapePromise = url ? tavilyScraper.scrapeDomain(url, config.tavily_api_key || process.env.TAVILY_API_KEY).catch(e => {
+        console.warn(`Scrape failed for ${url}:`, e.message);
+        return `--- TAVILY SCRAPE FAILED FOR ${url} ---\n(User provided URL but scraping failed: ${e.message})\n\n`;
+      }) : Promise.resolve('');
 
-      // 1. Scrape URL if provided
-      const url = fields.url && fields.url[0];
-      if (url) {
-        try {
-          // Assume tavily config exists in the onboarding-config
-          const scrapeData = await tavilyScraper.scrapeDomain(url, config.tavily_api_key || process.env.TAVILY_API_KEY);
-          extractedText += scrapeData + '\n';
-        } catch (e) {
-          console.warn(`Scrape failed for ${url}:`, e.message);
-          extractedText += `--- TAVILY SCRAPE FAILED FOR ${url} ---\n(User provided URL but scraping failed: ${e.message})\n\n`;
-        }
-      }
-
-      // 2. Parse dropped files if provided
       const uploadedFiles = files['files[]'] || files['files'] || [];
       const fileArray = Array.isArray(uploadedFiles) ? uploadedFiles : [uploadedFiles];
-      
-      for (const file of fileArray) {
+
+      const parserPromises = fileArray.map(async (file) => {
         try {
           const buffer = fs.readFileSync(file.filepath);
           const ext = path.extname(file.originalFilename).toLowerCase();
-          let parsedFileText = '';
-
+          let text = '';
           switch (ext) {
-            case '.pdf':
-              parsedFileText = await pdfParser.parsePdf(buffer);
-              break;
-            case '.docx':
-              parsedFileText = await docxParser.parseDocx(buffer);
-              break;
-            case '.csv':
-              parsedFileText = csvParser.parseCsv(buffer);
-              break;
+            case '.pdf':  text = await pdfParser.parsePdf(buffer); break;
+            case '.docx': text = await docxParser.parseDocx(buffer); break;
+            case '.csv':  text = csvParser.parseCsv(buffer); break;
             case '.txt':
-            case '.md':
-              parsedFileText = textParser.parseText(buffer);
-              break;
-            default:
-              console.warn(`Unsupported extraction extension: ${ext}`);
+            case '.md':   text = textParser.parseText(buffer); break;
           }
-          if (parsedFileText) {
-            extractedText += `\n[File: ${file.originalFilename}]\n${parsedFileText}\n`;
-          }
+          return text ? `\n[File: ${file.originalFilename}]\n${text}\n` : '';
         } catch (e) {
           console.warn(`Failed to parse file ${file.originalFilename}:`, e.message);
+          return '';
         }
-      }
+      });
 
-      json(res, 200, { success: true, text: extractedText.trim() });
+      const [webText, ...fileTexts] = await Promise.all([scrapePromise, ...parserPromises]);
+      const fileText = fileTexts.join('\n').trim();
+
+      json(res, 200, { 
+        success: true, 
+        webText: webText.trim(), 
+        fileText: fileText
+      });
     });
   } catch (err) {
     console.error('[POST /api/extract-sources] Error:', err.message);
@@ -292,13 +249,20 @@ async function handleExtractSources(req, res) {
 
 async function handleExtractAndScore(req, res) {
   try {
-    const { text } = await readBody(req);
-    if (!text) {
-      return json(res, 400, { success: false, error: 'No text provided for extraction' });
-    }
+    const { webText, fileText, chatText } = await readBody(req);
+    // Backward compatibility for single 'text' field
+    const w = webText || '';
+    const f = fileText || '';
+    const c = chatText || '';
 
-    const jsonMap = await schemaExtractor.extractToSchema(text);
-    const scoredMap = confidenceScorer.scoreFields(jsonMap);
+    const jsonMap = await schemaExtractor.extractToSchema(w, f, c);
+    
+    let scoredMap = {};
+    try {
+      scoredMap = confidenceScorer.scoreFields(jsonMap);
+    } catch (scoreErr) {
+      console.error('[HANDLERS] Scorer failed:', scoreErr.message);
+    }
 
     json(res, 200, { success: true, data: jsonMap, scores: scoredMap });
   } catch (err) {
@@ -309,18 +273,40 @@ async function handleExtractAndScore(req, res) {
 
 async function handleGenerateQuestion(req, res) {
   try {
-    const { businessModel, missingFields } = await readBody(req);
-    if (!businessModel || !missingFields || missingFields.length === 0) {
-      return json(res, 400, { success: false, error: 'businessModel and missingFields are required.' });
+    const body = await readBody(req);
+    const schema = body.schema || body.seed || {};
+    const businessModel = body.businessModel || schema.company?.business_model || 'B2B';
+    const scores = body.scores || {};
+    
+    // Helper to extract missing fields from scores
+    const extractMissing = (scoresObj, prefix = '') => {
+      let missing = [];
+      for (const [key, meta] of Object.entries(scoresObj)) {
+        const path = prefix ? `${prefix}.${key}` : key;
+        if (meta && typeof meta === 'object' && meta.score !== undefined) {
+          if (meta.score === 'Red' || meta.score === 'Yellow') {
+            missing.push(path);
+          }
+        } else if (meta && typeof meta === 'object') {
+          missing = missing.concat(extractMissing(meta, path));
+        }
+      }
+      return missing;
+    };
+
+    const missingFields = body.missingFields || (Object.keys(scores).length > 0 ? extractMissing(scores) : []);
+
+    if (!missingFields || missingFields.length === 0) {
+      return json(res, 200, { success: true, question: null }); // Everything complete
     }
 
-    const userPrompt = getGroupingPrompt(businessModel, missingFields.slice(0, 3)); // Only take up to 3 missing fields at once
-    const systemPrompt = "You are a conversational UI assistant generating single, friendly questions.";
+    const userPrompt = getGroupingPrompt(businessModel, missingFields.slice(0, 3));
+    const systemPrompt = getGroupingSystemPrompt();
 
     const llmRes = await llm.call(systemPrompt, userPrompt, { temperature: 0.6 });
     if (!llmRes.ok) throw new Error(llmRes.error);
 
-    json(res, 200, { success: true, question: llmRes.text.trim() });
+    json(res, 200, { success: true, question: llmRes.text.trim(), missingFields });
   } catch (err) {
     console.error('[POST /api/generate-question] Error:', err.message);
     json(res, 500, { success: false, error: err.message });
@@ -329,15 +315,18 @@ async function handleGenerateQuestion(req, res) {
 
 async function handleParseAnswer(req, res) {
   try {
-    const { existingData, userAnswer } = await readBody(req);
+    const body = await readBody(req);
+    const existingData = body.existingData || body.schema || body.seed || {};
+    const userAnswer   = body.userAnswer || body.answer;
+
     if (!existingData || !userAnswer) {
-      return json(res, 400, { success: false, error: 'existingData and userAnswer required.' });
+      return json(res, 400, { success: false, error: 'existingData and userAnswer (answer) required.' });
     }
 
     const jsonMap = await schemaExtractor.extractPartialToSchema(existingData, userAnswer);
     const scoredMap = confidenceScorer.scoreFields(jsonMap);
 
-    json(res, 200, { success: true, data: jsonMap, scores: scoredMap });
+    json(res, 200, { success: true, data: jsonMap, updatedSchema: jsonMap, scores: scoredMap });
   } catch (err) {
     console.error('[POST /api/parse-answer] Error:', err.message);
     json(res, 500, { success: false, error: err.message });
@@ -356,7 +345,7 @@ async function handleSparkSuggestion(req, res) {
     
     // Call LLM adapter
     const llmRes = await llm.call(
-      "You are a helpful AI that strictly outputs JSON arrays of strings.",
+      "You are a helpful AI that strictly outputs JSON arrays of strings. No preamble.",
       prompt,
       { max_tokens: 300, temperature: 0.7 }
     );

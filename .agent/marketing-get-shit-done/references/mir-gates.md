@@ -53,6 +53,8 @@ Required files with status `complete` or `verified`:
 | `Core_Strategy/01_COMPANY/PROFILE.md` | Business identity, legal name, geography |
 | `Core_Strategy/02_BRAND/VOICE-TONE.md` | Language rules, prohibited words, tone-by-context |
 | `Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md` | Value props, objection responses, headline bank |
+| `Core_Strategy/02_BUSINESS/LEAN-CANVAS.md` | Business model physics (CPA, LTV, Revenue) |
+| `Core_Strategy/02_BUSINESS/JTBD-MATRIX.md` | Buyer psychology (Triggers, Pains, Gains) |
 
 **Gate 1 RED means:** Agent cannot generate copy, briefs, or campaign drafts. The brand foundation is incomplete.
 
@@ -100,6 +102,13 @@ Parse JSON `gate1.ready` and `gate2.ready`:
 | mgsd-analyst | MGSD-AGT-ANA-05 | — | ✓ |
 | mgsd-funnel-analyst | MGSD-AGT-ANA-01 | — | ✓ |
 | mgsd-performance-monitor | MGSD-AGT-ANA-02 | — | ✓ |
+| paid_media_creator | MGSD-PRM-PM-01 | ✓ | — |
+| email_lifecycle_strategist | MGSD-PRM-EM-01 | ✓ | — |
+| cro_landing_page_builder | MGSD-PRM-LC-01 | ✓ | ✓ |
+| seo_content_architect | MGSD-PRM-SEO-01 | ✓ | — |
+| social_community_manager | MGSD-PRM-SOC-01 | ✓ | — |
+| brand_enforcer_qa | MGSD-PRM-QA-01 | ✓ | — |
+| telemetry_synthesizer | MGSD-PRM-TRK-01 | — | ✓ |
 | mgsd-auditor | MGSD-AGT-OPS-08 | — | — |
 | mgsd-linear-manager | MGSD-AGT-OPS-07 | — | — |
 | mgsd-context-loader | MGSD-AGT-OPS-01 | — | — |

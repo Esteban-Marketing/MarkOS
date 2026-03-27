@@ -33,7 +33,7 @@ const readline = require('readline');
 // ── Environment Settings ───────────────────────────────────────────────────
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
-const NEW_VERSION = fs.readFileSync(path.join(PKG_DIR, 'VERSION'), 'utf8').trim();
+const NEW_VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/marketing-get-shit-done/VERSION'), 'utf8').trim();
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));

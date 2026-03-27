@@ -1,0 +1,11 @@
+{
+  "company": {
+    "name": "Test Company",
+    "business_model": "B2B"
+  },
+  "metadata": {
+    "version": "2.1",
+    "generated": "2026-03-26T21:16:08.464Z",
+    "completeness_score": 100
+  }
+}

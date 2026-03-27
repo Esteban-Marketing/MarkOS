@@ -39,8 +39,8 @@ const path = require('path');
 // ─── DEFAULT BASE PATH ─────────────────────────────────────────────────────────
 // Resolves to .agent/marketing-get-shit-done/templates/ relative to repo root.
 // Callers can override this for testing.
-const REPO_ROOT    = path.resolve(__dirname, '..', '..', '..', '..', '..');
-const DEFAULT_BASE = path.join(REPO_ROOT, '.agent', 'marketing-get-shit-done', 'templates');
+const { TEMPLATES_DIR } = require('../path-constants.cjs');
+const DEFAULT_BASE = TEMPLATES_DIR;
 
 // ─── MODEL SLUG MAP ────────────────────────────────────────────────────────────
 // Normalizes the business_model enum value to a filename-safe slug.

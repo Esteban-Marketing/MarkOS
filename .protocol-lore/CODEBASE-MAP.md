@@ -124,28 +124,20 @@ Read this file after QUICKSTART.md to locate any component without filesystem se
         Export: call(systemPrompt, userPrompt, opts) → { ok, text, error }
       </file>
       <file path="onboarding/backend/agents/orchestrator.cjs">
-        Runs all MIR+MSP generators in parallel (Promise.allSettled).
-        Handles exponential backoff retry (3 attempts, 1.5s base delay, 2x multiplier).
+        Runs all MIR+MSP generators in parallel. Handles exponential backoff retry.
         Stores all drafts into ChromaDB after generation.
-        Export: orchestrate(seed, slug) → { drafts, chromaResults, errors }
       </file>
       <file path="onboarding/backend/agents/mir-filler.cjs">
-        Generates MIR (Marketing Intelligence Repository) draft content.
-        Functions:
-          generateCompanyProfile(seed) → Core_Strategy/01_COMPANY/PROFILE.md
-          generateMissionVisionValues(seed) → Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md
-          generateAudienceProfile(seed) → Market_Audiences/03_MARKET/AUDIENCES.md
-          generateCompetitiveLandscape(seed) → Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md
-        Each function calls llm-adapter.call() with a structured marketing prompt.
+        Generates MIR (Marketing Intelligence Repo) draft content.
+        Updated: Injects LEAN-CANVAS and JTBD-MATRIX logic based on seed.
       </file>
       <file path="onboarding/backend/agents/msp-filler.cjs">
         Generates MSP (Marketing Strategy Plan) draft content.
-        Functions:
-          generateBrandVoice(seed) → Core_Strategy/02_BRAND/VOICE-TONE.md
-          generateChannelStrategy(seed) → MSP/Strategy/00_MASTER-PLAN/CHANNEL-STRATEGY.md
-        Each function calls llm-adapter.call() with a structured strategy prompt.
+        Updated: Anchored to `.mgsd-local/MSP/*/WINNERS/` catalogs.
       </file>
     </dir>
+    <file path="onboarding/backend/path-constants.cjs">Centralized path resolution. Prevents "dot-hell" in v1.2+.</file>
+    <file path="onboarding/backend/utils.cjs">Shared utilities for body parsing, JSON serialization, and response handling.</file>
   </dir>
 </dir>
 
@@ -154,45 +146,55 @@ Read this file after QUICKSTART.md to locate any component without filesystem se
      ═══════════════════════════════════════════════════════════════════════════ -->
 <dir path="test">
   <purpose>Node built-in test runner (`node --test`). No jest/mocha. Tests run against real tmpdir copies of the codebase.</purpose>
-  <file path="test/setup.js">Shared test helpers: createTestEnvironment(), runCLI(), readManifest(). Creates isolated tmp dirs with seeded .agent/ and onboarding/ content.</file>
+  <file path="test/setup.js">Shared test helpers: createTestEnvironment(), runCLI(), readManifest().</file>
   <file path="test/install.test.js">Suite 1: Install lifecycle — fresh install, idempotency, version stamp.</file>
-  <file path="test/onboarding-server.test.js">Suite 3: Server port fallback, privacy banner presence, POST /submit end-to-end including AI draft pipeline (requires NODE_PATH to resolve openai from root).</file>
+  <file path="test/onboarding-server.test.js">Suite 3: Server port fallback, privacy banner, POST /submit E2E.</file>
   <file path="test/protocol.test.js">Suite 2: MIR/MSP file integrity — checks all referenced files exist.</file>
-  <file path="test/update.test.js">Suite 4: Update lifecycle — hash-comparison patching, user-modified file preservation.</file>
-  <file path="test/write-mir.test.js">Suite 5: write-mir.cjs unit — JIT cloning, fuzzy-merge content append, STATE.md row updates.</file>
+  <file path="test/update.test.js">Suite 4: Update lifecycle — hash-comparison patching.</file>
+  <file path="test/write-mir.test.js">Suite 5: write-mir.cjs unit — JIT cloning, fuzzy-merge.</file>
+  <file path="test/example-resolver.test.js">Suite 6: Verifies business_model example injection logic.</file>
 </dir>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     .agent/  — Protocol engine (DO NOT MODIFY unless extending protocol)
+     .agent/  — Protocol engine
      ═══════════════════════════════════════════════════════════════════════════ -->
 <dir path=".agent">
-  <purpose>The MGSD protocol engine. Version-controlled by npx install/update. Client data is NEVER stored here.</purpose>
-  <file path=".agent/marketing-get-shit-done/MGSD-INDEX.md">Full token registry of all MIR/MSP templates. 21KB+ — use .protocol-lore/TEMPLATES.md instead when context is limited.</file>
-  <file path=".agent/marketing-get-shit-done/templates/MIR/">Base MIR template files. DO NOT WRITE CLIENT DATA HERE. Use .mgsd-local/MIR/ overrides instead.</file>
+  <purpose>The MGSD protocol engine. Version-controlled by npx install/update.</purpose>
+  <dir path=".agent/prompts">
+    <purpose>Execution Layer. Logic templates for specialized agents.</purpose>
+    <file path=".agent/prompts/paid_media_creator.md">Creative strategist for paid acquisition.</file>
+    <file path=".agent/prompts/email_lifecycle_strategist.md">CRM and retention copywriter.</file>
+    <file path=".agent/prompts/cro_landing_page_builder.md">High-conversion wireframer.</file>
+    <file path=".agent/prompts/seo_content_architect.md">Organic search and authority builder.</file>
+    <file path=".agent/prompts/telemetry_synthesizer.md">PostHog/Analytics insight generator.</file>
+  </dir>
+  <file path=".agent/marketing-get-shit-done/MGSD-INDEX.md">Full token registry. Updated for v1.2.</file>
   <dir path=".agent/skills">
-    <purpose>GSD and MGSD skill definitions. Each has a SKILL.md with execution instructions.</purpose>
-    <file path=".agent/skills/mgsd-new-project/SKILL.md">Initializes a new client project. Launches onboarding/backend/server.cjs.</file>
-    <file path=".agent/skills/mgsd-plan-phase/SKILL.md">Creates PLAN.md with researcher→planner→checker agent chain.</file>
-    <file path=".agent/skills/mgsd-execute-phase/SKILL.md">Executes all plans in a phase with wave-based parallelization.</file>
-    <!-- ...additional skills follow same pattern -->
+    <purpose>GSD and MGSD skill definitions.</purpose>
+    <file path=".agent/skills/mgsd-new-project/SKILL.md">Initializes project + launches onboarding.</file>
+    <file path=".agent/skills/mgsd-plan-phase/SKILL.md">Researcher → Planner → Checker chain.</file>
   </dir>
 </dir>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-     .mgsd-local/  — Client workspace (gitignored, client-specific overrides)
+     .mgsd-local/  — Client workspace
      ═══════════════════════════════════════════════════════════════════════════ -->
 <dir path=".mgsd-local">
-  <purpose>Client-specific override layer. Never committed to git. Decouples client data from protocol engine.</purpose>
-  <file path=".mgsd-local/MIR/">JIT-cloned MIR files with client-approved AI draft content. Written by write-mir.cjs POST /approve.</file>
-  <file path=".mgsd-project.json">Persistent project state. Keys: project_slug (ChromaDB namespace), client_name, installed_at. Written once by server.cjs on first POST /submit.</file>
+  <purpose>Client-specific override layer. Never committed to git.</purpose>
+  <dir path=".mgsd-local/MIR">Approved MIR strategy files.</dir>
+  <dir path=".mgsd-local/MSP">Approved MSP strategic blueprints.</dir>
+  <dir path=".mgsd-local/MSP/<discipline>/WINNERS">Historical winners catalogues for agent anchoring.</dir>
+  <file path=".mgsd-project.json">Persistent project slug and metadata.</file>
 </dir>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      .planning/  — GSD planning state
      ═══════════════════════════════════════════════════════════════════════════ -->
 <dir path=".planning">
-  <file path=".planning/STATE.md">Current milestone, active phase, last commit context. First read after .protocol-lore/ files during agent boot.</file>
-  <file path=".planning/milestones/">Phase-by-phase PLAN.md history organized by milestone version.</file>
+  <file path=".planning/PROJECT.md">Project scope, current milestone, architectural pillars.</file>
+  <file path=".planning/STATE.md">Current milestone, active phase, last commit context.</file>
+  <file path=".planning/ROADMAP.md">Full history of phases 01-15 and future vision.</file>
+  <dir path=".planning/phases">Documentation artifacts (PLAN, SUMMARY, VERIFICATION) for every phase.</dir>
 </dir>
 
 </mgsd_codebase_map>

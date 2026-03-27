@@ -150,14 +150,14 @@
 **Goal:** Optimize MGSD to seamlessly run across 5-10 distinct isolated brands simultaneously. Build robust output telemetry and cross-client vector segregation.
 **Requirements Mapped:** SCL-01, TLM-01
 **Depends on:** Phase 9
-**Status:** ⏳ Pending
+**Status:** ✅ Complete
 **Success Criteria:**
 1. CLI smoothly navigates multiple concurrent project profiles perfectly encapsulating context boundaries.
 2. Centralized telemetry dashboard reports AI-vs-human execution metrics.
 
 **Plans:**
-- [ ] 10-01: Vercel Multi-Tenant Architecture Readiness
-- [ ] 10-02: PostHog Telemetry Integration (Frontend + Backend)
+- [x] 10-01: Vercel Multi-Tenant Architecture Readiness
+- [x] 10-02: PostHog Telemetry Integration (Frontend + Backend)
 
 ---
 
@@ -205,7 +205,7 @@
 **Goal:** Replace the 7-step batch onboarding form with an intelligent, magic 0-party data pipeline. The system scrapes the client's website (Tavily), parses uploaded files (PDF/DOCX/CSV/TXT/MD), assigns LLM confidence scores to every schema field, and conducts a minimal conversational gap-fill interview — asking only Red/Yellow fields. Business-model-aware routing, "Skip Chat" bailout, AI Spark icon generation, and a full inline-editable Step 7 review dashboard complete the experience.
 **Requirements Mapped:** ONB-13-01 → ONB-13-20
 **Depends on:** Phase 6 (Onboarding Engine), Phase 12 (Deferred Items)
-**Status:** ⏳ Pending — Context locked (see 13-CONTEXT.md)
+**Status:** ✅ Complete
 **Success Criteria:**
 1. Step 0 Omni-Input Gate accepts URL + file drop as the single entry point.
 2. Tavily scrapes site (depth 2, 15 pages max), file parsers handle PDF/DOCX/TXT/MD/CSV.
@@ -219,9 +219,64 @@
 10. Step 7 = full 30-field schema dashboard with inline editing, source badges, and confidence indicators.
 
 **Plans:**
-- [ ] 13-01: Step 0 Omni-Input Gate + Tavily scraper + file parsers
-- [ ] 13-02: Confidence scoring engine + LLM extraction pipeline
-- [ ] 13-03: Conversational interview engine + business model routing
-- [ ] 13-04: AI Spark icon + LLM cascade (BYOK → Ollama → manual)
-- [ ] 13-05: Auto-enrichment (competitor discovery) + "Skip Chat" bailout
-- [ ] 13-06: Step 7 full schema review dashboard + UI/UX polish
+- [x] 13-01: Step 0 Omni-Input Gate + Tavily scraper + file parsers
+- [x] 13-02: Confidence scoring engine + LLM extraction pipeline
+- [x] 13-03: Conversational interview engine + business model routing
+- [x] 13-04: AI Spark icon + LLM cascade (BYOK → Ollama → manual)
+- [x] 13-05: Auto-enrichment (competitor discovery) + "Skip Chat" bailout
+- [x] 13-06: Step 7 full schema review dashboard + UI/UX polish
+- [x] 13-07: Dashboard Trap Fix & Auto-Drafting
+
+---
+
+## Phase 13.1: Onboarding Tech Debt & Optimization
+**Goal:** Harden the Phase 13 onboarding engine by addressing critical upgrade risks (template isolation), modularizing backend logic (shared utils), enforcing a granular "Hierarchy of Truth" (Chat > File > Web) in extraction, and optimizing performance through parallel source processing.
+**Status:** ✅ Complete
+**Success Criteria:**
+1. Upgrade Isolation: Onboarding data written to `.mgsd-local/` instead of `.agent/` templates.
+2. Backend Modularity: `utils.cjs` created; `server.cjs` and `handlers.cjs` refactor to use shared JSON/Body logic.
+3. Hierarchy of Truth: `extraction-prompt.js` prioritizes Chat over File and Web sources.
+4. Performance: Source extraction (URL + Files) runs in parallel using `Promise.all`.
+5. Prompts: All hardcoded LLM prompts moved to `prompts/` directory.
+
+**Plans:**
+- [x] 13.1-01: Onboarding Hardening & Optimization
+
+## Phase 14: Codebase Mastery (v1.2)
+**Goal:** Harden the MGSD onboarding backend, resolve technical debt, and standardize path resolution across all modules.
+**Status:** ✅ Complete
+**Success Criteria:**
+1. Smart Onboarding Engine v2.0 hardened and production-ready.
+2. Path resolution standardized via `path-constants.cjs` to prevent "dot-hell" bugs.
+3. API payload structures harmonized between frontend and backend.
+
+**Plans:**
+- [x] 14-01: Backend Hardening & Path Standardization
+
+---
+
+## Phase 15: Strategic Enrichment & Asset Reference Architecture
+**Goal:** Establish a strict separation between the Data/Context layer (MIR/MSP) and the Execution layer (Prompts). Enrich the MIR with business model physics (Lean Canvas) and buyer psychology (JTBD Matrix).
+**Status:** ✅ Complete
+**Success Criteria:**
+1. Dual-Engine Business Framework implemented (Lean Canvas + JTBD Matrix).
+2. Centralized agent prompt registry with token injection logic.
+3. Local "Winners" repository for anchoring agent generation to historical performance.
+4. "Read-Catalog-First" boot sequence enforced for all creator agents.
+
+**Plans:**
+- [x] 15-01: Strategic Enrichment pass
+
+---
+
+## Phase 16: Documentation Enrichment
+**Goal:** Optimize the MGSD documentation for both human maintainers and autonomous LLM agents via inline notes, instruction precision, and context hardening.
+**Status:** 🏗️ In Progress
+**Success Criteria:**
+1. Codebase enriched with `/** @llm_context ... */` blocks in critical modules.
+2. All specialized prompts updated with Failure Mode Awareness and Context Relays.
+3. Protocol lore deep-linked via `file:///` URIs.
+4. Gold-standard behavioral examples catalog created.
+
+**Plans:**
+- [ ] 16-01: Documentation & Context Enrichment
