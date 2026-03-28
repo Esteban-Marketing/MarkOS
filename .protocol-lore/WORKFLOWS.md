@@ -36,6 +36,7 @@ LLMs: read this to know which skill file to invoke for each scenario.</purpose>
     <step>4. Required winners anchors: .mgsd-local/MSP/Paid_Media|Lifecycle_Email|Content_SEO|Social|Landing_Pages/WINNERS/_CATALOG.md.</step>
     <step>5. First execution workflows MUST consume approved local state and winners anchors before generating assets.</step>
     <step>6. If any required section or winners catalog is missing, readiness stays blocked and execution MUST pause.</step>
+    <step>6a. Winners anchor behavior: present=proceed, missing=block, stale=warn+proceed only with telemetry, mislocated=block and report canonical path.</step>
     <step>7. Telemetry checkpoints: approval_completed, execution_readiness_ready|execution_readiness_blocked, execution_loop_completed|execution_loop_abandoned.</step>
     <files>
       readiness_api: onboarding/backend/handlers.cjs

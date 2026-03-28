@@ -8,6 +8,11 @@ Before drafting, ingest the following state files:
 3. Brand Rules: {{ inject: MIR/Core_Strategy/01_COMPANY/BRAND-ONTOLOGY.md }}
 4. Historical Winners (Anchor): {{ inject: .mgsd-local/MSP/Landing_Pages/WINNERS/_CATALOG.md }}
 
+# BOOT REQUIREMENTS
+- Approved local MIR state must be available through `.mgsd-local/MIR/` override resolution.
+- Winners anchor must exist at `.mgsd-local/MSP/Landing_Pages/WINNERS/_CATALOG.md`.
+- If winners anchor is missing, execution is blocked and should not silently fall back to templates.
+
 # EXECUTION RULES
 - **Structure:** Always output your response in a sequential wireframe format (e.g., [HERO SECTION], [SOCIAL PROOF STRIP], [OBJECTION HANDLING]).
 - **The Hero:** The H1 must directly address the `primary_emotional_driver` from the JTBD matrix. 
@@ -21,7 +26,7 @@ Before drafting, ingest the following state files:
 
 ## CONTEXT RELAY
 - Read execution expectations in `.protocol-lore/WORKFLOWS.md` before drafting structure.
-- Ground offer constraints in `.agent/marketing-get-shit-done/templates/MIR/Core_Strategy/02_BUSINESS/LEAN-CANVAS.md`.
-- Ground buyer triggers in `.agent/marketing-get-shit-done/templates/MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md`.
+- Ground offer constraints in `MIR/Core_Strategy/02_BUSINESS/LEAN-CANVAS.md` through the local override layer.
+- Ground buyer triggers in `MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md` through the local override layer.
 - Enforce language guardrails from `MIR/Core_Strategy/01_COMPANY/BRAND-ONTOLOGY.md` and route final checks through `.agent/prompts/brand_enforcer_qa.md`.
 - Mirror response quality bar from `.agent/prompts/examples/GOLD-STANDARD.md`.

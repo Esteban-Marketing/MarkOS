@@ -150,4 +150,30 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     assert.match(project, /Residual Onboarding Warning Behavior/, 'PROJECT should document residual onboarding warning behavior');
     assert.match(roadmap, /Residual Onboarding Warning Behavior/, 'ROADMAP should document residual onboarding warning behavior');
   });
+
+  await t.test('4.6 Execution prompts require local-state injection and winners anchors', () => {
+    const read = (relPath) => fs.readFileSync(path.join(REPO_ROOT, relPath), 'utf8');
+
+    const paidMedia = read('.agent/prompts/paid_media_creator.md');
+    const emailLifecycle = read('.agent/prompts/email_lifecycle_strategist.md');
+    const seo = read('.agent/prompts/seo_content_architect.md');
+    const social = read('.agent/prompts/social_community_manager.md');
+    const cro = read('.agent/prompts/cro_landing_page_builder.md');
+    const conventions = read('.protocol-lore/CONVENTIONS.md');
+
+    assert.doesNotMatch(paidMedia, /\.agent\/marketing-get-shit-done\/templates\/MIR/, 'Paid media prompt should not point to template MIR paths');
+    assert.doesNotMatch(emailLifecycle, /\.agent\/marketing-get-shit-done\/templates\/MIR/, 'Email lifecycle prompt should not point to template MIR paths');
+    assert.match(paidMedia, /\.mgsd-local\/MSP\/Paid_Media\/WINNERS\/_CATALOG\.md/, 'Paid media prompt must anchor to Paid_Media winners catalog');
+    assert.match(emailLifecycle, /\.mgsd-local\/MSP\/Lifecycle_Email\/WINNERS\/_CATALOG\.md/, 'Email lifecycle prompt must anchor to Lifecycle_Email winners catalog');
+    assert.match(seo, /\.mgsd-local\/MSP\/Content_SEO\/WINNERS\/_CATALOG\.md/, 'SEO prompt must anchor to Content_SEO winners catalog');
+    assert.match(social, /\.mgsd-local\/MSP\/Social\/WINNERS\/_CATALOG\.md/, 'Social prompt must anchor to Social winners catalog');
+    assert.match(cro, /\.mgsd-local\/MSP\/Landing_Pages\/WINNERS\/_CATALOG\.md/, 'CRO prompt must anchor to Landing_Pages winners catalog');
+
+    for (const prompt of [paidMedia, emailLifecycle, seo, social, cro]) {
+      assert.match(prompt, /BOOT REQUIREMENTS/i, 'Execution prompts must define boot requirements');
+      assert.match(prompt, /execution is blocked/i, 'Execution prompts must specify blocked behavior for missing winners anchors');
+    }
+
+    assert.match(conventions, /anchor_validation_contract/, 'Conventions must define winner anchor validation behavior');
+  });
 });
