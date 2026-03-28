@@ -1,28 +1,31 @@
----
-phase: 17
-current_phase: 17 (npm-identity-cli-rebrand)
+phase: 26
+current_phase: 26 (memory-namespace-multi-tenant-operations)
 gsd_state_version: 1.0
-milestone: v1.2
-milestone_name: "v1.2 Future Integrations"
+milestone: v2.1
+milestone_name: "v2.1 Product Hardening & Identity Convergence"
 status: Ready
-last_updated: "2026-03-27T20:45:00.000Z"
+last_updated: "2026-03-28T23:55:00.000Z"
 progress:
-  total_phases: 17
-  completed_phases: 16
-  total_plans: 47
-  completed_plans: 46
+  total_phases: 27
+  completed_phases: 19
+  total_plans: 45
+  completed_plans: 34
 ---
 
-## Current Position
+Current Position
+----------------
 
-Phase: 16 (documentation-enrichment) — COMPLETE
-Next Phase: 17 (npm-identity-cli-rebrand) — READY TO EXECUTE
+Phase: 25 (onboarding-quality-merge-safety) — COMPLETE
+Active Phase: 26 (memory-namespace-multi-tenant-operations) — READY TO EXECUTE
+Next Phase: 27 (execution-loop-telemetry-expansion) — READY AFTER PHASE 26
 
-### MIR Gate Status
+MIR Gate Status
+---------------
 MIR Gate 1: GREEN
 MIR Gate 2: GREEN
 
-### Scaffold Status
+Scaffold Status
+---------------
 - [x] .planning/MIR — 78 files cloned from templates/MIR
 - [x] .planning/MSP — 80 files cloned from templates/MSP
 - [x] .mgsd-local/MIR — Gate 1 + Gate 2 client files populated
@@ -33,16 +36,19 @@ MIR Gate 2: GREEN
 - [x] Gate 1 intake — PROFILE, VOICE-TONE, MESSAGING-FRAMEWORK, LEAN-CANVAS, JTBD-MATRIX
 - [x] Gate 2 intake — TRACKING, AUTOMATION, KPI-FRAMEWORK
 
-### Client: MarkOS
+Client: MarkOS
+--------------
 Product: Marketing Operating System (npx one-command install)
 Model: SaaS — freemium + per seat + usage-based
 Stage: Pre-revenue | Geography: Global (English)
 90-day goals: 200 NPX installs, 10 paid pilots
 Budget: $0 (organic only)
 
-## Accumulated Context
+Accumulated Context
+-------------------
 
-### Roadmap Evolution
+Roadmap Evolution
+-----------------
 
 - Phase 1-7 (v1.0.0) successfully archived on 2026-03-23.
 - SOP-006: AI-Enhanced Client Onboarding (ChromaDB + AI Drafts) implemented and committed on 2026-03-24.
@@ -54,3 +60,7 @@ Budget: $0 (organic only)
 - Phase 14 (codebase-mastery) complete: Installer hardened, path resolution standardized via `path-constants.cjs`, API payloads harmonized, 100% test pass.
 - Phase 15 (strategic-enrichment) complete: Dual-engine framework (Lean Canvas + JTBD), decoupled execution layer (Prompts), and winners repository architecture.
 - Phase 16 (documentation-enrichment) complete: added llm_context blocks to orchestrator/llm-adapter, hardened 7 specialized prompts with failure/context sections, deep-linked protocol lore, and created GOLD-STANDARD interaction catalog.
+- 2026-03-28: research set refreshed from codebase reality; roadmap pivoted so v2.1 product hardening supersedes rename-only sequencing as the recommended next milestone.
+- 2026-03-28: Phase 23 identity normalization completed with a documented compatibility contract and guardrail tests.
+- 2026-03-28: Phase 24 completed with centralized runtime-context handling, explicit hosted approve/write guards, runtime parity test coverage, and a deployment constraints contract.
+- 2026-03-28: Phase 25 completed with extraction/scoring fixtures, merge safety contract tests, explicit regenerate/approve outcome states, and residual warning behavior documentation.

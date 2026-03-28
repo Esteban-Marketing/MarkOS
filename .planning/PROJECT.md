@@ -38,7 +38,7 @@ Residual risk accepted for now:
 ### Active
 - [ ] Normalize MarkOS identity across public UX, runtime identifiers, and compatibility-critical legacy paths.
 - [ ] Harden shared onboarding runtime behavior across local and hosted/API-wrapper execution modes.
-- [ ] Improve extraction quality, regenerate/approve ergonomics, and approved-draft merge safety with stronger test coverage.
+- [x] Improve extraction quality, regenerate/approve ergonomics, and approved-draft merge safety with stronger test coverage.
 - [ ] Formalize Chroma namespace rules, local/cloud operating modes, and cross-project isolation guarantees.
 - [ ] Strengthen the handoff from approved MIR/MSP state into execution workflows and actionable telemetry.
 

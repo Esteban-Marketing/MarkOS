@@ -78,3 +78,32 @@
 - Research files are auto-generated from onboarding seed and feed MIR/MSP context tokens.
 - Web onboarding UI collects all client data and populates the full research + strategy scaffold.
 - The patch engine diffs and applies updates safely, surfacing conflicts for human review.
+
+## Milestone v2.1 Requirements — Product Hardening & Identity Convergence
+
+### Identity Normalization (Phase 23)
+- [x] **IDN-01**: Product-facing identity is consistently MarkOS across package metadata, install/update UX, onboarding copy, and primary documentation.
+- [x] **IDN-02**: Remaining MGSD identifiers are intentionally classified as compatibility-only, historical-only, or migration targets.
+- [x] **IDN-03**: A compatibility map exists for legacy paths, manifests, env vars, localStorage keys, and Chroma namespaces.
+
+### Runtime Hardening (Phase 24)
+- [x] **RTH-01**: Shared onboarding handler behavior is consistent between local server mode and Vercel/API-wrapper mode.
+- [x] **RTH-02**: Filesystem write expectations and environment guards are explicit for local and hosted contexts.
+- [x] **RTH-03**: Config precedence and slug resolution are centralized and tested.
+
+### Onboarding Quality & Merge Safety (Phase 25)
+- [x] **ONQ-01**: Extraction and confidence-scoring quality are validated with representative source fixtures.
+- [x] **ONQ-02**: Regenerate and approve flows surface failures clearly and degrade safely.
+- [x] **ONQ-03**: Approved draft merge logic is covered by fixture-based tests for heading drift and fallback insertion.
+
+### Memory, Namespace & Multi-Tenant Operations (Phase 26)
+- [ ] **MMO-01**: Chroma namespace rules for projects, drafts, and compatibility reads are explicit and enforced.
+- [ ] **MMO-02**: Local and cloud vector-memory modes are both supported with clear health and migration behavior.
+- [ ] **MMO-03**: Cross-project isolation guarantees are testable and safe for multi-tenant usage.
+
+### Execution Loop & Telemetry Expansion (Phase 27)
+- [ ] **EXE-01**: Approved MIR/MSP state cleanly feeds downstream execution workflows.
+- [ ] **EXE-02**: Winner-catalog anchoring is validated as a required execution input for creator flows.
+- [ ] **TLM-02**: Telemetry emphasizes actionable execution checkpoints, approval state, and major failure boundaries.
+
+<!-- EOF -->

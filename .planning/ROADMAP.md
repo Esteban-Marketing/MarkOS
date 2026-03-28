@@ -498,7 +498,7 @@
 **Goal:** Improve extraction quality, confidence routing, regeneration ergonomics, and approved-draft merge safety so the first-run onboarding experience is reliably strong.
 **Requirements Mapped:** ONQ-01, ONQ-02, ONQ-03
 **Depends on:** Phase 24
-**Status:** Proposed (sequenced after Phase 24)
+**Status:** Complete
 **Success Criteria:**
 1. Source extraction quality and confidence scoring are validated with representative fixtures.
 2. Regeneration and approval flows are easier to reason about and safer under partial failure.
@@ -506,10 +506,10 @@
 4. Known noisy warnings and weak-fallback paths are reduced or explicitly documented.
 
 **Plans:**
-- [ ] 25-01: Add extraction and scoring fixtures for URL, file, and mixed-source onboarding inputs
-- [ ] 25-02: Add approval/merge tests for template variance and fallback insertion cases
-- [ ] 25-03: Tighten regenerate/approve error reporting and user-facing statuses
-- [ ] 25-04: Burn down test-time warnings and document any intentional fallback behavior
+- [x] 25-01: Add extraction and scoring fixtures for URL, file, and mixed-source onboarding inputs
+- [x] 25-02: Add approval/merge tests for template variance and fallback insertion cases
+- [x] 25-03: Tighten regenerate/approve error reporting and user-facing statuses
+- [x] 25-04: Burn down test-time warnings and document any intentional fallback behavior
 
 **Residual Onboarding Warning Behavior:**
 - Regenerate and approve now emit explicit outcome states: `success`, `warning`, `degraded`, `failure`.
