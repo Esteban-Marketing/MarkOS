@@ -274,9 +274,20 @@ async function call(systemPrompt, userPrompt, options = {}) {
       isFallback: true,
       provider: 'static-mock',
       error: err.message,
+      fallback_kind: classifyFallbackKind(err.message),
       text: fallbackText
     };
   }
+}
+
+function classifyFallbackKind(message) {
+  const normalized = String(message || '').toLowerCase();
+  if (normalized.includes('api_key') || normalized.includes('not set')) return 'missing_credentials';
+  if (normalized.includes('401') || normalized.includes('403')) return 'auth_error';
+  if (normalized.includes('429')) return 'rate_limited';
+  if (normalized.includes('timeout') || normalized.includes('econnrefused')) return 'transport_error';
+  if (normalized.includes('no_ai_available')) return 'no_provider';
+  return 'provider_error';
 }
 
 /**
@@ -308,7 +319,7 @@ function getFallbackResponse(system, user) {
     return "# AUDIENCE PERSONA (AUTO-FALLBACK)\n\n**Primary Persona:** The Savvy Decision Maker.\n**Needs:** Efficiency, ROI, clear communication.\n**Barriers:** Budget constraints, time limitations, complex procurement processes.";
   }
 
-  return `[NO AI AVAILABLE] Please enter your content manually here. (Original error: ${combined.slice(0, 50)}...)`;
+  return '[NO AI AVAILABLE] Please enter your content manually here while AI providers are unavailable.';
 }
 
 module.exports = { call };

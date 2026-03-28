@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * chroma-client.cjs — ChromaDB HTTP Client (MGSD Vector Memory)
+ * chroma-client.cjs — ChromaDB HTTP Client (MarkOS Vector Memory)
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
- *   Thin wrapper around the ChromaDB HTTP API for MGSD's vector memory layer.
+ *   Thin wrapper around the ChromaDB HTTP API for the MarkOS vector memory layer.
  *   All ChromaDB interaction (health, storage, retrieval) routes through this file.
  *
  * HOST RESOLUTION:
@@ -13,8 +13,9 @@
  *   4. If CHROMA_CLOUD_TOKEN is set, all requests include Authorization+x-chroma-token headers.
  *
  * COLLECTION NAMING:
- *   Every project gets its own isolated ChromaDB collection: `mgsd-{project_slug}`
- *   project_slug is read from .mgsd-project.json by server.cjs and passed into storeDraft().
+ *   MarkOS keeps the legacy `mgsd-{project_slug}` collection prefix during the
+ *   v2.1 compatibility window. project_slug is still read from
+ *   `.mgsd-project.json` and passed into the storage helpers below.
  *
  * EXPORTS:
  *   configure(host)                        → void (set chromaHost)
@@ -38,10 +39,34 @@ const { ChromaClient } = require('chromadb');
 
 let chromaHost = 'http://localhost:8000'; // Overridden by configure() at server boot
 let _client = null;
+const LEGACY_COLLECTION_PREFIX = 'mgsd';
+
+function buildSectionCollectionName(slug, section) {
+  return `${LEGACY_COLLECTION_PREFIX}-${slug}-${section}`;
+}
+
+function buildMetaCollectionName(slug) {
+  return `${LEGACY_COLLECTION_PREFIX}-${slug}-meta`;
+}
+
+function buildDraftCollectionName(slug) {
+  return `${LEGACY_COLLECTION_PREFIX}-${slug}-drafts`;
+}
 
 function getClient() {
   if (!_client) {
-    const opts = { path: chromaHost };
+    const opts = {};
+    try {
+      const parsed = new URL(chromaHost);
+      opts.host = parsed.hostname;
+      opts.port = parsed.port ? Number(parsed.port) : (parsed.protocol === 'https:' ? 443 : 80);
+      opts.ssl = parsed.protocol === 'https:';
+    } catch (_) {
+      // Backward compatibility for host-only values (e.g. "localhost", "mock").
+      opts.host = chromaHost;
+      opts.port = 8000;
+      opts.ssl = false;
+    }
     const cloudToken = process.env.CHROMA_CLOUD_TOKEN;
     if (cloudToken) {
       // Many hosted vector services accept Bearer token or x-chroma-token
@@ -81,7 +106,7 @@ async function healthCheck() {
 
 /**
  * Upsert all seed sections as separate named collections.
- * Each collection is keyed by: mgsd-{slug}-{section}
+ * Each collection is keyed by the legacy compatibility prefix: mgsd-{slug}-{section}
  * @param {string} slug    — project/client slug (kebab-case)
  * @param {object} seed    — full onboarding-seed.json object
  */
@@ -100,7 +125,7 @@ async function upsertSeed(slug, seed) {
   const results = [];
 
   for (const section of sections) {
-    const collectionName = `mgsd-${slug}-${section.name}`;
+    const collectionName = buildSectionCollectionName(slug, section.name);
     const docText = JSON.stringify(section.data, null, 2);
     const docId   = `${slug}-${section.name}-v1`;
 
@@ -129,7 +154,7 @@ async function upsertSeed(slug, seed) {
 
   // Also write a top-level project-meta document for fast lookup by slug
   try {
-    const metaCollection = await client.getOrCreateCollection({ name: `mgsd-${slug}-meta` });
+    const metaCollection = await client.getOrCreateCollection({ name: buildMetaCollectionName(slug) });
     await metaCollection.upsert({
       ids:       [`${slug}-project-meta`],
       documents: [JSON.stringify({ slug, business_model: seed.company?.business_model || null })],
@@ -150,7 +175,7 @@ async function upsertSeed(slug, seed) {
 async function getContext(slug, section, query = 'summary', nResults = 1) {
   try {
     const client = getClient();
-    const collectionName = `mgsd-${slug}-${section}`;
+    const collectionName = buildSectionCollectionName(slug, section);
     const collection = await client.getCollection({ name: collectionName });
     const results = await collection.query({ queryTexts: [query], nResults });
     return results.documents[0] || [];
@@ -170,7 +195,7 @@ async function getContext(slug, section, query = 'summary', nResults = 1) {
 async function storeDraft(slug, section, content, meta = {}) {
   try {
     const client = getClient();
-    const collectionName = `mgsd-${slug}-drafts`;
+    const collectionName = buildDraftCollectionName(slug);
     const collection = await client.getOrCreateCollection({ name: collectionName });
     await collection.upsert({
       ids:       [`${slug}-draft-${section}`],
@@ -189,11 +214,22 @@ async function storeDraft(slug, section, content, meta = {}) {
 async function clearProject(slug) {
   const client = getClient();
   const allCollections = await client.listCollections();
-  const toDelete = allCollections.filter(c => c.name.startsWith(`mgsd-${slug}-`));
+  const toDelete = allCollections.filter(c => c.name.startsWith(`${LEGACY_COLLECTION_PREFIX}-${slug}-`));
   for (const col of toDelete) {
     await client.deleteCollection({ name: col.name });
   }
   return { deleted: toDelete.map(c => c.name) };
 }
 
-module.exports = { configure, healthCheck, upsertSeed, getContext, storeDraft, clearProject };
+module.exports = {
+  configure,
+  healthCheck,
+  upsertSeed,
+  getContext,
+  storeDraft,
+  clearProject,
+  LEGACY_COLLECTION_PREFIX,
+  buildSectionCollectionName,
+  buildMetaCollectionName,
+  buildDraftCollectionName,
+};

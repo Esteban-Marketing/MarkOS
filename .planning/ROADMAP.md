@@ -441,3 +441,118 @@
 - [ ] 22-05: ChromaDB collection migration function
 - [ ] 22-06: .gitignore dual-pattern support
 - [ ] 22-07: End-to-end migration test (old install → new update)
+
+---
+
+## v2.1.0 — Product Hardening & Identity Convergence (Proposed 2026-03-28)
+
+> **Proposal Source:** [.planning/research/SUMMARY.md](.planning/research/SUMMARY.md)
+>
+> **Intent:** Shift the next roadmap from a rename-only framing to a product-hardening framing. The repo already functions as a local-first marketing operating system with optional hosted entrypoints. The next milestone should stabilize identity, runtime behavior, onboarding quality, memory operations, and downstream execution loops in that order.
+>
+> **Roadmap Decision:** v2.1 is now the recommended next milestone. The v2.0 rebrand phases remain valid as compatibility/migration work, but they are no longer the preferred immediate execution path.
+
+---
+
+### Phase 23: Identity Normalization
+**Goal:** Normalize the product identity across package metadata, runtime messages, manifests, local directories, and documentation while preserving backward compatibility for existing MGSD installs.
+**Requirements Mapped:** IDN-01, IDN-02, IDN-03
+**Depends on:** Phase 16
+**Status:** Complete
+**Artifacts:** `.planning/phases/23-identity-normalization/23-IDENTITY-AUDIT.md`, `.planning/phases/23-identity-normalization/23-COMPATIBILITY-CONTRACT.md`, `.planning/phases/23-identity-normalization/23-VERIFICATION.md`
+**Success Criteria:**
+1. Public product identity is consistently MarkOS across package metadata, installer/update UX, docs, and onboarding copy.
+2. Legacy MGSD paths and identifiers are cataloged and handled through explicit compatibility logic rather than ad hoc references.
+3. MarkOS/MGSD terminology is reduced to intentional compatibility and historical contexts only.
+4. A migration map exists for paths, manifests, local state, telemetry keys, and vector namespaces.
+
+**Plans:**
+- [x] 23-01: Audit and classify all remaining MGSD identifiers by compatibility-critical vs cosmetic
+- [x] 23-02: Normalize package/runtime copy and public-facing docs to MarkOS-first language
+- [x] 23-03: Define compatibility contract for paths, manifests, env vars, localStorage keys, and Chroma namespaces
+- [x] 23-04: Add validation checks to prevent accidental reintroduction of mixed identity strings
+
+---
+
+### Phase 24: Runtime Hardening (Local + Hosted)
+**Goal:** Harden the shared runtime between the local onboarding server and Vercel-style API wrappers so behavior stays consistent across environments.
+**Requirements Mapped:** RTH-01, RTH-02, RTH-03
+**Depends on:** Phase 23
+**Status:** Complete
+**Artifacts:** `.planning/phases/24-runtime-hardening/24-DEPLOYMENT-CONTRACT.md`, `.planning/phases/24-runtime-hardening/24-VERIFICATION.md`
+**Success Criteria:**
+1. Shared handler behavior is consistent across `server.cjs` and `api/*.js` entrypoints.
+2. Filesystem writes, slug handling, and config resolution behave predictably in both local and hosted contexts.
+3. Environment-sensitive operations are isolated behind explicit guards rather than spread through business logic.
+4. Hosted-path assumptions are validated by tests or documented constraints.
+
+**Plans:**
+- [x] 24-01: Audit all local-only and hosted-only code paths in handlers and server entrypoints
+- [x] 24-02: Centralize config precedence and environment detection logic
+- [x] 24-03: Add runtime coverage for local server mode and API-wrapper mode
+- [x] 24-04: Document deployment constraints for approve/write flows and persistence expectations
+
+---
+
+### Phase 25: Onboarding Quality & Merge Safety
+**Goal:** Improve extraction quality, confidence routing, regeneration ergonomics, and approved-draft merge safety so the first-run onboarding experience is reliably strong.
+**Requirements Mapped:** ONQ-01, ONQ-02, ONQ-03
+**Depends on:** Phase 24
+**Status:** Proposed (sequenced after Phase 24)
+**Success Criteria:**
+1. Source extraction quality and confidence scoring are validated with representative fixtures.
+2. Regeneration and approval flows are easier to reason about and safer under partial failure.
+3. `write-mir.cjs` merge behavior is protected by fixture-based tests covering header drift and fallback paths.
+4. Known noisy warnings and weak-fallback paths are reduced or explicitly documented.
+
+**Plans:**
+- [ ] 25-01: Add extraction and scoring fixtures for URL, file, and mixed-source onboarding inputs
+- [ ] 25-02: Add approval/merge tests for template variance and fallback insertion cases
+- [ ] 25-03: Tighten regenerate/approve error reporting and user-facing statuses
+- [ ] 25-04: Burn down test-time warnings and document any intentional fallback behavior
+
+**Residual Onboarding Warning Behavior:**
+- Regenerate and approve now emit explicit outcome states: `success`, `warning`, `degraded`, `failure`.
+- Header fallback append remains intentional when fuzzy matching cannot safely place approved content.
+- Hosted approve/write attempts remain guarded by `LOCAL_PERSISTENCE_UNAVAILABLE`.
+- Provider unavailability can still return static fallback drafts, surfaced as degraded outcomes.
+
+---
+
+### Phase 26: Memory, Namespace & Multi-Tenant Operations
+**Goal:** Formalize the product's memory layer around Chroma namespaces, local/cloud operating modes, migration safety, and cross-project isolation.
+**Requirements Mapped:** MMO-01, MMO-02, MMO-03
+**Depends on:** Phase 23, Phase 24
+**Status:** Proposed (sequenced after Phase 24)
+**Success Criteria:**
+1. Namespace rules for project slugs, draft collections, and compatibility reads are explicit and enforced.
+2. Local and cloud Chroma operating modes are documented and exercised through health and migration logic.
+3. Existing data remains discoverable during identity or namespace transitions.
+4. Cross-project isolation guarantees are clear enough to support multi-tenant usage safely.
+
+**Plans:**
+- [ ] 26-01: Document and codify Chroma collection naming and compatibility-read behavior
+- [ ] 26-02: Add migration-safe namespace handling for legacy and MarkOS-prefixed collections
+- [ ] 26-03: Expand health checks and failure reporting for local vs cloud vector backends
+- [ ] 26-04: Add multi-project test coverage or simulation around slug isolation
+
+---
+
+### Phase 27: Execution Loop & Telemetry Expansion
+**Goal:** Strengthen post-onboarding execution by deepening prompt execution flows, winner anchoring, and operational telemetry instead of stopping at draft generation.
+**Requirements Mapped:** EXE-01, EXE-02, TLM-02
+**Depends on:** Phase 25, Phase 26
+**Status:** Proposed (sequenced after Phase 25 and 26)
+**Success Criteria:**
+1. Downstream execution workflows consume approved MIR/MSP state predictably.
+2. Winner catalogs and prompt injection are validated as first-class execution inputs.
+3. Telemetry focuses on actionable operational checkpoints rather than generic event volume.
+4. The product demonstrates a clear path from onboarding to repeatable execution loops.
+
+**Plans:**
+- [ ] 27-01: Define the minimum post-onboarding execution loop and its required inputs
+- [ ] 27-02: Validate winners-catalog boot requirements across creator/executor flows
+- [ ] 27-03: Add telemetry around approval, execution readiness, and major failure points
+- [ ] 27-04: Produce a handoff spec tying onboarding outputs to execution workflows
+
+<!-- EOF -->

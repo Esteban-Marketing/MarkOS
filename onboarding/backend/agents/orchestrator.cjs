@@ -68,7 +68,7 @@ async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
       // If the adapter returned a fallback, it already "failed gracefully" 
       // and won't suddenly start working on retry. Fast-fail.
       if (res.isFallback) {
-        console.warn(`[orchestrator] ${name} using fallback: ${res.error}`);
+        console.log(`[orchestrator] ${name} using fallback content: ${res.error}`);
         return res; 
       }
 
@@ -93,7 +93,7 @@ async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
       }
       
       const wait = baseDelay * Math.pow(2, i);
-      console.warn(`[orchestrator] ${name} failed, retrying in ${wait}ms...`);
+      console.log(`[orchestrator] ${name} failed, retrying in ${wait}ms...`);
       await new Promise(r => setTimeout(r, wait));
     }
   }
@@ -120,6 +120,12 @@ async function orchestrate(seed, slug) {
   console.log(`[orchestrator] Starting draft generation for: ${slug}`);
 
   const errors = [];
+  const warningCodes = new Set();
+  const warnOnce = (code, message) => {
+    if (warningCodes.has(code)) return;
+    warningCodes.add(code);
+    console.warn(message);
+  };
 
   // ── 1. Store raw seed in ChromaDB ─────────────────────────────────────────
   let chromaResults = [];
@@ -127,7 +133,7 @@ async function orchestrate(seed, slug) {
     chromaResults = await chroma.upsertSeed(slug, seed);
     console.log(`[orchestrator] Seed stored in ChromaDB (${chromaResults.length} collections)`);
   } catch (err) {
-    console.warn(`[orchestrator] ChromaDB upsert failed: ${err.message} — continuing without persistence`);
+    warnOnce('chroma-upsert', `[orchestrator] ChromaDB upsert failed: ${err.message} — continuing without persistence`);
     errors.push({ phase: 'chroma-upsert', error: err.message });
   }
 
@@ -167,7 +173,7 @@ async function orchestrate(seed, slug) {
       }
     }
   } catch (e) {
-    console.warn(`[orchestrator] Neuro-auditor skipped: ${e.message}`);
+    warnOnce('neuro-auditor-skip', `[orchestrator] Neuro-auditor skipped: ${e.message}`);
   }
 
   // ── 4. Collect all drafts ─────────────────────────────────────────────────
@@ -197,7 +203,12 @@ async function orchestrate(seed, slug) {
 
   // ── 5. Store drafts in ChromaDB ───────────────────────────────────────────
   for (const [section, content] of Object.entries(drafts)) {
-    await chroma.storeDraft(slug, section, content);
+    try {
+      await chroma.storeDraft(slug, section, content);
+    } catch (storeErr) {
+      warnOnce(`chroma-store-${section}`, `[orchestrator] Failed to store ${section}: ${storeErr.message}`);
+      errors.push({ phase: `chroma-store-${section}`, error: storeErr.message });
+    }
   }
 
   console.log(`[orchestrator] Done. Errors: ${errors.length}`);
