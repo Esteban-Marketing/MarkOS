@@ -3,6 +3,90 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 
+const ONBOARDING_EXTRACTION_FIXTURES = Object.freeze({
+  urlOnly: {
+    input: {
+      webText: 'MarkOS helps marketing teams install an AI-native operating system with shared context and reusable workflows.',
+      fileText: '',
+      chatText: ''
+    },
+    expectedSchema: {
+      company: {
+        name: 'MarkOS',
+        business_model: 'SaaS'
+      },
+      audience: {
+        segment_name: 'Marketing teams'
+      }
+    }
+  },
+  fileOnlySparse: {
+    input: {
+      webText: '',
+      fileText: 'Company: Acme\nBusiness Model: B2B\nAudience: SMB founders\nDifferentiator: Fast setup',
+      chatText: ''
+    },
+    expectedSchema: {
+      company: {
+        name: 'Acme',
+        business_model: 'B2B'
+      },
+      audience: {
+        segment_name: 'SMB founders'
+      },
+      competitive: {
+        differentiator: 'Fast setup'
+      }
+    }
+  },
+  mixedConflict: {
+    input: {
+      webText: 'Site copy says B2C productivity app for students.',
+      fileText: 'Internal memo says B2B analytics platform for finance teams.',
+      chatText: 'We recently pivoted to B2B for finance teams; keep that direction.'
+    },
+    expectedSchema: {
+      company: {
+        name: 'Pivot Analytics',
+        business_model: 'B2B'
+      },
+      audience: {
+        segment_name: 'Finance teams'
+      }
+    }
+  }
+});
+
+function createJsonRequest(body, url = '/', method = 'POST') {
+  return {
+    method,
+    url,
+    headers: { 'content-type': 'application/json' },
+    body,
+  };
+}
+
+async function withMockedModule(modulePath, mockedExports, run) {
+  const resolved = require.resolve(modulePath);
+  const previous = require.cache[resolved];
+  require.cache[resolved] = {
+    id: resolved,
+    filename: resolved,
+    loaded: true,
+    exports: mockedExports,
+  };
+
+  try {
+    return await run();
+  } finally {
+    if (previous) {
+      require.cache[resolved] = previous;
+    } else {
+      delete require.cache[resolved];
+    }
+  }
+}
+
 function createTestEnvironment() {
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mgsd-test-'));
   
@@ -58,6 +142,8 @@ function createTestEnvironment() {
     seedOnboarding: () => {
       const srcDir = path.resolve(__dirname, '../onboarding');
       const destDir = path.join(tmpDir, 'onboarding');
+      const apiSrcDir = path.resolve(__dirname, '../api');
+      const apiDestDir = path.join(tmpDir, 'api');
       
       const copyRecursiveSync = (src, dest) => {
         fs.mkdirSync(dest, { recursive: true });
@@ -72,6 +158,7 @@ function createTestEnvironment() {
         }
       };
       copyRecursiveSync(srcDir, destDir);
+      copyRecursiveSync(apiSrcDir, apiDestDir);
       
       // Override config to prevent browser spawn during tests
       fs.writeFileSync(path.join(destDir, 'onboarding-config.json'), JSON.stringify({
@@ -131,4 +218,11 @@ function readManifest(targetDir) {
   return null;
 }
 
-module.exports = { createTestEnvironment, runCLI, readManifest };
+module.exports = {
+  createTestEnvironment,
+  runCLI,
+  readManifest,
+  createJsonRequest,
+  withMockedModule,
+  ONBOARDING_EXTRACTION_FIXTURES,
+};
