@@ -22,7 +22,7 @@ test('Suite 2: Agentic Patch Engine', async (t) => {
       
       assert.equal(code, 0, 'Exit code should be 0');
       assert.match(output, /MarkOS Update Engine/, 'Banner should reflect MarkOS branding');
-      assert.match(output, /Skipped: 1 files \(\.mgsd-local\/ override active\)/, 'Output should mention skipping an override');
+      assert.match(output, /Skipped: 1 files \(\.mgsd-local\/ compatibility override active\)/, 'Output should mention skipping a compatibility override');
 
       const installedFile = path.join(env.dir, '.agent', 'marketing-get-shit-done', 'MGSD-INDEX.md');
       const content = fs.readFileSync(installedFile, 'utf8');

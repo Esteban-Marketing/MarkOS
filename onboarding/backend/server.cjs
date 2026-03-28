@@ -38,14 +38,13 @@ const http    = require('http');
 const fs      = require('fs');
 const path    = require('path');
 const { exec } = require('child_process');
-const { readBody, json } = require('./utils.cjs');
 const handlers = require('./handlers.cjs');
+const { createRuntimeContext } = require('./runtime-context.cjs');
 
 const { 
   PROJECT_ROOT, 
   ONBOARDING_DIR, 
-  CONFIG_PATH, 
-  MIR_TEMPLATES 
+  CONFIG_PATH 
 } = require('./path-constants.cjs');
 
 // Load .env from project root.
@@ -57,29 +56,11 @@ const orchestrator = require('./agents/orchestrator.cjs');
 const chroma       = require('./chroma-client.cjs');
 const writeMIR     = require('./write-mir.cjs');
 
-const LOCAL_MIR_PATH = path.join(PROJECT_ROOT, '.mgsd-local/MIR');
-
-// ── Default Configuration ───────────────────────────────────────────────────
-let config = {
-  port: 4242,
-  auto_open_browser: true,
-  output_path: '../onboarding-seed.json',
-  chroma_host: 'http://localhost:8000',
-  project_slug: 'mgsd-client',
-  mir_output_path: null, // Defaults to LOCAL_MIR_PATH in .mgsd-local/
-};
-
-try {
-  const raw = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
-  config = { ...config, ...raw };
-} catch (e) {}
+const runtime = createRuntimeContext();
+const { config } = runtime;
 
 // Apply chroma config
 chroma.configure(config.chroma_host);
-
-const mirOutputPath = config.mir_output_path
-  ? path.resolve(PROJECT_ROOT, config.mir_output_path)
-  : LOCAL_MIR_PATH;
 
 // ── MIME Types ───────────────────────────────────────────────────────────────
 const MIME = {
@@ -138,7 +119,11 @@ if (fs.existsSync(ensureChromaPath)) {
   bootDB = require(ensureChromaPath).ensureChroma();
 }
 
-bootDB.then(() => {
+bootDB.then((bootReport) => {
+  if (typeof chroma.setBootReport === 'function') {
+    chroma.setBootReport(bootReport);
+  }
+
   server.on('error', (e) => {
     if (e.code === 'EADDRINUSE') {
       const fallback = config.port + 1;
@@ -151,7 +136,7 @@ bootDB.then(() => {
     const addr = server.address();
     const url  = `http://127.0.0.1:${addr.port}`;
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(` MGSD Onboarding v2.0 → ${url}`);
+    console.log(` MarkOS Onboarding v2.0 → ${url}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(' ✓ ChromaDB integration active');
     console.log(' ✓ OpenAI AI draft generation ready');

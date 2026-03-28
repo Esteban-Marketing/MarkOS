@@ -40,17 +40,48 @@ const { ChromaClient } = require('chromadb');
 let chromaHost = 'http://localhost:8000'; // Overridden by configure() at server boot
 let _client = null;
 const LEGACY_COLLECTION_PREFIX = 'mgsd';
+const FUTURE_COLLECTION_PREFIX = 'markos';
+let _bootReport = null;
+
+function getCanonicalCollectionPrefix() {
+  const prefix = (process.env.MARKOS_CHROMA_PREFIX || LEGACY_COLLECTION_PREFIX).trim().toLowerCase();
+  return prefix || LEGACY_COLLECTION_PREFIX;
+}
+
+function getCollectionReadPrefixes() {
+  return Array.from(new Set([
+    getCanonicalCollectionPrefix(),
+    LEGACY_COLLECTION_PREFIX,
+    FUTURE_COLLECTION_PREFIX,
+  ]));
+}
+
+function buildCollectionName(prefix, slug, suffix) {
+  return `${prefix}-${slug}-${suffix}`;
+}
 
 function buildSectionCollectionName(slug, section) {
-  return `${LEGACY_COLLECTION_PREFIX}-${slug}-${section}`;
+  return buildCollectionName(getCanonicalCollectionPrefix(), slug, section);
 }
 
 function buildMetaCollectionName(slug) {
-  return `${LEGACY_COLLECTION_PREFIX}-${slug}-meta`;
+  return buildCollectionName(getCanonicalCollectionPrefix(), slug, 'meta');
 }
 
 function buildDraftCollectionName(slug) {
-  return `${LEGACY_COLLECTION_PREFIX}-${slug}-drafts`;
+  return buildCollectionName(getCanonicalCollectionPrefix(), slug, 'drafts');
+}
+
+function getSectionCollectionReadCandidates(slug, section) {
+  return getCollectionReadPrefixes().map((prefix) => buildCollectionName(prefix, slug, section));
+}
+
+function getMetaCollectionReadCandidates(slug) {
+  return getCollectionReadPrefixes().map((prefix) => buildCollectionName(prefix, slug, 'meta'));
+}
+
+function getDraftCollectionReadCandidates(slug) {
+  return getCollectionReadPrefixes().map((prefix) => buildCollectionName(prefix, slug, 'drafts'));
 }
 
 function getClient() {
@@ -90,17 +121,84 @@ function configure(host) {
   _client = null; // reset so next getClient() uses new host
 }
 
+function setBootReport(report) {
+  _bootReport = report || null;
+}
+
+function inferChromaMode() {
+  try {
+    const parsed = new URL(chromaHost);
+    const host = parsed.hostname.toLowerCase();
+    if (host === 'localhost' || host === '127.0.0.1' || host === '::1') {
+      return 'local';
+    }
+    return 'cloud';
+  } catch (_) {
+    return chromaHost === 'localhost' ? 'local' : 'cloud';
+  }
+}
+
 /**
  * Test connectivity to ChromaDB
  * Returns { ok: true } or { ok: false, error: string }
  */
 async function healthCheck() {
+  const mode = inferChromaMode();
   try {
     const client = getClient();
     await client.heartbeat();
-    return { ok: true };
+
+    if (mode === 'cloud') {
+      return {
+        ok: true,
+        mode,
+        status: 'cloud_reachable',
+        host: chromaHost,
+        memory_state: 'enabled',
+      };
+    }
+
+    return {
+      ok: true,
+      mode,
+      status: _bootReport?.status === 'local_started' ? 'local_started' : 'local_available',
+      host: chromaHost,
+      memory_state: 'enabled',
+      boot: _bootReport,
+    };
   } catch (err) {
-    return { ok: false, error: err.message };
+    if (mode === 'cloud') {
+      return {
+        ok: false,
+        mode,
+        status: 'cloud_unavailable',
+        host: chromaHost,
+        memory_state: 'degraded',
+        error: err.message,
+      };
+    }
+
+    if (_bootReport && _bootReport.status === 'local_boot_failed') {
+      return {
+        ok: false,
+        mode,
+        status: 'local_boot_failed',
+        host: chromaHost,
+        memory_state: 'degraded',
+        error: _bootReport.error || err.message,
+        boot: _bootReport,
+      };
+    }
+
+    return {
+      ok: false,
+      mode,
+      status: 'local_unavailable',
+      host: chromaHost,
+      memory_state: 'degraded',
+      error: err.message,
+      boot: _bootReport,
+    };
   }
 }
 
@@ -173,16 +271,20 @@ async function upsertSeed(slug, seed) {
  * @param {number} nResults   — how many results to return
  */
 async function getContext(slug, section, query = 'summary', nResults = 1) {
-  try {
-    const client = getClient();
-    const collectionName = buildSectionCollectionName(slug, section);
-    const collection = await client.getCollection({ name: collectionName });
-    const results = await collection.query({ queryTexts: [query], nResults });
-    return results.documents[0] || [];
-  } catch (err) {
-    // Collection may not exist yet — return empty
-    return [];
+  const client = getClient();
+  const candidates = getSectionCollectionReadCandidates(slug, section);
+
+  for (const collectionName of candidates) {
+    try {
+      const collection = await client.getCollection({ name: collectionName });
+      const results = await collection.query({ queryTexts: [query], nResults });
+      return results.documents[0] || [];
+    } catch (err) {
+      // Continue to compatibility candidate.
+    }
   }
+
+  return [];
 }
 
 /**
@@ -214,7 +316,10 @@ async function storeDraft(slug, section, content, meta = {}) {
 async function clearProject(slug) {
   const client = getClient();
   const allCollections = await client.listCollections();
-  const toDelete = allCollections.filter(c => c.name.startsWith(`${LEGACY_COLLECTION_PREFIX}-${slug}-`));
+  const readPrefixes = getCollectionReadPrefixes();
+  const toDelete = allCollections.filter((c) => {
+    return readPrefixes.some((prefix) => c.name.startsWith(`${prefix}-${slug}-`));
+  });
   for (const col of toDelete) {
     await client.deleteCollection({ name: col.name });
   }
@@ -228,8 +333,16 @@ module.exports = {
   getContext,
   storeDraft,
   clearProject,
+  setBootReport,
+  inferChromaMode,
   LEGACY_COLLECTION_PREFIX,
+  FUTURE_COLLECTION_PREFIX,
+  getCanonicalCollectionPrefix,
+  getCollectionReadPrefixes,
   buildSectionCollectionName,
   buildMetaCollectionName,
   buildDraftCollectionName,
+  getSectionCollectionReadCandidates,
+  getMetaCollectionReadCandidates,
+  getDraftCollectionReadCandidates,
 };

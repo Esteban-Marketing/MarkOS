@@ -7,7 +7,7 @@
  *   Ensures parallel co-existence with the `get-shit-done` (GSD) protocol.
  *
  * INSTALLATION FLOW:
- *   1. Detection: Checks for existing GSD or MGSD installations in `.agent/`.
+ *   1. Detection: Checks for existing GSD or legacy MGSD-compatible installations in `.agent/`.
  *   2. User Prompt: Asks for installation scope (Project Local vs Global Home).
  *   3. Template Copy: Deep-copies `.agent/marketing-get-shit-done/` templates.
  *   4. GSD Integration: If GSD exists, merges ITM templates but keeps files isolated.
@@ -58,7 +58,7 @@ function detectGSD(targetDir) {
   return fs.existsSync(path.join(targetDir, '.agent', 'get-shit-done', 'VERSION'));
 }
 
-/** @returns {boolean} true if MGSD protocol is already active in this project */
+/** @returns {boolean} true if the legacy MGSD-compatible protocol path is already active in this project */
 function detectExistingMGSD(targetDir) {
   return fs.existsSync(path.join(targetDir, '.agent', 'marketing-get-shit-done', 'VERSION'));
 }
@@ -123,7 +123,7 @@ async function run() {
 
   // Step 3: Launch onboarding?
   console.log('\n[3/5] Client intelligence onboarding');
-  console.log('  Launch the 6-step web form to generate RESEARCH/, MIR/, MSP/ automatically?');
+  console.log('  Launch the MarkOS onboarding flow to generate RESEARCH/, MIR/, MSP/ automatically?');
   const launchOnboarding = await ask('Launch onboarding form after install? (y/n): ');
 
   // Step 4: Confirm
@@ -146,7 +146,7 @@ async function run() {
   const mgsdSrc = path.join(PKG_DIR, '.agent', 'marketing-get-shit-done');
   const mgsdDest = path.join(agentDir, 'marketing-get-shit-done');
   copyRecursive(mgsdSrc, mgsdDest);
-  console.log('✓ MarkOS protocol files installed');
+  console.log('✓ MarkOS protocol files installed (.agent/marketing-get-shit-done compatibility path)');
 
   // Copy onboarding
   const onboardingSrc = path.join(PKG_DIR, 'onboarding');
@@ -184,7 +184,7 @@ async function run() {
     file_hashes: buildFileHashes(mgsdDest)
   };
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-  console.log('✓ Install manifest written (.mgsd-install-manifest.json)');
+  console.log('✓ Install manifest written (.mgsd-install-manifest.json compatibility manifest)');
 
   // Non-destructive GSD append (if GSD detected)
   if (hasGSD) {

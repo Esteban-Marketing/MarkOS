@@ -1,23 +1,32 @@
-phase: 27
-current_phase: 27 (execution-loop-telemetry-expansion)
+---
 gsd_state_version: 1.0
-milestone: v2.1
-milestone_name: "v2.1 Product Hardening & Identity Convergence"
-status: Ready
-last_updated: "2026-03-28T04:30:00.000Z"
+milestone: v2.2
+milestone_name: TBD
+status: milestone-closed
+last_updated: "2026-03-28T16:30:00.000Z"
+previous_milestone: v2.1
+previous_milestone_shipped: "2026-03-28"
 progress:
-  total_phases: 27
-  completed_phases: 21
-  total_plans: 45
-  completed_plans: 42
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 Current Position
 ----------------
 
-Phase: 27 (execution-loop-telemetry-expansion) — COMPLETE
-Active Phase: 27 (execution-loop-telemetry-expansion) — COMPLETE
-Next Phase: None (awaiting new phase planning)
+Phase: None — v2.1 milestone closed 2026-03-28.
+Active Phase: None
+Next Phase: None (awaiting new milestone planning — run /gsd-new-milestone)
+
+Tooling Snapshot
+----------------
+
+- Active milestone (v2.1) progress: 20/20 plans complete (100%).
+- Global disk snapshot (all non-archived phase dirs): 22/45 summaries/plans complete.
+- Deferred roadmap track: v2.0 rebrand phases (17-22) remain intentionally unexecuted.
 
 MIR Gate Status
 ---------------
@@ -26,6 +35,7 @@ MIR Gate 2: GREEN
 
 Scaffold Status
 ---------------
+
 - [x] .planning/MIR — 78 files cloned from templates/MIR
 - [x] .planning/MSP — 80 files cloned from templates/MSP
 - [x] .mgsd-local/MIR — Gate 1 + Gate 2 client files populated

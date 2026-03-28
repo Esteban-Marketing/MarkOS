@@ -1,5 +1,12 @@
 # Changelog — MarkOS
 
+## Unreleased
+
+### Identity Normalization
+- MarkOS-first install, onboarding, and primary documentation copy normalized for Phase 23.
+- Compatibility contract published for legacy `.mgsd-*` paths, `MGSD_TELEMETRY`, browser storage keys, and `mgsd-*` Chroma namespaces.
+- Added guardrail coverage so public-facing surfaces do not quietly regress to mixed MarkOS/MGSD branding.
+
 ## v2.0.0 — 2026-03-27
 
 ### MarkOS Rebrand (MGSD → MarkOS)

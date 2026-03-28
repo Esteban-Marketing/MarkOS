@@ -204,7 +204,11 @@ async function orchestrate(seed, slug) {
   // ── 5. Store drafts in ChromaDB ───────────────────────────────────────────
   for (const [section, content] of Object.entries(drafts)) {
     try {
-      await chroma.storeDraft(slug, section, content);
+      const storeResult = await chroma.storeDraft(slug, section, content);
+      if (storeResult && storeResult.ok === false) {
+        warnOnce(`chroma-store-${section}`, `[orchestrator] Failed to store ${section}: ${storeResult.error || 'Unknown Chroma persistence error'}`);
+        errors.push({ phase: `chroma-store-${section}`, error: storeResult.error || 'Unknown Chroma persistence error' });
+      }
     } catch (storeErr) {
       warnOnce(`chroma-store-${section}`, `[orchestrator] Failed to store ${section}: ${storeErr.message}`);
       errors.push({ phase: `chroma-store-${section}`, error: storeErr.message });

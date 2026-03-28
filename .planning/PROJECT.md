@@ -1,15 +1,10 @@
 # MarkOS (Marketing Get Shit Done Protocol)
 
-## Current Milestone: v2.1 Product Hardening & Identity Convergence
+## Current Milestone: Next milestone TBD
 
-**Goal:** Stabilize MarkOS as a local-first marketing operating system by aligning identity, hardening the shared runtime, improving onboarding quality, formalizing memory operations, and tightening the handoff from approved state into downstream execution.
+**Status:** v2.1 — Product Hardening & Identity Convergence shipped 2026-03-28. Planning for next milestone not yet started.
 
-**Target features:**
-- MarkOS-first identity with explicit backward compatibility for MGSD-era paths, manifests, and namespaces.
-- Consistent onboarding behavior across local server mode and Vercel/API-wrapper mode.
-- Safer extraction, regeneration, approval, and draft-merge behavior validated by fixtures and tests.
-- Clear Chroma namespace rules, local/cloud operating modes, and multi-project isolation guarantees.
-- Stronger post-onboarding execution readiness and telemetry at meaningful operational checkpoints.
+**Deferred Track (v2.0 Rebrand — Phases 17-22):** Repo-wide rename from `marketing-get-shit-done` → `markos` (npm, directories, configs, code paths, docs). Shelved until explicitly re-prioritized after product hardening was deemed higher priority.
 
 ## What This Is
 A protocol for agentic marketing execution, built as a parallel system to the development-focused Get Shit Done (GSD) protocol. It enables human managers and AI marketing agents to collaborate on strategy, content, campaigns, and operations using standardized templates (MIR-TEMPLATE, MSP-TEMPLATE, .agents) while synchronizing tasks seamlessly with Linear.
@@ -60,19 +55,22 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 ## Requirements
 
 ### Active
-- [ ] Normalize MarkOS identity across public UX, runtime identifiers, and compatibility-critical legacy paths.
-- [ ] Harden shared onboarding runtime behavior across local and hosted/API-wrapper execution modes.
-- [x] Improve extraction quality, regenerate/approve ergonomics, and approved-draft merge safety with stronger test coverage.
-- [x] Formalize Chroma namespace rules, local/cloud operating modes, and cross-project isolation guarantees.
-- [x] Strengthen the handoff from approved MIR/MSP state into execution workflows and actionable telemetry.
+- [ ] Define next milestone scope (options: v2.2 hardening continuation, v2.0 rebrand deferred track, or new capability track).
+
+### Validated & Delivered (v2.1)
+- ✓ Normalized MarkOS identity across public UX, package metadata, and onboarding UI with explicit backward-compat classification map — v2.1 (Phase 23)
+- ✓ Hardened shared onboarding runtime behavior across local and Vercel/API-wrapper modes with explicit env guards and centralized slug resolution — v2.1 (Phase 24)
+- ✓ Improved extraction quality, regenerate/approve ergonomics, and approved-draft merge safety with fixture-backed tests — v2.1 (Phase 25)
+- ✓ Formalized Chroma namespace rules, local/cloud operating modes, and cross-project isolation guarantees — v2.1 (Phase 26)
+- ✓ Strengthened handoff from approved MIR/MSP state into execution workflows with checklist-based readiness contract and actionable telemetry — v2.1 (Phase 27)
 
 ### Validated & Delivered (v1.0 & v1.1)
-- [x] Defined the core `mgsd` workflow integrating MIR-TEMPLATE and MSP-TEMPLATE.
-- [x] Implemented canonical `RESEARCH/` architectures and `mgsd-researcher` engine.
-- [x] Supported dual-protocol execution natively on the repository.
-- [x] Created NPX installer and patching engine for distribution.
-- [x] Enforced gating hooks preventing agent misfires on unchecked Phase plans.
-- [x] Implemented Strategic Enrichment (Phase 15): Dual-engine business framework (Lean Canvas/JTBD) and specialized agent prompt registry.
+- ✓ Defined the core `mgsd` workflow integrating MIR-TEMPLATE and MSP-TEMPLATE — v1.0
+- ✓ Implemented canonical `RESEARCH/` architectures and `mgsd-researcher` engine — v1.0
+- ✓ Supported dual-protocol execution natively on the repository — v1.0
+- ✓ Created NPX installer and patching engine for distribution — v1.0
+- ✓ Enforced gating hooks preventing agent misfires on unchecked Phase plans — v1.1
+- ✓ Implemented Strategic Enrichment (Phase 15): Dual-engine business framework (Lean Canvas/JTBD) and specialized agent prompt registry — v1.1
 
 ### Out of Scope
 - Building our own task tracker (relies on Linear integration).
@@ -86,8 +84,11 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 | Parallel protocol | Avoids corrupting developer `gsd` tools with marketing jargon | — Established |
 | Linear integration | Standardizing on Linear for issue tracking since it supports agents well | — Maintained |
 | Fail-Fast Engine | Strict logic gating implemented over `mgsd-execute-phase` | — Established |
-| v2.1 milestone sequencing | Research shows product hardening should precede a repo-wide rename-only campaign | — Adopted |
-| Compatibility-first identity policy | MarkOS is public-facing while MGSD-era paths and namespaces remain explicit compatibility surfaces until later migration phases | — Adopted |
+| v2.1 milestone sequencing | Research shows product hardening should precede a repo-wide rename-only campaign | ✓ Good — shipped 2026-03-28 |
+| Compatibility-first identity policy | MarkOS is public-facing while MGSD-era paths and namespaces remain explicit compatibility surfaces until later migration phases | ✓ Good — audit completed Phase 23 |
+| Onboarding-to-execution separation | Approval state and execution readiness are distinct contract states; readiness blocked on missing anchors/sections | ✓ Good — Phase 27 contract shipped |
+| Fixture-driven quality assertions | Extraction quality assertions are fixture-backed rather than inline payload-heavy tests | ✓ Good — Phase 25 test suite |
+| Hosted runtime write limitation | Vercel/API-wrapper mode intentionally cannot persist approve/write flows to local disk — explicit degraded behavior | ✓ Good — documented in Phase 24 residuals |
 
 ## Evolution
 
@@ -109,4 +110,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-03-28 after Phase 26 execution.
+Last updated: 2026-03-28 after v2.1 milestone completion.

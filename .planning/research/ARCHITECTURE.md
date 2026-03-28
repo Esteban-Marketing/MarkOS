@@ -1,93 +1,104 @@
-# Architecture Patterns: MarkOS Rebrand
+# Architecture Patterns
 
-**Domain:** Brand rename — structural considerations
-**Researched:** 2026-03-27
+**Domain:** AI-native marketing operating system
+**Researched:** 2026-03-28
 
-## Current Architecture
+## Recommended Architecture
 
-```
-.agent/
-├── marketing-get-shit-done/       ← MGSD protocol engine (rename target)
-│   ├── MGSD-INDEX.md              ← Master token registry
-│   ├── VERSION
-│   ├── agents/                    ← 39 agent definitions (mgsd-*.md)
-│   ├── bin/                       ← mgsd-tools.cjs + lib/
-│   ├── hooks/                     ← 5 hook files
-│   ├── prompts/                   ← 7 prompt templates
-│   ├── references/                ← 16 reference docs
-│   ├── templates/                 ← MIR, MSP, LINEAR-TASKS, generic
-│   └── workflows/                 ← 27 workflow definitions
-├── agents/                        ← GSD-layer agents (gsd-*.md) — NOT renaming
-├── hooks/                         ← GSD-layer hooks (gsd-*.js) — NOT renaming
-├── skills/                        ← Mixed: gsd-* (keep) + mgsd-* (rename)
-├── get-shit-done/                 ← GSD framework — NOT renaming
-├── settings.json                  ← Hook config — NOT renaming (refs GSD hooks)
-└── gsd-file-manifest.json         ← GSD manifest — NOT renaming
-```
+```text
+CLI Layer
+  bin/install.cjs
+  bin/update.cjs
+  bin/ensure-chroma.cjs
 
-## Target Architecture
+Delivery Layer
+  Local server: onboarding/backend/server.cjs
+  Hosted wrapper: api/*.js + vercel.json
 
-```
-.agent/
-├── markos/                        ← Renamed from marketing-get-shit-done
-│   ├── MARKOS-INDEX.md            ← Renamed from MGSD-INDEX.md
-│   ├── VERSION
-│   ├── agents/                    ← markos-*.md (renamed from mgsd-*.md)
-│   ├── bin/                       ← markos-tools.cjs (renamed from mgsd-tools.cjs)
-│   ├── hooks/                     ← Same filenames, updated content
-│   ├── prompts/                   ← Same filenames, updated token IDs
-│   ├── references/                ← Same filenames, updated token IDs
-│   ├── templates/                 ← LINEAR-TASKS files renamed MGSD-ITM → MARKOS-ITM
-│   └── workflows/                 ← mgsd-linear-sync.md → markos-linear-sync.md
-├── agents/                        ← Unchanged (GSD layer)
-├── hooks/                         ← Unchanged (GSD layer)
-├── skills/                        ← mgsd-* dirs renamed to markos-*
-│   ├── gsd-*/                     ← Unchanged
-│   └── markos-*/                  ← Renamed from mgsd-*
-├── get-shit-done/                 ← Unchanged
-├── settings.json                  ← Unchanged
-└── gsd-file-manifest.json         ← Unchanged
+Application Layer
+  onboarding/backend/handlers.cjs
+  onboarding/backend/agents/*.cjs
+  onboarding/backend/write-mir.cjs
 
-.markos-local/                     ← Renamed from .mgsd-local/
-.markos-project.json               ← Renamed from .mgsd-project.json
-.markos-install-manifest.json      ← Renamed from .mgsd-install-manifest.json
+State Layer
+  .agent/marketing-get-shit-done/templates/
+  .planning/MIR
+  .planning/MSP
+  .mgsd-local/
+  .mgsd-project.json
+  Chroma collections
 ```
 
-## Component Boundaries
+### Component Boundaries
 
-| Component | Rename Scope | Cross-References |
-|-----------|-------------|------------------|
-| MGSD protocol engine | Full rename: dir + all contents | Referenced by skills, protocol-lore, onboarding |
-| GSD framework | NO rename | References marketing-get-shit-done in subagent spawns (check) |
-| Skills layer | mgsd-* dirs only | Reference MGSD agents/workflows internally |
-| Protocol-lore | Content-only updates | References both MGSD commands and paths |
-| Onboarding code | Content-only updates | Hardcoded paths to marketing-get-shit-done/ |
+| Component | Responsibility | Communicates With |
+|-----------|---------------|-------------------|
+| CLI binaries | Install, update, bootstrap, health operations | Filesystem, Chroma bootstrap, local repo |
+| Onboarding UI | Collect user inputs and drive approval workflow | Local server or Vercel API routes |
+| Shared handlers | Route business logic for config, status, submit, regenerate, approve | UI, orchestrator, Chroma, write-mir |
+| LLM adapter | Normalize provider calls | Anthropic, OpenAI, Gemini, Ollama |
+| Orchestrator | Sequence draft generation and error capture | Fillers, adapter, Chroma |
+| Write-MIR layer | Persist approved drafts into client-owned files | Templates, local override directories, STATE tracking |
+| Template layer | Immutable protocol defaults | Install/update engine, write-mir fallback |
+| Local override layer | Client-specific approved state | Execution agents, write-mir, update protection |
+| Test suite | Protect installer, updater, onboarding, and protocol integrity | All major runtime surfaces |
 
-## Token ID Schema Change
+### Data Flow
 
-```
-Current: MGSD-[CLASS]-[DOMAIN]-[SEQ]
-Target:  MARKOS-[CLASS]-[DOMAIN]-[SEQ]
+User input enters through the onboarding UI and is submitted to shared handlers. The handlers persist seed data when running locally, derive or reuse a project slug, and call the orchestrator. The orchestrator runs MIR and MSP generators through a provider-agnostic LLM adapter, stores seed and draft artifacts in Chroma, and returns generated sections. After human approval, `write-mir.cjs` merges approved content into local MIR/MSP files and updates state markers.
 
-Example: MGSD-AGT-STR-01 → MARKOS-AGT-STR-01
-```
+## Patterns to Follow
 
-All CLASS, DOMAIN, and SEQ values remain unchanged. Only the prefix changes.
+### Pattern 1: Immutable Templates + Local Overrides
+**What:** Keep protocol templates versioned and pristine while writing approved project state to a separate local layer.
+**When:** Any time generated or user-edited content must survive updates.
+**Example:** `write-mir.cjs` reads from template files only as a fallback and writes approved drafts into `.mgsd-local` targets.
 
-## Critical Path Dependencies
+### Pattern 2: Shared Business Logic Across Runtimes
+**What:** Put route behavior in reusable handlers and expose thin runtime-specific entrypoints.
+**When:** A feature must work both in a local server and a hosted/serverless wrapper.
+**Example:** `server.cjs` and `api/*.js` both delegate to `onboarding/backend/handlers.cjs`.
 
-```
-MARKOS-INDEX.md must exist before any agent loads
-  → Agents read INDEX at boot (step 1 of navigation rule)
-  → Skills route to agents by token ID
-  → Hooks validate via token ID cross-references
-  → Linear templates use MGSD-ITM-* IDs in filenames AND content
-```
+### Pattern 3: Provider Abstraction at the Edge
+**What:** Normalize AI calls behind one adapter instead of scattering provider branches across business logic.
+**When:** Multiple providers or fallbacks are required.
+**Example:** `llm-adapter.cjs` resolves provider choice and returns a stable `{ ok, text, usage }` shape.
 
-**Implication:** The rename must be atomic across the entire `.agent/marketing-get-shit-done/` subtree. A partial rename will break token resolution.
+## Anti-Patterns to Avoid
+
+### Anti-Pattern 1: Writing Client State into Versioned Templates
+**What:** Mutating `.agent/.../templates` with approved client content.
+**Why bad:** Breaks updates, pollutes defaults, and destroys the ownership boundary.
+**Instead:** Keep approved state in `.mgsd-local` and treat templates as source defaults only.
+
+### Anti-Pattern 2: Runtime-Specific Business Logic Forks
+**What:** Let local server logic and Vercel logic drift apart.
+**Why bad:** Creates bugs that only appear in one deployment mode.
+**Instead:** Keep handlers shared and push environment differences to thin boundaries.
+
+### Anti-Pattern 3: Hardcoded Relative Path Sprawl
+**What:** Resolve important paths with repeated `../../` chains.
+**Why bad:** Fragile in tests, serverless wrappers, and multi-tenant contexts.
+**Instead:** Use centralized path constants for backend file resolution.
+
+## Scalability Considerations
+
+| Concern | At 100 users | At 10K users | At 1M users |
+|---------|--------------|--------------|-------------|
+| Onboarding traffic | Local or small hosted deployments are fine | Needs better queueing and request observability | Needs explicit async job model and durable orchestration |
+| Vector storage | Local Chroma or a single hosted instance is workable | Requires tenancy and migration discipline | Requires strict namespace governance and operational automation |
+| LLM cost and latency | Acceptable with synchronous generation | Needs caching, retries, and provider controls | Needs batching, budgeting, and likely workflow decomposition |
+| File-based state | Excellent for client trust and small teams | Still useful, but migration tooling becomes important | Needs stronger sync and compatibility guarantees around local state |
 
 ## Sources
 
-- `.agent/marketing-get-shit-done/MGSD-INDEX.md` (full token registry)
-- `.agent/settings.json` (hook configuration)
-- File system enumeration of all directories
+- .protocol-lore/ARCHITECTURE.md
+- .protocol-lore/CONVENTIONS.md
+- onboarding/backend/server.cjs
+- onboarding/backend/handlers.cjs
+- onboarding/backend/path-constants.cjs
+- onboarding/backend/write-mir.cjs
+- onboarding/backend/agents/orchestrator.cjs
+- api/submit.js
+- api/status.js
+- vercel.json

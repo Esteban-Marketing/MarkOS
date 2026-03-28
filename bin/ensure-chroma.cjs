@@ -58,15 +58,28 @@ async function ensureChroma() {
   // ── Step 1: Check for cloud override ───────────────────────────────────────
   // If the user has configured a remote ChromaDB, nothing to do locally.
   let useCloudChroma = false;
+  let cloudUrl = process.env.CHROMA_CLOUD_URL || null;
   if (fs.existsSync(envPath)) {
     const activeEnv = fs.readFileSync(envPath, 'utf8');
-    if (activeEnv.match(/^CHROMA_CLOUD_URL=http/m)) {
+    const cloudMatch = activeEnv.match(/^CHROMA_CLOUD_URL=(.+)$/m);
+    if (cloudMatch && cloudMatch[1]) {
+      cloudUrl = cloudMatch[1].trim();
       useCloudChroma = true;
     }
   }
 
+  if (cloudUrl && cloudUrl.startsWith('http')) {
+    useCloudChroma = true;
+  }
+
   if (useCloudChroma) {
-    return true; // Cloud is managed externally — no local daemon needed
+    return {
+      ok: true,
+      mode: 'cloud',
+      status: 'cloud_configured',
+      host: cloudUrl,
+      message: 'Cloud Chroma configured; local daemon boot skipped.',
+    };
   }
 
   // ── Step 2: Ping local heartbeat endpoint ──────────────────────────────────
@@ -80,7 +93,13 @@ async function ensureChroma() {
   });
 
   if (isAlive) {
-    return true; // ChromaDB is already running — nothing to start
+    return {
+      ok: true,
+      mode: 'local',
+      status: 'local_available',
+      host: 'http://localhost:8000',
+      boot_attempted: false,
+    };
   }
 
   // ── Step 3: Spawn detached Python daemon ───────────────────────────────────
@@ -100,12 +119,45 @@ async function ensureChroma() {
     // makes any Chroma HTTP requests. Without this wait, the first API
     // calls would fail with ECONNREFUSED during the daemon startup window.
     await new Promise(r => setTimeout(r, 2000));
-    return true;
+
+    const started = await new Promise((resolve) => {
+      const req = http.get('http://localhost:8000/api/v1/heartbeat', (res) => {
+        resolve(res.statusCode === 200);
+      });
+      req.on('error', () => resolve(false));
+      req.setTimeout(500, () => resolve(false));
+    });
+
+    if (!started) {
+      return {
+        ok: false,
+        mode: 'local',
+        status: 'local_boot_failed',
+        host: 'http://localhost:8000',
+        boot_attempted: true,
+        error: 'Local daemon spawn attempted but heartbeat did not recover within startup window.',
+      };
+    }
+
+    return {
+      ok: true,
+      mode: 'local',
+      status: 'local_started',
+      host: 'http://localhost:8000',
+      boot_attempted: true,
+    };
   } catch (err) {
     // Python is not installed or chromadb package is missing.
     // Inform the user and fall through gracefully — do not crash.
     console.log('⚠ Could not start ChromaDB automatically. You may need to run: python -m chromadb.cli.cli run');
-    return false;
+    return {
+      ok: false,
+      mode: 'local',
+      status: 'local_boot_failed',
+      host: 'http://localhost:8000',
+      boot_attempted: true,
+      error: err.message,
+    };
   }
 }
 
@@ -115,5 +167,7 @@ module.exports = { ensureChroma };
 // Allows running this script directly: `node bin/ensure-chroma.cjs`
 // Useful for health checks in shell scripts or CI pipelines.
 if (require.main === module) {
-  ensureChroma().then(() => process.exit(0));
+  ensureChroma()
+    .then((report) => process.exit(report && report.ok ? 0 : 1))
+    .catch(() => process.exit(1));
 }

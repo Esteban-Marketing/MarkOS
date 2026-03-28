@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
  *   Applies updates from the MarkOS package to a project while preserving client
- *   modifications and `.mgsd-local/` overrides. Idempotent and SHA256-safe.
+ *   modifications and `.mgsd-local/` compatibility overrides. Idempotent and SHA256-safe.
  *
  * UPDATE FLOW:
  *   1. Local Manifest Check: Reads `.mgsd-install-manifest.json` for current state.
@@ -20,7 +20,7 @@
  * RELATED FILES:
  *   bin/install.cjs                       (Created the initial manifest)
  *   .mgsd-install-manifest.json          (Source of truth for file hashes)
- *   .mgsd-local/                         (The "holy ground" that update never touches)
+ *   .mgsd-local/                         (The compatibility override layer that update never touches)
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 'use strict';
@@ -58,7 +58,7 @@ function readManifest() {
 }
 
 function isLocalOverride(relPath) {
-  // Check if the file has a .mgsd-local/ override
+  // Check if the file has a .mgsd-local/ compatibility override
   const localPath = path.join(CWD, '.mgsd-local', relPath);
   return fs.existsSync(localPath);
 }
@@ -176,7 +176,7 @@ async function run() {
   }
 
   console.log(`  ✓ Applied: ${applied} files updated`);
-  console.log(`  ⊘ Skipped: ${skippedOverride} files (.mgsd-local/ override active)`);
+  console.log(`  ⊘ Skipped: ${skippedOverride} files (.mgsd-local/ compatibility override active)`);
 
   if (conflicts.length > 0) {
     console.log(`\n  ⚠ ${conflicts.length} conflict(s) — both you and the update changed these files:\n`);

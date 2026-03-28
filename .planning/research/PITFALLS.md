@@ -1,81 +1,84 @@
-# Domain Pitfalls: MarkOS Rebrand
+# Domain Pitfalls
 
-**Domain:** Brand rename execution risks
-**Researched:** 2026-03-27
+**Domain:** AI-native marketing operating system
+**Researched:** 2026-03-28
 
 ## Critical Pitfalls
 
-### Pitfall 1: Partial Token ID Rename Breaks Agent Boot
-**What goes wrong:** Agents read MGSD-INDEX.md at boot and resolve cross-references by token ID. If some files have MARKOS- tokens but the index still says MGSD-, or vice versa, agents fail to resolve dependencies.
-**Why it happens:** The rename touches 100+ token IDs across 90+ files. Easy to miss one.
-**Consequences:** Agent boot failures, broken skill routing, workflows that reference non-existent token IDs.
-**Prevention:** Use automated find-replace scripts, NOT manual editing. Run a post-rename validation that greps for any remaining `MGSD-` tokens in the renamed tree.
-**Detection:** `grep -r "MGSD-" .agent/markos/` should return zero results after rename.
+### Pitfall 1: Brand Identity Split Between MarkOS and MGSD Runtime Paths
+**What goes wrong:** The product presents itself as MarkOS while runtime files, manifests, local directories, and Chroma collection names still rely on MGSD naming.
+**Why it happens:** The package and README were rebranded before all internal paths and persistence conventions were migrated.
+**Consequences:** Confusing operator experience, brittle migrations, and increased risk of broken updates during future rename work.
+**Prevention:** Introduce an explicit compatibility layer and a phased migration plan rather than ad hoc renames.
+**Detection:** Search for `mgsd`, `.mgsd-`, and `marketing-get-shit-done` across runtime code and docs before every identity-related release.
 
-### Pitfall 2: ChromaDB Namespace Mismatch
-**What goes wrong:** Existing client installations have data in `mgsd-{slug}` ChromaDB collections. After rename, code looks for `markos-{slug}` — data appears lost.
-**Why it happens:** The namespace is derived from code, not stored in the collection itself.
-**Consequences:** All episodic memory, campaign history, and RAG embeddings become invisible.
-**Prevention:** Add a migration step in the update script that aliases/copies old collections. Or keep backward-compatible namespace detection.
-**Detection:** Test with existing ChromaDB data before shipping.
+### Pitfall 2: Local Runtime and Hosted Runtime Drift
+**What goes wrong:** Features work in `server.cjs` locally but behave differently through `api/*.js` wrappers or hosted filesystems.
+**Why it happens:** The product supports both a local onboarding server and a serverless entrypoint model.
+**Consequences:** Environment-specific failures in submit, approve, or file persistence flows.
+**Prevention:** Keep shared logic in handlers, isolate environment checks, and add tests that explicitly exercise both surfaces.
+**Detection:** Run onboarding flows in both local and hosted-like contexts before shipping runtime changes.
 
-### Pitfall 3: `.mgsd-local/` Directory Not Migrated
-**What goes wrong:** Client customizations in `.mgsd-local/` are not moved to `.markos-local/`. Code now looks for `.markos-local/` override layer — finds nothing — falls back to base templates, silently losing all client overrides.
-**Why it happens:** `.mgsd-local/` is gitignored, so it won't be caught by a git-based rename.
-**Consequences:** Client brand voice, messaging, tracking config all revert to templates. Potentially catastrophic for active campaigns.
-**Prevention:** The update/migration script must explicitly `mv .mgsd-local .markos-local` (or symlink). Must also update `.gitignore`.
-**Detection:** Post-migration check: `ls -la .markos-local/MIR/` should show previously customized files.
+### Pitfall 3: Fuzzy Draft Merge Can Misplace Approved Content
+**What goes wrong:** Approved content is merged into the wrong section or appended as fallback text when template headings drift.
+**Why it happens:** `write-mir.cjs` uses header matching and fuzzy normalization rather than strict structural schemas.
+**Consequences:** Silent content corruption in client-owned planning files.
+**Prevention:** Add fixture-based merge tests for representative template variants and keep heading conventions stable.
+**Detection:** Compare approved output files against expected fixtures after changes to templates or merge logic.
 
-### Pitfall 4: Hardcoded Paths in Onboarding Code
-**What goes wrong:** `onboarding/backend/` JavaScript files have hardcoded paths to `.agent/marketing-get-shit-done/` and `.mgsd-local/`. After directory rename, server.cjs crashes on boot.
-**Why it happens:** Paths are string constants in .cjs files, not resolved dynamically.
-**Consequences:** Onboarding engine completely broken.
-**Prevention:** Update all `path.join()` and `path.resolve()` calls in: `server.cjs`, `handlers.cjs`, `orchestrator.cjs`, `mir-filler.cjs`, `msp-filler.cjs`, `example-resolver.cjs`.
-**Detection:** Run `node onboarding/backend/server.cjs` after rename and hit all endpoints.
+### Pitfall 4: Vector Persistence Assumptions Age Faster Than Product Messaging
+**What goes wrong:** Chroma host configuration, namespace rules, or client initialization behavior diverge from the product's docs and tests.
+**Why it happens:** Vector infrastructure and SDKs evolve quickly, while local-first tools often pin assumptions for long periods.
+**Consequences:** Noisy warnings, degraded portability, or migration surprises when customers move between local and cloud modes.
+**Prevention:** Periodically validate Chroma integration against current docs and add an explicit compatibility note in release planning.
+**Detection:** Treat SDK warnings in tests as product signals, not harmless noise.
 
 ## Moderate Pitfalls
 
-### Pitfall 5: Git History Fragmentation
-**What goes wrong:** Renaming 90+ files in one commit may make `git log --follow` fail for individual file history tracking.
-**Prevention:** Use `git mv` for all renames. Consider splitting into meaningful commits per category (agents, skills, infra) so git can track moves.
+### Pitfall 1: Provider API Behavior Drift
+**What goes wrong:** System and developer instruction semantics, models, or output handling differ across providers and change over time.
+**Prevention:** Keep the provider adapter centralized and test stable return shapes rather than provider-specific payload details.
 
-### Pitfall 6: GSD ↔ MGSD Cross-References
-**What goes wrong:** GSD-layer files (`.agent/get-shit-done/`) may reference `marketing-get-shit-done` paths when spawning marketing subagents.
-**Prevention:** Grep `.agent/get-shit-done/` for `marketing-get-shit-done` and `mgsd` references. Update if found.
-**Detection:** `grep -r "marketing-get-shit-done\|mgsd" .agent/get-shit-done/`
+### Pitfall 2: Configuration Spread Across Files and Environment
+**What goes wrong:** Effective runtime behavior depends on `.env`, `onboarding-config.json`, serverless environment variables, and persisted slug files.
+**Prevention:** Keep config resolution centralized and document precedence clearly.
 
-### Pitfall 7: npm Package Name Availability
-**What goes wrong:** Desired npm package name `markos` may already be taken.
-**Prevention:** Check `npm view markos` before committing to the name. Have backup names ready (`@markos/cli`, `markos-marketing`).
-
-### Pitfall 8: Internal Prose References to "MGSD"
-**What goes wrong:** Agent system prompts contain prose like "You are the MGSD Strategist" and "the MGSD protocol". Missed occurrences create a confusing dual-brand experience.
-**Prevention:** Case-insensitive grep for both `mgsd` and `MGSD` across ALL files, not just filenames. Include prose in templates, references, and MSP strategy docs.
+### Pitfall 3: Installation and Update Safety Can Regress Quietly
+**What goes wrong:** File hash manifests, override protection, or conflict prompts stop behaving correctly after unrelated changes.
+**Prevention:** Keep install/update tests mandatory for every release candidate.
 
 ## Minor Pitfalls
 
-### Pitfall 9: README / Marketing Content Lagging
-**What goes wrong:** Install command in README still says `npx marketing-get-shit-done`. Users get a 404.
-**Prevention:** Update README.md, RESEARCH/ docs, and all `.mgsd-local/MSP/Campaigns/` content that reference the old npm command.
+### Pitfall 1: Documentation Drifts Behind Runtime Reality
+**What goes wrong:** Research and docs describe an earlier initiative instead of the shipped product.
+**Prevention:** Treat `.planning/research` as living operational input and refresh it when the product shape changes materially.
 
-### Pitfall 10: localStorage Key Not Migrated
-**What goes wrong:** Existing onboarding UI users have `mgsd_privacy_accepted` in localStorage. Code checks for `markos_privacy_accepted`. Users see the privacy banner again.
-**Prevention:** Add backward-compatible check: `localStorage.getItem('markos_privacy_accepted') || localStorage.getItem('mgsd_privacy_accepted')`.
+### Pitfall 2: Log Noise Hides Real Problems
+**What goes wrong:** Repeated deprecation or fallback logs become normal and mask actionable failures.
+**Prevention:** Burn down known warnings and make fallback paths explicit in health reviews.
 
 ## Phase-Specific Warnings
 
 | Phase Topic | Likely Pitfall | Mitigation |
 |-------------|---------------|------------|
-| Token registry rename | Partial rename breaks boot | Atomic script + validation grep |
-| Agent file rename | Missed internal name: field | Validate all frontmatter names |
-| Skill directory rename | Broken skill routing | Test each skill invocation |
-| Infrastructure rename | .mgsd-local data loss | Explicit directory migration step |
-| npm package rename | Name already taken | Check npm registry first |
-| Documentation update | Stale install commands | Grep all docs for old commands |
+| Identity normalization | Breaking existing installs during path migration | Ship compatibility reads before compatibility removals |
+| Runtime hardening | Local and hosted behavior diverge | Test shared handlers in both execution modes |
+| Onboarding quality | Merge logic damages client files | Add fixture-heavy write and approve tests |
+| Memory and scale | Namespace or migration mistakes hide existing data | Document slug and collection rules before changing them |
+| Telemetry and execution | Observability added without clear operator value | Instrument only decisions and failure points that change action |
 
 ## Sources
 
-- Codebase analysis: file_search + grep_search across full workspace
-- `.protocol-lore/CONVENTIONS.md` (override resolution protocol)
-- `.protocol-lore/MEMORY.md` (ChromaDB namespace rules)
-- `onboarding/backend/server.cjs` (hardcoded path analysis)
+- bin/install.cjs
+- bin/update.cjs
+- onboarding/backend/server.cjs
+- onboarding/backend/handlers.cjs
+- onboarding/backend/write-mir.cjs
+- onboarding/backend/chroma-client.cjs
+- test/onboarding-server.test.js
+- test/update.test.js
+- test/protocol.test.js
+- https://docs.trychroma.com/docs/overview/introduction
+- https://developers.openai.com/api/reference/resources/chat
+- https://platform.claude.com/docs/en/api/messages
+- https://ai.google.dev/gemini-api/docs/text-generation

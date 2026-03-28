@@ -1,28 +1,65 @@
 # Technology Stack
 
-**Project:** MarkOS Rebrand
-**Researched:** 2026-03-27
+**Project:** MarkOS
+**Researched:** 2026-03-28
 
 ## Recommended Stack
 
-No technology changes. This is a pure naming/branding pass across existing files.
+### Core Framework
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| Node.js | >=18.0.0 | Runtime for CLI, onboarding backend, tests | Matches package engine, supports built-in fetch and `node:test`, keeps distribution simple |
+| CommonJS | Current repo standard | Module system | Consistent with all shipped `.cjs` entrypoints and avoids a build step |
+| Raw `http` server | Node built-in | Local onboarding server | Sufficient for the current API surface, low dependency weight, easy to ship inside `npx` install |
 
-### Tools Needed for Rename
+### Database
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| ChromaDB JS client | ^3.4.0 | Vector persistence for seed data and drafts | Supports local/self-hosted and cloud-addressable retrieval for onboarding memory |
+| Local filesystem | Native | Persistent client-owned protocol state | Keeps MIR/MSP and override data inspectable, versionable, and migration-friendly |
 
-| Technology | Purpose | Why |
-|------------|---------|-----|
-| `sed` / script | Bulk find-replace across 300+ files | Token IDs, internal names, path references |
-| `git mv` | File/directory renames with history preservation | Agent, skill, workflow files |
-| Node.js | Update `package.json` name field | npm distribution rename |
+### Infrastructure
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| npm / npx distribution | Current | CLI installation and updates | Core product delivery mechanism |
+| Vercel routing | Current repo config | Hosted onboarding entrypoints | Reuses shared backend handlers without maintaining a second API implementation |
+| PostHog Node | ^5.21.2 | Telemetry | Lightweight opt-in observability path already wired into config |
 
-## npm Package Rename
+### Supporting Libraries
+| Library | Version | Purpose | When to Use |
+|---------|---------|---------|-------------|
+| `dotenv` | ^17.3.1 | Environment loading | Use for local provider keys and Chroma host configuration |
+| `openai` | ^6.32.0 | OpenAI integration | Use when OpenAI is the selected or fallback provider |
+| `formidable` | ^3.5.4 | Multipart form/file ingestion | Use for onboarding source uploads |
+| `mammoth` | ^1.12.0 | DOCX parsing | Use for uploaded planning or strategy docs |
+| `pdf-parse` | ^2.4.5 | PDF parsing | Use for uploaded PDFs in onboarding extraction |
+| `csv-parse` | ^6.2.1 | CSV parsing | Use for structured source uploads |
+| `posthog-node` | ^5.21.2 | Telemetry events | Use only where event capture materially informs product operations |
 
-| Current | Proposed | Notes |
-|---------|----------|-------|
-| `marketing-get-shit-done` | `markos` or `@markos/cli` | Shorter, brandable |
-| `npx marketing-get-shit-done install` | `npx markos install` | Major DX improvement |
+## Alternatives Considered
+
+| Category | Recommended | Alternative | Why Not |
+|----------|-------------|-------------|---------|
+| Backend framework | Raw Node `http` | Express / Fastify | Current route surface is small enough that a framework would add weight without clear leverage |
+| Testing | `node:test` | Jest / Vitest | Built-in runner already covers current needs and keeps install footprint low |
+| Vector store | Chroma | SaaS-only vector DB | MarkOS benefits from local-first/self-hostable deployment and operator control |
+| Provider strategy | Adapter over multiple vendors | Single-vendor integration | Current product value includes provider flexibility and fallback paths |
+
+## Installation
+
+```bash
+npm install chromadb csv-parse dotenv formidable mammoth openai pdf-parse posthog-node
+```
 
 ## Sources
 
-- package.json (read directly)
-- .agent/marketing-get-shit-done/ directory tree (enumerated)
+- package.json
+- README.md
+- bin/install.cjs
+- onboarding/backend/server.cjs
+- onboarding/backend/chroma-client.cjs
+- https://nodejs.org/api/test.html
+- https://docs.trychroma.com/docs/overview/introduction
+- https://developers.openai.com/api/reference/resources/chat
+- https://platform.claude.com/docs/en/api/messages
+- https://ai.google.dev/gemini-api/docs/text-generation
