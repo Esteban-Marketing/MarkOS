@@ -1,10 +1,14 @@
-// onboarding.js — MGSD Client Onboarding v2.0
+// onboarding.js — MarkOS Client Onboarding v2.0
 // Handles 7-step form flow + AI draft generation + MIR publish
 
 'use strict';
 
 // ── Configuration & State ─────────────────────────────────────────────────────
-const STORAGE_KEY  = 'mgsd-onboarding-draft';
+const STORAGE_KEY  = 'markos-onboarding-draft';
+const LEGACY_STORAGE_KEY = 'mgsd-onboarding-draft';
+const PRIVACY_DISMISSED_KEY = 'markos_privacy_dismissed';
+const LEGACY_PRIVACY_DISMISSED_KEY = 'mgsd_privacy_dismissed';
+const DEFAULT_PROJECT_SLUG = 'markos-client';
 const TOTAL_STEPS  = 3;
 let currentStep    = 0; // Starts at Step 0 (Omni-Input Gate)
 let lastSeed       = null;   // seed built on step 6 submit
@@ -33,6 +37,35 @@ const gateStatusBar      = document.getElementById('gateStatusBar');
 
 let competitorCount = 1;
 
+function getOutcomeMessage(outcome, fallbackMessage) {
+  if (!outcome || !outcome.state) return fallbackMessage;
+
+  const warningText = (outcome.warnings || []).length > 0
+    ? ` ${outcome.warnings.join(' | ')}`
+    : '';
+
+  if (outcome.state === 'success') {
+    return `Success: ${outcome.message || fallbackMessage}`;
+  }
+  if (outcome.state === 'warning') {
+    return `Warning: ${outcome.message || fallbackMessage}${warningText}`;
+  }
+  if (outcome.state === 'degraded') {
+    return `Degraded: ${outcome.message || fallbackMessage}${warningText}`;
+  }
+  return `Failure: ${outcome.message || fallbackMessage}`;
+}
+
+function showOutcomeStatus(outcome, fallbackMessage) {
+  if (!gateStatusBar) return;
+  gateStatusBar.style.display = 'block';
+  gateStatusBar.textContent = getOutcomeMessage(outcome, fallbackMessage);
+}
+
+function getStoredItem(primaryKey, fallbackKey) {
+  return localStorage.getItem(primaryKey) || localStorage.getItem(fallbackKey);
+}
+
 // ── Draft card definitions ────────────────────────────────────────────────────
 const DRAFT_CARDS = [
   { key: 'company_profile',  label: 'Company Profile',      icon: '🏢', mirFile: 'PROFILE.md' },
@@ -49,12 +82,12 @@ async function loadConfig() {
   const privacyNotice = document.getElementById('privacyNotice');
   const dismissPrivacy = document.getElementById('dismissPrivacy');
   if (privacyNotice && dismissPrivacy) {
-    if (localStorage.getItem('mgsd_privacy_dismissed') === 'true') {
+    if (getStoredItem(PRIVACY_DISMISSED_KEY, LEGACY_PRIVACY_DISMISSED_KEY) === 'true') {
       privacyNotice.style.display = 'none';
     } else {
       dismissPrivacy.addEventListener('click', () => {
         privacyNotice.classList.add('dismissed');
-        localStorage.setItem('mgsd_privacy_dismissed', 'true');
+        localStorage.setItem(PRIVACY_DISMISSED_KEY, 'true');
         setTimeout(() => privacyNotice.style.display = 'none', 300);
       });
     }
@@ -82,6 +115,8 @@ async function loadConfig() {
       if (config.form_title) {
         document.getElementById('formTitle').innerText = config.form_title;
         document.title = config.form_title;
+      } else {
+        document.title = 'MarkOS Onboarding';
       }
     }
   } catch (err) {
@@ -201,7 +236,7 @@ function saveDraft() {
 
 function restoreDraft() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = getStoredItem(STORAGE_KEY, LEGACY_STORAGE_KEY);
     if (!saved) return;
     const data = JSON.parse(saved);
 
@@ -326,7 +361,7 @@ async function handleDraftGeneration() {
  * Fallback to manual entry if AI drafts fail.
  */
 window.proceedToManualEntry = function() {
-    lastSlug = lastSlug || 'mgsd-client-' + Math.random().toString(36).substring(2, 7);
+    lastSlug = lastSlug || `${DEFAULT_PROJECT_SLUG}-` + Math.random().toString(36).substring(2, 7);
     draftContents = {
         company_profile: '[ENTER COMPANY PROFILE MANUALLY]',
         mission_values: '[ENTER MISSION/VALUES MANUALLY]',
@@ -418,8 +453,16 @@ async function regenerateSection(key) {
 
     const result = await response.json();
     textarea.value = result.content || '[Regeneration failed]';
+
+    if (!response.ok || !result.success) {
+      showOutcomeStatus(result.outcome, result.error || 'Section regeneration failed.');
+      return;
+    }
+
+    showOutcomeStatus(result.outcome, 'Section regenerated.');
   } catch (err) {
     textarea.value = `[Error: ${err.message}]`;
+    showOutcomeStatus(null, `Failure: ${err.message}`);
   } finally {
     regenBtn.disabled    = false;
     regenBtn.textContent = '↻ Re-generate';
@@ -459,19 +502,20 @@ async function handlePublish() {
 
     if (result.success) {
       const written = result.written || [];
-      gateStatusBar.style.display = 'block';
-      gateStatusBar.textContent   = `✓ ${written.length} MIR files written. STATE.md updated. Gate 1 is progressing.`;
+      showOutcomeStatus(result.outcome, `${written.length} MIR files written. STATE.md updated.`);
 
       setTimeout(() => showCompletionScreen(written), 1200);
     } else {
       btnPublish.disabled    = false;
       btnPublish.textContent = '🚀 Publish & Activate MIR';
+      showOutcomeStatus(result.outcome, result.error || 'Publish encountered errors.');
       const errors = (result.errors || []).join('\n');
       alert(`Publish encountered errors:\n${errors}`);
     }
   } catch (err) {
     btnPublish.disabled    = false;
     btnPublish.textContent = '🚀 Publish & Activate MIR';
+    showOutcomeStatus(null, `Failure: ${err.message}`);
     alert(`Publish failed: ${err.message}`);
   }
 }

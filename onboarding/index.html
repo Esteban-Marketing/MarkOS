@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Intelligence Onboarding</title>
+    <title>MarkOS Onboarding</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="onboarding.css">
@@ -27,7 +27,7 @@
     <div class="onboarding-wrapper">
         <header class="onboarding-header">
             <img src="" alt="Logo" class="onboarding-logo" id="brandLogo">
-            <h1 class="onboarding-title" id="formTitle">Client Intelligence Onboarding</h1>
+            <h1 class="onboarding-title" id="formTitle">MarkOS Intelligence Onboarding</h1>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
@@ -93,7 +93,7 @@
                 <div class="privacy-notice" id="privacyNotice" role="alert">
                     <div class="privacy-notice-icon">🔒</div>
                     <div class="privacy-notice-body">
-                        <strong>AI Data Notice</strong> — The information you enter here is sent to your configured AI provider (OpenAI, Anthropic, or Google Gemini) via your private API key to generate marketing drafts. Your data is <strong>never stored on external servers</strong> beyond your own API provider's temporary processing window. API keys are stored only in your local <code>.env</code> file and never leave your machine.
+                        <strong>AI Data Notice</strong> — The information you enter here is sent to your configured AI provider (OpenAI, Anthropic, or Google Gemini) via your private API key to generate MarkOS drafts. Your data is <strong>never stored on external servers</strong> beyond your own API provider's temporary processing window. API keys are stored only in your local <code>.env</code> file and never leave your machine.
                     </div>
                     <button class="privacy-notice-dismiss" id="dismissPrivacy" aria-label="Dismiss" title="Dismiss">✕</button>
                 </div>
@@ -161,7 +161,7 @@
                     <div class="publish-bar d-none" id="publishBar">
                         <div class="publish-summary" id="publishSummary">Approve all sections above to enable publishing.</div>
                         <button class="btn-publish" id="btnPublish" disabled>🚀 Publish &amp; Activate MIR</button>
-                        <div class="gate-status-bar" id="gateStatusBar"></div>
+                        <div class="gate-status-bar" id="gateStatusBar" role="status" aria-live="polite"></div>
                     </div>
                 </div>
             </section>
@@ -177,8 +177,8 @@
                 <div class="completion-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 </div>
-                <h2 class="completion-title" id="completionTitle">Intelligence Activated</h2>
-                <p class="completion-message" id="completionMessage">MIR templates populated. AI agents are now context-aware and ready to execute.</p>
+                <h2 class="completion-title" id="completionTitle">MarkOS Intelligence Activated</h2>
+                <p class="completion-message" id="completionMessage">MIR templates populated. MarkOS agents are now context-aware and ready to execute.</p>
                 <div class="mt-lg d-flex gap-md justify-center flex-wrap" id="completionActions">
                     <button class="btn-primary d-none" id="btnCloseWindow" onclick="window.close()">Close Window</button>
                 </div>
