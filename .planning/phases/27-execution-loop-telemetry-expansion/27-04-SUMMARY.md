@@ -17,7 +17,7 @@ decisions:
 metrics:
   completed_at: 2026-03-28
   commits:
-    - pending
+    - 6872dbb
 ---
 
 # Phase 27 Plan 04: Onboarding-to-Execution Handoff Spec Summary
@@ -47,4 +47,4 @@ None.
 
 ## Self-Check: PASSED
 
-- Commit found: pending (updated after plan metadata commit)
+- Commit found: 6872dbb
