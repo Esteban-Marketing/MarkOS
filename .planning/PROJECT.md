@@ -64,7 +64,7 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 - [ ] Harden shared onboarding runtime behavior across local and hosted/API-wrapper execution modes.
 - [x] Improve extraction quality, regenerate/approve ergonomics, and approved-draft merge safety with stronger test coverage.
 - [x] Formalize Chroma namespace rules, local/cloud operating modes, and cross-project isolation guarantees.
-- [ ] Strengthen the handoff from approved MIR/MSP state into execution workflows and actionable telemetry.
+- [x] Strengthen the handoff from approved MIR/MSP state into execution workflows and actionable telemetry.
 
 ### Validated & Delivered (v1.0 & v1.1)
 - [x] Defined the core `mgsd` workflow integrating MIR-TEMPLATE and MSP-TEMPLATE.

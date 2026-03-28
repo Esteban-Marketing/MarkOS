@@ -523,7 +523,8 @@
 **Goal:** Formalize the product's memory layer around Chroma namespaces, local/cloud operating modes, migration safety, and cross-project isolation.
 **Requirements Mapped:** MMO-01, MMO-02, MMO-03
 **Depends on:** Phase 23, Phase 24
-**Status:** Proposed (sequenced after Phase 24)
+**Status:** Complete
+**Artifacts:** `.planning/phases/26-memory-namespace-multi-tenant-operations/26-VERIFICATION.md`
 **Success Criteria:**
 1. Namespace rules for project slugs, draft collections, and compatibility reads are explicit and enforced.
 2. Local and cloud Chroma operating modes are documented and exercised through health and migration logic.
@@ -531,10 +532,10 @@
 4. Cross-project isolation guarantees are clear enough to support multi-tenant usage safely.
 
 **Plans:**
-- [ ] 26-01: Document and codify Chroma collection naming and compatibility-read behavior
-- [ ] 26-02: Add migration-safe namespace handling for legacy and MarkOS-prefixed collections
-- [ ] 26-03: Expand health checks and failure reporting for local vs cloud vector backends
-- [ ] 26-04: Add multi-project test coverage or simulation around slug isolation
+- [x] 26-01: Document and codify Chroma collection naming and compatibility-read behavior
+- [x] 26-02: Add migration-safe namespace handling for legacy and MarkOS-prefixed collections
+- [x] 26-03: Expand health checks and failure reporting for local vs cloud vector backends
+- [x] 26-04: Add multi-project test coverage or simulation around slug isolation
 
 ---
 
@@ -542,7 +543,8 @@
 **Goal:** Strengthen post-onboarding execution by deepening prompt execution flows, winner anchoring, and operational telemetry instead of stopping at draft generation.
 **Requirements Mapped:** EXE-01, EXE-02, TLM-02
 **Depends on:** Phase 25, Phase 26
-**Status:** Proposed (sequenced after Phase 25 and 26)
+**Status:** Complete
+**Artifacts:** `.planning/phases/27-execution-loop-telemetry-expansion/27-01-SUMMARY.md`, `.planning/phases/27-execution-loop-telemetry-expansion/27-02-SUMMARY.md`, `.planning/phases/27-execution-loop-telemetry-expansion/27-03-SUMMARY.md`, `.planning/phases/27-execution-loop-telemetry-expansion/27-04-SUMMARY.md`
 **Success Criteria:**
 1. Downstream execution workflows consume approved MIR/MSP state predictably.
 2. Winner catalogs and prompt injection are validated as first-class execution inputs.
@@ -550,9 +552,9 @@
 4. The product demonstrates a clear path from onboarding to repeatable execution loops.
 
 **Plans:**
-- [ ] 27-01: Define the minimum post-onboarding execution loop and its required inputs
-- [ ] 27-02: Validate winners-catalog boot requirements across creator/executor flows
-- [ ] 27-03: Add telemetry around approval, execution readiness, and major failure points
-- [ ] 27-04: Produce a handoff spec tying onboarding outputs to execution workflows
+- [x] 27-01: Define the minimum post-onboarding execution loop and its required inputs
+- [x] 27-02: Validate winners-catalog boot requirements across creator/executor flows
+- [x] 27-03: Add telemetry around approval, execution readiness, and major failure points
+- [x] 27-04: Produce a handoff spec tying onboarding outputs to execution workflows
 
 <!-- EOF -->
