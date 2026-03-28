@@ -17,7 +17,7 @@ LLMs: read this to know which skill file to invoke for each scenario.</purpose>
     <step>2. Human submits form → POST /submit.</step>
     <step>3. server reads/generates .mgsd-project.json (deterministic project_slug).</step>
     <step>4. orchestrator.cjs runs mir-filler + msp-filler in parallel (Promise.allSettled).</step>
-    <step>5. Drafts stored to ChromaDB collection `mgsd-{slug}`.</step>
+    <step>5. Drafts stored to canonical Chroma namespace `{prefix}-{slug}-drafts` with compatibility reads across `mgsd-*` and `markos-*` prefixes.</step>
     <step>6. /status returns drafts → UI displays for review.</step>
     <step>7. Human approves → POST /approve → write-mir.cjs JIT-clones + writes .mgsd-local/MIR/.</step>
     <files>
@@ -28,13 +28,29 @@ LLMs: read this to know which skill file to invoke for each scenario.</purpose>
     </files>
   </loop>
 
+  <loop id="execution_handoff">
+    <trigger>POST /approve writes approved onboarding drafts and returns handoff metadata.</trigger>
+    <step>1. Onboarding completion is true when at least one approved draft is persisted to .mgsd-local/MIR/.</step>
+    <step>2. Execution readiness is evaluated separately; completion does not imply readiness.</step>
+    <step>3. Required approved sections: company_profile, mission_values, audience, competitive, brand_voice, channel_strategy.</step>
+    <step>4. Required winners anchors: .mgsd-local/MSP/Paid_Media|Lifecycle_Email|Content_SEO|Social|Landing_Pages/WINNERS/_CATALOG.md.</step>
+    <step>5. First execution workflows MUST consume approved local state and winners anchors before generating assets.</step>
+    <step>6. If any required section or winners catalog is missing, readiness stays blocked and execution MUST pause.</step>
+    <step>7. Telemetry checkpoints: approval_completed, execution_readiness_ready|execution_readiness_blocked, execution_loop_completed|execution_loop_abandoned.</step>
+    <files>
+      readiness_api: onboarding/backend/handlers.cjs
+      onboarding_ui: onboarding/onboarding.js
+      telemetry: onboarding/backend/agents/telemetry.cjs
+    </files>
+  </loop>
+
   <!-- Auto-Healing Daemon Workflow (V1.1 addition) -->
   <loop id="ensure_chroma">
     <trigger>Called by bin/install.cjs and onboarding/backend/server.cjs before boot.</trigger>
-    <step>1. Ping localhost:8000/api/v2/heartbeat (2s timeout).</step>
-    <step>2. If alive → return immediately. If dead + CHROMA_CLOUD_URL set → use cloud, return.</step>
-    <step>3. If dead + no cloud URL → spawn `python -m chromadb.cli.cli run` as detached daemon.</step>
-    <step>4. Wait 2s for daemon readiness. Resolve promise.</step>
+    <step>1. Resolve mode: cloud if CHROMA_CLOUD_URL exists, else local daemon.</step>
+    <step>2. Local mode pings localhost:8000/api/v1/heartbeat (500ms timeout).</step>
+    <step>3. If dead + local mode → spawn `python -m chromadb.cli.cli run` as detached daemon.</step>
+    <step>4. Re-check heartbeat and return a structured boot report: local_available/local_started/local_boot_failed or cloud_configured.</step>
     <file>bin/ensure-chroma.cjs</file>
   </loop>
 </execution_loops>

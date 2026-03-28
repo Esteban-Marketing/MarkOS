@@ -5,7 +5,20 @@ const crypto = require('crypto');
 
 let client = null;
 
-if (process.env.MGSD_TELEMETRY !== 'false' && process.env.POSTHOG_API_KEY) {
+const EXECUTION_CHECKPOINT_EVENTS = new Set([
+  'approval_completed',
+  'execution_readiness_ready',
+  'execution_readiness_blocked',
+  'execution_failure',
+  'execution_loop_completed',
+  'execution_loop_abandoned',
+]);
+
+function getTelemetryPreference() {
+  return process.env.MARKOS_TELEMETRY ?? process.env.MGSD_TELEMETRY;
+}
+
+if (getTelemetryPreference() !== 'false' && process.env.POSTHOG_API_KEY) {
   client = new PostHog(
     process.env.POSTHOG_API_KEY,
     { host: process.env.POSTHOG_HOST || 'https://us.i.posthog.com' }
@@ -29,8 +42,16 @@ function capture(eventName, properties = {}) {
     event: eventName,
     properties: {
       ...properties,
-      $lib: 'mgsd-backend-telemetry',
+      $lib: 'markos-backend-telemetry',
     }
+  });
+}
+
+function captureExecutionCheckpoint(eventName, properties = {}) {
+  if (!EXECUTION_CHECKPOINT_EVENTS.has(eventName)) return;
+  capture(eventName, {
+    telemetry_scope: 'execution_loop',
+    ...properties,
   });
 }
 
@@ -40,4 +61,4 @@ async function shutdown() {
   }
 }
 
-module.exports = { capture, shutdown };
+module.exports = { capture, captureExecutionCheckpoint, shutdown };

@@ -16,10 +16,62 @@ const {
   resolveRequestedProjectSlug,
   resolveSeedOutputPath,
 } = require('./runtime-context.cjs');
+const telemetry = require('./agents/telemetry.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
 // (utils.cjs handles readBody and json)
+
+const EXECUTION_READINESS_CONTRACT = Object.freeze({
+  requiredDraftSections: [
+    'company_profile',
+    'mission_values',
+    'audience',
+    'competitive',
+    'brand_voice',
+    'channel_strategy',
+  ],
+  requiredWinnersCatalogs: [
+    '.mgsd-local/MSP/Paid_Media/WINNERS/_CATALOG.md',
+    '.mgsd-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md',
+    '.mgsd-local/MSP/Content_SEO/WINNERS/_CATALOG.md',
+    '.mgsd-local/MSP/Social/WINNERS/_CATALOG.md',
+    '.mgsd-local/MSP/Landing_Pages/WINNERS/_CATALOG.md',
+  ],
+});
+
+function buildExecutionReadiness(approvedDrafts = {}) {
+  const draftChecks = EXECUTION_READINESS_CONTRACT.requiredDraftSections.map((section) => {
+    const approved = typeof approvedDrafts[section] === 'string' && approvedDrafts[section].trim().length > 0;
+    return {
+      type: 'approved_draft',
+      key: section,
+      ready: approved,
+      blocking: !approved,
+      detail: approved ? 'approved' : 'missing',
+    };
+  });
+
+  const winnerChecks = EXECUTION_READINESS_CONTRACT.requiredWinnersCatalogs.map((relativePath) => {
+    const exists = fs.existsSync(path.join(PROJECT_ROOT, relativePath));
+    return {
+      type: 'winners_catalog',
+      key: relativePath,
+      ready: exists,
+      blocking: !exists,
+      detail: exists ? 'present' : 'missing',
+    };
+  });
+
+  const checks = [...draftChecks, ...winnerChecks];
+  const blockingChecks = checks.filter((check) => check.blocking);
+
+  return {
+    status: blockingChecks.length === 0 ? 'ready' : 'blocked',
+    checks,
+    blocking_checks: blockingChecks,
+  };
+}
 
 function createOutcome(state, code, message, details = {}) {
   return {
@@ -59,6 +111,12 @@ async function handleStatus(req, res) {
 
   json(res, 200, {
     chromadb: chromaHealth,
+    memory: {
+      ...chromaHealth,
+      runtime_mode: runtime.mode,
+      local_persistence: runtime.canWriteLocalFiles,
+      requires_operator_action: !chromaHealth.ok,
+    },
     mir: mirGateStatus,
     runtime_mode: runtime.mode,
     local_persistence: runtime.canWriteLocalFiles,
@@ -141,15 +199,28 @@ async function handleRegenerate(req, res) {
     };
 
     if (!generators[section]) {
+      telemetry.captureExecutionCheckpoint('execution_readiness_blocked', {
+        reason: 'unknown_regenerate_section',
+        section,
+      });
       return json(res, 400, { error: `Unknown section: ${section}` });
     }
 
     const result = await generators[section]();
+    let persistenceWarning = null;
     if (result.ok && slug) {
-      await chroma.storeDraft(slug, section, result.text);
+      const storeResult = await chroma.storeDraft(slug, section, result.text);
+      if (storeResult && storeResult.ok === false) {
+        persistenceWarning = `Failed to persist regenerated-${section}: ${storeResult.error || 'Unknown Chroma persistence error'}`;
+      }
     }
 
     if (!result.ok) {
+      telemetry.captureExecutionCheckpoint('execution_failure', {
+        checkpoint: 'regenerate',
+        section,
+        reason: result.error || 'unknown_regenerate_failure',
+      });
       return json(res, 502, {
         success: false,
         content: result.text,
@@ -161,13 +232,34 @@ async function handleRegenerate(req, res) {
     }
 
     if (result.isFallback) {
+      telemetry.captureExecutionCheckpoint('execution_readiness_blocked', {
+        reason: 'regenerate_fallback',
+        section,
+      });
+      const warnings = [result.error || 'Provider unavailable; fallback content returned'];
+      if (persistenceWarning) warnings.push(persistenceWarning);
       return json(res, 200, {
         success: true,
         content: result.text,
         error: result.error,
         outcome: createOutcome('degraded', 'REGENERATE_FALLBACK', 'Section regenerated using fallback content.', {
           fallback: true,
-          warnings: [result.error || 'Provider unavailable; fallback content returned'],
+          warnings,
+        }),
+      });
+    }
+
+    if (persistenceWarning) {
+      telemetry.captureExecutionCheckpoint('execution_readiness_blocked', {
+        reason: 'regenerate_persistence_warning',
+        section,
+      });
+      return json(res, 200, {
+        success: true,
+        content: result.text,
+        error: null,
+        outcome: createOutcome('warning', 'REGENERATE_PERSIST_WARNING', 'Section regenerated but persistence warning occurred.', {
+          warnings: [persistenceWarning],
         }),
       });
     }
@@ -179,6 +271,10 @@ async function handleRegenerate(req, res) {
       outcome: createOutcome('success', 'REGENERATE_OK', 'Section regenerated successfully.'),
     });
   } catch (err) {
+    telemetry.captureExecutionCheckpoint('execution_failure', {
+      checkpoint: 'regenerate',
+      reason: err.message,
+    });
     json(res, 500, {
       success: false,
       error: err.message,
@@ -195,6 +291,10 @@ async function handleApprove(req, res) {
     const { approvedDrafts, slug } = await readBody(req);
 
     if (!runtime.canWriteLocalFiles) {
+      telemetry.captureExecutionCheckpoint('execution_failure', {
+        checkpoint: 'approve',
+        reason: 'LOCAL_PERSISTENCE_UNAVAILABLE',
+      });
       return json(res, 501, {
         success: false,
         error: 'LOCAL_PERSISTENCE_UNAVAILABLE',
@@ -228,7 +328,10 @@ async function handleApprove(req, res) {
     const chromaErrors = [];
     for (const [section, content] of Object.entries(approvedDrafts)) {
       try {
-        await chroma.storeDraft(projectSlug, `approved-${section}`, content);
+        const storeResult = await chroma.storeDraft(projectSlug, `approved-${section}`, content);
+        if (storeResult && storeResult.ok === false) {
+          chromaErrors.push(`Failed to persist approved-${section}: ${storeResult.error || 'Unknown Chroma persistence error'}`);
+        }
       } catch (storeErr) {
         chromaErrors.push(`Failed to persist approved-${section}: ${storeErr.message}`);
       }
@@ -245,6 +348,10 @@ async function handleApprove(req, res) {
       });
 
     if (written.length === 0) {
+      telemetry.captureExecutionCheckpoint('execution_failure', {
+        checkpoint: 'approve',
+        reason: 'APPROVE_WRITE_FAILED',
+      });
       return json(res, 500, {
         success: false,
         written,
@@ -257,16 +364,49 @@ async function handleApprove(req, res) {
       });
     }
 
+    const readiness = buildExecutionReadiness(approvedDrafts || {});
+    const onboardingCompleted = written.length > 0;
+
     if (combinedErrors.length > 0 || mergeFallbackWarnings.length > 0) {
+      telemetry.captureExecutionCheckpoint('execution_readiness_blocked', {
+        checkpoint: 'approve',
+        project_slug: projectSlug,
+        reason: 'APPROVE_PARTIAL_WARNING',
+        blocking_count: readiness.blocking_checks.length,
+      });
       return json(res, 200, {
         success: true,
         written,
         stateUpdated,
         errors: combinedErrors,
         mergeEvents,
+        handoff: {
+          onboarding_completed: onboardingCompleted,
+          execution_readiness: readiness,
+        },
         outcome: createOutcome('warning', 'APPROVE_PARTIAL_WARNING', 'Drafts were written with warnings.', {
           warnings: [...mergeFallbackWarnings, ...combinedErrors],
         }),
+      });
+    }
+
+    telemetry.captureExecutionCheckpoint('approval_completed', {
+      checkpoint: 'approve',
+      project_slug: projectSlug,
+      written_count: written.length,
+    });
+    telemetry.captureExecutionCheckpoint(
+      readiness.status === 'ready' ? 'execution_readiness_ready' : 'execution_readiness_blocked',
+      {
+        checkpoint: 'approve',
+        project_slug: projectSlug,
+        blocking_count: readiness.blocking_checks.length,
+      }
+    );
+    if (readiness.status === 'ready') {
+      telemetry.captureExecutionCheckpoint('execution_loop_completed', {
+        checkpoint: 'approve',
+        project_slug: projectSlug,
       });
     }
 
@@ -276,10 +416,18 @@ async function handleApprove(req, res) {
       stateUpdated,
       errors: [],
       mergeEvents,
+      handoff: {
+        onboarding_completed: onboardingCompleted,
+        execution_readiness: readiness,
+      },
       outcome: createOutcome('success', 'APPROVE_OK', 'Drafts were written successfully.'),
     });
   } catch (err) {
     console.error('[POST /approve] Error:', err.message);
+    telemetry.captureExecutionCheckpoint('execution_failure', {
+      checkpoint: 'approve',
+      reason: err.message,
+    });
     json(res, 500, {
       success: false,
       error: err.message,

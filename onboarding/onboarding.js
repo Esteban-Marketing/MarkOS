@@ -16,6 +16,7 @@ let lastSlug       = null;   // slug returned by server
 let approvedDrafts = {};     // { section_key: content }
 let draftContents  = {};     // { section_key: original content }
 let omniExtractedText = '';  // raw text extracted from Step 0
+let executionLoopCompleted = false;
 
 // ── Elements ──────────────────────────────────────────────────────────────────
 const stepSections       = document.querySelectorAll('.step-section');
@@ -502,7 +503,30 @@ async function handlePublish() {
 
     if (result.success) {
       const written = result.written || [];
+      const readinessStatus = result.handoff?.execution_readiness?.status || 'blocked';
       showOutcomeStatus(result.outcome, `${written.length} MIR files written. STATE.md updated.`);
+
+      if (window.posthog && posthog.capture) {
+        posthog.capture('approval_completed', {
+          project_slug: lastSlug,
+          written_count: written.length,
+          readiness_status: readinessStatus,
+        });
+        posthog.capture(
+          readinessStatus === 'ready' ? 'execution_readiness_ready' : 'execution_readiness_blocked',
+          {
+            project_slug: lastSlug,
+            blocking_count: (result.handoff?.execution_readiness?.blocking_checks || []).length,
+          }
+        );
+        if (readinessStatus === 'ready') {
+          posthog.capture('execution_loop_completed', {
+            project_slug: lastSlug,
+          });
+        }
+      }
+
+      executionLoopCompleted = readinessStatus === 'ready';
 
       setTimeout(() => showCompletionScreen(written), 1200);
     } else {
@@ -884,6 +908,17 @@ btnBack.addEventListener('click', () => {
 });
 
 btnPublish.addEventListener('click', handlePublish);
+
+window.addEventListener('beforeunload', () => {
+  const hasDrafts = Object.keys(draftContents || {}).length > 0;
+  const hasApprovals = Object.keys(approvedDrafts || {}).length > 0;
+  if (!executionLoopCompleted && hasDrafts && hasApprovals && window.posthog && posthog.capture) {
+    posthog.capture('execution_loop_abandoned', {
+      project_slug: lastSlug,
+      approved_count: Object.keys(approvedDrafts || {}).length,
+    });
+  }
+});
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA' && currentStep < 2) {

@@ -33,13 +33,37 @@ Residual risk accepted for now:
 - Hosted runtime remains intentionally unable to persist approve/write flows to local disk.
 - Provider outages continue to return static fallback drafts; this is explicit degraded behavior, not silent success.
 
+## Execution Readiness Contract (Phase 27 Baseline)
+
+Onboarding approval and execution readiness are separate states:
+
+- Onboarding completion: `POST /approve` successfully writes approved drafts to `.mgsd-local/MIR/`.
+- Execution readiness: all required approved sections and winners anchors are present.
+
+Required approved sections:
+- `company_profile`
+- `mission_values`
+- `audience`
+- `competitive`
+- `brand_voice`
+- `channel_strategy`
+
+Required winners anchors:
+- `.mgsd-local/MSP/Paid_Media/WINNERS/_CATALOG.md`
+- `.mgsd-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md`
+- `.mgsd-local/MSP/Content_SEO/WINNERS/_CATALOG.md`
+- `.mgsd-local/MSP/Social/WINNERS/_CATALOG.md`
+- `.mgsd-local/MSP/Landing_Pages/WINNERS/_CATALOG.md`
+
+Execution work must pause when readiness is blocked; operators should resolve missing checks before creator/executor prompts run.
+
 ## Requirements
 
 ### Active
 - [ ] Normalize MarkOS identity across public UX, runtime identifiers, and compatibility-critical legacy paths.
 - [ ] Harden shared onboarding runtime behavior across local and hosted/API-wrapper execution modes.
 - [x] Improve extraction quality, regenerate/approve ergonomics, and approved-draft merge safety with stronger test coverage.
-- [ ] Formalize Chroma namespace rules, local/cloud operating modes, and cross-project isolation guarantees.
+- [x] Formalize Chroma namespace rules, local/cloud operating modes, and cross-project isolation guarantees.
 - [ ] Strengthen the handoff from approved MIR/MSP state into execution workflows and actionable telemetry.
 
 ### Validated & Delivered (v1.0 & v1.1)
@@ -85,4 +109,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-03-28 after Phase 24 verification closure.
+Last updated: 2026-03-28 after Phase 26 execution.
