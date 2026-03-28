@@ -262,9 +262,12 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
 
   await t.test('3.7 Regenerate and approve expose structured outcome states', async () => {
     const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
     const chromaPath = path.join(env.dir, 'onboarding', 'backend', 'chroma-client.cjs');
     const mirFillerPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'mir-filler.cjs');
     const mspFillerPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'msp-filler.cjs');
+    const llmPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'llm-adapter.cjs');
+    const telemetryPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'telemetry.cjs');
     const writeMirPath = path.join(env.dir, 'onboarding', 'backend', 'write-mir.cjs');
 
     await withMockedModule(mirFillerPath, {
@@ -313,26 +316,156 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
         mergeEvents: [{ file: 'Core_Strategy/01_COMPANY/PROFILE.md', type: 'header-fallback-append', header: 'New Header' }],
       }),
     }, async () => {
+      const emittedCheckpoints = [];
       await withMockedModule(chromaPath, {
         configure: () => {},
-        storeDraft: async () => {
-          throw new Error('mock chroma persistence error');
-        },
+        storeDraft: async () => ({ ok: false, error: 'mock returned chroma persistence error' }),
       }, async () => {
-        const handlers = loadFreshModule(handlersPath);
-        const approveReq = createJsonRequest({
-          slug: 'acme-slug',
-          approvedDrafts: { company_profile: '## New Header\n\nDraft body' }
-        }, '/approve');
-        const approveRes = createMockResponse();
+        await withMockedModule(telemetryPath, {
+          captureExecutionCheckpoint: (eventName, properties) => emittedCheckpoints.push({ eventName, properties }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const approveReq = createJsonRequest({
+            slug: 'acme-slug',
+            approvedDrafts: { company_profile: '## New Header\n\nDraft body' }
+          }, '/approve');
+          const approveRes = createMockResponse();
 
-        await handlers.handleApprove(approveReq, approveRes);
-        assert.equal(approveRes.statusCode, 200);
+          await handlers.handleApprove(approveReq, approveRes);
+          assert.equal(approveRes.statusCode, 200);
 
-        const approvePayload = JSON.parse(approveRes.body);
-        assert.equal(approvePayload.success, true);
-        assert.equal(approvePayload.outcome.state, 'warning');
-        assert.equal(approvePayload.outcome.code, 'APPROVE_PARTIAL_WARNING');
+          const approvePayload = JSON.parse(approveRes.body);
+          assert.equal(approvePayload.success, true);
+          assert.equal(approvePayload.outcome.state, 'warning');
+          assert.equal(approvePayload.outcome.code, 'APPROVE_PARTIAL_WARNING');
+          assert.match((approvePayload.outcome.warnings || []).join(' '), /mock returned chroma persistence error/);
+          assert.equal(approvePayload.handoff.execution_readiness.status, 'blocked');
+          assert.ok((approvePayload.handoff.execution_readiness.blocking_checks || []).length > 0, 'Blocked readiness should include blocking checks');
+          assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_readiness_blocked'), 'Approve warning path should emit execution_readiness_blocked');
+        });
+      });
+    });
+
+    await withMockedModule(mirFillerPath, {
+      generateCompanyProfile: async () => ({ ok: true, text: 'company draft text' }),
+      generateMissionVisionValues: async () => ({ ok: true, text: 'mission draft text' }),
+      generateAudienceProfile: async () => ({ ok: false, error: 'skip neuro path', text: '[DRAFT UNAVAILABLE]' }),
+      generateCompetitiveLandscape: async () => ({ ok: true, text: 'competitive draft text' }),
+    }, async () => {
+      await withMockedModule(mspFillerPath, {
+        generateBrandVoice: async () => ({ ok: true, text: 'brand voice draft text' }),
+        generateChannelStrategy: async () => ({ ok: true, text: 'channel strategy draft text' }),
+      }, async () => {
+        await withMockedModule(llmPath, {
+          call: async () => ({ ok: true, text: 'neuro check' }),
+        }, async () => {
+          await withMockedModule(telemetryPath, {
+            capture: () => {},
+          }, async () => {
+            await withMockedModule(chromaPath, {
+              configure: () => {},
+              upsertSeed: async () => [],
+              storeDraft: async () => ({ ok: false, error: 'mock returned chroma persistence error' }),
+            }, async () => {
+              const orchestrator = loadFreshModule(orchestratorPath);
+              const result = await orchestrator.orchestrate({ company: { name: 'Acme' } }, 'acme-slug');
+              assert.ok(result.errors.some((entry) => entry.phase === 'chroma-store-company_profile'), 'Orchestrator should surface non-throwing storeDraft failures');
+            });
+          });
+        });
+      });
+    });
+  });
+
+  await t.test('3.8 Status endpoint exposes memory mode semantics', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const chromaPath = path.join(env.dir, 'onboarding', 'backend', 'chroma-client.cjs');
+
+    await withMockedModule(chromaPath, {
+      configure: () => {},
+      healthCheck: async () => ({
+        ok: false,
+        mode: 'cloud',
+        status: 'cloud_unavailable',
+        error: 'ECONNREFUSED',
+      }),
+    }, async () => {
+      const handlers = loadFreshModule(handlersPath);
+      const req = { method: 'GET', url: '/status' };
+      const res = createMockResponse();
+
+      await handlers.handleStatus(req, res);
+      assert.equal(res.statusCode, 200);
+
+      const payload = JSON.parse(res.body);
+      assert.equal(payload.chromadb.status, 'cloud_unavailable');
+      assert.equal(payload.memory.status, 'cloud_unavailable');
+      assert.equal(payload.memory.mode, 'cloud');
+      assert.equal(payload.memory.requires_operator_action, true);
+    });
+  });
+
+  await t.test('3.9 Approve success emits readiness-ready and loop-completed checkpoints', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const chromaPath = path.join(env.dir, 'onboarding', 'backend', 'chroma-client.cjs');
+    const writeMirPath = path.join(env.dir, 'onboarding', 'backend', 'write-mir.cjs');
+    const telemetryPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'telemetry.cjs');
+
+    const requiredCatalogs = [
+      'Paid_Media',
+      'Lifecycle_Email',
+      'Content_SEO',
+      'Social',
+      'Landing_Pages',
+    ];
+
+    for (const discipline of requiredCatalogs) {
+      const winnersPath = path.join(env.dir, '.mgsd-local', 'MSP', discipline, 'WINNERS');
+      fs.mkdirSync(winnersPath, { recursive: true });
+      fs.writeFileSync(path.join(winnersPath, '_CATALOG.md'), '# winners\n', 'utf8');
+    }
+
+    const emittedCheckpoints = [];
+
+    await withMockedModule(writeMirPath, {
+      applyDrafts: () => ({
+        written: ['Core_Strategy/01_COMPANY/PROFILE.md'],
+        stateUpdated: true,
+        errors: [],
+        mergeEvents: [],
+      }),
+    }, async () => {
+      await withMockedModule(chromaPath, {
+        configure: () => {},
+        storeDraft: async () => ({ ok: true }),
+      }, async () => {
+        await withMockedModule(telemetryPath, {
+          captureExecutionCheckpoint: (eventName, properties) => emittedCheckpoints.push({ eventName, properties }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const approveReq = createJsonRequest({
+            slug: 'acme-slug',
+            approvedDrafts: {
+              company_profile: 'ok',
+              mission_values: 'ok',
+              audience: 'ok',
+              competitive: 'ok',
+              brand_voice: 'ok',
+              channel_strategy: 'ok',
+            }
+          }, '/approve');
+          const approveRes = createMockResponse();
+
+          await handlers.handleApprove(approveReq, approveRes);
+          assert.equal(approveRes.statusCode, 200);
+
+          const payload = JSON.parse(approveRes.body);
+          assert.equal(payload.success, true);
+          assert.equal(payload.handoff.execution_readiness.status, 'ready');
+          assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'approval_completed'));
+          assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_readiness_ready'));
+          assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_loop_completed'));
+        });
       });
     });
   });

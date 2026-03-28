@@ -103,7 +103,7 @@ onboarding/
   backend/
     server.cjs            ← HTTP server (GET / /config /status; POST /submit /approve)
     write-mir.cjs         ← JIT-clone templates → fuzzy-merge → stamp STATE.md
-    chroma-client.cjs     ← ChromaDB HTTP client (compatibility namespace: mgsd-{project_slug})
+    chroma-client.cjs     ← ChromaDB HTTP client (canonical writes + compatibility reads)
     agents/
       orchestrator.cjs    ← parallel draft generation + Chroma persistence
       llm-adapter.cjs     ← unified OpenAI/Anthropic/Gemini call wrapper
@@ -196,6 +196,22 @@ If you need hosted approve/write durability, add a dedicated persistence backend
 
 ---
 
+## Memory Namespace Contract (Phase 26)
+
+- Project isolation root: `project_slug` from `.mgsd-project.json`.
+- Canonical write target: `{prefix}-{project_slug}-{section|drafts|meta}` (default prefix: `mgsd`).
+- Compatibility reads: probe canonical prefix first, then `mgsd`, then `markos`.
+- Migration safety boundary: runtime flows only perform compatibility reads; destructive namespace migration stays explicit and manual.
+
+Health semantics exposed by `/status` and `chroma-client.cjs`:
+
+- Local mode: `local_available`, `local_started`, `local_unavailable`, `local_boot_failed`
+- Cloud mode: `cloud_configured`, `cloud_reachable`, `cloud_unavailable`
+
+These states indicate whether memory-backed features are fully available or degraded, so operators can distinguish daemon boot problems from hosted connectivity issues.
+
+---
+
 ## Residual Onboarding Warning Behavior
 
 The onboarding pipeline now uses explicit outcome states (`success`, `warning`, `degraded`, `failure`) for regenerate and approve operations.
@@ -210,6 +226,45 @@ Intentional residual behavior that remains for now:
 - Local persistence guard for hosted mode (`LOCAL_PERSISTENCE_UNAVAILABLE`).
 
 These states are expected during partial infrastructure outages and should not be treated as silent success.
+
+---
+
+## Onboarding-to-Execution Handoff Contract (Phase 27)
+
+Onboarding approval and execution readiness are intentionally separate:
+
+- Onboarding completion: `POST /approve` writes approved drafts to `.mgsd-local/MIR/`.
+- Execution readiness: all required approved sections and winners anchors are present.
+
+Required approved sections:
+- `company_profile`
+- `mission_values`
+- `audience`
+- `competitive`
+- `brand_voice`
+- `channel_strategy`
+
+Required winners anchors:
+- `.mgsd-local/MSP/Paid_Media/WINNERS/_CATALOG.md`
+- `.mgsd-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md`
+- `.mgsd-local/MSP/Content_SEO/WINNERS/_CATALOG.md`
+- `.mgsd-local/MSP/Social/WINNERS/_CATALOG.md`
+- `.mgsd-local/MSP/Landing_Pages/WINNERS/_CATALOG.md`
+
+If any prerequisite is missing, execution readiness remains blocked and downstream execution should pause.
+
+### Execution Telemetry (Actionable Checkpoints)
+
+Telemetry is intentionally narrow and checkpoint-based:
+
+- `approval_completed`
+- `execution_readiness_ready`
+- `execution_readiness_blocked`
+- `execution_failure`
+- `execution_loop_completed`
+- `execution_loop_abandoned`
+
+These events are designed for operational decisions (ready vs blocked, completed vs abandoned) and failure diagnosis, not broad usage volume tracking.
 
 ---
 

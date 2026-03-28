@@ -1,6 +1,11 @@
 'use strict';
 
-const { PostHog } = require('posthog-node');
+let PostHog = null;
+try {
+  ({ PostHog } = require('posthog-node'));
+} catch (error) {
+  PostHog = null;
+}
 const crypto = require('crypto');
 
 let client = null;
@@ -18,7 +23,7 @@ function getTelemetryPreference() {
   return process.env.MARKOS_TELEMETRY ?? process.env.MGSD_TELEMETRY;
 }
 
-if (getTelemetryPreference() !== 'false' && process.env.POSTHOG_API_KEY) {
+if (PostHog && getTelemetryPreference() !== 'false' && process.env.POSTHOG_API_KEY) {
   client = new PostHog(
     process.env.POSTHOG_API_KEY,
     { host: process.env.POSTHOG_HOST || 'https://us.i.posthog.com' }
