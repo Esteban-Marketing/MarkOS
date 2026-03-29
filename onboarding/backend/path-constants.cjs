@@ -10,6 +10,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
+const fs = require('fs');
 const path = require('path');
 
 // Reference: This file is in onboarding/backend/
@@ -17,16 +18,24 @@ const BACKEND_DIR = __dirname;
 const ONBOARDING_DIR = path.resolve(BACKEND_DIR, '..');
 const PROJECT_ROOT = path.resolve(ONBOARDING_DIR, '..');
 
-// Template & Resource Locations
-const PROTOCOL_DIR = path.join(PROJECT_ROOT, '.agent/marketing-get-shit-done');
-const TEMPLATES_DIR = path.join(PROJECT_ROOT, '.agent/marketing-get-shit-done/templates');
+// Template & Resource Locations (MarkOS-first with legacy fallback)
+const CANONICAL_PROTOCOL_DIR = path.join(PROJECT_ROOT, '.agent/markos');
+const LEGACY_PROTOCOL_DIR = path.join(PROJECT_ROOT, '.agent/marketing-get-shit-done');
+const PROTOCOL_DIR = fs.existsSync(CANONICAL_PROTOCOL_DIR) ? CANONICAL_PROTOCOL_DIR : LEGACY_PROTOCOL_DIR;
+const TEMPLATES_DIR = path.join(PROTOCOL_DIR, 'templates');
 const MIR_TEMPLATES = path.join(TEMPLATES_DIR, 'MIR');
 const MSP_TEMPLATES = path.join(TEMPLATES_DIR, 'MSP');
 
-// Legacy compatibility state surfaces retained during identity normalization
-const LEGACY_LOCAL_DIR = path.join(PROJECT_ROOT, '.mgsd-local');
-const PROJECT_CONFIG_PATH = path.join(PROJECT_ROOT, '.mgsd-project.json');
-const INSTALL_MANIFEST_PATH = path.join(PROJECT_ROOT, '.mgsd-install-manifest.json');
+// State surfaces (MarkOS-first with legacy fallback)
+const LEGACY_LOCAL_DIR = fs.existsSync(path.join(PROJECT_ROOT, '.markos-local'))
+  ? path.join(PROJECT_ROOT, '.markos-local')
+  : path.join(PROJECT_ROOT, '.mgsd-local');
+const PROJECT_CONFIG_PATH = fs.existsSync(path.join(PROJECT_ROOT, '.markos-project.json'))
+  ? path.join(PROJECT_ROOT, '.markos-project.json')
+  : path.join(PROJECT_ROOT, '.mgsd-project.json');
+const INSTALL_MANIFEST_PATH = fs.existsSync(path.join(PROJECT_ROOT, '.markos-install-manifest.json'))
+  ? path.join(PROJECT_ROOT, '.markos-install-manifest.json')
+  : path.join(PROJECT_ROOT, '.mgsd-install-manifest.json');
 
 // Config & Seed
 const CONFIG_PATH = path.join(ONBOARDING_DIR, 'onboarding-config.json');
