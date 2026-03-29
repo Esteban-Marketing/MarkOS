@@ -1,8 +1,8 @@
-# Legacy Term Audit — MGSD → MarkOS Rebrand
+﻿# Legacy Term Audit â€” MARKOS â†’ MarkOS Rebrand
 
 **Audited:** 2026-03-27  
 **Method:** Exhaustive grep across entire codebase (all file types)  
-**Note:** Several searches hit the result cap (200–500). Actual counts are **minimums** — true totals are higher.
+**Note:** Several searches hit the result cap (200â€“500). Actual counts are **minimums** â€” true totals are higher.
 
 ---
 
@@ -10,28 +10,28 @@
 
 | Term Pattern | Min. Occurrences | Unique Files | Severity |
 |---|---|---|---|
-| `mgsd` (any case) | 1,000+ | 120+ | CRITICAL — pervasive |
-| `marketing-get-shit-done` | 200+ | 70+ | CRITICAL — package name, paths |
-| `marketing get shit done` (spaces) | 16 | 13 | MODERATE — display text only |
-| `get-shit-done` (without marketing-) | 200+ | 60+ | CRITICAL — includes path references |
-| `.mgsd-local` | 200+ | 80+ | CRITICAL — filesystem convention |
-| `.mgsd-project.json` | 25 | 18 | HIGH — config file name |
-| `.mgsd-install-manifest.json` | 40 | 20 | HIGH — install infrastructure |
-| `MGSD_TELEMETRY` | 11 | 8 | MODERATE — env var |
-| `mgsd_privacy_accepted` | 3 | 3 | LOW — localStorage key |
-| `mgsd-backend-telemetry` | 2 | 2 | LOW — PostHog `$lib` value |
-| `mgsd-{project_slug}` (ChromaDB) | 13 | 10 | HIGH — data namespace |
-| `MGSD-INDEX.md` | 100+ | 40+ | CRITICAL — master registry filename |
-| `mgsd-*` agent/skill names | 200+ | 80+ | CRITICAL — all agent identifiers |
-| `MGSD-` token prefixes | 500+ | 100+ | CRITICAL — all token IDs |
+| `markos` (any case) | 1,000+ | 120+ | CRITICAL â€” pervasive |
+| `markos` | 200+ | 70+ | CRITICAL â€” package name, paths |
+| `MarkOS` (spaces) | 16 | 13 | MODERATE â€” display text only |
+| `get-shit-done` (without marketing-) | 200+ | 60+ | CRITICAL â€” includes path references |
+| `.markos-local` | 200+ | 80+ | CRITICAL â€” filesystem convention |
+| `.markos-project.json` | 25 | 18 | HIGH â€” config file name |
+| `.markos-install-manifest.json` | 40 | 20 | HIGH â€” install infrastructure |
+| `MARKOS_TELEMETRY` | 11 | 8 | MODERATE â€” env var |
+| `markos_privacy_accepted` | 3 | 3 | LOW â€” localStorage key |
+| `markos-backend-telemetry` | 2 | 2 | LOW â€” PostHog `$lib` value |
+| `markos-{project_slug}` (Supabase + Upstash Vector) | 13 | 10 | HIGH â€” data namespace |
+| `MARKOS-INDEX.md` | 100+ | 40+ | CRITICAL â€” master registry filename |
+| `markos-*` agent/skill names | 200+ | 80+ | CRITICAL â€” all agent identifiers |
+| `MARKOS-` token prefixes | 500+ | 100+ | CRITICAL â€” all token IDs |
 
-**Estimated total legacy references: 2,500–3,000+**
+**Estimated total legacy references: 2,500â€“3,000+**
 
 ---
 
-## 1. `marketing-get-shit-done` (hyphenated, package name)
+## 1. `markos` (hyphenated, package name)
 
-### Code Files (HIGHEST PRIORITY — functional)
+### Code Files (HIGHEST PRIORITY â€” functional)
 
 | File | Occurrences | Context |
 |---|---|---|
@@ -42,8 +42,8 @@
 | `onboarding/backend/server.cjs` | 1 | Path comment |
 | `onboarding/backend/agents/example-resolver.cjs` | 2 | Path comments |
 | `onboarding/backend/agents/orchestrator.cjs` | 1 | Agent path resolution (hardcoded) |
-| `.agent/marketing-get-shit-done/bin/lib/core.cjs` | 3 | Display text, comment |
-| `.agent/marketing-get-shit-done/bin/mgsd-tools.cjs` | 6 | Display text, path refs |
+| `.agent/markos/bin/lib/core.cjs` | 3 | Display text, comment |
+| `.agent/markos/bin/markos-tools.cjs` | 6 | Display text, path refs |
 | `test/setup.js` | 2+ | Test fixtures, path construction |
 | `test/update.test.js` | 2+ | Test path construction |
 | `test/protocol.test.js` | 1+ | Test assertions |
@@ -55,21 +55,21 @@
 | `.claude/settings.json` | 1 | Path reference |
 | `onboarding/onboarding-config.json` | 1 | Comment/path |
 
-### .agent/ Directory (agent protocol files — **317+ files**)
+### .agent/ Directory (agent protocol files â€” **317+ files**)
 
-The entire `.agent/marketing-get-shit-done/` directory is the legacy name. Every file within it exists under this path. Key internal references:
+The entire `.agent/markos/` directory is the legacy name. Every file within it exists under this path. Key internal references:
 
 | File | Occurrences | Context |
 |---|---|---|
-| `MGSD-INDEX.md` | Self-referential | Master registry |
-| `agents/mgsd-onboarder.md` | 3+ | Path references |
-| `agents/mgsd-researcher.md` | 3+ | Path references |
-| `agents/mgsd-auditor.md` | 2+ | Path references |
-| `agents/mgsd-analyst.md` | 1+ | Path references |
+| `MARKOS-INDEX.md` | Self-referential | Master registry |
+| `agents/markos-onboarder.md` | 3+ | Path references |
+| `agents/markos-researcher.md` | 3+ | Path references |
+| `agents/markos-auditor.md` | 2+ | Path references |
+| `agents/markos-analyst.md` | 1+ | Path references |
 | `workflows/new-project.md` | 2+ | Path references |
 | `templates/local-override/.gitignore` | 1 | Reference |
 | `references/*.md` (9 files) | 2 each | Path in frontmatter |
-| All `skills/mgsd-*/SKILL.md` | Multiple | Path references |
+| All `skills/markos-*/SKILL.md` | Multiple | Path references |
 
 ### Documentation (root docs)
 
@@ -81,7 +81,7 @@ The entire `.agent/marketing-get-shit-done/` directory is the legacy name. Every
 | `RESEARCH/ORG-PROFILE.md` | 1 | npx command in research content |
 | `RESEARCH/PRODUCT-RESEARCH.md` | 3 | Install commands, use cases |
 
-### .mgsd-local/ (populated client data)
+### .markos-local/ (populated client data)
 
 | File | Occurrences | Context |
 |---|---|---|
@@ -96,7 +96,7 @@ The entire `.agent/marketing-get-shit-done/` directory is the legacy name. Every
 
 ### .planning/ (milestone & planning docs)
 
-This is the **single largest concentration**. Every phase (01–07) references `marketing-get-shit-done` extensively in PLAN.md, CONTEXT.md, VERIFICATION.md, and SUMMARY.md files. Key files:
+This is the **single largest concentration**. Every phase (01â€“07) references `markos` extensively in PLAN.md, CONTEXT.md, VERIFICATION.md, and SUMMARY.md files. Key files:
 
 | File | Occurrences | Context |
 |---|---|---|
@@ -115,13 +115,13 @@ This is the **single largest concentration**. Every phase (01–07) references `
 
 | File | Occurrences | Context |
 |---|---|---|
-| `QUICKSTART.md` | 1 | Path to MGSD-INDEX |
+| `QUICKSTART.md` | 1 | Path to MARKOS-INDEX |
 | `CODEBASE-MAP.md` | 5+ | Directory listings, file references |
 | `ARCHITECTURE.md` | 0 | (Uses abbreviated paths) |
 
 ---
 
-## 2. `.mgsd-local/` (client override directory)
+## 2. `.markos-local/` (client override directory)
 
 **200+ occurrences across 80+ files.** This is the second most pervasive term.
 
@@ -138,26 +138,26 @@ This is the **single largest concentration**. Every phase (01–07) references `
 | `bin/update.cjs` | 5+ | `isLocalOverride()`, skip logic |
 | `.gitignore` | 1 | Exclusion rule |
 
-### Template Override Comments (MIR — 30+ files)
+### Template Override Comments (MIR â€” 30+ files)
 
 Every MIR template contains:
 ```
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/...` to customize it safely.
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/...` to customize it safely.
 ```
 
 Files: All MIR/ templates across `Core_Strategy/`, `Market_Audiences/`, `Products/`, `Operations/`, `Campaigns_Assets/`
 
-### Template Override Comments (MSP — 30+ files)
+### Template Override Comments (MSP â€” 30+ files)
 
 Every MSP template contains similar `OVERRIDE PATH` notes:
 
 Files: All MSP/ templates across `Strategy/`, `Inbound/`, `Outbound/`, `Social/`, `Community_Events/`, `Campaigns/`, `Lifecycle_Email/`
 
-### .mgsd-local/ directory itself (client data — 12+ populated files)
+### .markos-local/ directory itself (client data â€” 12+ populated files)
 
-Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the path:
+Every file inside `.markos-local/` contains an OVERRIDE comment referencing the path:
 ```html
-<!-- OVERRIDE: .mgsd-local layer — this file overrides .planning/MIR/... -->
+<!-- OVERRIDE: .markos-local layer â€” this file overrides .planning/MIR/... -->
 ```
 
 ### Documentation & planning
@@ -178,7 +178,7 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 
 ---
 
-## 3. `.mgsd-project.json` (project config file)
+## 3. `.markos-project.json` (project config file)
 
 **25 occurrences across 18 files.**
 
@@ -187,9 +187,9 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 | File | Occurrences | Context |
 |---|---|---|
 | `onboarding/backend/server.cjs` | 1 | Comment/path |
-| `onboarding/backend/handlers.cjs` | 1 | `path.resolve(PROJECT_ROOT, '.mgsd-project.json')` |
-| `onboarding/backend/chroma-client.cjs` | 2 | Comment references |
-| `bin/ensure-chroma.cjs` | 1 | Comment reference |
+| `onboarding/backend/handlers.cjs` | 1 | `path.resolve(PROJECT_ROOT, '.markos-project.json')` |
+| `onboarding/backend/vector-store-client.cjs` | 2 | Comment references |
+| `bin/ensure-vector.cjs` | 1 | Comment reference |
 
 ### Documentation
 
@@ -197,7 +197,7 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 |---|---|---|
 | `TECH-MAP.md` | 4 | Config description, directory tree |
 | `README.md` | 2 | Directory listing, state reference |
-| `.protocol-lore/MEMORY.md` | 5 | ChromaDB namespace source |
+| `.protocol-lore/MEMORY.md` | 5 | Supabase + Upstash Vector namespace source |
 | `.protocol-lore/CONVENTIONS.md` | 1 | Slug source rule |
 | `.protocol-lore/QUICKSTART.md` | 2 | Quick reference, cat command |
 | `.protocol-lore/WORKFLOWS.md` | 1 | Onboarding flow |
@@ -205,7 +205,7 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 
 ---
 
-## 4. `.mgsd-install-manifest.json` (install tracking)
+## 4. `.markos-install-manifest.json` (install tracking)
 
 **40 occurrences across 20 files.**
 
@@ -233,7 +233,7 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 
 ---
 
-## 5. `MGSD_TELEMETRY` (environment variable)
+## 5. `MARKOS_TELEMETRY` (environment variable)
 
 **11 occurrences across 8 files.**
 
@@ -241,8 +241,8 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 
 | File | Occurrences | Context |
 |---|---|---|
-| `onboarding/backend/agents/telemetry.cjs` | 1 | `process.env.MGSD_TELEMETRY !== 'false'` |
-| `onboarding/backend/handlers.cjs` | 1 | `process.env.MGSD_TELEMETRY !== 'false'` |
+| `onboarding/backend/agents/telemetry.cjs` | 1 | `process.env.MARKOS_TELEMETRY !== 'false'` |
+| `onboarding/backend/handlers.cjs` | 1 | `process.env.MARKOS_TELEMETRY !== 'false'` |
 
 ### Documentation
 
@@ -255,7 +255,7 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 
 ---
 
-## 6. `mgsd_privacy_accepted` (localStorage key)
+## 6. `markos_privacy_accepted` (localStorage key)
 
 **3 occurrences across 3 files.**
 
@@ -265,22 +265,22 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 | `.protocol-lore/CODEBASE-MAP.md` | UI privacy banner logic |
 | `.planning/research/SUMMARY.md` | Research reference |
 
-**Note:** Also likely present in `onboarding/index.html` or frontend JS (not captured in grep — check HTML files).
+**Note:** Also likely present in `onboarding/index.html` or frontend JS (not captured in grep â€” check HTML files).
 
 ---
 
-## 7. `mgsd-backend-telemetry` (PostHog `$lib` identifier)
+## 7. `markos-backend-telemetry` (PostHog `$lib` identifier)
 
 **2 occurrences.**
 
 | File | Context |
 |---|---|
-| `onboarding/backend/agents/telemetry.cjs` | `$lib: 'mgsd-backend-telemetry'` — **hardcoded string** |
+| `onboarding/backend/agents/telemetry.cjs` | `$lib: 'markos-backend-telemetry'` â€” **hardcoded string** |
 | `.planning/research/rebrand/SUMMARY.md` | Self-referential research note |
 
 ---
 
-## 8. `mgsd-{project_slug}` (ChromaDB collection namespace)
+## 8. `markos-{project_slug}` (Supabase + Upstash Vector collection namespace)
 
 **13 occurrences across 10 files.**
 
@@ -288,7 +288,7 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 
 | File | Context |
 |---|---|
-| `onboarding/backend/chroma-client.cjs` | Collection naming convention |
+| `onboarding/backend/vector-store-client.cjs` | Collection naming convention |
 
 ### Documentation
 
@@ -297,20 +297,20 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 | `TECH-MAP.md` | Namespace description |
 | `README.md` | Directory listing description |
 | `RESEARCH/PRODUCT-RESEARCH.md` | Feature description |
-| `.protocol-lore/MEMORY.md` | ChromaDB instance URL, slug rules |
+| `.protocol-lore/MEMORY.md` | Supabase + Upstash Vector instance URL, slug rules |
 | `.protocol-lore/CONVENTIONS.md` | Collection naming rule |
 | `.protocol-lore/QUICKSTART.md` | Quick reference |
 | `.protocol-lore/CODEBASE-MAP.md` | Per-project collection description |
 
 ---
 
-## 9. `MGSD-INDEX.md` (master registry filename)
+## 9. `MARKOS-INDEX.md` (master registry filename)
 
 **100+ occurrences across 40+ files.**
 
 ### The file itself
 
-- `/.agent/marketing-get-shit-done/MGSD-INDEX.md` — the actual master registry. Must be renamed.
+- `/.agent/markos/MARKOS-INDEX.md` â€” the actual master registry. Must be renamed.
 
 ### Code / Tests
 
@@ -322,20 +322,20 @@ Every file inside `.mgsd-local/` contains an OVERRIDE comment referencing the pa
 
 ### Agent Files (every agent references it)
 
-Every `.agent/marketing-get-shit-done/agents/mgsd-*.md` file contains:
+Every `.agent/markos/agents/markos-*.md` file contains:
 ```yaml
-- MGSD-IDX-000    # MGSD-INDEX.md — master registry
+- MARKOS-IDX-000    # MARKOS-INDEX.md â€” master registry
 ```
 And a cross-reference table entry:
 ```
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this agent |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point â€” indexes this agent |
 ```
 
-**Files:** `mgsd-auditor.md`, `mgsd-researcher.md`, `mgsd-analyst.md`, `mgsd-onboarder.md`
+**Files:** `markos-auditor.md`, `markos-researcher.md`, `markos-analyst.md`, `markos-onboarder.md`
 
 ### Reference Files (every reference doc references it)
 
-Every `.agent/marketing-get-shit-done/references/*.md` file contains the same frontmatter reference. **9 reference files.**
+Every `.agent/markos/references/*.md` file contains the same frontmatter reference. **9 reference files.**
 
 ### Documentation & Planning
 
@@ -343,7 +343,7 @@ Pervasive across TECH-MAP.md, README.md, `.protocol-lore/CODEBASE-MAP.md`, all m
 
 ---
 
-## 10. `MGSD-` Token ID Prefixes
+## 10. `MARKOS-` Token ID Prefixes
 
 **500+ occurrences across 100+ files.** These are the structured token IDs used throughout the protocol system.
 
@@ -351,23 +351,23 @@ Pervasive across TECH-MAP.md, README.md, `.protocol-lore/CODEBASE-MAP.md`, all m
 
 | Prefix | Meaning | Example | Files |
 |---|---|---|---|
-| `MGSD-RES-` | RESEARCH tokens | `MGSD-RES-ORG-01` | Templates, INDEX, agents |
-| `MGSD-MIR-` | MIR template tokens | `MGSD-MIR-COR-01` | All MIR templates |
-| `MGSD-MSP-` | MSP template tokens | `MGSD-MSP-STR-01` | All MSP templates |
-| `MGSD-AGT-` | Agent tokens | `MGSD-AGT-RES-01` | Agent definitions, INDEX |
-| `MGSD-IDX-` | Index entries | `MGSD-IDX-000` | Every agent, every reference |
-| `MGSD-REF-` | Reference tokens | `MGSD-REF-PHZ-01` | Reference docs |
-| `MGSD-WKF-` | Workflow tokens | `MGSD-WKF-001` | Workflow definitions |
-| `MGSD-SKL-` | Skill tokens | `MGSD-SKL-NWP-01` | Skill definitions |
-| `MGSD-HK-` | Hook tokens | `MGSD-HK-001` | Hook definitions |
+| `MARKOS-RES-` | RESEARCH tokens | `MARKOS-RES-ORG-01` | Templates, INDEX, agents |
+| `MARKOS-MIR-` | MIR template tokens | `MARKOS-MIR-COR-01` | All MIR templates |
+| `MARKOS-MSP-` | MSP template tokens | `MARKOS-MSP-STR-01` | All MSP templates |
+| `MARKOS-AGT-` | Agent tokens | `MARKOS-AGT-RES-01` | Agent definitions, INDEX |
+| `MARKOS-IDX-` | Index entries | `MARKOS-IDX-000` | Every agent, every reference |
+| `MARKOS-REF-` | Reference tokens | `MARKOS-REF-PHZ-01` | Reference docs |
+| `MARKOS-WKF-` | Workflow tokens | `MARKOS-WKF-001` | Workflow definitions |
+| `MARKOS-SKL-` | Skill tokens | `MARKOS-SKL-NWP-01` | Skill definitions |
+| `MARKOS-HK-` | Hook tokens | `MARKOS-HK-001` | Hook definitions |
 
 ### Location density
 
-These appear in every `.agent/marketing-get-shit-done/` file's YAML frontmatter (`token_id:`, `dependencies:`), cross-reference tables, and document headers. With 39 agents, 25 skills, 27 workflows, 9 references, 5 hooks, plus the INDEX and templates — this is 100+ files with 3–5 tokens each = **500+ minimum**.
+These appear in every `.agent/markos/` file's YAML frontmatter (`token_id:`, `dependencies:`), cross-reference tables, and document headers. With 39 agents, 25 skills, 27 workflows, 9 references, 5 hooks, plus the INDEX and templates â€” this is 100+ files with 3â€“5 tokens each = **500+ minimum**.
 
 ---
 
-## 11. `mgsd-*` Agent & Skill Names
+## 11. `markos-*` Agent & Skill Names
 
 **200+ occurrences across 80+ files.** These are the concrete agent personas, skill commands, and tool names.
 
@@ -375,66 +375,66 @@ These appear in every `.agent/marketing-get-shit-done/` file's YAML frontmatter 
 
 | Agent Name | Files Where Referenced |
 |---|---|
-| `mgsd-onboarder` | agents/*.md, CONTEXT files, PLAN files, TECH-MAP, TEAM.md, RESEARCH files |
-| `mgsd-strategist` | agents/*.md, all MIR templates (AGENT LOGIC), TECH-MAP, TEAM.md |
-| `mgsd-planner` | agents/*.md, MSP templates, TECH-MAP, TEAM.md |
-| `mgsd-researcher` | agents/*.md, CONTEXT/PLAN files (phase 5), RESEARCH files |
-| `mgsd-content-creator` | agents/*.md, MIR/MSP templates, TECH-MAP |
-| `mgsd-content-brief` | TECH-MAP |
-| `mgsd-copy-drafter` | MIR templates (AGENT LOGIC), TECH-MAP |
-| `mgsd-neuro-auditor` | orchestrator.cjs (hardcoded path), TECH-MAP, TEAM.md |
-| `mgsd-linear-manager` | All MIR templates (assigned agent), TECH-MAP |
-| `mgsd-content-manager` | MIR Campaigns_Assets templates |
-| `mgsd-executor` | MIR templates (AGENT LOGIC) |
-| `mgsd-social-drafter` | MSP Social templates, TECH-MAP |
-| `mgsd-email-sequence` | TECH-MAP |
-| `mgsd-seo-planner` | MSP Inbound templates, TECH-MAP |
-| `mgsd-cro-hypothesis` | TECH-MAP |
-| `mgsd-campaign-architect` | TECH-MAP, MSP Outbound |
-| `mgsd-plan-checker` | TECH-MAP |
-| `mgsd-task-synthesizer` | TECH-MAP |
-| `mgsd-creative-director` | TECH-MAP |
-| `mgsd-gap-auditor` | TECH-MAP |
-| `mgsd-verifier` | TECH-MAP |
-| `mgsd-calendar-builder` | MSP Community_Events, TECH-MAP |
-| `mgsd-budget-monitor` | TECH-MAP |
-| `mgsd-tracking-spec` | TECH-MAP |
-| `mgsd-auditor` | agents/mgsd-auditor.md |
-| `mgsd-analyst` | agents/mgsd-analyst.md |
-| `mgsd-session-report` | 04-03-SUMMARY |
+| `markos-onboarder` | agents/*.md, CONTEXT files, PLAN files, TECH-MAP, TEAM.md, RESEARCH files |
+| `markos-strategist` | agents/*.md, all MIR templates (AGENT LOGIC), TECH-MAP, TEAM.md |
+| `markos-planner` | agents/*.md, MSP templates, TECH-MAP, TEAM.md |
+| `markos-researcher` | agents/*.md, CONTEXT/PLAN files (phase 5), RESEARCH files |
+| `markos-content-creator` | agents/*.md, MIR/MSP templates, TECH-MAP |
+| `markos-content-brief` | TECH-MAP |
+| `markos-copy-drafter` | MIR templates (AGENT LOGIC), TECH-MAP |
+| `markos-neuro-auditor` | orchestrator.cjs (hardcoded path), TECH-MAP, TEAM.md |
+| `markos-linear-manager` | All MIR templates (assigned agent), TECH-MAP |
+| `markos-content-manager` | MIR Campaigns_Assets templates |
+| `markos-executor` | MIR templates (AGENT LOGIC) |
+| `markos-social-drafter` | MSP Social templates, TECH-MAP |
+| `markos-email-sequence` | TECH-MAP |
+| `markos-seo-planner` | MSP Inbound templates, TECH-MAP |
+| `markos-cro-hypothesis` | TECH-MAP |
+| `markos-campaign-architect` | TECH-MAP, MSP Outbound |
+| `markos-plan-checker` | TECH-MAP |
+| `markos-task-synthesizer` | TECH-MAP |
+| `markos-creative-director` | TECH-MAP |
+| `markos-gap-auditor` | TECH-MAP |
+| `markos-verifier` | TECH-MAP |
+| `markos-calendar-builder` | MSP Community_Events, TECH-MAP |
+| `markos-budget-monitor` | TECH-MAP |
+| `markos-tracking-spec` | TECH-MAP |
+| `markos-auditor` | agents/markos-auditor.md |
+| `markos-analyst` | agents/markos-analyst.md |
+| `markos-session-report` | 04-03-SUMMARY |
 
 ### Skill Names (9+ skills)
 
 | Skill Name | Primary File |
 |---|---|
-| `mgsd-new-project` | `.agent/skills/mgsd-new-project/SKILL.md` |
-| `mgsd-plan-phase` | `.agent/skills/mgsd-plan-phase/SKILL.md` |
-| `mgsd-execute-phase` | `.agent/skills/mgsd-execute-phase/SKILL.md` |
-| `mgsd-discuss-phase` | `.agent/skills/mgsd-discuss-phase/SKILL.md` |
-| `mgsd-verify-work` | `.agent/skills/mgsd-verify-work/SKILL.md` |
-| `mgsd-research-phase` | `.agent/skills/mgsd-research-phase/SKILL.md` |
-| `mgsd-linear-sync` | `.agent/skills/mgsd-linear-sync/SKILL.md` |
-| `mgsd-progress` | `.agent/skills/mgsd-progress/SKILL.md` |
-| `mgsd-health` | Referenced in protocol docs |
+| `markos-new-project` | `.agent/skills/markos-new-project/SKILL.md` |
+| `markos-plan-phase` | `.agent/skills/markos-plan-phase/SKILL.md` |
+| `markos-execute-phase` | `.agent/skills/markos-execute-phase/SKILL.md` |
+| `markos-discuss-phase` | `.agent/skills/markos-discuss-phase/SKILL.md` |
+| `markos-verify-work` | `.agent/skills/markos-verify-work/SKILL.md` |
+| `markos-research-phase` | `.agent/skills/markos-research-phase/SKILL.md` |
+| `markos-linear-sync` | `.agent/skills/markos-linear-sync/SKILL.md` |
+| `markos-progress` | `.agent/skills/markos-progress/SKILL.md` |
+| `markos-health` | Referenced in protocol docs |
 
 ### Tool/Binary Names
 
 | Name | File | Context |
 |---|---|---|
-| `mgsd-tools.cjs` | `.agent/marketing-get-shit-done/bin/mgsd-tools.cjs` | CLI tool |
-| `mgsd` bin alias | `package.json` `"bin"` field | CLI binary alias |
+| `markos-tools.cjs` | `.agent/markos/bin/markos-tools.cjs` | CLI tool |
+| `markos` bin alias | `package.json` `"bin"` field | CLI binary alias |
 
 ---
 
 ## 12. `get-shit-done` (without marketing- prefix)
 
-**200+ occurrences across 60+ files.** Overlaps heavily with `marketing-get-shit-done` but also includes standalone GSD references:
+**200+ occurrences across 60+ files.** Overlaps heavily with `markos` but also includes standalone GSD references:
 
-### Standalone GSD references (not part of `marketing-get-shit-done`)
+### Standalone GSD references (not part of `markos`)
 
 | File | Context |
 |---|---|
-| `TECH-MAP.md` L1356 | `get-shit-done/` — GSD protocol (separate repo) |
+| `TECH-MAP.md` L1356 | `get-shit-done/` â€” GSD protocol (separate repo) |
 | `.planning/MIR/README.md` | "submit changes via PR to the get-shit-done repo" |
 | `.planning/MIR/SETUP.md` | `git clone .../get-shit-done.git` |
 | `.planning/MSP/SETUP.md` | `git clone .../get-shit-done.git` |
@@ -445,78 +445,79 @@ These appear in every `.agent/marketing-get-shit-done/` file's YAML frontmatter 
 | Phase 07 CONTEXT | `.agent/get-shit-done/VERSION` detection |
 | Phase 03 PLAN.md | "workflows in `.agent/get-shit-done`" |
 
-**Note:** Some of these reference the **parent GSD protocol** (a separate repo/product), not MGSD. These should be evaluated individually — some may intentionally remain as `get-shit-done` if they refer to the parent project.
+**Note:** Some of these reference the **parent GSD protocol** (a separate repo/product), not MARKOS. These should be evaluated individually â€” some may intentionally remain as `get-shit-done` if they refer to the parent project.
 
 ---
 
 ## Priority Classification for Rebrand
 
-### P0 — BREAKING (must change atomically)
-- `package.json` name: `marketing-get-shit-done`
-- `package.json` bin: `marketing-get-shit-done`, `mgsd`
-- `npx marketing-get-shit-done` commands everywhere
-- `.agent/marketing-get-shit-done/` directory name
-- `bin/install.cjs` — hardcoded paths and banner
-- `bin/update.cjs` — hardcoded paths and error messages
+### P0 â€” BREAKING (must change atomically)
+- `package.json` name: `markos`
+- `package.json` bin: `markos`, `markos`
+- `npx markos` commands everywhere
+- `.agent/markos/` directory name
+- `bin/install.cjs` â€” hardcoded paths and banner
+- `bin/update.cjs` â€” hardcoded paths and error messages
 
-### P1 — FUNCTIONAL (breaks update/install if not migrated)
-- `.mgsd-local/` — directory convention (code + templates)
-- `.mgsd-project.json` — project config filename
-- `.mgsd-install-manifest.json` — install tracking filename  
-- `mgsd-{project_slug}` — ChromaDB collection prefix
-- `MGSD_TELEMETRY` — env var
-- `mgsd_privacy_accepted` — localStorage key
-- `mgsd-backend-telemetry` — PostHog lib identifier
-- `MGSD-INDEX.md` — master registry filename
+### P1 â€” FUNCTIONAL (breaks update/install if not migrated)
+- `.markos-local/` â€” directory convention (code + templates)
+- `.markos-project.json` â€” project config filename
+- `.markos-install-manifest.json` â€” install tracking filename  
+- `markos-{project_slug}` â€” Supabase + Upstash Vector collection prefix
+- `MARKOS_TELEMETRY` â€” env var
+- `markos_privacy_accepted` â€” localStorage key
+- `markos-backend-telemetry` â€” PostHog lib identifier
+- `MARKOS-INDEX.md` â€” master registry filename
 
-### P2 — PROTOCOL (agent system works but shows old branding)
-- All `MGSD-` token ID prefixes (500+)
-- All `mgsd-*` agent names (25+ agents)
-- All `mgsd-*` skill names (9+ skills)
-- `mgsd-tools.cjs` — tool binary name
+### P2 â€” PROTOCOL (agent system works but shows old branding)
+- All `MARKOS-` token ID prefixes (500+)
+- All `markos-*` agent names (25+ agents)
+- All `markos-*` skill names (9+ skills)
+- `markos-tools.cjs` â€” tool binary name
 - Agent LOGIC references in MIR/MSP templates
 
-### P3 — DOCUMENTATION (no functional impact)
+### P3 â€” DOCUMENTATION (no functional impact)
 - TECH-MAP.md, ARCH-DIAGRAM.md, README.md
 - All `.planning/milestones/` historical docs
 - RESEARCH/ files
 - `.protocol-lore/` boot context
-- `.mgsd-local/` populated content referencing old name
+- `.markos-local/` populated content referencing old name
 
-### P4 — HISTORICAL (consider keeping as-is)
-- `.planning/milestones/v1.0-phases/` — completed phase docs (historical record)
+### P4 â€” HISTORICAL (consider keeping as-is)
+- `.planning/milestones/v1.0-phases/` â€” completed phase docs (historical record)
 - Some GSD parent protocol references that should remain
 
 ---
 
 ## Files Requiring No Changes (out of scope)
 
-- `node_modules/` — regenerated on install
-- `.git/` — git internal
-- Binary/image files — none found with legacy terms
-- `.planning/research/rebrand/` — these audit files themselves
+- `node_modules/` â€” regenerated on install
+- `.git/` â€” git internal
+- Binary/image files â€” none found with legacy terms
+- `.planning/research/rebrand/` â€” these audit files themselves
 
 ---
 
 ## Automated Rename Feasibility
 
 ### Safe for find-and-replace:
-- `MGSD-` → `MARKOS-` (token prefixes — very consistent pattern)
-- `.mgsd-local` → `.markos-local` (directory convention)
-- `.mgsd-project.json` → `.markos-project.json`
-- `.mgsd-install-manifest.json` → `.markos-install-manifest.json`
-- `MGSD_TELEMETRY` → `MARKOS_TELEMETRY`
-- `mgsd_privacy_accepted` → `markos_privacy_accepted`
-- `mgsd-backend-telemetry` → `markos-backend-telemetry`
+- `MARKOS-` â†’ `MARKOS-` (token prefixes â€” very consistent pattern)
+- `.markos-local` â†’ `.markos-local` (directory convention)
+- `.markos-project.json` â†’ `.markos-project.json`
+- `.markos-install-manifest.json` â†’ `.markos-install-manifest.json`
+- `MARKOS_TELEMETRY` â†’ `MARKOS_TELEMETRY`
+- `markos_privacy_accepted` â†’ `markos_privacy_accepted`
+- `markos-backend-telemetry` â†’ `markos-backend-telemetry`
 
 ### Requires manual review:
-- `marketing-get-shit-done` → varies (some `markos`, some `@markos/cli`, some display text)
-- `mgsd-*` agent names → `markos-*` (need to verify no collisions)
-- `get-shit-done` → many are parent GSD refs, not MGSD
-- `MGSD-INDEX.md` → `MARKOS-INDEX.md` (filename + all references)
-- `MGSD` in prose → context-dependent (some acronym, some product name)
+- `markos` â†’ varies (some `markos`, some `@markos/cli`, some display text)
+- `markos-*` agent names â†’ `markos-*` (need to verify no collisions)
+- `get-shit-done` â†’ many are parent GSD refs, not MARKOS
+- `MARKOS-INDEX.md` â†’ `MARKOS-INDEX.md` (filename + all references)
+- `MARKOS` in prose â†’ context-dependent (some acronym, some product name)
 
 ### Requires migration code:
-- `mgsd-{project_slug}` → `markos-{project_slug}` (ChromaDB data migration)
-- `.agent/marketing-get-shit-done/` → `.agent/markos/` (directory rename + install/update logic)
+- `markos-{project_slug}` â†’ `markos-{project_slug}` (Supabase + Upstash Vector data migration)
+- `.agent/markos/` â†’ `.agent/markos/` (directory rename + install/update logic)
 - `package.json` name change (npm deprecation package needed)
+

@@ -1,4 +1,4 @@
-<mgsd_arch>
+<markos_arch>
 <purpose>Defines all major system components, their responsibilities, and how they interact.
 LLMs: read this to understand the data flow before modifying any layer of the system.</purpose>
 
@@ -10,10 +10,10 @@ LLMs: read this to understand the data flow before modifying any layer of the sy
 </layer>
 
 <layer id="cli_binaries">
-  <desc>npm executables. Primary entry points use `npx markos`; legacy filesystem paths remain MGSD-compatible during v2.1.</desc>
-  <file>bin/install.cjs — first-run install, template copy, ChromaDB boot delegation</file>
+  <desc>npm executables. Primary entry points use `npx markos`; legacy filesystem paths remain MARKOS-compatible during v2.1.</desc>
+  <file>bin/install.cjs — first-run install, template copy, Supabase \+ Upstash Vector boot delegation</file>
   <file>bin/update.cjs — SHA256 idempotent update, patch-safe</file>
-  <file>bin/ensure-chroma.cjs — auto-healing ChromaDB daemon, called by install + server</file>
+  <file>bin/ensure-vector.cjs — auto-healing Supabase \+ Upstash Vector daemon, called by install + server</file>
 </layer>
 
 <layer id="onboarding_engine">
@@ -34,15 +34,15 @@ LLMs: read this to understand the data flow before modifying any layer of the sy
     <rule>Uses `{{ inject: [PATH] }}` syntax to pull context from Data Layer.</rule>
   </layer>
   <layer id="protocol_data_layer">
-    <path>.agent/marketing-get-shit-done/templates/MIR/</path>
-    <path>.agent/marketing-get-shit-done/templates/MSP/</path>
+    <path>.agent/markos/templates/MIR/</path>
+    <path>.agent/markos/templates/MSP/</path>
     <rule>Base templates. Version-controlled. NEVER write client data here. This protocol path is legacy-compatible, not the public product name.</rule>
   </layer>
   <layer id="client_workspace">
-    <path>.mgsd-local/MIR/</path>
-    <path>.mgsd-local/MSP/</path>
+    <path>.markos-local/MIR/</path>
+    <path>.markos-local/MSP/</path>
     <rule>Client State Layer. Gitignored. Stores project-specific strategy and approved assets on the current compatibility path.</rule>
-    <path>.mgsd-local/MSP/<discipline>/WINNERS/</path>
+    <path>.markos-local/MSP/<discipline>/WINNERS/</path>
     <rule>Historical Anchoring Layer. Agents MUST read catalogs here before generation.</rule>
   </layer>
 </layer>
@@ -57,18 +57,19 @@ LLMs: read this to understand the data flow before modifying any layer of the sy
 <flow>
   <!-- Onboarding Flow (v2.0) -->
   1. Human runs `npx markos install` → bin/install.cjs
-  2. server.cjs receives Omni-Input (URL/Files) → orchestrator.cjs parallel extraction
+  <desc>npm executables. Primary entry points use `npx markos`; legacy filesystem paths remain MarkOS-compatible during v2.1.</desc>
   3. LLM Scorer assigns confidence (R/Y/G) → server.cjs conducts gap-fill interview
-  4. Human approves → write-mir.cjs fuzzy-merges content into .mgsd-local/MIR/ (legacy compatibility path)
-  4a. Hosted/API-wrapper approve path rejects local persistence with LOCAL_PERSISTENCE_UNAVAILABLE unless alternate persistence is provided.
-
+  4. Human approves → write-mir.cjs fuzzy-merges content into .markos-local/MIR/ (legacy compatibility path)
+    <path>.agent/markos/templates/MIR/</path>
+    <path>.agent/markos/templates/MSP/</path>
   <!-- Execution Flow (v1.2) -->
-  1. Manager calls mgsd-plan-phase → creates waved PLAN.md
+  1. Manager calls markos-plan-phase → creates waved PLAN.md
   2. Onboarding approve boundary emits handoff payload: onboarding_completed + execution_readiness checks.
-  3. Execution readiness requires approved draft sections (company_profile, mission_values, audience, competitive, brand_voice, channel_strategy).
-  4. Creator Agent Boots → validates winners anchors in .mgsd-local/MSP/*/WINNERS/_CATALOG.md before generation.
-  5. Executor calls prompt registry → Injects approved local state (MIR/MSP) into .agent/prompts/ logic.
+    <path>.markos-local/MIR/</path>
+    <path>.markos-local/MSP/</path>
+    <path>.markos-local/MSP/<discipline>/WINNERS/</path>
   6. If readiness is blocked, execution pauses and unresolved checks are surfaced to operators.
   7. Final output Nyquist-verified against mir-gates.md requirements.
 </flow>
-</mgsd_arch>
+</markos_arch>
+

@@ -1,13 +1,13 @@
 # PROFILE.md — Company & Identity Profile
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/01_COMPANY/PROFILE.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/01_COMPANY/PROFILE.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This is the primary identity anchor for all marketing execution. `mgsd-strategist` MUST use this file to derive the `MESSAGE-HOUSE.md` and `AUDIENCES.md`. `mgsd-planner` MUST NOT approve any roadmap phase that contradicts Section 10 (What This Business Is NOT).
+> **AGENT LOGIC**: This is the primary identity anchor for all marketing execution. `markos-strategist` MUST use this file to derive the `MESSAGE-HOUSE.md` and `AUDIENCES.md`. `markos-planner` MUST NOT approve any roadmap phase that contradicts Section 10 (What This Business Is NOT).
 
 **Dependencies:** RESEARCH (`../../05_RESEARCH/ORG-PROFILE.md`), BRAND (`../02_BRAND/BRAND-VOICE.md`)
-**Assigned Agent:** `mgsd-strategist`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-strategist`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : The single most-read file in this repository. A complete, structured

@@ -1,47 +1,47 @@
 ---
-token_id: MGSD-TPL-OPS-17
+token_id: MARKOS-TPL-OPS-17
 document_class: TPL
 domain: OPS
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000
-  - MGSD-REF-OPS-06  # continuation-format.md
+  - MARKOS-IDX-000
+  - MARKOS-REF-OPS-06  # continuation-format.md
 downstream:
-  - MGSD-AGT-EXE-01  # executor writes handoff
-  - MGSD-AGT-OPS-07  # linear-manager creates handoff ticket
+  - MARKOS-AGT-EXE-01  # executor writes handoff
+  - MARKOS-AGT-OPS-07  # linear-manager creates handoff ticket
 mir_gate_required: none
 ---
 
 # HANDOFF.md — Human↔AI Transition Template
 
-<!-- TOKEN: MGSD-TPL-OPS-17 | CLASS: TPL | DOMAIN: OPS -->
-<!-- PURPOSE: Scaffold for all agent-to-human and human-to-agent handoffs. Agents fill this template whenever execution requires human input, decision, or approval. Linked to a Linear [MGSD-HANDOFF] ticket to ensure the human sees it. -->
+<!-- TOKEN: MARKOS-TPL-OPS-17 | CLASS: TPL | DOMAIN: OPS -->
+<!-- PURPOSE: Scaffold for all agent-to-human and human-to-agent handoffs. Agents fill this template whenever execution requires human input, decision, or approval. Linked to a Linear [MARKOS-HANDOFF] ticket to ensure the human sees it. -->
 <!-- USAGE: Copy this file to .planning/HANDOFF.md. Fill all [FILL] fields. Never leave [FILL] in the final file. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-REF-OPS-06 | references/continuation-format.md | Resume/continuation format — used when handoff resolves |
-| MGSD-REF-OPS-07 | references/checkpoints.md | Checkpoint pattern for mid-phase handoffs |
-| MGSD-HKP-OPS-03 | hooks/post-execution-sync.md | Sync hook creates Linear ticket for this handoff |
-| MGSD-AGT-OPS-07 | agents/mgsd-linear-manager.md | Creates [MGSD-HANDOFF] ticket from this file |
+| MARKOS-REF-OPS-06 | references/continuation-format.md | Resume/continuation format — used when handoff resolves |
+| MARKOS-REF-OPS-07 | references/checkpoints.md | Checkpoint pattern for mid-phase handoffs |
+| MARKOS-HKP-OPS-03 | hooks/post-execution-sync.md | Sync hook creates Linear ticket for this handoff |
+| MARKOS-AGT-OPS-07 | agents/markos-linear-manager.md | Creates [MARKOS-HANDOFF] ticket from this file |
 
 ---
 
 ```yaml
 timestamp: [YYYY-MM-DDTHH:MM:SSZ]
-source_agent: [MGSD-AGT-XXX-NN — agent initiating handoff]
-target: [human | MGSD-AGT-XXX-NN]
+source_agent: [MARKOS-AGT-XXX-NN — agent initiating handoff]
+target: [human | MARKOS-AGT-XXX-NN]
 handoff_type: [creative-approval | budget-decision | gate-block | platform-setup | legal-review | content-review | verification | escalation]
 severity: [low | medium | urgent]
 phase: [phase number and name]
 plan_id: [plan file that triggered this handoff]
 blocking_artifact: [exact file path blocking execution]
-linear_ticket: [MGSD-HANDOFF-{NNNN} — created by mgsd-linear-manager]
+linear_ticket: [MARKOS-HANDOFF-{NNNN} — created by markos-linear-manager]
 state_set_to: [awaiting_human_input]
-resume_command: [/mgsd-execute-phase {N} or /mgsd-resume-work]
+resume_command: [/markos-execute-phase {N} or /markos-resume-work]
 ```
 
 ---
@@ -83,7 +83,7 @@ resume_command: [/mgsd-execute-phase {N} or /mgsd-resume-work]
 
 ### Decision Options
 
-- [ ] **Approve** → type `/mgsd-execute-phase {N}` to resume
+- [ ] **Approve** → type `/markos-execute-phase {N}` to resume
 - [ ] **Reject / revise** → provide specific feedback; agent will revise and return
 - [ ] **Escalate** → if legal or brand team review required before decision
 
@@ -99,12 +99,12 @@ When human provides [approval | decision | filled file], the agent will:
 
 **Resume command:**
 ```
-/mgsd-execute-phase {phase_number}
+/markos-execute-phase {phase_number}
 ```
 
 or if using pause-work:
 ```
-/mgsd-resume-work
+/markos-resume-work
 ```
 
 ---

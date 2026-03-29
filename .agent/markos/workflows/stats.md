@@ -2,7 +2,7 @@
 description: Display marketing project statistics
 ---
 
-# /mgsd-stats
+# /markos-stats
 
 <purpose>
 Show comprehensive project statistics: phases, plans, campaigns, MIR coverage, and timeline.
@@ -11,15 +11,15 @@ Show comprehensive project statistics: phases, plans, campaigns, MIR coverage, a
 ## Process
 
 ```bash
-PHASES=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" roadmap list-phases --raw)
-MIR=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit --raw)
+PHASES=$(node ".agent/markos/bin/markos-tools.cjs" roadmap list-phases --raw)
+MIR=$(node ".agent/markos/bin/markos-tools.cjs" mir-audit --raw)
 ```
 
 ## Output
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► PROJECT STATISTICS
+ MARKOS ► PROJECT STATISTICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ── Phases ─────────────────────────────────────────────

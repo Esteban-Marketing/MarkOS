@@ -1,17 +1,17 @@
 # POSITIONING.md — Market Position & Differentiation Strategy
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Market_Audiences/03_MARKET/POSITIONING.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Market_Audiences/03_MARKET/POSITIONING.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This is the "Competitive North Star". `mgsd-copywriter` MUST adhere to Section 5 (Positioning Guardrails) for all public-facing copy. `mgsd-analyst` MUST use Section 1 (Positioning Statement) to audit all creative briefs for strategic alignment.
+> **AGENT LOGIC**: This is the "Competitive North Star". `markos-copywriter` MUST adhere to Section 5 (Positioning Guardrails) for all public-facing copy. `markos-analyst` MUST use Section 1 (Positioning Statement) to audit all creative briefs for strategic alignment.
 
 **Dependencies:** AUDIENCES (`AUDIENCES.md`), COMPETITION (`COMPETITIVE-LANDSCAPE.md`)
-**Assigned Agent:** `mgsd-analyst`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-analyst`
+**Linear Project Manager:** `markos-linear-manager`
 
 ---
 
-<!-- SOURCED_FROM → MGSD-RES-ORG-01 (ORG-PROFILE.md § Market Position, § Strategic Goals) -->
+<!-- SOURCED_FROM → MARKOS-RES-ORG-01 (ORG-PROFILE.md § Market Position, § Strategic Goals) -->
 <!-- AGENT: Before filling this file, read RESEARCH/ORG-PROFILE.md § Market Position -->
 
 ## 1. Positioning Statement

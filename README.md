@@ -23,7 +23,7 @@ Most AI marketing tools give you outputs. MarkOS gives you a system.
 |---|---|
 | Prompt → hope for consistency | Protocol → always on-brand |
 | Scattered docs and Notion pages | Structured MIR intelligence layer |
-| Different agents, no shared context | ChromaDB memory + override resolution |
+| Different agents, no shared context | Supabase + Upstash vector memory + override resolution |
 | Re-explain your brand every session | One-command deploy, persistent context |
 
 **MarkOS is not a writing tool.** It's the structured infrastructure that makes AI marketing agents effective.
@@ -32,8 +32,10 @@ Most AI marketing tools give you outputs. MarkOS gives you a system.
 
 ## Install
 
+Node.js `>=20.16.0` is required. If your runtime is older, upgrade Node first and then rerun the installer.
+
 In ~60 seconds you get:
-- `.agent/marketing-get-shit-done/` — the protocol engine during the v2.1 compatibility window
+- `.agent/markos/` — the protocol engine (MarkOS v3+)
 - `.planning/MIR/` — 78-file Marketing Intelligence Repository (brand, audience, competitive)
 - `.planning/MSP/` — 80-file Marketing Strategy Plan (channels, campaigns, budgets)
 - `.protocol-lore/` — AI agent navigation knowledge base
@@ -70,14 +72,15 @@ ITM  (Issue Task Templates)
 
 ## Agents
 
-These are the current protocol agent IDs. Their `mgsd-*` names remain in place during the compatibility window while MarkOS is the primary product identity.
+
+These are the current protocol agent IDs. Their `markos-*` names are now canonical, with legacy `markos-*` aliases retained for compatibility only.
 
 | Agent | What It Does |
 |-------|-------------|
-| `mgsd-strategist` | Creates discipline plans from MIR data |
-| `mgsd-copy-drafter` | Generates on-brand copy for any channel |
-| `mgsd-campaign-architect` | Builds campaign structures from MSP blueprints |
-| `mgsd-data-scientist` | Interprets KPI data and recommends pivots |
+| `markos-strategist` | Creates discipline plans from MIR data |
+| `markos-copy-drafter` | Generates on-brand copy for any channel |
+| `markos-campaign-architect` | Builds campaign structures from MSP blueprints |
+| `markos-data-scientist` | Interprets KPI data and recommends pivots |
 
 ---
 
@@ -95,7 +98,7 @@ These are the current protocol agent IDs. Their `mgsd-*` names remain in place d
 ```text
 bin/install.cjs           ← first-run installer
 bin/update.cjs            ← SHA256 idempotent updater (preserves patched files)
-bin/ensure-chroma.cjs     ← auto-healing ChromaDB daemon
+bin/ensure-vector.cjs     ← vector provider bootstrap (Supabase + Upstash)
 
 onboarding/
   index.html              ← 5-step onboarding form (privacy notice included)
@@ -103,16 +106,16 @@ onboarding/
   backend/
     server.cjs            ← HTTP server (GET / /config /status; POST /submit /approve)
     write-mir.cjs         ← JIT-clone templates → fuzzy-merge → stamp STATE.md
-    chroma-client.cjs     ← ChromaDB HTTP client (canonical writes + compatibility reads)
+    vector-store-client.cjs     ← Supabase + Upstash vector adapter (canonical writes + compatibility reads)
     agents/
-      orchestrator.cjs    ← parallel draft generation + Chroma persistence
+      orchestrator.cjs    ← parallel draft generation + vector persistence
       llm-adapter.cjs     ← unified OpenAI/Anthropic/Gemini call wrapper
       mir-filler.cjs      ← Company/Audience/Competitive MIR generators
       msp-filler.cjs      ← Brand Voice/Channel Strategy MSP generators
 
 .agent/                   ← Protocol engine (version-controlled)
-.mgsd-local/              ← Client override layer (gitignored — legacy path still canonical for v2.1)
-.mgsd-project.json        ← Persistent project slug (legacy compatibility manifest for v2.1)
+.markos-local/              ← Client override layer (gitignored)
+.markos-project.json        ← Persistent project slug
 .protocol-lore/           ← Agent navigation knowledge base (mandatory first-read)
 ```
 
@@ -125,7 +128,7 @@ If you are an AI agent, read these files in order before doing anything else:
 1. `.protocol-lore/QUICKSTART.md` — boot entry point, search map, key commands
 2. `.protocol-lore/CODEBASE-MAP.md` — full filesystem map with file annotations
 3. `.planning/STATE.md` — current milestone and active phase
-4. `.agent/marketing-get-shit-done/MGSD-INDEX.md` — full token registry on the legacy protocol path (only when needed)
+4. `.agent/markos/MARKOS-INDEX.md` — full token registry on the MarkOS protocol path
 
 ---
 
@@ -137,7 +140,10 @@ Copy `.env.example` to `.env` and fill in at least one LLM key:
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 GEMINI_API_KEY=AI...
-CHROMA_CLOUD_URL=https://...   # optional — skips local ChromaDB daemon
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+UPSTASH_VECTOR_REST_URL=https://your-upstash-index.upstash.io
+UPSTASH_VECTOR_REST_TOKEN=your-upstash-token
 ```
 
 ---
@@ -154,31 +160,32 @@ Tests use Node's built-in test runner. Zero external test framework dependencies
 
 ## GSD Co-existence
 
-MarkOS detects and installs alongside existing GSD without touching any GSD files. Both protocols share `.agent/` and run in parallel, while the marketing protocol remains on the legacy `.agent/marketing-get-shit-done/` path until the dedicated migration phase lands.
+MarkOS detects and installs alongside existing GSD without touching any GSD files. Both protocols share `.agent/` and run in parallel, but MarkOS now uses `.agent/markos/` as the canonical protocol path.
 
 ---
 
 ## Customization
 
-Place client overrides in `.mgsd-local/` — this legacy compatibility path survives all updates and patches in v2.1.
+Place client overrides in `.markos-local/` — this is the canonical override path for MarkOS v3+.
 
-- **MIR overrides**: `.mgsd-local/MIR/` (JIT-cloned on first POST /approve)
-- **Onboarding config**: `onboarding/onboarding-config.json` (port, auto_open_browser, chroma_host)
-- **Project state**: `.mgsd-project.json` (written once, never regenerated)
+  - **MIR overrides**: `.markos-local/MIR/` (JIT-cloned on first POST /approve)
+  - **Onboarding config**: `onboarding/onboarding-config.json` (port, auto_open_browser, vector_endpoint)
+  - **Project state**: `.markos-project.json` (written once, never regenerated)
 
-See `.agent/marketing-get-shit-done/MGSD-INDEX.md` for full documentation on the current protocol layout.
+See `.agent/markos/MARKOS-INDEX.md` for full documentation on the current protocol layout.
 
 ---
 
 ## Compatibility Surfaces
 
-MarkOS is the canonical product name. The following MGSD-era identifiers remain intentionally supported during v2.1 because they are compatibility-critical rather than user-facing branding:
 
-- `.agent/marketing-get-shit-done/` and `MGSD-INDEX.md`
-- `.mgsd-local/`, `.mgsd-project.json`, and `.mgsd-install-manifest.json`
-- `mgsd-*` Chroma collection prefixes
-- `mgsd-*` protocol agent IDs and the legacy `mgsd` CLI alias
-- `MGSD_TELEMETRY` as a fallback to `MARKOS_TELEMETRY`
+MarkOS is the canonical product name. The following legacy identifiers remain intentionally supported for compatibility only (not user-facing):
+
+- `.agent/markos/` and `MARKOS-INDEX.md` (legacy protocol path)
+- `.markos-local/`, `.markos-project.json`, and `.markos-install-manifest.json` (legacy override and manifest files)
+- `markos-*` vector namespace prefixes and protocol agent IDs
+- The legacy `markos` CLI alias
+- `MARKOS_TELEMETRY` as a fallback to `MARKOS_TELEMETRY`
 
 Public instructions, install commands, onboarding copy, and primary documentation should use MarkOS-first language.
 
@@ -196,19 +203,65 @@ If you need hosted approve/write durability, add a dedicated persistence backend
 
 ---
 
+## Rollout Hardening Policy (Phase 31)
+
+The rollout hardening contract for v2.2 is operationally gated and test-backed.
+
+### Endpoint Reliability SLOs
+
+| Endpoint | Tier | Availability SLO (30d) | p95 latency target | Error budget policy |
+|----------|------|-------------------------|--------------------|---------------------|
+| POST /submit | critical | >= 99.5% | <= 1500ms excluding upstream LLM latency | Freeze non-critical rollout changes if budget exceeds 25% mid-window |
+| POST /approve | critical | >= 99.9% | <= 900ms for local write path | Block release promotion if local persistence regressions occur |
+| POST /linear/sync | standard | >= 99.0% | <= 1200ms excluding Linear API latency | Treat setup/auth failures as operational incidents with immediate fallback |
+| POST /campaign/result | standard | >= 99.5% | <= 800ms | Any winners-catalog write regression blocks rollout progression |
+
+Runtime telemetry emits `rollout_endpoint_observed` for these endpoints with stable payload keys:
+- `endpoint`, `endpoint_tier`, `slo_target_availability`, `slo_target_p95_ms`
+- `outcome_state`, `status_code`, `duration_ms`, `runtime_mode`, `project_slug_hash`
+
+### Security and Retention Boundaries
+
+- Hosted wrappers for config/status/migration require scoped Supabase bearer auth and fail fast when `MARKOS_SUPABASE_AUD` is unset.
+- Hosted approve/write behavior intentionally refuses local persistence (`LOCAL_PERSISTENCE_UNAVAILABLE`) to avoid ambiguous disk writes.
+- Local compatibility artifacts under `.markos-local/` and `.markos-local/` remain excluded from git commits.
+- Migration operations remain replay-safe and deterministic under dry-run/idempotent checks.
+- Secret, token, and auth-like payload keys are redacted as `[REDACTED]` before telemetry and error-path logging.
+- Retention policy is fixed and code-backed: `server_logs_days=14`, `rollout_reports_days=30`, `migration_checkpoint_days=90`.
+
+### Migration Rollout Promotion Contract
+
+`MARKOS_ROLLOUT_MODE` is the single source of truth and supports only:
+- `dry-run`
+- `dual-write`
+- `cloud-primary`
+
+Promotion path is strict: `dry-run -> dual-write -> cloud-primary`.
+
+Write-mode promotions require an approved checkpoint record in `.planning/phases/31-rollout-hardening/31-MIGRATION-CHECKPOINTS.json` with owner sign-off, verification reference, and rollback metadata.
+
+### Compatibility Deprecation Gates
+
+Legacy MARKOS compatibility surfaces are retired by operator decision, not by an automatic gate unlock.
+
+Recommended evidence inputs include:
+1. Phase verification suites remain green for onboarding and protocol guardrails.
+2. MarkOSDB migration dry-run determinism and replay-idempotent behavior are stable.
+3. Hosted project-scoped auth boundaries are enforced in production wrappers.
+4. Downstream client projects confirm cloud-canonical storage readiness.
+
+There is no hard minimum evidence count before retirement. Operators record each retirement decision in `.planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json` (including optional `evidence_refs`).
+
+---
+
 ## Memory Namespace Contract (Phase 26)
 
-- Project isolation root: `project_slug` from `.mgsd-project.json`.
-- Canonical write target: `{prefix}-{project_slug}-{section|drafts|meta}` (default prefix: `mgsd`).
-- Compatibility reads: probe canonical prefix first, then `mgsd`, then `markos`.
+- Project isolation root: `project_slug` from `.markos-project.json`.
+- Canonical write target: `{prefix}-{project_slug}-{section|drafts|meta}` (default prefix: `markos`).
+- Compatibility reads: probe canonical prefix first, then `markos`, then `markos` (legacy).
 - Migration safety boundary: runtime flows only perform compatibility reads; destructive namespace migration stays explicit and manual.
 
-Health semantics exposed by `/status` and `chroma-client.cjs`:
-
-- Local mode: `local_available`, `local_started`, `local_unavailable`, `local_boot_failed`
-- Cloud mode: `cloud_configured`, `cloud_reachable`, `cloud_unavailable`
-
-These states indicate whether memory-backed features are fully available or degraded, so operators can distinguish daemon boot problems from hosted connectivity issues.
+Health semantics exposed by `/status` and `vector-store-client.cjs`:`r`n`r`n- `providers_ready`: Supabase + Upstash checks passed.`r`n- `providers_degraded`: one or more providers are configured but not reachable.`r`n- `providers_unconfigured`: required provider environment variables are missing.`r`n`r`nThese states indicate whether memory-backed features are fully available or degraded, and whether action is needed on credentials or connectivity.
 
 ---
 
@@ -233,7 +286,7 @@ These states are expected during partial infrastructure outages and should not b
 
 Onboarding approval and execution readiness are intentionally separate:
 
-- Onboarding completion: `POST /approve` writes approved drafts to `.mgsd-local/MIR/`.
+- Onboarding completion: `POST /approve` writes approved drafts to `.markos-local/MIR/`.
 - Execution readiness: all required approved sections and winners anchors are present.
 
 Required approved sections:
@@ -245,11 +298,11 @@ Required approved sections:
 - `channel_strategy`
 
 Required winners anchors:
-- `.mgsd-local/MSP/Paid_Media/WINNERS/_CATALOG.md`
-- `.mgsd-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md`
-- `.mgsd-local/MSP/Content_SEO/WINNERS/_CATALOG.md`
-- `.mgsd-local/MSP/Social/WINNERS/_CATALOG.md`
-- `.mgsd-local/MSP/Landing_Pages/WINNERS/_CATALOG.md`
+- `.markos-local/MSP/Paid_Media/WINNERS/_CATALOG.md`
+- `.markos-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md`
+- `.markos-local/MSP/Content_SEO/WINNERS/_CATALOG.md`
+- `.markos-local/MSP/Social/WINNERS/_CATALOG.md`
+- `.markos-local/MSP/Landing_Pages/WINNERS/_CATALOG.md`
 
 If any prerequisite is missing, execution readiness remains blocked and downstream execution should pause.
 
@@ -271,3 +324,4 @@ These events are designed for operational decisions (ready vs blocked, completed
 ## License
 
 MIT
+

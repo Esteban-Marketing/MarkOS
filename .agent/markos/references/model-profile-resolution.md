@@ -1,35 +1,35 @@
 ---
-token_id: MGSD-REF-OPS-10
+token_id: MARKOS-REF-OPS-10
 document_class: REF
 domain: OPS
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
-  - MGSD-REF-OPS-09 # model-profiles.md — profile tier definitions
+  - MARKOS-IDX-000    # MARKOS-INDEX.md — master registry
+  - MARKOS-REF-OPS-09 # model-profiles.md — profile tier definitions
 downstream:
-  - MGSD-REF-OPS-05  # planning-config.md — config schema that triggers resolution
-  - MGSD-AGT-EXE-01  # mgsd-executor.md — agent performing runtime resolution
+  - MARKOS-REF-OPS-05  # planning-config.md — config schema that triggers resolution
+  - MARKOS-AGT-EXE-01  # markos-executor.md — agent performing runtime resolution
 mir_gate_required: false
 ---
 
-# Model Profile Resolution for MGSD Agents
+# Model Profile Resolution for MARKOS Agents
 
-<!-- TOKEN: MGSD-REF-OPS-10 | CLASS: REF | DOMAIN: OPS -->
+<!-- TOKEN: MARKOS-REF-OPS-10 | CLASS: REF | DOMAIN: OPS -->
 <!-- PURPOSE: Defines the 4-level cascade order for resolving which model profile applies to any given agent call: agent-explicit → phase config → global config → inherit default. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
-| MGSD-REF-OPS-09 | model-profiles.md | Profile tier definitions resolved by this cascade |
-| MGSD-REF-OPS-05 | planning-config.md | Config schema that sources resolution inputs |
-| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Agent that executes the resolution at runtime |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this document |
+| MARKOS-REF-OPS-09 | model-profiles.md | Profile tier definitions resolved by this cascade |
+| MARKOS-REF-OPS-05 | planning-config.md | Config schema that sources resolution inputs |
+| MARKOS-AGT-EXE-01 | agents/markos-executor.md | Agent that executes the resolution at runtime |
 
 ## Resolution Order
 
-Model profiles resolve in this cascade for MGSD agents:
+Model profiles resolve in this cascade for MARKOS agents:
 
 ```
 1. Explicit --model flag (highest priority)
@@ -41,7 +41,7 @@ Model profiles resolve in this cascade for MGSD agents:
 ## Checking Profile
 
 ```bash
-PROFILE=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-get model_profile 2>/dev/null || echo "balanced")
+PROFILE=$(node ".agent/markos/bin/markos-tools.cjs" config-get model_profile 2>/dev/null || echo "balanced")
 ```
 
 ## Profile-to-Model Mapping
@@ -60,10 +60,10 @@ Per agent role from init context:
 
 ```bash
 # Set globally
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-set model_profile quality
+node ".agent/markos/bin/markos-tools.cjs" config-set model_profile quality
 
 # Set per-agent
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-set agents.planner_model claude-opus-4-5
+node ".agent/markos/bin/markos-tools.cjs" config-set agents.planner_model claude-opus-4-5
 ```
 
 ## Agent Spawn with Model
@@ -72,7 +72,7 @@ Always pass model from init context:
 
 ```
 Task(
-  subagent_type="mgsd-market-researcher",
+  subagent_type="markos-market-researcher",
   model="{researcher_model}",
   ...
 )

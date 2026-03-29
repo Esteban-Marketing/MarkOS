@@ -5,9 +5,9 @@
 
 // ── Configuration & State ─────────────────────────────────────────────────────
 const STORAGE_KEY  = 'markos-onboarding-draft';
-const LEGACY_STORAGE_KEY = 'mgsd-onboarding-draft';
+const LEGACY_STORAGE_KEY = 'markos-onboarding-draft'; // legacy fallback, do not remove
 const PRIVACY_DISMISSED_KEY = 'markos_privacy_dismissed';
-const LEGACY_PRIVACY_DISMISSED_KEY = 'mgsd_privacy_dismissed';
+const LEGACY_PRIVACY_DISMISSED_KEY = 'markos_privacy_dismissed'; // legacy fallback, do not remove
 const DEFAULT_PROJECT_SLUG = 'markos-client';
 const TOTAL_STEPS  = 3;
 let currentStep    = 0; // Starts at Step 0 (Omni-Input Gate)
@@ -17,6 +17,10 @@ let approvedDrafts = {};     // { section_key: content }
 let draftContents  = {};     // { section_key: original content }
 let omniExtractedText = '';  // raw text extracted from Step 0
 let executionLoopCompleted = false;
+let interviewQuestionCount = 0;
+let interviewAutoProceedTriggered = false;
+
+const INTERVIEW_MAX_QUESTIONS = 5;
 
 // ── Elements ──────────────────────────────────────────────────────────────────
 const stepSections       = document.querySelectorAll('.step-section');
@@ -132,19 +136,19 @@ function onBusinessModelChange() {
   }
 }
 
-let isChromaOffline = false;
+let isVectorMemoryOffline = false;
 
 async function loadStatus() {
   try {
     const res = await fetch('/status');
     if (res.ok) {
       const status = await res.json();
-      if (!status.chromadb) {
-        isChromaOffline = true;
+      if (!status.vector_memory) {
+        isVectorMemoryOffline = true;
       }
     }
   } catch (err) {
-    isChromaOffline = true;
+    isVectorMemoryOffline = true;
   }
 }
 
@@ -172,8 +176,8 @@ function updateUI() {
   }
 
   if (currentStep === 2) {
-    if (isChromaOffline) {
-      btnNext.innerText = '⚠️ Vector DB Offline (Cannot Generate AI Drafts)';
+    if (isVectorMemoryOffline) {
+      btnNext.innerText = '⚠️ Vector Memory Offline (Cannot Generate AI Drafts)';
       btnNext.disabled = true;
       btnNext.style.backgroundColor = '#6b7280';
     } else {
@@ -681,12 +685,44 @@ function showCompletionScreen(written) {
   document.getElementById('btnCloseWindow').style.display = 'inline-block';
 }
 
+function updateInterviewProgress() {
+  const progressEl = document.getElementById('interviewProgress');
+  if (!progressEl) return;
+  progressEl.textContent = `Question ${interviewQuestionCount} of ${INTERVIEW_MAX_QUESTIONS}`;
+}
+
+function triggerInterviewAutoProceed(message) {
+  if (interviewAutoProceedTriggered) return;
+  interviewAutoProceedTriggered = true;
+
+  const container = document.getElementById('interviewContainer');
+  const btnSend = document.getElementById('btnSendAnswer');
+  const inputEl = document.getElementById('interviewInput');
+  const progressEl = document.getElementById('interviewProgress');
+
+  if (btnSend) btnSend.disabled = true;
+  if (inputEl) inputEl.disabled = true;
+  if (progressEl) {
+    progressEl.textContent = `Question ${INTERVIEW_MAX_QUESTIONS} of ${INTERVIEW_MAX_QUESTIONS}`;
+  }
+
+  container.innerHTML += `<div class="chat-msg agent">${message || 'Interview complete.'} Generating your drafts automatically...</div>`;
+  container.scrollTop = container.scrollHeight;
+
+  setTimeout(() => {
+    handleDraftGeneration();
+  }, 700);
+}
+
 // ── Conversational Interview Logic ──────────────────────────────────────────────
 async function startInterview() {
   const container = document.getElementById('interviewContainer');
   const inputEl = document.getElementById('interviewInput');
   const btnSend = document.getElementById('btnSendAnswer');
   const btnSkip = document.getElementById('btnSkipChat');
+  interviewQuestionCount = 0;
+  interviewAutoProceedTriggered = false;
+  updateInterviewProgress();
 
   const seed = buildSeed(); // merges current schema and form values
   
@@ -798,18 +834,22 @@ async function proceedWithNextQuestion(currentSeed) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         schema: currentSeed,
-        scores: window.fieldScores || {}
+        scores: window.fieldScores || {},
+        questionCount: interviewQuestionCount,
       })
     });
     
     const resJSON = await response.json();
     if (resJSON.success && resJSON.question) {
+      interviewQuestionCount += 1;
+      updateInterviewProgress();
       window.currentMissingFields = resJSON.missingFields || [];
       container.innerHTML += `<div class="chat-msg agent">${resJSON.question}</div>`;
     } else {
-      container.innerHTML += `<div class="chat-msg agent">It looks like we have everything we need! You can move to the next step to review your drafts.</div>`;
-      btnSend.disabled = true;
-      inputEl.disabled = true;
+      const reason = resJSON.completionReason === 'max_questions_reached'
+        ? 'We hit the 5-question cap.'
+        : 'It looks like we have everything we need!';
+      triggerInterviewAutoProceed(reason);
     }
   } catch (err) {
     container.innerHTML += `<div class="chat-msg agent" style="color:var(--danger)">Error connecting to AI: ${err.message}. You can skip to drafts.</div>`;
@@ -862,15 +902,21 @@ async function handleSendAnswer() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           schema: window.extractedSchema,
-          scores: window.fieldScores
+          scores: window.fieldScores,
+          questionCount: interviewQuestionCount,
         })
       });
       const qJSON = await qRes.json();
       if (qJSON.success && qJSON.question) {
+        interviewQuestionCount += 1;
+        updateInterviewProgress();
         window.currentMissingFields = qJSON.missingFields || [];
         container.innerHTML += `<div class="chat-msg agent">Got it! ${qJSON.question}</div>`;
       } else {
-        container.innerHTML += `<div class="chat-msg agent">Awesome, I think I have a complete picture now! You can proceed to Drafts.</div>`;
+        const reason = qJSON.completionReason === 'max_questions_reached'
+          ? 'We hit the 5-question cap.'
+          : 'Awesome, I think I have a complete picture now!';
+        triggerInterviewAutoProceed(reason);
       }
     } else {
       container.innerHTML += `<div class="chat-msg agent" style="color:var(--danger)">I couldn't quite process that. Could you clarify?</div>`;

@@ -7,36 +7,36 @@
 <domain>
 ## Phase Boundary
 
-Align all `mgsd-*` skills to the expanded Phase 3 template structures. Simultaneously define and implement the `.mgsd-local/` directory convention — a protected client override space that survives all GSD and MGSD patch updates without modification.
+Align all `markos-*` skills to the expanded Phase 3 template structures. Simultaneously define and implement the `.markos-local/` directory convention — a protected client override space that survives all GSD and MARKOS patch updates without modification.
 </domain>
 
 <decisions>
 ## Implementation Decisions
 
 ### Skill Template Path Alignment
-- All `mgsd-*` skills (`mgsd-new-project`, `mgsd-plan-phase`, `mgsd-execute-phase`, `mgsd-discuss-phase`, `mgsd-verify-work`, `mgsd-research-phase`, `mgsd-linear-sync`, etc.) must resolve template paths from `.agent/marketing-get-shit-done/templates/` using the Phase 3 expanded structure
+- All `markos-*` skills (`markos-new-project`, `markos-plan-phase`, `markos-execute-phase`, `markos-discuss-phase`, `markos-verify-work`, `markos-research-phase`, `markos-linear-sync`, etc.) must resolve template paths from `.agent/markos/templates/` using the Phase 3 expanded structure
 - Skills referencing MIR or MSP templates must use correct subdirectory paths (e.g. `MIR/Core_Strategy/`, `MIR/Market_Audiences/`, `MSP/<discipline>/`)
 - Each skill's SKILL.md must contain a `## Template Paths` section listing every template directory it reads or writes
 
-### `.mgsd-local/` Override Architecture
-- A `.mgsd-local/` directory at the **client project root** is the protected zone for all client customizations
-- Files in `.mgsd-local/` are **NEVER** touched by `mgsd update` or GSD patches
-- `.mgsd-local/` mirrors MIR/MSP structure: `.mgsd-local/MIR/`, `.mgsd-local/MSP/`, `.mgsd-local/config/`
-- Agent override resolution order: `.mgsd-local/` FIRST → protocol defaults fallback
-- Skills and agents that load config or templates must check `.mgsd-local/` path first
+### `.markos-local/` Override Architecture
+- A `.markos-local/` directory at the **client project root** is the protected zone for all client customizations
+- Files in `.markos-local/` are **NEVER** touched by `markos update` or GSD patches
+- `.markos-local/` mirrors MIR/MSP structure: `.markos-local/MIR/`, `.markos-local/MSP/`, `.markos-local/config/`
+- Agent override resolution order: `.markos-local/` FIRST → protocol defaults fallback
+- Skills and agents that load config or templates must check `.markos-local/` path first
 
 ### Scaffold Integration
-- `mgsd-new-project` creates `.mgsd-local/` with all subdirs and a `README.md` explaining the convention on first run
-- `.mgsd-local/` is added to project `.gitignore` by default (client data is private)
-- `.mgsd-local/README.md` lists every overridable path and usage instructions in plain language
+- `markos-new-project` creates `.markos-local/` with all subdirs and a `README.md` explaining the convention on first run
+- `.markos-local/` is added to project `.gitignore` by default (client data is private)
+- `.markos-local/README.md` lists every overridable path and usage instructions in plain language
 
 ### Self-Documentation
 - Every SKILL.md that touches templates includes an `<!-- OVERRIDABLE: path -->` comment adjacent to each overridable template reference
-- The MGSD-INDEX.md gains an "Overridable Paths" section listing all `.mgsd-local/`-compatible files
+- The MARKOS-INDEX.md gains an "Overridable Paths" section listing all `.markos-local/`-compatible files
 
 ### Agent Discretion
 - Specific file-copy vs. symlink strategy for override resolution
-- Internal code structure of override lookup logic in mgsd-tools
+- Internal code structure of override lookup logic in markos-tools
 </decisions>
 
 <canonical_refs>
@@ -45,19 +45,19 @@ Align all `mgsd-*` skills to the expanded Phase 3 template structures. Simultane
 **Downstream agents MUST read these before planning or implementing.**
 
 ### Protocol Structure
-- `.agent/marketing-get-shit-done/MGSD-INDEX.md` — master registry of all MGSD files
-- `.agent/marketing-get-shit-done/templates/MIR/README.md` — MIR template structure
-- `.agent/marketing-get-shit-done/templates/MIR/` — MIR subdirectories (Core_Strategy, Market_Audiences, Products, Campaigns_Assets, Operations)
-- `.agent/marketing-get-shit-done/templates/MSP/` — MSP discipline templates (Phase 3 expanded)
+- `.agent/markos/MARKOS-INDEX.md` — master registry of all MARKOS files
+- `.agent/markos/templates/MIR/README.md` — MIR template structure
+- `.agent/markos/templates/MIR/` — MIR subdirectories (Core_Strategy, Market_Audiences, Products, Campaigns_Assets, Operations)
+- `.agent/markos/templates/MSP/` — MSP discipline templates (Phase 3 expanded)
 
 ### Skills to Align
-- `.agent/skills/mgsd-new-project/SKILL.md`
-- `.agent/skills/mgsd-plan-phase/SKILL.md`
-- `.agent/skills/mgsd-execute-phase/SKILL.md`
-- `.agent/skills/mgsd-discuss-phase/SKILL.md`
-- `.agent/skills/mgsd-verify-work/SKILL.md`
-- `.agent/skills/mgsd-research-phase/SKILL.md`
-- `.agent/skills/mgsd-linear-sync/SKILL.md`
+- `.agent/skills/markos-new-project/SKILL.md`
+- `.agent/skills/markos-plan-phase/SKILL.md`
+- `.agent/skills/markos-execute-phase/SKILL.md`
+- `.agent/skills/markos-discuss-phase/SKILL.md`
+- `.agent/skills/markos-verify-work/SKILL.md`
+- `.agent/skills/markos-research-phase/SKILL.md`
+- `.agent/skills/markos-linear-sync/SKILL.md`
 
 ### Requirements
 - `.planning/REQUIREMENTS.md` — SKL-01, SKL-02 must be addressed
@@ -65,8 +65,8 @@ Align all `mgsd-*` skills to the expanded Phase 3 template structures. Simultane
 
 <specifics>
 ## Specific Ideas
-- `.mgsd-local/` should be added to `.gitignore` via `mgsd-new-project` scaffold
-- Agents should emit a log line when falling back from local override to protocol default: `[override] No .mgsd-local/X found, using protocol default`
+- `.markos-local/` should be added to `.gitignore` via `markos-new-project` scaffold
+- Agents should emit a log line when falling back from local override to protocol default: `[override] No .markos-local/X found, using protocol default`
 - The scaffold README should be in plain English — no technical jargon exposed to clients
 </specifics>
 

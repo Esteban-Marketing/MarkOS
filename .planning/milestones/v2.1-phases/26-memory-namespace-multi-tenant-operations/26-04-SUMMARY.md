@@ -1,13 +1,13 @@
----
+﻿---
 phase: 26
 plan: 26-04
 subsystem: multi-project-isolation
-tags: [chroma, isolation, multi-tenant, tests]
+tags: [vector, isolation, multi-tenant, tests]
 requires: [26-03]
 provides: [MMO-03]
 affects:
-  - test/chroma-client.test.js
-  - onboarding/backend/chroma-client.cjs
+  - test/vector-client.test.js
+  - onboarding/backend/vector-store-client.cjs
 decisions:
   - Slug-scoped isolation is mandatory for safe multi-project operation
 metrics:
@@ -18,7 +18,7 @@ metrics:
 
 # Phase 26 Plan 04: Multi-Project Isolation Summary
 
-Validated and documented cross-project isolation behavior for slug-scoped Chroma operations.
+Validated and documented cross-project isolation behavior for slug-scoped Vector Store operations.
 
 ## Completed Work
 
@@ -28,7 +28,7 @@ Validated and documented cross-project isolation behavior for slug-scoped Chroma
 
 ## Verification
 
-- node --test test/chroma-client.test.js
+- node --test test/vector-client.test.js
 
 ## Deviations from Plan
 
@@ -39,3 +39,4 @@ None - executed as planned.
 None.
 
 ## Self-Check: PASSED
+

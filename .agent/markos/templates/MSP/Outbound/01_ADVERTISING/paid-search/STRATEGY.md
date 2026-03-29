@@ -1,7 +1,7 @@
 # [Sub-Channel] Strategy
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/01_ADVERTISING/paid-search/STRATEGY.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Outbound/01_ADVERTISING/paid-search/STRATEGY.md to customize it safely.
 
 
 ```

@@ -1,9 +1,9 @@
 ---
-token_id: MGSD-RES-CNT-01
+token_id: MARKOS-RES-CNT-01
 document_class: RESEARCH
 version: "1.0.0"
 status: populated
-populated_by: mgsd-onboarder
+populated_by: markos-onboarder
 populated_at: 2025-07-18
 feeds_into:
   - MIR/Campaigns_Assets/
@@ -11,7 +11,7 @@ feeds_into:
 
 # Content Audit — MarkOS
 
-<!-- mgsd-token: RESEARCH -->
+<!-- markos-token: RESEARCH -->
 
 > [!NOTE] Pre-alpha state: MarkOS has 0 installs and no published content at time of writing. This audit documents the baseline (empty) and provides the strategic content roadmap for the launch phase.
 
@@ -124,5 +124,6 @@ Source: Gate 2 TRACKING.md (PostHog events, UTM framework), KPI-FRAMEWORK.md (ch
 
 ---
 *Research Quality Gate: All sections include evidence source, confidence level, and strategic implication.*
-*Last populated: 2025-07-18 | Populated by: mgsd-onboarder | Source: Gate 1 + Gate 2 MIR intake*
+*Last populated: 2025-07-18 | Populated by: markos-onboarder | Source: Gate 1 + Gate 2 MIR intake*
 *Next update: 30-day post-launch milestone with real performance data*
+

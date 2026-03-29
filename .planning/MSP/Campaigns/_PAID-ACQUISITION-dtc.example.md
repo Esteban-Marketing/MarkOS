@@ -1,7 +1,7 @@
 # _PAID-ACQUISITION-dtc.example.md
 # Reference Example: **DTC** (Premium Skincare Brand)
 
-<!-- mgsd-token: MSP | model: DTC -->
+<!-- markos-token: MSP | model: DTC -->
 
 ---
 

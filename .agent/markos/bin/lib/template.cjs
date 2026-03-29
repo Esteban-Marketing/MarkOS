@@ -1,5 +1,5 @@
 /**
- * template.cjs — Template scaffolding utilities for MGSD
+ * template.cjs — Template scaffolding utilities for MARKOS
  * Copies MIR/MSP templates and fills placeholder tokens
  */
 

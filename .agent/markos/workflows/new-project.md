@@ -2,10 +2,10 @@
 description: Initialize a new marketing project with full Gate 1 intake questionnaire, MIR scaffolding, MSP discipline activation, and roadmap creation
 ---
 
-# /mgsd-new-project
+# /markos-new-project
 
 <purpose>
-Initialize a new single-client MGSD project from scratch. Clones MIR and MSP templates, runs a structured Gate 1 intake questionnaire with human-confirmed answers written directly to MIR files, activates MSP disciplines, and creates PROJECT.md + ROADMAP.md + STATE.md. No campaign work until Gate 1 is GREEN.
+Initialize a new single-client MARKOS project from scratch. Clones MIR and MSP templates, runs a structured Gate 1 intake questionnaire with human-confirmed answers written directly to MIR files, activates MSP disciplines, and creates PROJECT.md + ROADMAP.md + STATE.md. No campaign work until Gate 1 is GREEN.
 </purpose>
 
 ## Process
@@ -13,7 +13,7 @@ Initialize a new single-client MGSD project from scratch. Clones MIR and MSP tem
 ### 1. Initialize
 
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init new-project --raw)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" init new-project --raw)
 ```
 
 If `.planning/PROJECT.md` already exists → show warning, ask if user wants to reinitialize or resume filling existing MIR (resume → skip to Step 4).
@@ -23,49 +23,49 @@ If `.planning/PROJECT.md` already exists → show warning, ask if user wants to 
 Copy MIR and MSP templates into the project planning directory:
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" template clone \
+node ".agent/markos/bin/markos-tools.cjs" template clone \
   --source templates/MIR \
   --dest .planning/MIR
 
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" template clone \
+node ".agent/markos/bin/markos-tools.cjs" template clone \
   --source templates/MSP \
   --dest .planning/MSP
 ```
 
 Initialize STATE.md:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" state init --gate1 red --gate2 red
+node ".agent/markos/bin/markos-tools.cjs" state init --gate1 red --gate2 red
 ```
 
-### 3. Create .mgsd-local/ Override Directory
+### 3. Create .markos-local/ Override Directory
 
 Create the client override space at the project root:
 
 ```bash
-mkdir -p .mgsd-local/MIR/Core_Strategy
-mkdir -p .mgsd-local/MIR/Market_Audiences
-mkdir -p .mgsd-local/MIR/Products
-mkdir -p .mgsd-local/MIR/Campaigns_Assets
-mkdir -p .mgsd-local/MIR/Operations
-mkdir -p .mgsd-local/MSP
-mkdir -p .mgsd-local/config
+mkdir -p .markos-local/MIR/Core_Strategy
+mkdir -p .markos-local/MIR/Market_Audiences
+mkdir -p .markos-local/MIR/Products
+mkdir -p .markos-local/MIR/Campaigns_Assets
+mkdir -p .markos-local/MIR/Operations
+mkdir -p .markos-local/MSP
+mkdir -p .markos-local/config
 ```
 
 Copy the override README:
 ```bash
-cp ".agent/marketing-get-shit-done/templates/local-override/README.md" ".mgsd-local/README.md"
+cp ".agent/markos/templates/local-override/README.md" ".markos-local/README.md"
 ```
 
-Add .mgsd-local/ to .gitignore (append if .gitignore exists, create if not):
+Add .markos-local/ to .gitignore (append if .gitignore exists, create if not):
 ```bash
 echo "" >> .gitignore
-echo "# MGSD client overrides (private — do not commit)" >> .gitignore
-echo ".mgsd-local/" >> .gitignore
+echo "# MARKOS client overrides (private — do not commit)" >> .gitignore
+echo ".markos-local/" >> .gitignore
 echo "onboarding-seed.json" >> .gitignore
-echo ".mgsd-install-manifest.json" >> .gitignore
+echo ".markos-install-manifest.json" >> .gitignore
 ```
 
-Emit confirmation: `✓ .mgsd-local/ created — your private override space is ready`
+Emit confirmation: `✓ .markos-local/ created — your private override space is ready`
 
 ### 4. Generate RESEARCH/ Intelligence Files
 
@@ -81,7 +81,7 @@ mkdir -p RESEARCH
 SEED_EXISTS=$(test -f onboarding-seed.json && echo "true" || echo "false")
 ```
 
-#### Trigger mgsd-researcher in correct sequence
+#### Trigger markos-researcher in correct sequence
 For each RESEARCH file in this EXACT order (later files need earlier context):
 1. `RESEARCH/ORG-PROFILE.md` — identity foundation
 2. `RESEARCH/PRODUCT-RESEARCH.md` — what we're marketing
@@ -93,15 +93,15 @@ For each RESEARCH file in this EXACT order (later files need earlier context):
 Copy the template for each file first:
 ```bash
 # Note: In Windows PowerShell, use Copy-Item instead of cp if needed, but assuming git bash context:
-cp ".agent/marketing-get-shit-done/templates/RESEARCH/ORG-PROFILE.md" "RESEARCH/ORG-PROFILE.md"
-cp ".agent/marketing-get-shit-done/templates/RESEARCH/PRODUCT-RESEARCH.md" "RESEARCH/PRODUCT-RESEARCH.md"
-cp ".agent/marketing-get-shit-done/templates/RESEARCH/AUDIENCE-RESEARCH.md" "RESEARCH/AUDIENCE-RESEARCH.md"
-cp ".agent/marketing-get-shit-done/templates/RESEARCH/MARKET-TRENDS.md" "RESEARCH/MARKET-TRENDS.md"
-cp ".agent/marketing-get-shit-done/templates/RESEARCH/COMPETITIVE-INTEL.md" "RESEARCH/COMPETITIVE-INTEL.md"
-cp ".agent/marketing-get-shit-done/templates/RESEARCH/CONTENT-AUDIT.md" "RESEARCH/CONTENT-AUDIT.md"
+cp ".agent/markos/templates/RESEARCH/ORG-PROFILE.md" "RESEARCH/ORG-PROFILE.md"
+cp ".agent/markos/templates/RESEARCH/PRODUCT-RESEARCH.md" "RESEARCH/PRODUCT-RESEARCH.md"
+cp ".agent/markos/templates/RESEARCH/AUDIENCE-RESEARCH.md" "RESEARCH/AUDIENCE-RESEARCH.md"
+cp ".agent/markos/templates/RESEARCH/MARKET-TRENDS.md" "RESEARCH/MARKET-TRENDS.md"
+cp ".agent/markos/templates/RESEARCH/COMPETITIVE-INTEL.md" "RESEARCH/COMPETITIVE-INTEL.md"
+cp ".agent/markos/templates/RESEARCH/CONTENT-AUDIT.md" "RESEARCH/CONTENT-AUDIT.md"
 ```
 
-Then invoke `mgsd-researcher` (as a subagent Task) with:
+Then invoke `markos-researcher` (as a subagent Task) with:
 - Target file: `RESEARCH/{FILENAME}`
 - Seed data: relevant section from `onboarding-seed.json` (or prompt user for 5 seed questions)
 - Context: all previously populated RESEARCH files (for later files in the sequence)
@@ -117,7 +117,7 @@ Emit progress for each file:
 
 #### Commit RESEARCH/ directory
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(mir): initialize RESEARCH/ — 6 intelligence files generated" --files RESEARCH/
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(mir): initialize RESEARCH/ — 6 intelligence files generated" --files RESEARCH/
 ```
 
 ### 4. MSP Discipline Activation
@@ -144,7 +144,7 @@ Which marketing disciplines are active for this project?
 
 ### 5. Gate 1 Intake Questionnaire
 
-@-reference `.agent/marketing-get-shit-done/references/questioning.md`
+@-reference `.agent/markos/references/questioning.md`
 
 Walk through each block in order. Write answers directly to the corresponding MIR file after each block. Human confirms accuracy before continuing to the next block.
 
@@ -232,7 +232,7 @@ Write answers → confirm → mark status.
 ### 6. Gate 1 Verification
 
 ```bash
-GATE1=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit --gate 1 --raw)
+GATE1=$(node ".agent/markos/bin/markos-tools.cjs" mir-audit --gate 1 --raw)
 ```
 
 **If gate1.ready: true:**
@@ -257,7 +257,7 @@ Gate 2 covers: tracking, automation, ad accounts, and KPI targets.
 Campaigns cannot launch until Gate 2 is GREEN.
 
 Continue to Gate 2 setup now ("now") or defer to later ("defer")?
-→ Run /mgsd-health at any time to check gate status.
+→ Run /markos-health at any time to check gate status.
 ```
 
 If "defer" → set `gate2: deferred` in STATE.md and proceed.
@@ -265,7 +265,7 @@ If "now" → run Gate 2 intake (see `references/mir-gates.md §Gate 2` for requi
 
 ### 8. Create Planning Files
 
-Using MGSD templates:
+Using MARKOS templates:
 
 1. **PROJECT.md** — from `templates/project.md`, populated with discovery answers
 2. **REQUIREMENTS.md** — from `templates/requirements.md`
@@ -276,26 +276,26 @@ Using MGSD templates:
 ### 9. Commit and Next Steps
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(init): initialize MGSD project — Gate 1 ${GATE1_STATUS}"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(init): initialize MARKOS project — Gate 1 ${GATE1_STATUS}"
 ```
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► PROJECT INITIALIZED
+ MARKOS ► PROJECT INITIALIZED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Gate 1: {✅ GREEN | 🔴 RED}
 Gate 2: {✅ GREEN | 🔴 deferred}
 
-/mgsd-progress         → see project dashboard
-/mgsd-new-milestone    → define first marketing milestone
-/mgsd-discuss-phase 1  → start planning Phase 1
+/markos-progress         → see project dashboard
+/markos-new-milestone    → define first marketing milestone
+/markos-discuss-phase 1  → start planning Phase 1
 ```
 
 <success_criteria>
 - [ ] MIR template cloned to .planning/MIR/
 - [ ] MSP template cloned to .planning/MSP/
-- [ ] RESEARCH/ — 6 intelligence files auto-populated by mgsd-researcher
+- [ ] RESEARCH/ — 6 intelligence files auto-populated by markos-researcher
 - [ ] Gate 1 intake complete — all 5 files written and human-confirmed
 - [ ] Gate 1 GREEN or specific gaps documented
 - [ ] Gate 2 either completed or explicitly deferred in STATE.md

@@ -1,4 +1,4 @@
-# Phase 25 Context — Onboarding Quality & Merge Safety
+﻿# Phase 25 Context â€” Onboarding Quality & Merge Safety
 
 ## Objective
 
@@ -25,7 +25,7 @@ Phase 25 depends on Phase 24 intentionally. Runtime parity has to be defined fir
 1. **Fixture-first quality:** onboarding quality claims should be backed by representative inputs, not only happy-path smoke tests.
 2. **Silent merge risk is unacceptable:** fallback insertion and fuzzy header matching must be observable and regression-tested.
 3. **User-visible failures must be explainable:** regenerate and approve flows should surface structured failure information rather than generic success envelopes.
-4. **Warnings are product signals:** repeated Chroma, fallback, and skipped-auditor warnings must be reduced or explicitly documented.
+4. **Warnings are product signals:** repeated Vector Store, fallback, and skipped-auditor warnings must be reduced or explicitly documented.
 5. **Quality work follows runtime hardening:** this phase assumes Phase 24 has already clarified supported runtime behavior and constraints.
 
 ## Requirements Mapped
@@ -39,7 +39,7 @@ Phase 25 depends on Phase 24 intentionally. Runtime parity has to be defined fir
 | Surface | Why It Matters | Likely Outputs |
 |---------|----------------|----------------|
 | `onboarding/backend/handlers.cjs` | Submit, regenerate, approve, extract, and score flows are orchestrated here | Clearer response contracts, safer partial-failure behavior |
-| `onboarding/backend/agents/orchestrator.cjs` | Retry, fallback, Chroma, and neuro-auditor warning paths surface here | Reduced warning noise, documented intentional degradations |
+| `onboarding/backend/agents/orchestrator.cjs` | Retry, fallback, Vector Store, and neuro-auditor warning paths surface here | Reduced warning noise, documented intentional degradations |
 | `onboarding/backend/confidences/confidence-scorer.cjs` | Interview routing depends on how fields are scored | Fixture-backed scoring expectations and edge-case coverage |
 | `onboarding/backend/write-mir.cjs` | Fuzzy merge logic can silently corrupt client-owned files | Stronger fixture tests for header drift, append fallback, and STATE updates |
 | `test/onboarding-server.test.js` | Current onboarding coverage is narrow and mostly happy-path | Broader fixture and failure-path coverage |
@@ -57,12 +57,13 @@ Phase 25 depends on Phase 24 intentionally. Runtime parity has to be defined fir
 
 ## Deliverables
 
-1. `25-CONTEXT.md` — this document.
-2. `25-01-PLAN.md` — add extraction and scoring fixtures for representative onboarding inputs.
-3. `25-02-PLAN.md` — add approval and merge safety tests for template variance and fallback paths.
-4. `25-03-PLAN.md` — tighten regenerate and approve error reporting plus user-facing statuses.
-5. `25-04-PLAN.md` — burn down warning noise and document intentional fallback behavior.
+1. `25-CONTEXT.md` â€” this document.
+2. `25-01-PLAN.md` â€” add extraction and scoring fixtures for representative onboarding inputs.
+3. `25-02-PLAN.md` â€” add approval and merge safety tests for template variance and fallback paths.
+4. `25-03-PLAN.md` â€” tighten regenerate and approve error reporting plus user-facing statuses.
+5. `25-04-PLAN.md` â€” burn down warning noise and document intentional fallback behavior.
 
 ## Exit Criteria
 
 Phase 25 is complete when onboarding quality is validated by representative fixtures, merge behavior is protected against realistic template drift, regenerate and approve failures are understandable without source inspection, and known warning-heavy fallback paths are either reduced or explicitly documented.
+

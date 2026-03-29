@@ -2,7 +2,7 @@
 description: Campaign launch checklist and pre-flight verification
 ---
 
-# /mgsd-campaign-launch
+# /markos-campaign-launch
 
 <purpose>
 Pre-flight verification before a campaign goes live. Validates tracking, creative, budget, and audience setup. Produces launch confirmation.
@@ -22,7 +22,7 @@ Read `CAMPAIGN.md` for the specified campaign.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► CAMPAIGN PRE-FLIGHT — {campaign_id}
+ MARKOS ► CAMPAIGN PRE-FLIGHT — {campaign_id}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | # | Check | Status |
@@ -69,7 +69,7 @@ On "launch":
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► CAMPAIGN LAUNCH ✓
+ MARKOS ► CAMPAIGN LAUNCH ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 {campaign_id} is LIVE

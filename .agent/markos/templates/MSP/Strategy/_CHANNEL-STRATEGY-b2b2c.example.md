@@ -1,7 +1,7 @@
 # _CHANNEL-STRATEGY-b2b2c.example.md
 # Reference Example: **B2B2C** (Property Management Platform)
 
-<!-- mgsd-token: MSP | model: B2B2C -->
+<!-- markos-token: MSP | model: B2B2C -->
 
 ---
 

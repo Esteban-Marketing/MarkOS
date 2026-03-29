@@ -1,6 +1,6 @@
 # SETUP.md — Quick-Start Guide for New Projects
 
-<!-- mgsd-token: MIR -->
+<!-- markos-token: MIR -->
 
 > **Read this when starting a new project from the MIR template.**
 
@@ -90,7 +90,7 @@ cp Campaigns_Assets/08_CAMPAIGNS/_CAMPAIGN-TEMPLATE.md \
    Campaigns_Assets/08_CAMPAIGNS/ACTIVE/[campaign_id].md
 ```
 
-Fill `CAMPAIGN.md` and follow the mGSD Protocol (Phase 3 onward).
+Fill `CAMPAIGN.md` and follow the MarkOS Protocol (Phase 3 onward).
 
 ---
 

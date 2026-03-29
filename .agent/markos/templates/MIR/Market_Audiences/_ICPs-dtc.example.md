@@ -1,7 +1,7 @@
 # ICPs.md — Ideal Customer Profiles (Consumer Persona)
 # Reference Example: **DTC** (Premium Skincare Brand)
 
-<!-- mgsd-token: MIR | model: DTC -->
+<!-- markos-token: MIR | model: DTC -->
 > [!NOTE] DTC ICPs are demographic + psychographic + behavioral — no firmographic fields apply.
 
 ---

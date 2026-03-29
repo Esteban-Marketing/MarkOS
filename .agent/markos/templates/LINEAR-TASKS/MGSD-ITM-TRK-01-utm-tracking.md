@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-TRK-01
+token_id: MARKOS-ITM-TRK-01
 document_class: ITM
 domain: TRK
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-OPS-01
-  - MGSD-REF-OPS-03
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-OPS-01
+  - MARKOS-REF-OPS-03
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 2
 ---
 
-# MGSD-ITM-TRK-01 — UTM Architecture & Tracking Setup
+# MARKOS-ITM-TRK-01 — UTM Architecture & Tracking Setup
 
-<!-- TOKEN: MGSD-ITM-TRK-01 | CLASS: ITM | DOMAIN: TRK -->
-<!-- PURPOSE: Linear issue template for establishing PostHog event schema, pixel IDs, UTM taxonomy, and CAPI configuration before campaign launch. Consumed by mgsd-linear-manager when creating [MGSD] Tracking Setup tickets. Gate 2 required. -->
+<!-- TOKEN: MARKOS-ITM-TRK-01 | CLASS: ITM | DOMAIN: TRK -->
+<!-- PURPOSE: Linear issue template for establishing PostHog event schema, pixel IDs, UTM taxonomy, and CAPI configuration before campaign launch. Consumed by markos-linear-manager when creating [MARKOS] Tracking Setup tickets. Gate 2 required. -->
 
-**Linear Title format:** `[MGSD] Tracking Setup: {campaign_name} — {platform}`
+**Linear Title format:** `[MARKOS] Tracking Setup: {campaign_name} — {platform}`
 **Category:** Tracking & UTM Setup
 **Primary Triggers:** N/A — operational task; enables trigger measurement
 **Funnel Stage:** Pre-launch
@@ -28,26 +28,26 @@ mir_gate_required: 2
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 2 enforcement |
-| MGSD-REF-OPS-03 | references/verification-patterns.md | Dimension 4 (Tracking) criteria |
-| MGSD-AGT-TRK-01 | agents/mgsd-tracking-spec.md | PostHog event schema and CAPI config |
-| MGSD-AGT-TRK-02 | agents/mgsd-utm-architect.md | UTM taxonomy generation |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 2 enforcement |
+| MARKOS-REF-OPS-03 | references/verification-patterns.md | Dimension 4 (Tracking) criteria |
+| MARKOS-AGT-TRK-01 | agents/markos-tracking-spec.md | PostHog event schema and CAPI config |
+| MARKOS-AGT-TRK-02 | agents/markos-utm-architect.md | UTM taxonomy generation |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-TRK-01 | Tracking & UTM Setup -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-TRK-01 | Tracking & UTM Setup -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-OPS-01 §Gate 2; MGSD-REF-OPS-03 §Dimension 4 |
+| Token IDs Required | MARKOS-REF-OPS-01 §Gate 2; MARKOS-REF-OPS-03 §Dimension 4 |
 | MIR Gate | Gate 2 GREEN required |
 | MSP Matrix | `MSP/Campaigns/` — active campaign matrix |
-| AGT Assigned | MGSD-AGT-TRK-01 (tracking-spec) + MGSD-AGT-TRK-02 (utm-architect) |
-| SKL Entry Point | MGSD-SKL-OPS-02 (mgsd-execute-phase) |
+| AGT Assigned | MARKOS-AGT-TRK-01 (tracking-spec) + MARKOS-AGT-TRK-02 (utm-architect) |
+| SKL Entry Point | MARKOS-SKL-OPS-02 (markos-execute-phase) |
 
 ---
 
@@ -80,20 +80,20 @@ mir_gate_required: 2
 
 ## Task Steps
 
-- [ ] **Step 1:** Run Gate 2 check via `mgsd-tools.cjs mir-audit`. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run Gate 2 check via `markos-tools.cjs mir-audit`. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate 2 status
-- [ ] **Step 2:** Generate PostHog event schema using `MGSD-AGT-TRK-01` — one event per funnel stage transition, parameter list per event.
-  - Agent: MGSD-AGT-TRK-01
+- [ ] **Step 2:** Generate PostHog event schema using `MARKOS-AGT-TRK-01` — one event per funnel stage transition, parameter list per event.
+  - Agent: MARKOS-AGT-TRK-01
   - Output: Updated `TRACKING.md` event table
-- [ ] **Step 3:** Generate UTM taxonomy using `MGSD-AGT-TRK-02` — UTM strings for every campaign × channel × variant combination.
-  - Agent: MGSD-AGT-TRK-02
+- [ ] **Step 3:** Generate UTM taxonomy using `MARKOS-AGT-TRK-02` — UTM strings for every campaign × channel × variant combination.
+  - Agent: MARKOS-AGT-TRK-02
   - Output: `UTM-SPEC.md`
 - [ ] **Step 4:** Verify CAPI configuration — confirm all required parameters exist in TRACKING.md.
-  - Agent: MGSD-AGT-TRK-01
+  - Agent: MARKOS-AGT-TRK-01
   - Output: CAPI checklist (PASS / FAIL per platform)
-- [ ] **Step 5:** Commit with message `mgsd(tracking): {campaign_slug} utm-spec and tracking schema committed`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 5:** Commit with message `markos(tracking): {campaign_slug} utm-spec and tracking schema committed`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -108,7 +108,7 @@ mir_gate_required: 2
 | 4 — Tracking | PostHog events defined; UTMs committed; CAPI configured | All CAPI checklist items PASS |
 | 5 — Creative Compliance | N/A | N/A |
 | 6 — Budget Alignment | N/A | N/A |
-| 7 — Linear Sync | TRACKING.md and UTM-SPEC.md committed and synced | mgsd-linear-manager sync 0 drift |
+| 7 — Linear Sync | TRACKING.md and UTM-SPEC.md committed and synced | markos-linear-manager sync 0 drift |
 | Neuro Audit | N/A — operational task | N/A |
 
 ---
@@ -117,9 +117,9 @@ mir_gate_required: 2
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-TRK-01 |
+| Template ID | MARKOS-ITM-TRK-01 |
 | Task Category | Tracking & UTM Setup |
-| Labels | `[mgsd]`, `[tracking]`, `[pre-launch]` |
+| Labels | `[markos]`, `[tracking]`, `[pre-launch]` |
 | Priority | Urgent (blocks campaign launch) |
 | Estimate | 2–3h |
 | Parent Issue | Campaign Launch Checklist Epic |

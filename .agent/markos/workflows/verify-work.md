@@ -1,15 +1,15 @@
 <purpose>
-Validate marketing phase deliverables through agent-driven 7-dimension verification. Spawns mgsd-verifier, persists human-testing items as UAT.md, and routes to gap closure if dimensions fail.
+Validate marketing phase deliverables through agent-driven 7-dimension verification. Spawns markos-verifier, persists human-testing items as UAT.md, and routes to gap closure if dimensions fail.
 </purpose>
 
 <required_reading>
-@.agent/marketing-get-shit-done/references/verification-patterns.md
-@.agent/marketing-get-shit-done/references/mir-gates.md
+@.agent/markos/references/verification-patterns.md
+@.agent/markos/references/mir-gates.md
 </required_reading>
 
 <available_agent_types>
-- mgsd-verifier — Runs 7-dimension check, creates VERIFICATION.md
-- mgsd-gap-auditor — MIR [FILL] placeholder scan
+- markos-verifier — Runs 7-dimension check, creates VERIFICATION.md
+- markos-gap-auditor — MIR [FILL] placeholder scan
 </available_agent_types>
 
 <process>
@@ -17,17 +17,17 @@ Validate marketing phase deliverables through agent-driven 7-dimension verificat
 ## 1. Initialize
 
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init execute-phase "${PHASE}" --raw)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" init execute-phase "${PHASE}" --raw)
 PHASE_DIR=$(echo "$INIT" | jq -r '.phase_dir')
 PHASE_NAME=$(echo "$INIT" | jq -r '.phase_name')
 ```
 
-**If phase not found:** Error — run `/mgsd-execute-phase {N}` first.
+**If phase not found:** Error — run `/markos-execute-phase {N}` first.
 
 Display banner:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► VERIFYING — Phase {N}: {Name}
+ MARKOS ► VERIFYING — Phase {N}: {Name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -44,12 +44,12 @@ If missing summaries: "Plans without SUMMARY.md — execute these first: {list}"
 
 Check MIR gates:
 ```bash
-MIR_STATUS=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit --raw)
+MIR_STATUS=$(node ".agent/markos/bin/markos-tools.cjs" mir-audit --raw)
 ```
 
 Display: `Gate 1: {status} | Gate 2: {status}`
 
-## 3. Spawn mgsd-verifier
+## 3. Spawn markos-verifier
 
 ```
 Task(
@@ -70,7 +70,7 @@ Phase requirements: {phase_req_ids}
 </verification_context>
 
 <verification_dimensions>
-Run all 7 dimensions from .agent/marketing-get-shit-done/references/verification-patterns.md:
+Run all 7 dimensions from .agent/markos/references/verification-patterns.md:
 
 1. MIR Completeness — Do plans reference MIR files correctly? Are Gate 1 files populated?
 2. Template Variable Resolution — Any unresolved {{VARIABLE}} tokens in deliverables?
@@ -89,7 +89,7 @@ Return one of:
 - gaps_found — {N} dimensions failed with specific gaps listed
 </output>
   ",
-  subagent_type="mgsd-verifier",
+  subagent_type="markos-verifier",
   model="{verifier_model}",
   description="Verify Phase {phase}"
 )
@@ -119,7 +119,7 @@ Overall: {PASSED ✓ | PASSED WITH WARNINGS ⚠ | GAPS FOUND ✗ | HUMAN NEEDED 
 ### If `passed`
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-${PHASE}): verification passed"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(phase-${PHASE}): verification passed"
 ```
 
 Display Next Up.
@@ -147,7 +147,7 @@ passed: 0
 ```
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-${PHASE}): persist human UAT items"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(phase-${PHASE}): persist human UAT items"
 ```
 
 Present to user:
@@ -160,7 +160,7 @@ All automated checks passed. {N} items need platform verification:
 
 {list items with platform steps}
 
-Items saved to {phase_num}-HUMAN-UAT.md — surfaces in /mgsd-progress until cleared.
+Items saved to {phase_num}-HUMAN-UAT.md — surfaces in /markos-progress until cleared.
 
 → Type "verified" when complete, or describe any issues found.
 ```
@@ -172,7 +172,7 @@ On issues → treat as `gaps_found`.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► GAPS FOUND — Phase {N}
+ MARKOS ► GAPS FOUND — Phase {N}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 {M}/{7} dimensions failed.
@@ -182,7 +182,7 @@ On issues → treat as `gaps_found`.
 
 ## ▶ Next Up
 
-/mgsd-plan-phase {N} --gaps
+/markos-plan-phase {N} --gaps
 
 Also: cat {phase_dir}/{padded_phase}-VERIFICATION.md — full report
 ```
@@ -190,18 +190,18 @@ Also: cat {phase_dir}/{padded_phase}-VERIFICATION.md — full report
 ## 6. Commit and Next Up
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-${PHASE}): verification report" --files "${PHASE_DIR}/{padded_phase}-VERIFICATION.md"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(phase-${PHASE}): verification report" --files "${PHASE_DIR}/{padded_phase}-VERIFICATION.md"
 ```
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► PHASE {N} VERIFIED ✓
+ MARKOS ► PHASE {N} VERIFIED ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-/mgsd-progress — see updated roadmap
-/mgsd-discuss-phase {next} — start next phase
-/mgsd-campaign-launch — pre-flight for any ready campaigns
-/mgsd-performance-review — review active campaign metrics
+/markos-progress — see updated roadmap
+/markos-discuss-phase {next} — start next phase
+/markos-campaign-launch — pre-flight for any ready campaigns
+/markos-performance-review — review active campaign metrics
 ```
 
 </process>
@@ -209,7 +209,7 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-${PH
 <success_criteria>
 - [ ] All plans have SUMMARY.md before verification starts
 - [ ] MIR gate status displayed
-- [ ] mgsd-verifier spawned with phase context
+- [ ] markos-verifier spawned with phase context
 - [ ] VERIFICATION.md created with all 7 dimensions
 - [ ] Human UAT items persisted if status is human_needed
 - [ ] Gap closure path offered if gaps_found

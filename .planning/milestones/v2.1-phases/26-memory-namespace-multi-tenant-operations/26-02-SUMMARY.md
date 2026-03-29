@@ -1,12 +1,12 @@
----
+﻿---
 phase: 26
 plan: 26-02
 subsystem: migration-safe-namespace
-tags: [chroma, migration, compatibility]
+tags: [vector, migration, compatibility]
 requires: [26-01]
 provides: [MMO-01, MMO-02]
 affects:
-  - onboarding/backend/chroma-client.cjs
+  - onboarding/backend/vector-store-client.cjs
   - bin/update.cjs
 decisions:
   - Migration-safe reads/writes prioritize data continuity over strict prefix purity
@@ -28,7 +28,7 @@ Implemented migration-safe namespace handling so legacy and MarkOS-prefixed coll
 
 ## Verification
 
-- node --test test/chroma-client.test.js
+- node --test test/vector-client.test.js
 
 ## Deviations from Plan
 
@@ -39,3 +39,4 @@ None - executed as planned.
 None.
 
 ## Self-Check: PASSED
+

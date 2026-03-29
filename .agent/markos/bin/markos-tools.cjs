@@ -15,23 +15,23 @@ const fs = require('fs');
 
 const CWD = process.cwd();
 const MARKOS_ROOT = path.resolve(CWD, '.agent/markos');
-const LEGACY_MGSD_ROOT = path.resolve(CWD, '.agent/marketing-get-shit-done');
-const MGSD_ROOT = fs.existsSync(MARKOS_ROOT) ? MARKOS_ROOT : LEGACY_MGSD_ROOT;
+const LEGACY_MARKOS_ROOT = path.resolve(CWD, '.agent/markos');
+const MARKOS_ROOT = fs.existsSync(MARKOS_ROOT) ? MARKOS_ROOT : LEGACY_MARKOS_ROOT;
 
-// ─── Auto-Healing ChromaDB ───────────────────────────────────────────────────
-// Integrated as part of v1.1 Hardening — ensures daemon is alive for vector ops.
-const CHROMADB_DAEMON_FILE = path.join(CWD, 'bin/ensure-chroma.cjs');
-async function bootstrapChroma() {
-  if (fs.existsSync(CHROMADB_DAEMON_FILE)) {
-    const { ensureChroma } = require(CHROMADB_DAEMON_FILE);
-    await ensureChroma();
+// ─── Vector Provider Bootstrap ───────────────────────────────────────────────
+// Ensures vector providers are configured before vector-dependent commands run.
+const VECTOR_BOOTSTRAP_FILE = path.join(CWD, 'bin/ensure-vector.cjs');
+async function bootstrapVectorStores() {
+  if (fs.existsSync(VECTOR_BOOTSTRAP_FILE)) {
+    const { ensureVectorStores } = require(VECTOR_BOOTSTRAP_FILE);
+    await ensureVectorStores();
   }
 }
 
 // ─── Bootstrap check ─────────────────────────────────────────────────────────
 
 function checkSetup() {
-  if (!fs.existsSync(MGSD_ROOT)) {
+  if (!fs.existsSync(MARKOS_ROOT)) {
     process.stderr.write('[MarkOS] Protocol not initialized in this repository.\n');
     process.stderr.write('Run /markos-new-project to initialize.\n');
     process.exit(1);
@@ -63,13 +63,13 @@ function getFilesList() {
 // ─── Command router ──────────────────────────────────────────────────────────
 
 if (!command) {
-  const version = fs.existsSync(path.join(MGSD_ROOT, 'VERSION'))
-    ? fs.readFileSync(path.join(MGSD_ROOT, 'VERSION'), 'utf-8').trim()
+  const version = fs.existsSync(path.join(MARKOS_ROOT, 'VERSION'))
+    ? fs.readFileSync(path.join(MARKOS_ROOT, 'VERSION'), 'utf-8').trim()
     : 'unknown';
 
   console.log(`markos-tools v${version}`);
   console.log('');
-  console.log('Usage: mgsd-tools <command> [args]');
+  console.log('Usage: markos-tools <command> [args]');
   console.log('');
   console.log('Project Setup:');
   console.log('  init <workflow> [phase]    Get context for a workflow');
@@ -232,9 +232,9 @@ switch (command) {
 // ─── Execution ───────────────────────────────────────────────────────────────
 
 (async () => {
-  // Commands that require ChromaDB daemon to be running
+  // Commands that require vector providers to be configured
   const vectorCommands = ['init', 'mir-audit'];
   if (vectorCommands.includes(command)) {
-    await bootstrapChroma();
+    await bootstrapVectorStores();
   }
 })();

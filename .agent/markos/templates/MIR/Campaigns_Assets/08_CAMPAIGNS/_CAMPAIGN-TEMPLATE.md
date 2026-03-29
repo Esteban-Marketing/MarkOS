@@ -1,18 +1,18 @@
 # _CAMPAIGN-TEMPLATE.md — Campaign Blueprint & Execution Source of Truth
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Campaigns_Assets/08_CAMPAIGNS/_CAMPAIGN-TEMPLATE.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Campaigns_Assets/08_CAMPAIGNS/_CAMPAIGN-TEMPLATE.md` to customize it safely.
 
 > [!IMPORTANT]
 > **AGENT LOGIC**: This is the execution source of truth for all initiatives. 
-> - `mgsd-strategist` MUST load this file after the MIR boot sequence.
-> - `mgsd-copy-drafter` MUST derive all ad copy from the specified MIR messaging frameworks.
-> - `mgsd-executor` MUST NOT launch without all Section 6 (Launch Checklist) items passing.
+> - `markos-strategist` MUST load this file after the MIR boot sequence.
+> - `markos-copy-drafter` MUST derive all ad copy from the specified MIR messaging frameworks.
+> - `markos-executor` MUST NOT launch without all Section 6 (Launch Checklist) items passing.
 > - Campaigns derive from MIR — they MUST NOT contradict established core strategy.
 
 **Dependencies:** CORE-STRATEGY (`../../Core_Strategy/`), PRODUCTS (`../../Products/04_PRODUCTS/`), MARKET-AUDIENCES (`../../Market_Audiences/03_MARKET/`), BRAND-IDENTITY (`../../Core_Strategy/02_BRAND/BRAND-IDENTITY.md`)
-**Assigned Agent:** `mgsd-strategist`, `mgsd-executor`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-strategist`, `markos-executor`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```yaml
 file_purpose  : Provide a standardized blueprint for planning, executing, and tracking campaigns.

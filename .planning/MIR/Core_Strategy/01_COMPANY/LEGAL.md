@@ -1,13 +1,13 @@
 # LEGAL.md — Legal Entity, Compliance & Restrictions
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/01_COMPANY/LEGAL.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/01_COMPANY/LEGAL.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: Compliance is non-negotiable. `mgsd-auditor` MUST verify all campaign specs against the constraints in Section 2 and 3. `mgsd-copy-drafter` MUST NOT use prohibited claims (Section 3). Any violation triggers a Phase Halt until fixed.
+> **AGENT LOGIC**: Compliance is non-negotiable. `markos-auditor` MUST verify all campaign specs against the constraints in Section 2 and 3. `markos-copy-drafter` MUST NOT use prohibited claims (Section 3). Any violation triggers a Phase Halt until fixed.
 
 **Dependencies:** PROJECT (`../00_META/PROJECT.md`), WORKFLOWS (`../../Operations/10_OPERATIONS/WORKFLOWS.md`)
-**Assigned Agent:** `mgsd-auditor`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-auditor`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : Define the legal entity, compliance requirements, and marketing

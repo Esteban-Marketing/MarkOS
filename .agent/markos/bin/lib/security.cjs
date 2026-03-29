@@ -1,5 +1,5 @@
 /**
- * Security — Input sanitization for MGSD
+ * Security — Input sanitization for MARKOS
  */
 
 /**

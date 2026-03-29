@@ -1,10 +1,10 @@
 # VALUE-PROP.md — Core Value Proposition & Messaging
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/VALUE-PROP.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/VALUE-PROP.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: Before filling this file, read `RESEARCH/ORG-PROFILE.md` AND `RESEARCH/AUDIENCE-RESEARCH.md`. The `mgsd-strategist` MUST ensure the proposition maps directly to audience pain points.
+> **AGENT LOGIC**: Before filling this file, read `RESEARCH/ORG-PROFILE.md` AND `RESEARCH/AUDIENCE-RESEARCH.md`. The `markos-strategist` MUST ensure the proposition maps directly to audience pain points.
 
 ---
 

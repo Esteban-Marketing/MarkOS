@@ -2,13 +2,13 @@
 
 ## Objective
 
-Migrate the npm package identity, CLI bin entries, and install/update scripts from `marketing-get-shit-done`/`mgsd` to `markos`. This is the foundational phase of the v2.0 MarkOS rebrand — all downstream phases depend on this completing first.
+Migrate the npm package identity, CLI bin entries, and install/update scripts from `markos`/`markos` to `markos`. This is the foundational phase of the v2.0 MarkOS rebrand — all downstream phases depend on this completing first.
 
 ## Locked Decisions
 
 1. **npm package name:** `markos` (confirmed available via `npm view markos` — 404 on 2026-03-27)
 2. **Primary bin entry:** `markos` → `./bin/install.cjs`
-3. **Legacy bin alias:** `mgsd` retained for one major version as backward compat
+3. **Legacy bin alias:** `markos` retained for one major version as backward compat
 4. **Version bump:** `1.0.0` → `2.0.0` (semver major for breaking npm rename)
 5. **Product name:** MarkOS — Marketing Operating System
 6. **Brand owner:** esteban.marketing (markos.esteban.marketing)
@@ -21,7 +21,7 @@ Migrate the npm package identity, CLI bin entries, and install/update scripts fr
 - `bin/update.cjs` — banner text, version path, error messages, manifest path references
 - `VERSION` — bump to 2.0.0
 - `CHANGELOG.md` — add v2.0.0 rebrand entry, update header
-- Deprecation bridge strategy for old `marketing-get-shit-done` package
+- Deprecation bridge strategy for old `markos` package
 
 ### Out of Scope (Later Phases)
 - Directory renames (Phase 18)
@@ -34,16 +34,16 @@ Migrate the npm package identity, CLI bin entries, and install/update scripts fr
 
 | File | Current State | Changes Needed |
 |------|--------------|----------------|
-| `package.json` | name: `marketing-get-shit-done`, bin: `marketing-get-shit-done` + `mgsd` | name: `markos`, bin: `markos` + `mgsd` (compat) |
-| `bin/install.cjs` | Banner: "MGSD Installer", VERSION path: `.agent/marketing-get-shit-done/VERSION` | Banner: "MarkOS Installer", display text updates |
-| `bin/update.cjs` | Banner: "MGSD Update Engine", manifest path: `.mgsd-install-manifest.json` | Banner: "MarkOS Update Engine", display text updates |
+| `package.json` | name: `markos`, bin: `markos` + `markos` | name: `markos`, bin: `markos` + `markos` (compat) |
+| `bin/install.cjs` | Banner: "MARKOS Installer", VERSION path: `.agent/markos/VERSION` | Banner: "MarkOS Installer", display text updates |
+| `bin/update.cjs` | Banner: "MARKOS Update Engine", manifest path: `.markos-install-manifest.json` | Banner: "MarkOS Update Engine", display text updates |
 | `VERSION` | `1.0.0` | `2.0.0` |
-| `CHANGELOG.md` | Header: `marketing-get-shit-done` | Header: `MarkOS`, new v2.0.0 entry |
+| `CHANGELOG.md` | Header: `markos` | Header: `MarkOS`, new v2.0.0 entry |
 
 ## Requirements Mapped
 
 - **RBD-01**: npm package name changed, `npx markos install` and `npx markos update` work
-- **RBD-02**: Deprecation notice on old package, `mgsd` bin alias retained
+- **RBD-02**: Deprecation notice on old package, `markos` bin alias retained
 
 ## Dependencies
 
@@ -54,8 +54,8 @@ Migrate the npm package identity, CLI bin entries, and install/update scripts fr
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Old `npx marketing-get-shit-done` stops working | HIGH | Publish deprecation bridge version |
-| `files` array references `.agent/marketing-get-shit-done/` — directory doesn't exist yet under new name | MEDIUM | Keep old path in `files` until Phase 18 completes, then update |
+| Old `npx markos` stops working | HIGH | Publish deprecation bridge version |
+| `files` array references `.agent/markos/` — directory doesn't exist yet under new name | MEDIUM | Keep old path in `files` until Phase 18 completes, then update |
 | Tests reference old package name | MEDIUM | Update test fixtures in this phase |
 
 ## Research References

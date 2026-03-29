@@ -1,7 +1,7 @@
 # JTBD-MATRIX.md — Buyer Psychology & Copy Anchors
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md` to customize it safely.
 
 ---
 

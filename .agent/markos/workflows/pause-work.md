@@ -2,7 +2,7 @@
 description: Pause marketing work with context handoff for session resumption
 ---
 
-# /mgsd-pause-work
+# /markos-pause-work
 
 <purpose>
 Create a context snapshot when pausing work mid-phase so the next session can resume seamlessly.
@@ -72,16 +72,16 @@ task: {current_task_number}
 ### 3. Commit
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(pause): save context at phase {N} task {T}"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(pause): save context at phase {N} task {T}"
 ```
 
 ### 4. Display
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► WORK PAUSED
+ MARKOS ► WORK PAUSED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Context saved to CONTINUE-HERE.md
-Resume with: /mgsd-resume-work
+Resume with: /markos-resume-work
 ```

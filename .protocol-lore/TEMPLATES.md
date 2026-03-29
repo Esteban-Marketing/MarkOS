@@ -1,4 +1,4 @@
-<mgsd_templates>
+<markos_templates>
 <purpose>Token-efficient map of MIR, MSP, and ITM templates. Bypasses need to load 21KB index.</purpose>
 
 <mir_domain>
@@ -17,24 +17,25 @@
 </mir_domain>
 
 <linear_items>
-  <!-- ITM tokens auto-map onto Linear issues during mgsd-linear-sync -->
+  <!-- ITM tokens auto-map onto Linear issues during markos-linear-sync -->
   <group id="content_creation">
-    <token>MGSD-ITM-CNT-01 (Lead Magnet) [B04/B05/B07]</token>
-    <token>MGSD-ITM-CNT-02 (Ad Copy) [B02/B05/B06/B09]</token>
-    <token>MGSD-ITM-CNT-03 (Email Seq) [B01-B03/B07]</token>
-    <token>MGSD-ITM-CNT-06 (SEO Article) [B04/B05/B07/B08]</token>
+    <token>MARKOS-ITM-CNT-01 (Lead Magnet) [B04/B05/B07]</token>
+    <token>MARKOS-ITM-CNT-02 (Ad Copy) [B02/B05/B06/B09]</token>
+    <token>MARKOS-ITM-CNT-03 (Email Seq) [B01-B03/B07]</token>
+    <token>MARKOS-ITM-CNT-06 (SEO Article) [B04/B05/B07/B08]</token>
   </group>
   <group id="acquisition">
-    <token>MGSD-ITM-ACQ-01 (Paid Social Setup)</token>
-    <token>MGSD-ITM-ACQ-02 (Retargeting Setup)</token>
-    <token>MGSD-ITM-ACQ-03 (LinkedIn Outbound)</token>
+    <token>MARKOS-ITM-ACQ-01 (Paid Social Setup)</token>
+    <token>MARKOS-ITM-ACQ-02 (Retargeting Setup)</token>
+    <token>MARKOS-ITM-ACQ-03 (LinkedIn Outbound)</token>
   </group>
 </linear_items>
 
 <resolution_protocol>
-  1. Detect `<!-- OVERRIDABLE: .mgsd-local/... -->`
-  2. Check `.mgsd-local/<path>`
+  1. Detect `<!-- OVERRIDABLE: .markos-local/... -->`
+  2. Check `.markos-local/<path>`
   3. If exists, override protocol baseline.
   4. If none, fallback to baseline.
 </resolution_protocol>
-</mgsd_templates>
+</markos_templates>
+

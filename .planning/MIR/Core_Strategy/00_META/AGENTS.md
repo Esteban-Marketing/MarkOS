@@ -1,7 +1,7 @@
 # AGENTS.md — AI Agent Operating Rules
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/00_META/AGENTS.md to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MIR/Core_Strategy/00_META/AGENTS.md to customize it safely.
 
 
 ```

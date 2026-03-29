@@ -1,15 +1,52 @@
-# MGSD Architecture Diagram & Data Flow Specification
+﻿
+# MarkOS Architecture Diagram & Data Flow Specification
 
-**Last Updated:** March 27, 2026  
-**Version:** 1.1.0  
+**Last Updated:** March 28, 2026  
+**Version:** 2.2.0  
+
+---
+
+## MarkOS System Overview (v2.0–v2.2)
+
+**Summary:**
+MarkOS is a modular, agentic marketing operating system designed for robust onboarding, context-rich execution, and seamless integration with LLMs and vector memory. This document distills all major architectural and protocol changes from v2.0, v2.1, and v2.2, with explicit cross-references to milestone artifacts and a structure optimized for LLMs with short memory.
+
+**Key Upgrades (v2.0–v2.2):**
+- Full rebrand from MARKOS/markos to MarkOS (see: v2.0 milestone)
+- MarkOSDB migration and cloud-canonical artifact contracts (see: v2.2-MILESTONE-AUDIT.md, 30-markosdb-migration.md)
+- Rollout hardening: SLOs, migration safety, security guardrails, compatibility gates (see: 31-rollout-hardening.md)
+- Protocol-lore navigation and agent boot sequence (see: .protocol-lore/QUICKSTART.md)
+
+**See also:**
+- [v2.2-MILESTONE-AUDIT.md](.planning/v2.2-MILESTONE-AUDIT.md)
+- [TECH-MAP.md](TECH-MAP.md)
+- [.protocol-lore/QUICKSTART.md](.protocol-lore/QUICKSTART.md)
+- [README.md](README.md)
 
 ---
 
 ## System Architecture Overview
 
+
 ```
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [TECH-MAP.md](TECH-MAP.md): Technical map and component relationships.
+- [README.md](README.md): Quickstart, install, and onboarding instructions.
+- [.protocol-lore/QUICKSTART.md](.protocol-lore/QUICKSTART.md): Agent boot sequence and protocol-lore navigation.
+- [onboarding/backend/](onboarding/backend/): All backend agent, skill, and utility modules.
+- [api/](api/): API endpoints and integration points.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
+
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                           MGSD SYSTEM TOPOLOGY                              │
+│                           MarkOS SYSTEM TOPOLOGY                            │
 └─────────────────────────────────────────────────────────────────────────────┘
 
                               ┌────────────────────┐
@@ -19,7 +56,7 @@
                                         │ HTTP
                                         ▼
                          ┌──────────────────────────────┐
-                         │  Onboarding Server v2.0      │
+                         │  Onboarding Server v2.2      │
                          │  (onboarding/backend/        │
                          │   server.cjs:4242)           │
                          └──────────┬───────────────────┘
@@ -45,7 +82,7 @@
          ▼                      ▼       ▼                   ▼
     ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
     │ MIR Filler   │    │ MSP Filler   │    │   Telemetry  │
-    │(mir-fill...) │    │(msp-fill...) │    │ (PostHog)    │
+    │(mir-filler)  │    │(msp-filler)  │    │ (PostHog)    │
     └────┬─────────┘    └─────┬────────┘    └──────────────┘
          │                    │
          └────────┬───────────┘
@@ -68,7 +105,7 @@
          │  (chroma-client.cjs)     │
          │ ┌─────────────────────┐  │
          │ │ Store Drafts        │  │
-         │ │ Namespace: mgsd-{id}│  │
+         │ │ Namespace: markos-{id}│  │
          │ │ (Vector Embeddings) │  │
          │ └─────────────────────┘  │
          └──────────┬───────────────┘
@@ -244,14 +281,18 @@
                               "[DRAFT UNAVAILABLE]"
 ```
 
-### 4. Vector Memory (ChromaDB) Integration
+
+## Vector Memory (ChromaDB) Integration
+
+**Summary:**
+MarkOS uses ChromaDB for vector memory, storing all onboarding, MIR, and MSP artifacts as JSON with embeddings and metadata. This enables semantic search, agentic recall, and LLM context injection. Legacy collection names (e.g., markos-*) are being migrated to markos-* in v2.2.
 
 ```
 ┌────────────────────────────────────────────────┐
 │ Post-Onboarding Vector Memory State            │
 └────────────────────────────────────────────────┘
 
-ChromaDB Collection: mgsd-acme-corp-abc123
+ChromaDB Collection: markos-acme-corp-abc123
 
 ┌────────────────┐ ┌─────────────────────┐
 │ Seed Sections  │ │ Draft Sections      │
@@ -273,24 +314,28 @@ Each stored as JSON with:
 ┌─────────────────────────────────────────────┐
 │ Agent Queries (during execution phase)      │
 ├─────────────────────────────────────────────┤
-│ mgsd-copy-drafter:                          │
+│ markos-copy-drafter:                          │
 │  "Query: failed email sequences"            │
 │  → Return historic [FAILURE] classified     │
 │  → Explicitly exclude those angles          │
 │                                             │
-│ mgsd-campaign-architect:                    │
+│ markos-campaign-architect:                    │
 │  "Query: similar B2B campaigns"             │
 │  → Return structures tagged [SUCCESS]       │
 │  → Adopt matching structure                 │
 │                                             │
-│ mgsd-data-scientist (post-execution):       │
+│ markos-data-scientist (post-execution):       │
 │  "Store: Phase 5 CAC=$45, ROAS=2.3x"        │
 │  → Tag as [SUCCESS] or [FAILURE]            │
 │  → Embed with classified metadata           │
 └─────────────────────────────────────────────┘
 ```
 
-### 5. Data Persistence Flow
+
+## Data Persistence Flow
+
+**Summary:**
+All user-approved drafts and MIR/MSP artifacts are written to .markos-local/ for human-readable, version-controlled storage. The system supports JIT-cloning of templates and fuzzy-merge of drafts, with explicit state stamping and disclaimer logic. See also: [write-mir.cjs](onboarding/backend/write-mir.cjs), [STATE.md](.markos-local/STATE.md).
 
 ```
 ┌──────────────────────────────────┐
@@ -302,7 +347,7 @@ Each stored as JSON with:
              ▼
 ┌──────────────────────────────────┐
 │ write-mir.cjs:applyDrafts()      │
-│ 1. Check .mgsd-local/MIR/        │
+│ 1. Check .markos-local/MIR/      │
 └────────────┬───────────────────┘
              │
        ┌─────┴──────────────────┐
@@ -314,11 +359,11 @@ Each stored as JSON with:
        │              │ JIT-Clone:         │
        │              │ Copy entire        │
        │              │ .agent/templates/  │
-       │              │ MIR/ → .mgsd-local/│
+      │              │ MIR/ → .markos-local/│
        │              └────────┬───────────┘
        │                       │
        └───┬───────────────────┘
-           │ (Now .mgsd-local/ exists)
+           │ (Now .markos-local/ exists)
            ▼
 ┌──────────────────────────────────┐
 │ For each approved draft:          │
@@ -338,7 +383,7 @@ Each stored as JSON with:
              ▼
 ┌──────────────────────────────────┐
 │ Apply Disclaimer Timestamp       │
-│ > 🤖 Generated by MGSD on 2026.. │
+│ > 🤖 Generated by MARKOS on 2026.. │
 └────────────┬───────────────────┘
              │
              ▼
@@ -348,7 +393,11 @@ Each stored as JSON with:
 └──────────────────────────────────┘
 ```
 
-### 6. Template Resolution (Example Injection)
+
+## Template Resolution (Example Injection)
+
+**Summary:**
+Templates are resolved by business model and injected into LLM prompts for context-rich generation. The system supports fallback to generic templates and empty blocks. See also: [example-resolver.cjs](onboarding/backend/agents/example-resolver.cjs).
 
 ```
 ┌──────────────────────────────────────┐
@@ -388,7 +437,11 @@ Each stored as JSON with:
     └──────────────────────────────┘
 ```
 
-### 7. Multi-Model LLM Provider Selection
+
+## Multi-Model LLM Provider Selection
+
+**Summary:**
+MarkOS supports Anthropic, OpenAI, Gemini, and local Ollama models, with auto-detection and provider override. Fallback logic ensures robust prompt completion. See also: [llm-adapter.cjs](onboarding/backend/agents/llm-adapter.cjs).
 
 ```
 ┌─────────────────────────────────────┐
@@ -447,7 +500,11 @@ Each stored as JSON with:
                                     └──────────────────┘
 ```
 
-### 8. ChromaDB Boot Sequence
+
+## ChromaDB Boot Sequence
+
+**Summary:**
+ChromaDB is auto-booted as a local daemon if no cloud URL is set, with health checks and retry logic. This ensures vector memory is always available for agent workflows. See also: [ensure-chroma.cjs](bin/ensure-chroma.cjs).
 
 ```
 ┌───────────────────────────────────┐
@@ -497,7 +554,11 @@ Each stored as JSON with:
                         └──────────────────────────┘
 ```
 
-### 9. Confidence Scoring & Gap-Fill Interview
+
+## Confidence Scoring & Gap-Fill Interview
+
+**Summary:**
+Extracted data is scored for confidence (R/Y/G). Low-confidence fields trigger gap-fill interviews, generating follow-up questions and suggested answers for user selection. See also: [confidence-scorer.cjs](onboarding/backend/confidences/confidence-scorer.cjs).
 
 ```
 ┌────────────────────────────────────┐
@@ -536,7 +597,11 @@ Each stored as JSON with:
  └────────────────────────────────┘
 ```
 
-### 10. Data Flow: Seed → MIR → MSP → Execution
+
+## Data Flow: Seed → MIR → MSP → Execution
+
+**Summary:**
+The full data lifecycle: onboarding seed → MIR (intelligence layer) → MSP (strategy blueprint) → execution → winners catalog → next-phase learning. All steps are versioned, human-readable, and LLM-accessible. See also: [onboarding-seed.json](onboarding/onboarding-seed.json), [write-mir.cjs](onboarding/backend/write-mir.cjs).
 
 ```
 ┌─────────────────────────────┐
@@ -558,14 +623,14 @@ Each stored as JSON with:
 │   ├─ Brand Voice            │
 │   ├─ Tech Stack             │
 │   └─ Lean Canvas + JTBD     │
-│ (Stored in .mgsd-local/MIR/)│
+│ (Stored in .markos-local/MIR/)│
 └────────────┬────────────────┘
              │ (human readable, version controlled)
              ▼
 ┌─────────────────────────────┐
 │ 3. Agent Boots: Read MIR    │ (Execution phase)
 │   Check overrides in:       │
-│   .mgsd-local/MIR/          │
+│   .markos-local/MIR/        │
 │   Apply local customization │
 └────────────┬────────────────┘
              │
@@ -583,7 +648,7 @@ Each stored as JSON with:
              ▼
 ┌─────────────────────────────┐
 │ 5. Agent Reads Winners Cat. │
-│   .mgsd-local/MSP/          │
+│   .markos-local/MSP/        │
 │   {discipline}/WINNERS/     │
 │   _CATALOG.md               │
 │   (Anchor to high-performers)
@@ -607,13 +672,17 @@ Each stored as JSON with:
 
 ---
 
+
 ## Component Interaction Matrix
+
+**Summary:**
+This matrix details how all major MarkOS components interact, including read/write/call relationships. Use this as a quick reference for debugging or onboarding new contributors. See also: [TECH-MAP.md](TECH-MAP.md), [README.md](README.md).
 
 ```
 ┌─────────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
 │ Component       │ Reads From   │ Writes To    │ Calls        │ Called By    │
 ├─────────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-│ server.cjs      │ .env         │ .mgsd-proj.. │ handlers,    │ npm/user     │
+│ server.cjs      │ .env         │ .markos-proj.. │ handlers,    │ npm/user     │
 │                 │ config.json  │ seed.json    │ orchestrator │              │
 ├─────────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
 │ handlers.cjs    │ req body     │ JSON res     │ orchestrator │ server.cjs   │
@@ -635,7 +704,7 @@ Each stored as JSON with:
 │ chroma-client   │ .env         │ collections  │ fetch API    │ orchestrator │
 │ .cjs            │ project_slug │ metadata     │              │ handlers     │
 ├─────────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
-│ write-mir.cjs   │ Chroma       │ .mgsd-local/ │  fs ops      │ handlers     │
+│ write-mir.cjs   │ Chroma       │ .markos-local/ │  fs ops      │ handlers     │
 │                 │ templates    │ STATE.md     │              │              │
 ├─────────────────┼──────────────┼──────────────┼──────────────┼──────────────┤
 │ parsers/        │ file stream  │ text content │ -            │ handlers     │
@@ -654,14 +723,18 @@ Each stored as JSON with:
 
 ---
 
+
 ## State Diagram: Project Lifecycle
+
+**Summary:**
+The MarkOS project lifecycle covers install, onboarding, extraction, generation, review, approval, and execution. Each state is explicitly versioned and agent-driven. See also: [onboarding/index.html](onboarding/index.html), [install.cjs](bin/install.cjs).
 
 ```
 ┌──────────────────┐
 │ NOT INSTALLED    │
 └────────┬─────────┘
          │ npm install
-         │ npx marketing-get-shit-done install
+         │ npx markos install
          ▼
 ┌──────────────────┐
 │ INSTALLING       │
@@ -729,7 +802,11 @@ Each stored as JSON with:
 
 ---
 
+
 ## Error Recovery Paths
+
+**Summary:**
+MarkOS implements robust error recovery for ChromaDB, LLM provider, and template resolution failures. Each path is designed for agentic self-healing and user transparency. See also: [ensure-chroma.cjs](bin/ensure-chroma.cjs), [llm-adapter.cjs](onboarding/backend/agents/llm-adapter.cjs).
 
 ### Path 1: ChromaDB Dead
 
@@ -813,7 +890,7 @@ Each stored as JSON with:
          │
          ▼
 ┌────────────────┐
-│ .mgsd-local/   │
+│ .markos-local/ │
 │ MIR/ exists?   │
 └────────┬───────┘
          │
@@ -841,7 +918,11 @@ Each stored as JSON with:
 
 ---
 
+
 ## Security & Data Isolation
+
+**Summary:**
+Separation of concerns is enforced between persistent state (MIR/MSP), stateless logic (prompts/skills), and generated output. User data is never committed to version control. See also: [onboarding/backend/markosdb-contracts.cjs](onboarding/backend/markosdb-contracts.cjs).
 
 ### Design Pattern: Separation of Concerns
 
@@ -849,7 +930,7 @@ Each stored as JSON with:
 ┌────────────────────────────────────────────────┐
 │ MIR/MSP = STATE (What is known)                │
 │ Persistent, human-editable, ground truth       │
-│ Location: .mgsd-local/                         │
+│ Location: .markos-local/                       │
 │ Gitignored, client data never committed        │
 └────────────────────────────────────────────────┘
       │
@@ -858,7 +939,7 @@ Each stored as JSON with:
 ┌────────────────────────────────────────────────┐
 │ .agent/prompts/* = LOGIC (How to execute)      │
 │ Stateless, reusable, version-controlled        │
-│ Location: .agent/marketing-get-shit-done/      │
+│ Location: .agent/markos/                       │
 │ Never write client data here                   │
 └────────────────────────────────────────────────┘
       │
@@ -871,71 +952,82 @@ Each stored as JSON with:
 └────────────────────────────────────────────────┘
 ```
 
-### Data Flow: Override Resolution
 
-```
-┌──────────────────────────────────────────┐
-│ Agent reads: MIR/Core_Strategy/02_BRAND/ │
-│             VOICE-TONE.md                │
-└────────────┬─────────────────────────────┘
-             │
-             ▼
-┌──────────────────────────────────────────┐
-│ Check .mgsd-local/MIR/02_BRAND/          │
-│ VOICE-TONE.md                            │
-└────────────┬─────────────────────────────┘
-             │
-         ┌───┴──────┐
-    Exists│          │ Not exists
-         ▼          ▼
-    ┌────────┐  ┌──────────────────┐
-    │ Use    │  │ Fall back to:     │
-    │ Local  │  │ .agent/templates/ │
-    │ Version│  │ MIR/02_BRAND/     │
-    │        │  │ VOICE-TONE.md     │
-    │ Log    │  └──────────────────┘
-    │[override]
-    └────────┘
-
-Result: Agent has context-aware data
-         with local overrides applied
-```
+## Data Flow: Onboarding to MIR/MarkOSDB
 
 ---
 
-## Performance Characteristics
+### 1. User Onboarding & Intake
 
-### Request Timeline
+**Entry Point:** onboarding/index.html, onboarding.js
 
-```
-POST /submit
-├─ Parse body               : ~5ms
-├─ Generate slug            : ~2ms
-├─ Store seed in Chroma     : ~100ms
-├─ MIR Generation Batch 1   : ~3000ms (parallel)
-│  ├─ generateCompanyProfile
-│  ├─ generateMissionVisionValues
-│  └─ Rate limit delay      : ~2000ms
-├─ MIR Generation Batch 2   : ~3000ms
-│  ├─ generateAudienceProfile
-│  ├─ generateCompetitiveLandscape
-│  └─ Rate limit delay      : ~2000ms
-├─ MSP Generation           : ~2000ms (sequential)
-│  ├─ generateBrandVoice    : ~1000ms
-│  └─ generateChannelStrategy : ~1000ms
-├─ Store drafts in Chroma   : ~50ms
-└───────────────────────────────────────
-Total: ~10-12 seconds (typical)
+**Data:**
+- User profile, org profile, audience, product, content
+- Uploaded files (PDF, DOCX, CSV, TXT)
 
-Factors:
-- LLM latency varies by provider
-- Network latency to LLM service
-- Chroma write efficiency
-- Retry attempts increase time
-```
+**Process:**
+- User completes onboarding form
+- Data is validated and chunked client-side
+- Files are uploaded and parsed
+- All data is sent to onboarding backend
 
-### Throughput
+**See also:** [onboarding-config.json](onboarding/onboarding-config.json), [onboarding-seed.schema.json](onboarding/onboarding-seed.schema.json)
 
+---
+
+### 2. Backend Intake & Extraction
+
+**Entry Point:** onboarding/backend/server.cjs
+
+**Process:**
+- Receives onboarding payload
+- Routes to extractors, parsers, and enrichers
+- Extracts schema, content, and metadata
+- Enriches with competitor and market data
+- Writes MIR (Marketing Intelligence Record)
+
+**See also:** [extractors](onboarding/backend/extractors/), [enrichers](onboarding/backend/enrichers/)
+
+---
+
+### 3. MIR/MarkOSDB Write & Sync
+
+**Entry Point:** onboarding/backend/write-mir.cjs
+
+**Process:**
+- Writes MIR to MarkOSDB (cloud canonical)
+- Syncs with vector memory (Chroma)
+- Triggers downstream agent workflows
+
+**See also:** [chroma-client.cjs](onboarding/backend/chroma-client.cjs), [markosdb-contracts.cjs](onboarding/backend/markosdb-contracts.cjs)
+
+---
+
+### 4. Agentic Orchestration & LLM Integration
+
+**Entry Point:** onboarding/backend/agents/orchestrator.cjs
+
+**Process:**
+- Orchestrates agent workflows (extraction, enrichment, grouping)
+- Handles retries, error recovery, and telemetry
+- Adapts to LLM provider (OpenAI, Anthropic, Gemini)
+
+**See also:** [llm-adapter.cjs](onboarding/backend/agents/llm-adapter.cjs), [telemetry.cjs](onboarding/backend/agents/telemetry.cjs)
+
+---
+
+### 5. Output & Protocol-Lore
+
+**Artifacts:**
+- MIR (Marketing Intelligence Record)
+- .protocol-lore/QUICKSTART.md
+- Enriched onboarding-seed.json
+
+**Downstream:**
+- API endpoints ([api/](api/))
+- Agent skills, workflows, and enrichment prompts
+
+**See also:** [.protocol-lore/QUICKSTART.md](.protocol-lore/QUICKSTART.md), [onboarding-seed.schema.json](onboarding/onboarding-seed.schema.json)
 ```
 Single Server Instance (server.cjs):
 - Concurrent requests: Limited by Node.js event loop
@@ -1002,7 +1094,7 @@ async function callNewProvider(systemPrompt, userPrompt, options) {
 ### How to Add New Template Example
 
 ```
-1. Locate: .agent/marketing-get-shit-done/templates/
+1. Locate: .agent/markos/templates/
 2. Create: MSP/Strategy/_CHANNEL-STRATEGY-{business_model}.example.md
 3. Follow structure of existing examples
 4. Business model is auto-detected from seed
@@ -1038,8 +1130,8 @@ scoreTeamSize(value) {
 ### Pattern 1: Single Node (Development)
 
 ```
-npm install marketing-get-shit-done
-npx marketing-get-shit-done install
+npm install markos
+npx markos install
 
 node onboarding/backend/server.cjs
 # Runs on localhost:4242
@@ -1178,6 +1270,34 @@ services:
 | **Gate System** | STATE.md | Progressive completion tracking |
 
 ---
+
+## Phase 30 Architecture Addendum: MarkOSDB Migration
+
+```text
+.markos-local/.markos-local artifacts
+            │
+            ▼
+POST /migrate/local-to-cloud (dry-run | execute)
+            │
+            ▼
+handleMarkosdbMigration (handlers.cjs)
+  - normalize relative paths
+  - classify artifact type
+  - hash checksum
+  - build relational + vector contracts
+            │
+            ├── Supabase Contract Projection (markos_artifacts, checkpoints)
+            └── Upstash Metadata Projection (slug/discipline/outcome/source_path)
+                        │
+                        ▼
+          Chroma compatibility projection ({prefix}-{slug}-markosdb)
+```
+
+### Hosted Runtime Access Boundary
+
+- `api/config`, `api/status`, and `api/migrate` require hosted bearer auth.
+- Request scope is enforced via project slug claims before handlers execute.
+- Local runtime remains compatibility-safe and can operate without bearer auth.
 
 *Architecture Specification Version: 1.0*  
 *Effective Date: March 27, 2026*

@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-CNT-03
+token_id: MARKOS-ITM-CNT-03
 document_class: ITM
 domain: CNT
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 1
 ---
 
-# MGSD-ITM-CNT-03 — Email Sequence (Nurture/Conversion)
+# MARKOS-ITM-CNT-03 — Email Sequence (Nurture/Conversion)
 
-<!-- TOKEN: MGSD-ITM-CNT-03 | CLASS: ITM | DOMAIN: CNT -->
-<!-- PURPOSE: Linear issue template for producing a multi-email nurture or conversion sequence. Consumed by mgsd-linear-manager when creating [MGSD] Email Sequence tickets. Gate 1 required. -->
+<!-- TOKEN: MARKOS-ITM-CNT-03 | CLASS: ITM | DOMAIN: CNT -->
+<!-- PURPOSE: Linear issue template for producing a multi-email nurture or conversion sequence. Consumed by markos-linear-manager when creating [MARKOS] Email Sequence tickets. Gate 1 required. -->
 
-**Linear Title format:** `[MGSD] Email Sequence: {sequence_name} — {trigger_event} — {N}-email`
+**Linear Title format:** `[MARKOS] Email Sequence: {sequence_name} — {trigger_event} — {N}-email`
 **Category:** Email Sequence
 **Primary Triggers:** B01 (Variable Reward), B02 (Loss Aversion), B03 (Social Proof), B07 (Curiosity Gap)
 **Funnel Stage:** Consideration → Decision → Onboarding
@@ -28,26 +28,26 @@ mir_gate_required: 1
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B01, §B02, §B03, §B07 definitions |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
-| MGSD-AGT-CNT-04 | agents/mgsd-email-sequence.md | Generates full email sequence |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Sequence-level audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B01, §B02, §B03, §B07 definitions |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
+| MARKOS-AGT-CNT-04 | agents/markos-email-sequence.md | Generates full email sequence |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Sequence-level audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-CNT-03 | Email Sequence -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-CNT-03 | Email Sequence -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B01, §B02, §B03, §B07; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B01, §B02, §B03, §B07; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 GREEN; AUTOMATION.md populated for send logic |
 | MSP Matrix | `MSP/Inbound/` or `MSP/Campaigns/` — nurture discipline section |
-| AGT Assigned | MGSD-AGT-CNT-04 (email-sequence) |
-| SKL Entry Point | MGSD-SKL-OPS-02 (mgsd-execute-phase) |
+| AGT Assigned | MARKOS-AGT-CNT-04 (email-sequence) |
+| SKL Entry Point | MARKOS-SKL-OPS-02 (markos-execute-phase) |
 
 ---
 
@@ -88,20 +88,20 @@ mir_gate_required: 1
 
 ## Task Steps
 
-- [ ] **Step 1:** Run Gate 1 check via `mgsd-tools.cjs mir-audit`. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run Gate 1 check via `markos-tools.cjs mir-audit`. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status
-- [ ] **Step 2:** Generate full sequence using `MGSD-AGT-CNT-04` — each email gets: subject line (B07 gap), preview text, body (VOICE-TONE compliant), single CTA. Alternate value magnitude to enforce B01 cadence.
-  - Agent: MGSD-AGT-CNT-04
+- [ ] **Step 2:** Generate full sequence using `MARKOS-AGT-CNT-04` — each email gets: subject line (B07 gap), preview text, body (VOICE-TONE compliant), single CTA. Alternate value magnitude to enforce B01 cadence.
+  - Agent: MARKOS-AGT-CNT-04
   - Output: `EMAIL-SEQUENCE-DRAFT.md` (one section per email)
-- [ ] **Step 3:** Run `MGSD-AGT-NEU-01` on sequence as a unit — flag any email breaking B01 cadence rules or using gain-framed CTAs in decision emails.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 3:** Run `MARKOS-AGT-NEU-01` on sequence as a unit — flag any email breaking B01 cadence rules or using gain-framed CTAs in decision emails.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Audit report with per-email flags
 - [ ] **Step 4:** Resolve all `REWRITE REQUIRED` flags — rerun audit until `PASSED`.
-  - Agent: MGSD-AGT-CNT-04
+  - Agent: MARKOS-AGT-CNT-04
   - Output: Revised `EMAIL-SEQUENCE-DRAFT.md`
-- [ ] **Step 5:** Commit with message `mgsd(email): sequence {sequence_slug} {N}-email draft complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 5:** Commit with message `markos(email): sequence {sequence_slug} {N}-email draft complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -116,8 +116,8 @@ mir_gate_required: 1
 | 4 — Tracking | N/A — no pixel tracking on email | N/A |
 | 5 — Creative Compliance | No prohibited words; decision emails loss-framed | VOICE-TONE diff clean |
 | 6 — Budget Alignment | N/A — email production, no ad spend | N/A |
-| 7 — Linear Sync | Issue status reflects execution state | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | Sequence-level PASSED; no single email breaking cadence rules | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue status reflects execution state | markos-linear-manager sync 0 drift |
+| Neuro Audit | Sequence-level PASSED; no single email breaking cadence rules | `MARKOS-AGT-NEU-01` returns `PASSED` |
 
 ---
 
@@ -125,9 +125,9 @@ mir_gate_required: 1
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-CNT-03 |
+| Template ID | MARKOS-ITM-CNT-03 |
 | Task Category | Email Sequence |
-| Labels | `[mgsd]`, `[email]`, `[consideration]` |
+| Labels | `[markos]`, `[email]`, `[consideration]` |
 | Priority | High |
 | Estimate | 4–8h depending on sequence length |
 | Parent Issue | Nurture or Conversion campaign Epic |

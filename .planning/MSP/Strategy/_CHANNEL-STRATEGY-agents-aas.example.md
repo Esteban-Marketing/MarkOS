@@ -1,11 +1,26 @@
-# _CHANNEL-STRATEGY-agents-aas.example.md
-# Reference Example: **Agents-aaS** (AI Marketing Operations Agent Platform)
 
-<!-- mgsd-token: MSP | model: Agents-aaS -->
+# MarkOS Channel Strategy Example: Agents-aaS
+
+<!-- markos-token: MSP | model: Agents-aaS -->
+
+---
+
+
+## LLM-Optimized Summary
+
+This file provides a reference channel strategy for an Agents-aaS (AI Marketing Operations Agent Platform) go-to-market. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts. Structured for LLM chunking and cross-referencing.
+
+**See also:**
+- [MARKETING-PLAN.md](MARKETING-PLAN.md)
+- [STRATEGIC-GOALS.md](STRATEGIC-GOALS.md)
+- [README.md](../../../../README.md)
 
 ---
 
 ## Channel Priority Stack
+
+**Summary:**
+Ranks and explains the most effective channels for Agents-aaS, with rationale, content format, frequency, and KPIs for each.
 
 **1. Founder-Led Content on LinkedIn + Twitter/X**
 - Why: AI tool adoption in marketing is driven by peer trust more than vendor marketing. When a founder authentically documents their agent platform's results, failures, and learnings, it drives more qualified pipeline than any ad. This audience follows AI builders, not AI marketers.
@@ -37,13 +52,33 @@
 - Posting frequency: 1–2 analyst briefings/quarter; 2–3 podcast appearances/month.
 - KPI: G2 reviews (target 50+, avg 4.5+), analyst mention tracking, podcast-attributed inbound.
 
+
 ## Quick Wins (First 30 Days)
+
+**Summary:**
+Tactical actions to drive early traction and credibility for an Agents-aaS launch.
 
 1. **"Live Agent Session" Demo Video**: Record a 12-minute unedited screen capture of the agent autonomously executing a real marketing workflow (research → copy → scheduling). Publish on LinkedIn with no edits except titles. Authenticity converts skeptics — polished demos don't.
 2. **G2 Review Campaign**: Email your top 20 most engaged customers asking for an honest G2 review. Offer to give them early access to a new agent capability in exchange. Target: 20 reviews in 30 days to cross the G2 category visibility threshold.
 3. **Marketing AI Slack Community AMA**: Reach out to the moderator of the top 2 marketing AI Slack communities and offer the CEO for a live AMA. Frame it as "What agentic marketing actually looks like in production — including what went wrong." Honesty and transparency generate the most positive response.
 
+
 ## Channels to Explicitly Avoid (For Now)
+
+**Summary:**
+Lists channels that are not recommended for this audience or stage, with rationale.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 - **Broad Meta Paid Social**: Our buyer is not being reached through B2C-style social advertising. Waste of budget.
 - **Cold Email at Volume**: AI companies sending mass automated emails actively undermine their credibility. High personalization, human-led outreach only.

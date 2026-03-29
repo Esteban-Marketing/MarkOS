@@ -1,7 +1,7 @@
 # MEDIA-RELATIONS.md — Press & Publication Outreach
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/07_PR-COMMUNICATIONS/MEDIA-RELATIONS.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Outbound/07_PR-COMMUNICATIONS/MEDIA-RELATIONS.md to customize it safely.
 
 
 ```

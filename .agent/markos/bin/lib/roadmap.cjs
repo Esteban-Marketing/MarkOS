@@ -1,5 +1,5 @@
 /**
- * Roadmap — ROADMAP.md parser and utilities for MGSD
+ * Roadmap — ROADMAP.md parser and utilities for MARKOS
  */
 
 const fs = require('fs');

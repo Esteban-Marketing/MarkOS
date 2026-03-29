@@ -11,5 +11,5 @@ Analyze and validate the implementation of the 4 recent foundational pillars (Re
 - `TEAM.md`
 - `WORKFLOWS.md`
 - `DEFCON.md`
-- `mgsd-strategist.md`, `mgsd-data-scientist.md`, `mgsd-behavioral-scraper.md`, `mgsd-task-synthesizer.md`
+- `markos-strategist.md`, `markos-data-scientist.md`, `markos-behavioral-scraper.md`, `markos-task-synthesizer.md`
 - Planning and Execute Workflow files (`plan-phase.md`, `execute-phase.md`)

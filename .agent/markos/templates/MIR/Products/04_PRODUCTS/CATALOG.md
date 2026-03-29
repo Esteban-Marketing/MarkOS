@@ -1,13 +1,13 @@
 # CATALOG.md — Products & Services Catalog
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Products/04_PRODUCTS/CATALOG.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Products/04_PRODUCTS/CATALOG.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This catalog is the definitive source of truth for all deliverables. `mgsd-copy-drafter` MUST verify every product claim in Section 2 before generating ad copy. `mgsd-executor` MUST ensure that any product promoted in an active campaign is marked as `ACTIVE` in this file. No unauthorized products or claims may be used.
+> **AGENT LOGIC**: This catalog is the definitive source of truth for all deliverables. `markos-copy-drafter` MUST verify every product claim in Section 2 before generating ad copy. `markos-executor` MUST ensure that any product promoted in an active campaign is marked as `ACTIVE` in this file. No unauthorized products or claims may be used.
 
 **Dependencies:** PRICING (`PRICING.md`), OFFERS (`OFFERS.md`), CUSTOMER-JOURNEY (`CUSTOMER-JOURNEY.md`), AUDIENCES (`../../Market_Audiences/03_MARKET/AUDIENCES.md`)
-**Assigned Agent:** `mgsd-product-manager`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-product-manager`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : Complete inventory of everything this business sells.

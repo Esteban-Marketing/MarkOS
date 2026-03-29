@@ -1,24 +1,43 @@
-# STRATEGIC-GOALS.md — Annual Marketing Goals
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/STRATEGIC-GOALS.md to customize it safely.
+# MarkOS Annual Marketing Goals
+
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/00_MASTER-PLAN/STRATEGIC-GOALS.md to customize it safely.
+
+---
+
+## LLM-Optimized Summary
+
+This document defines every annual marketing goal for MarkOS with precision: what is being measured, the current baseline, the target, the timeline, the owner, and the PostHog measurement source. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts. Structured for LLM chunking and cross-referencing.
+
+**See also:**
+- [PERFORMANCE-DASHBOARD.md](PERFORMANCE-DASHBOARD.md)
+- [MARKETING-PLAN.md](MARKETING-PLAN.md)
+- [README.md](../../../../README.md)
 
 
-```
-file_purpose  : Define every marketing goal with precision: what is being measured,
-                the current baseline, the target, the timeline, the owner,
-                and the PostHog measurement source.
-status        : empty
-plan_period   : YYYY
-last_updated  : YYYY-MM-DD
-```
+
+---
+
+**File Purpose:**
+Define every marketing goal with precision: what is being measured, the current baseline, the target, the timeline, the owner, and the PostHog measurement source. Updated for MarkOS v2.2.
+
+**Status:** [FILL]
+**Plan Period:** [FILL]
+**Last Updated:** 2026-03-28
+
+---
 
 > **Rule:** A goal without a measurement source and a baseline is not a goal — it is a wish.
 > Every goal here must have all fields filled before the plan is considered active.
 
 ---
 
+
 ## 1. Goal-Setting Framework
+
+**Summary:**
+Describes how goals are set, the categories used, and the roll-up logic. Aligns with MarkOS v2.2 governance.
 
 **How goals are set at this business:**
 [FILL — e.g. "Goals are set bottom-up: KPI targets in each discipline plan roll up to marketing goals here, which roll up to business goals from the client brief in MIR `Core_Strategy/00_META/PROJECT.md`."]
@@ -35,7 +54,11 @@ efficiency    : "Cost and process metrics"
 
 ---
 
+
 ## 2. Annual Marketing Goals
+
+**Summary:**
+Lists all annual goals by category (acquisition, activation, retention, revenue, brand, efficiency), with baselines, targets, deadlines, measurement sources, and owners.
 
 ### Acquisition Goals
 
@@ -79,7 +102,11 @@ efficiency    : "Cost and process metrics"
 
 ---
 
+
 ## 3. Quarterly Goal Breakdown
+
+**Summary:**
+Breaks annual targets into quarterly milestones for tracking and accountability.
 
 > Annual targets broken into quarterly milestones.
 
@@ -111,7 +138,11 @@ efficiency    : "Cost and process metrics"
 
 ---
 
+
 ## 4. Goal Dependency Map
+
+**Summary:**
+Maps dependencies between goals, showing which must be achieved first. Use for sequencing and risk management.
 
 **Goals that depend on other goals being achieved first:**
 
@@ -133,7 +164,23 @@ G-REV-01 (revenue attributed) requires:
 
 ---
 
+
 ## 5. Anti-Goals
+
+**Summary:**
+Lists what marketing will explicitly NOT try to achieve this year. Use for focus and expectation management.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 > What marketing will explicitly NOT try to achieve this year.
 > Just as important as what we are pursuing.

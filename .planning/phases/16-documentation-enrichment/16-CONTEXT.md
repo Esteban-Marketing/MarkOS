@@ -1,4 +1,4 @@
-# Phase 16 Context — Documentation Enrichment
+﻿# Phase 16 Context â€” Documentation Enrichment
 
 ## Objective
 
@@ -17,7 +17,7 @@ This phase is strictly documentation and prompt-quality hardening. It does not c
 ### Out of Scope
 - MarkOS rebrand execution (Phase 17+).
 - Directory renames and migration logic.
-- Telemetry or ChromaDB schema changes.
+- Telemetry or Supabase + Upstash Vector schema changes.
 
 ## Locked Targets
 
@@ -43,3 +43,4 @@ This phase is strictly documentation and prompt-quality hardening. It does not c
 | Prompt sections added inconsistently | Medium | Apply a single section template across all 7 prompt files |
 | Broken deep links | High | Add explicit link verification in `VERIFICATION.md` |
 | Gold-standard doc becoming generic | Medium | Require concrete role-specific examples with inputs/outputs |
+

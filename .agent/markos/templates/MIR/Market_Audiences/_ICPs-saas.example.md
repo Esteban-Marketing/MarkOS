@@ -1,7 +1,7 @@
 # ICPs.md — Ideal Customer Profiles (Firmographics)
 # Reference Example: **SaaS** (Developer Observability Platform)
 
-<!-- mgsd-token: MIR | model: SaaS -->
+<!-- markos-token: MIR | model: SaaS -->
 > [!NOTE] SaaS ICP is firmographic with layered stakeholder mapping (technical evaluator + economic buyer).
 
 ---

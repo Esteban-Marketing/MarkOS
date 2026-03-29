@@ -1,13 +1,13 @@
 # INTEGRATIONS.md — System Connections & Data Flows
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/06_TECH-STACK/INTEGRATIONS.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/06_TECH-STACK/INTEGRATIONS.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This document governs data integrity. `mgsd-analyst` MUST verify that the `System Map` flows (Section 1) match actual platform logs before reporting on performance.
+> **AGENT LOGIC**: This document governs data integrity. `markos-analyst` MUST verify that the `System Map` flows (Section 1) match actual platform logs before reporting on performance.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This document is critical for `mgsd-executor` to maintain system health. Any changes to `Workflow ID` (Section 2) or `Secret Key Name` (Section 3) MUST be reviewed by `{{LEAD_AGENT}}` before deployment.
+> **AGENT LOGIC**: This document is critical for `markos-executor` to maintain system health. Any changes to `Workflow ID` (Section 2) or `Secret Key Name` (Section 3) MUST be reviewed by `{{LEAD_AGENT}}` before deployment.
 
 
 ```

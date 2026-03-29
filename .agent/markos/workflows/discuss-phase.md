@@ -2,7 +2,7 @@
 description: Gather marketing phase context through adaptive questioning before planning
 ---
 
-# /mgsd-discuss-phase
+# /markos-discuss-phase
 
 <purpose>
 Gather context for a marketing phase before planning. Uses adaptive questioning to understand campaign objectives, audience, budget, channels, and creative direction. Produces CONTEXT.md.
@@ -18,7 +18,7 @@ Gather context for a marketing phase before planning. Uses adaptive questioning 
 ### 1. Load Context
 
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init plan-phase {phase} --raw)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" init plan-phase {phase} --raw)
 ```
 
 Read:
@@ -30,13 +30,13 @@ Read:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► DISCOVERY — Phase {N}: {Name}
+ MARKOS ► DISCOVERY — Phase {N}: {Name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ### 3. Adaptive Questioning
 
-@-reference `.agent/marketing-get-shit-done/references/questioning.md`
+@-reference `.agent/markos/references/questioning.md`
 
 If `--auto`:
 - Read MIR files for answers
@@ -77,7 +77,7 @@ If `--auto`: infer archetype from AUDIENCES.md, pain state from MESSAGING-FRAMEW
 After questioning, display:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► NEURO PROFILE — Phase {N}
+ MARKOS ► NEURO PROFILE — Phase {N}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Archetype: {archetype}
@@ -90,14 +90,14 @@ Pain state: "{first 10 words of pain state...}"
 
 Ask user: "Generate NEURO-BRIEF.md for this phase? (y/n)"
 
-If yes: copy `.agent/marketing-get-shit-done/templates/NEURO-BRIEF.md` to `{phase_dir}/{padded_phase}-NEURO-BRIEF.md` and pre-fill: `ics_archetype`, `funnel_stage`, `primary_trigger` from answers above. All other fields remain [FILL] for planner to complete.
+If yes: copy `.agent/markos/templates/NEURO-BRIEF.md` to `{phase_dir}/{padded_phase}-NEURO-BRIEF.md` and pre-fill: `ics_archetype`, `funnel_stage`, `primary_trigger` from answers above. All other fields remain [FILL] for planner to complete.
 
 ### 4. Create CONTEXT.md
 
 Write to `.planning/phases/{phase-dir}/{NN}-CONTEXT.md` using `templates/context.md`:
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" find-phase {phase}
+node ".agent/markos/bin/markos-tools.cjs" find-phase {phase}
 ```
 
 Populate template with gathered context.
@@ -105,7 +105,7 @@ Populate template with gathered context.
 ### 5. Commit
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-{N}): discuss phase context"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(phase-{N}): discuss phase context"
 ```
 
 ### 6. Next Up
@@ -115,7 +115,7 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-{N})
 
 **Plan Phase {N}** — Create execution plan
 
-`/mgsd-plan-phase {N}`
+`/markos-plan-phase {N}`
 ```
 
 <success_criteria>

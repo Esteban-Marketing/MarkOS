@@ -1,7 +1,7 @@
 # SEO-CONTENT.md — Organic Content for Search
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/02_CONTENT-MARKETING/SEO-CONTENT.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/02_CONTENT-MARKETING/SEO-CONTENT.md to customize it safely.
 
 
 ```

@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-ACQ-01
+token_id: MARKOS-ITM-ACQ-01
 document_class: ITM
 domain: ACQ
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 2
 ---
 
-# MGSD-ITM-ACQ-01 — Paid Social Campaign Setup (Meta / TikTok / LinkedIn)
+# MARKOS-ITM-ACQ-01 — Paid Social Campaign Setup (Meta / TikTok / LinkedIn)
 
-<!-- TOKEN: MGSD-ITM-ACQ-01 | CLASS: ITM | DOMAIN: ACQ -->
-<!-- PURPOSE: Linear issue template for structuring and specifying a full paid social campaign: campaign objective, audience targeting, creative brief per ad set, and budget allocation. Consumed by mgsd-linear-manager when creating [MGSD] Paid Social Setup tickets. Gate 1 + Gate 2 required. -->
+<!-- TOKEN: MARKOS-ITM-ACQ-01 | CLASS: ITM | DOMAIN: ACQ -->
+<!-- PURPOSE: Linear issue template for structuring and specifying a full paid social campaign: campaign objective, audience targeting, creative brief per ad set, and budget allocation. Consumed by markos-linear-manager when creating [MARKOS] Paid Social Setup tickets. Gate 1 + Gate 2 required. -->
 
-**Linear Title format:** `[MGSD] Paid Social Setup: {platform} — {campaign_name} — {objective}`
+**Linear Title format:** `[MARKOS] Paid Social Setup: {platform} — {campaign_name} — {objective}`
 **Category:** Acquisition
 **Primary Triggers:** B05 (Pain Relief), B02 (Loss Aversion), B06 (Scarcity)
 **Secondary:** B09 (Anchoring), B03 (Social Proof)
@@ -29,28 +29,28 @@ mir_gate_required: 2
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B02, §B03, §B05, §B06, §B09 |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 + Gate 2 enforcement |
-| MGSD-AGT-STR-03 | agents/mgsd-campaign-architect.md | Campaign structure: objective, ad sets, audience layering |
-| MGSD-AGT-STR-04 | agents/mgsd-creative-brief.md | Per-ad-set creative brief |
-| MGSD-AGT-TRK-02 | agents/mgsd-utm-architect.md | UTM taxonomy for all ad sets |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Creative brief neuro audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B02, §B03, §B05, §B06, §B09 |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 + Gate 2 enforcement |
+| MARKOS-AGT-STR-03 | agents/markos-campaign-architect.md | Campaign structure: objective, ad sets, audience layering |
+| MARKOS-AGT-STR-04 | agents/markos-creative-brief.md | Per-ad-set creative brief |
+| MARKOS-AGT-TRK-02 | agents/markos-utm-architect.md | UTM taxonomy for all ad sets |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Creative brief neuro audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-ACQ-01 | Acquisition — Paid Social -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-ACQ-01 | Acquisition — Paid Social -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B02, §B03, §B05, §B06, §B09; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B02, §B03, §B05, §B06, §B09; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 AND Gate 2 GREEN |
 | MSP Matrix | `MSP/Campaigns/01_PAID_ACQUISITION.md` — paid social discipline section |
-| AGT Assigned | MGSD-AGT-STR-03 (campaign-architect) + MGSD-AGT-STR-04 (creative-brief) + MGSD-AGT-TRK-02 (utm-architect) |
-| SKL Entry Point | MGSD-SKL-OPS-01 (mgsd-plan-phase) |
+| AGT Assigned | MARKOS-AGT-STR-03 (campaign-architect) + MARKOS-AGT-STR-04 (creative-brief) + MARKOS-AGT-TRK-02 (utm-architect) |
+| SKL Entry Point | MARKOS-SKL-OPS-01 (markos-plan-phase) |
 
 ---
 
@@ -93,26 +93,26 @@ mir_gate_required: 2
 
 ## Task Steps
 
-- [ ] **Step 1:** Run `mgsd-tools.cjs mir-audit` — confirm Gate 1 AND Gate 2 GREEN. Block if either RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run `markos-tools.cjs mir-audit` — confirm Gate 1 AND Gate 2 GREEN. Block if either RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status
-- [ ] **Step 2:** Generate campaign architecture using `MGSD-AGT-STR-03` — output: campaign objective, ad set map (TOFU / MOFU / BOFU), audience targeting per ad set, budget split per ad set, optimization event per ad set.
-  - Agent: MGSD-AGT-STR-03
+- [ ] **Step 2:** Generate campaign architecture using `MARKOS-AGT-STR-03` — output: campaign objective, ad set map (TOFU / MOFU / BOFU), audience targeting per ad set, budget split per ad set, optimization event per ad set.
+  - Agent: MARKOS-AGT-STR-03
   - Output: `PAID-SOCIAL-ARCHITECTURE-{campaign_slug}.md`
-- [ ] **Step 3:** Generate creative brief per ad set using `MGSD-AGT-STR-04` — each brief specifies: trigger, copy hook, visual direction, CTA text. TOFU → B05; MOFU → B03; BOFU → B02.
-  - Agent: MGSD-AGT-STR-04
+- [ ] **Step 3:** Generate creative brief per ad set using `MARKOS-AGT-STR-04` — each brief specifies: trigger, copy hook, visual direction, CTA text. TOFU → B05; MOFU → B03; BOFU → B02.
+  - Agent: MARKOS-AGT-STR-04
   - Output: `CREATIVE-BRIEFS-{campaign_slug}.md` (one section per ad set)
-- [ ] **Step 4:** Generate UTM parameters for all ad sets using `MGSD-AGT-TRK-02`.
-  - Agent: MGSD-AGT-TRK-02
+- [ ] **Step 4:** Generate UTM parameters for all ad sets using `MARKOS-AGT-TRK-02`.
+  - Agent: MARKOS-AGT-TRK-02
   - Output: `UTM-SPEC-{campaign_slug}.md`
-- [ ] **Step 5:** Run `MGSD-AGT-NEU-01` on all creative briefs — flag TOFU briefs revealing product in sentence 1, gain-framed CTAs, BOFU briefs without escalating cost-of-inaction.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 5:** Run `MARKOS-AGT-NEU-01` on all creative briefs — flag TOFU briefs revealing product in sentence 1, gain-framed CTAs, BOFU briefs without escalating cost-of-inaction.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Creative brief audit per ad set
 - [ ] **Step 6:** Resolve all `REWRITE REQUIRED` flags. Rerun until `PASSED`.
-  - Agent: MGSD-AGT-STR-04
+  - Agent: MARKOS-AGT-STR-04
   - Output: Revised creative briefs
-- [ ] **Step 7:** Commit with message `mgsd(acquisition): paid-social {platform} {campaign_slug} setup complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 7:** Commit with message `markos(acquisition): paid-social {platform} {campaign_slug} setup complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -127,8 +127,8 @@ mir_gate_required: 2
 | 4 — Tracking | Pixels, CAPI params, and conversion events confirmed | TRACKING.md non-empty; UTM-SPEC committed |
 | 5 — Creative Compliance | TOFU briefs pain-first; BOFU CTAs loss-framed | Neuro audit PASSED per ad set |
 | 6 — Budget Alignment | Budget per ad set ≤ BUDGET-ALLOCATION.md paid acquisition cap | Stated allocation ≤ discipline cap |
-| 7 — Linear Sync | Issue marked Done; all artifacts committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | All ad set creative briefs PASSED | `MGSD-AGT-NEU-01` returns `PASSED` for all briefs |
+| 7 — Linear Sync | Issue marked Done; all artifacts committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | All ad set creative briefs PASSED | `MARKOS-AGT-NEU-01` returns `PASSED` for all briefs |
 
 ---
 
@@ -136,9 +136,9 @@ mir_gate_required: 2
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-ACQ-01 |
+| Template ID | MARKOS-ITM-ACQ-01 |
 | Task Category | Acquisition |
-| Labels | `[mgsd]`, `[paid-social]`, `[acquisition]`, `[awareness]` |
+| Labels | `[markos]`, `[paid-social]`, `[acquisition]`, `[awareness]` |
 | Priority | Urgent |
 | Estimate | 4–6h |
 | Parent Issue | Paid Social Campaign Epic |

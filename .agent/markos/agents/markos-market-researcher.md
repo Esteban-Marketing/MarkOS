@@ -65,7 +65,7 @@ Research agent for the plan-phase orchestration chain. Answers: "What do I need 
 
 ## Neuromarketing Alignment
 
-**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+**Reference:** `.agent/markos/references/neuromarketing.md`
 
 Research output must include a `## Biological Signal Scan` section:
 

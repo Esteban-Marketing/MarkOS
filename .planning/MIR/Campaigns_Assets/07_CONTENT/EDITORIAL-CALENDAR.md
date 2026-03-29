@@ -1,13 +1,13 @@
 # EDITORIAL-CALENDAR.md — Content Schedule
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Campaigns_Assets/07_CONTENT/EDITORIAL-CALENDAR.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Campaigns_Assets/07_CONTENT/EDITORIAL-CALENDAR.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This calendar is the source of truth for the `mgsd-content-manager`. Every Linear task for content production MUST link back to a specific Row/Date in this calendar. Agents MUST NOT publish content that is not logged here with a `PUBLISHED` status and a valid `Campaign Link` where applicable.
+> **AGENT LOGIC**: This calendar is the source of truth for the `markos-content-manager`. Every Linear task for content production MUST link back to a specific Row/Date in this calendar. Agents MUST NOT publish content that is not logged here with a `PUBLISHED` status and a valid `Campaign Link` where applicable.
 
 **Dependencies:** CONTENT-STRATEGY (`CONTENT-STRATEGY.md`), BRAND-IDENTITY (`../../Core_Strategy/02_BRAND/BRAND-IDENTITY.md`), ACTIVE-CAMPAIGNS (`../08_CAMPAIGNS/ACTIVE/`)
-**Assigned Agent:** `mgsd-content-manager`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-content-manager`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : Track planned and published content across all channels.

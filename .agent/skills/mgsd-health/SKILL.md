@@ -1,20 +1,20 @@
 ---
-name: mgsd-health
+name: markos-health
 description: Check structural integrity of the marketing project setup
 ---
 
-# mgsd-health
+# markos-health
 
 <context>
 Diagnoses missing directories, plans, or configurations.
 </context>
 
 <execution_context>
-@.agent/marketing-get-shit-done/workflows/health.md
+@.agent/markos/workflows/health.md
 </execution_context>
 
 <process>
-Execute the `/mgsd-health` workflow exactly as documented in the workflow file.
+Execute the `/markos-health` workflow exactly as documented in the workflow file.
 </process>
 
 <success_criteria>

@@ -88,7 +88,7 @@ async function withMockedModule(modulePath, mockedExports, run) {
 }
 
 function createTestEnvironment() {
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'mgsd-test-'));
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'markos-test-'));
   
   return {
     dir: tmpDir,
@@ -102,22 +102,22 @@ function createTestEnvironment() {
       fs.mkdirSync(gsdDir, { recursive: true });
       fs.writeFileSync(path.join(gsdDir, 'VERSION'), '1.0.0');
     },
-    seedMGSD: () => {
-      const mgsdDir = path.join(tmpDir, '.agent', 'marketing-get-shit-done');
-      fs.mkdirSync(mgsdDir, { recursive: true });
-      fs.writeFileSync(path.join(mgsdDir, 'VERSION'), '0.9.0');
+    seedMarkOS: () => {
+      const markosDir = path.join(tmpDir, '.agent', 'markos');
+      fs.mkdirSync(markosDir, { recursive: true });
+      fs.writeFileSync(path.join(markosDir, 'VERSION'), '0.9.0');
     },
     seedInstallForUpdate: () => {
       const crypto = require('crypto');
-      const mgsdDir = path.join(tmpDir, '.agent', 'marketing-get-shit-done');
-      fs.mkdirSync(path.join(mgsdDir, 'agents'), { recursive: true });
+      const markosDir = path.join(tmpDir, '.agent', 'markos');
+      fs.mkdirSync(path.join(markosDir, 'agents'), { recursive: true });
       
-      const file1 = path.join(mgsdDir, 'MGSD-INDEX.md');
-      const file2 = path.join(mgsdDir, 'agents', 'mgsd-researcher.md');
+      const file1 = path.join(markosDir, 'MARKOS-INDEX.md');
+      const file2 = path.join(markosDir, 'agents', 'markos-researcher.md');
       
       fs.writeFileSync(file1, 'Old Index v0.9.0');
       fs.writeFileSync(file2, 'Old Researcher v0.9.0');
-      fs.writeFileSync(path.join(mgsdDir, 'VERSION'), '0.9.0');
+      fs.writeFileSync(path.join(markosDir, 'VERSION'), '0.9.0');
       
       const hash1 = crypto.createHash('sha256').update('Old Index v0.9.0').digest('hex');
       const hash2 = crypto.createHash('sha256').update('Old Researcher v0.9.0').digest('hex');
@@ -128,16 +128,16 @@ function createTestEnvironment() {
         location: 'project',
         project_name: 'Test Project',
         file_hashes: {
-          'MGSD-INDEX.md': hash1,
-          'agents\\mgsd-researcher.md': hash2,
+          'MARKOS-INDEX.md': hash1,
+          'agents\\markos-researcher.md': hash2,
           'VERSION': crypto.createHash('sha256').update('0.9.0').digest('hex')
         }
       };
       
       // Fix paths for POSIX systems:
-      manifest.file_hashes['agents/mgsd-researcher.md'] = hash2;
+      manifest.file_hashes['agents/markos-researcher.md'] = hash2;
       
-      fs.writeFileSync(path.join(tmpDir, '.mgsd-install-manifest.json'), JSON.stringify(manifest, null, 2));
+      fs.writeFileSync(path.join(tmpDir, '.markos-install-manifest.json'), JSON.stringify(manifest, null, 2));
     },
     seedOnboarding: () => {
       const srcDir = path.resolve(__dirname, '../onboarding');
@@ -170,10 +170,16 @@ function createTestEnvironment() {
   };
 }
 
-function runCLI(scriptPath, cwd, inputs = []) {
+function runCLI(scriptPath, cwd, inputs = [], options = {}) {
   return new Promise((resolve, reject) => {
     // Execute the Node script in the specific tmp directory
-    const child = spawn(process.execPath, [scriptPath], { cwd });
+    const child = spawn(process.execPath, [scriptPath], {
+      cwd,
+      env: {
+        ...process.env,
+        ...(options.env || {}),
+      },
+    });
     
     let output = '';
     
@@ -211,7 +217,7 @@ function runCLI(scriptPath, cwd, inputs = []) {
 }
 
 function readManifest(targetDir) {
-  const manifestPath = path.join(targetDir, '.mgsd-install-manifest.json');
+  const manifestPath = path.join(targetDir, '.markos-install-manifest.json');
   if (fs.existsSync(manifestPath)) {
     return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   }

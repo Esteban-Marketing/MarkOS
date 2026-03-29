@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * server.cjs — MGSD Onboarding Backend & AI Orchestration Server
+ * server.cjs — MARKOS Onboarding Backend & AI Orchestration Server
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
  *   HTTP interface for the client onboarding form. Handles local file serving,
@@ -9,27 +9,27 @@
  * ENDPOINTS:
  *   GET  /              → serves `onboarding/index.html`
  *   GET  /config        → returns `onboarding-config.json` + environment status
- *   GET  /status        → returns ChromaDB heartbeat + MIR STATE.md progress
+ *   GET  /status        → returns vector memory heartbeat + MIR STATE.md progress
  *   POST /submit        → PERSISTS seed JSON → RUNS AI AGENTS → returns draft snippets
  *   POST /regenerate    → re-runs a specific agent for a single section
- *   POST /approve       → triggers `write-mir.cjs` to write drafts to `.mgsd-local/`
+ *   POST /approve       → triggers `write-mir.cjs` to write drafts to `.markos-local/`
  *
  * INITIALIZATION SEQUENCE:
  *   1. Load `.env` from project root.
  *   2. Load `onboarding-config.json`.
- *   3. Configure `chroma-client.cjs` with host.
- *   4. Run `bin/ensure-chroma.cjs` heartbeat to revive daemon if dead.
+ *   3. Configure `vector-store-client.cjs` with runtime settings.
+ *   4. Run `bin/ensure-vector.cjs` health bootstrap.
  *
  * PERSISTENCE RULES:
- *   - project_slug is written to `.mgsd-project.json` on the first POST /submit.
- *   - This slug becomes the permanent namespace for ChromaDB collections.
- *   - Drafts are stored in ChromaDB before being approved by the human.
+ *   - project_slug is written to `.markos-project.json` on the first POST /submit.
+ *   - This slug becomes the permanent namespace for vector collections.
+ *   - Drafts are stored in vector memory before being approved by the human.
  *
  * RELATED FILES:
  *   onboarding/backend/agents/orchestrator.cjs  (Parallel draft generation)
  *   onboarding/backend/write-mir.cjs            (Fuzzy MIR file management)
- *   onboarding/backend/chroma-client.cjs        (Vector storage)
- *   bin/ensure-chroma.cjs                       (Auto-healing daemon)
+ *   onboarding/backend/vector-store-client.cjs  (Vector storage)
+ *   bin/ensure-vector.cjs                       (Provider health bootstrap)
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 'use strict';
@@ -53,14 +53,14 @@ try {
 } catch (e) {}
 
 const orchestrator = require('./agents/orchestrator.cjs');
-const chroma       = require('./chroma-client.cjs');
+const vectorStore  = require('./vector-store-client.cjs');
 const writeMIR     = require('./write-mir.cjs');
 
 const runtime = createRuntimeContext();
 const { config } = runtime;
 
-// Apply chroma config
-chroma.configure(config.chroma_host);
+// Apply vector store config
+vectorStore.configure(config);
 
 // ── MIME Types ───────────────────────────────────────────────────────────────
 const MIME = {
@@ -90,6 +90,9 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/api/competitor-discovery')) return handlers.handleCompetitorDiscovery(req, res);
   if (req.method === 'POST' && req.url.startsWith('/regenerate')) return handlers.handleRegenerate(req, res);
   if (req.method === 'POST' && req.url.startsWith('/approve')) return handlers.handleApprove(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/migrate/local-to-cloud')) return handlers.handleMarkosdbMigration(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/linear/sync')) return handlers.handleLinearSync(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/campaign/result')) return handlers.handleCampaignResult(req, res);
 
 
   // ── Static File Serving ────────────────────────────────────────────────────
@@ -113,15 +116,15 @@ const server = http.createServer(async (req, res) => {
 });
 
 // ── Boot Sequence ────────────────────────────────────────────────────────────
-const ensureChromaPath = path.resolve(__dirname, '../../bin/ensure-chroma.cjs');
+const ensureVectorPath = path.resolve(__dirname, '../../bin/ensure-vector.cjs');
 let bootDB = Promise.resolve();
-if (fs.existsSync(ensureChromaPath)) {
-  bootDB = require(ensureChromaPath).ensureChroma();
+if (fs.existsSync(ensureVectorPath)) {
+  bootDB = require(ensureVectorPath).ensureVectorStores();
 }
 
 bootDB.then((bootReport) => {
-  if (typeof chroma.setBootReport === 'function') {
-    chroma.setBootReport(bootReport);
+  if (typeof vectorStore.setBootReport === 'function') {
+    vectorStore.setBootReport(bootReport);
   }
 
   server.on('error', (e) => {
@@ -138,7 +141,7 @@ bootDB.then((bootReport) => {
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(` MarkOS Onboarding v2.0 → ${url}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(' ✓ ChromaDB integration active');
+    console.log(' ✓ Supabase + Upstash vector integration active');
     console.log(' ✓ OpenAI AI draft generation ready');
     console.log(' Ensure OPENAI_API_KEY is set in .env');
     console.log(' Complete the form → get AI drafts → publish\n');

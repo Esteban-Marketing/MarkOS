@@ -1,7 +1,7 @@
 # CONTACTS.md — Vendor, Platform & Stakeholder Directory
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Operations/10_OPERATIONS/CONTACTS.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Operations/10_OPERATIONS/CONTACTS.md` to customize it safely.
 
 > [!IMPORTANT]
 > **AGENT LOGIC**: This is the emergency routing table. AI agents must NOT attempt to contact external vendors or handles directly. In the event of a failure (Session 5), the agent must surface the relevant "Who to Contact" entry to {{LEAD_AGENT}}.

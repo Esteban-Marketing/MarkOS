@@ -2,10 +2,10 @@
 description: Diagnose planning directory health and optionally repair issues
 ---
 
-# /mgsd-health
+# /markos-health
 
 <purpose>
-Check structural integrity of the MGSD project setup.
+Check structural integrity of the MARKOS project setup.
 </purpose>
 
 ## Process
@@ -20,7 +20,7 @@ Check structural integrity of the MGSD project setup.
 | `STATE.md` exists | [✓/✗] |
 | `config.json` exists | [✓/✗] |
 | `config.json` valid JSON | [✓/✗] |
-| `.agent/marketing-get-shit-done/` exists | [✓/✗] |
+| `.agent/markos/` exists | [✓/✗] |
 | MIR templates present | [✓/✗] |
 | MSP templates present | [✓/✗] |
 | Agent roster present | [✓/✗] |
@@ -38,7 +38,7 @@ For each phase directory:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► HEALTH CHECK
+ MARKOS ► HEALTH CHECK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Structure:  ✓ All planning files present

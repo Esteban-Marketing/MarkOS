@@ -1,7 +1,7 @@
 # CONTENT-PILLARS.md — Pillar Definitions & Rationale
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/02_CONTENT-MARKETING/CONTENT-PILLARS.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/02_CONTENT-MARKETING/CONTENT-PILLARS.md to customize it safely.
 
 
 ```

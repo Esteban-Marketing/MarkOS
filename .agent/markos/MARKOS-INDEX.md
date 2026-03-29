@@ -65,47 +65,47 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 
 | TOKEN_ID | File Path | Class | Domain | Description |
 |----------|-----------|-------|--------|-------------|
-| MGSD-AGT-STR-01 | `agents/mgsd-strategist.md` | AGT | STR | MIR architect; enforces Gate 1/2 before strategy; neuro trigger architecture |
-| MGSD-AGT-STR-02 | `agents/mgsd-planner.md` | AGT | STR | Creates PLAN.md from MIR context + MSP matrix |
-| MGSD-AGT-STR-03 | `agents/mgsd-campaign-architect.md` | AGT | STR | Campaign structure design; channel selection |
-| MGSD-AGT-STR-04 | `agents/mgsd-creative-brief.md` | AGT | STR | Creative brief generation from MIR foundation |
-| MGSD-AGT-STR-05 | `agents/mgsd-cro-hypothesis.md` | AGT | STR | Conversion rate optimization hypothesis generation |
-| MGSD-AGT-NEU-01 | `agents/mgsd-neuro-auditor.md` | AGT | NEU | 8-dimension neuromarketing audit of plans; returns PASSED/WARNINGS/REWRITE REQUIRED |
-| MGSD-AGT-EXE-01 | `agents/mgsd-executor.md` | AGT | EXE | Executes all tasks in a PLAN.md; atomic commits; creates SUMMARY.md |
-| MGSD-AGT-EXE-02 | `agents/mgsd-verifier.md` | AGT | EXE | 7-dimension post-phase verification; creates VERIFICATION.md |
-| MGSD-AGT-EXE-03 | `agents/mgsd-plan-checker.md` | AGT | EXE | Pre-execution plan quality gate; validates plan structure and completeness |
-| MGSD-AGT-CNT-01 | `agents/mgsd-content-creator.md` | AGT | CNT | Channel-formatted content generation; enforces VOICE-TONE constraints |
-| MGSD-AGT-CNT-02 | `agents/mgsd-copy-drafter.md` | AGT | CNT | Long-form and short-form copy drafting |
-| MGSD-AGT-CNT-03 | `agents/mgsd-social-drafter.md` | AGT | CNT | Social media post drafting per channel format |
-| MGSD-AGT-CNT-04 | `agents/mgsd-email-sequence.md` | AGT | CNT | Email sequence generation with trigger-based logic |
-| MGSD-AGT-CNT-05 | `agents/mgsd-content-brief.md` | AGT | CNT | Content brief creation from campaign objectives |
-| MGSD-AGT-CNT-06 | `agents/mgsd-seo-planner.md` | AGT | CNT | SEO keyword strategy and content cluster planning |
-| MGSD-AGT-AUD-01 | `agents/mgsd-audience-intel.md` | AGT | AUD | Monthly ICP behavioral signal extraction from public data |
-| MGSD-AGT-AUD-02 | `agents/mgsd-market-researcher.md` | AGT | AUD | Market research; competitor positioning; demand signals |
-| MGSD-AGT-AUD-03 | `agents/mgsd-competitive-monitor.md` | AGT | AUD | Ongoing competitor campaign and messaging monitoring |
-| MGSD-AGT-AUD-04 | `agents/mgsd-market-scanner.md` | AGT | AUD | Emerging opportunity detection in target market |
-| MGSD-AGT-ANA-01 | `agents/mgsd-funnel-analyst.md` | AGT | ANA | Funnel stage conversion analysis |
-| MGSD-AGT-ANA-02 | `agents/mgsd-performance-monitor.md` | AGT | ANA | Campaign KPI monitoring against targets |
-| MGSD-AGT-ANA-03 | `agents/mgsd-gap-auditor.md` | AGT | ANA | MIR gap detection; surfaces incomplete or stale files |
-| MGSD-AGT-ANA-04 | `agents/mgsd-report-compiler.md` | AGT | ANA | Compiles analytics data into structured performance reports |
-| MGSD-AGT-TRK-01 | `agents/mgsd-tracking-spec.md` | AGT | TRK | PostHog event schema, pixel IDs, conversion event definitions |
-| MGSD-AGT-TRK-02 | `agents/mgsd-utm-architect.md` | AGT | TRK | UTM taxonomy design and parameter standards |
-| MGSD-AGT-OPS-01 | `agents/mgsd-context-loader.md` | AGT | OPS | Loads and validates project context at session start |
-| MGSD-AGT-OPS-02 | `agents/mgsd-librarian.md` | AGT | OPS | MIR file staleness tracking and catalogue maintenance |
-| MGSD-AGT-OPS-03 | `agents/mgsd-automation-architect.md` | AGT | OPS | n8n/automation workflow design |
-| MGSD-AGT-OPS-04 | `agents/mgsd-calendar-builder.md` | AGT | OPS | Campaign calendar generation from MSP matrices |
-| MGSD-AGT-OPS-05 | `agents/mgsd-budget-monitor.md` | AGT | OPS | Budget threshold monitoring; escalation on overspend |
-| MGSD-AGT-OPS-06 | `agents/mgsd-lead-scorer.md` | AGT | OPS | Lead scoring model definition |
-| MGSD-AGT-OPS-07 | `agents/mgsd-linear-manager.md` | AGT | OPS | Linear.app ticket creation and bidirectional sync |
-| MGSD-AGT-RES-01 | `agents/mgsd-researcher.md` | AGT | RES | Market Intelligence Agent — populates RESEARCH/ files from onboarding seed |
-| MGSD-AGT-ONB-01 | `agents/mgsd-onboarder.md` | AGT | ONB | Onboarding Orchestrator — reads seed, drives researcher, scaffolds MIR/MSP |
-| MGSD-PRM-OPS-01 | `prompts/telemetry_synthesizer.md` | PRM | OPS | Layer 0 Data Analyst; converts raw analytics into MIR insights |
-| MGSD-PRM-STR-01 | `prompts/cro_landing_page_builder.md` | PRM | STR | High-conversion wireframer and copywriter for owned properties |
-| MGSD-PRM-EXE-01 | `prompts/paid_media_creator.md` | PRM | EXE | Performance media creator (Meta/Google Ad copy) |
-| MGSD-PRM-CNT-01 | `prompts/email_lifecycle_strategist.md` | PRM | CNT | Retention and LTV-focused email strategist |
-| MGSD-PRM-CNT-02 | `prompts/seo_content_architect.md` | PRM | CNT | Inbound content creator focused on long-tail dominance |
-| MGSD-PRM-CNT-03 | `prompts/social_community_manager.md` | PRM | CNT | Organic social engagement and market polarization |
-| MGSD-PRM-OPS-02 | `prompts/brand_enforcer_qa.md` | PRM | OPS | Ruthless gatekeeper for brand and legal compliance |
+| MARKOS-AGT-STR-01 | `agents/markos-strategist.md` | AGT | STR | MIR architect; enforces Gate 1/2 before strategy; neuro trigger architecture |
+| MARKOS-AGT-STR-02 | `agents/markos-planner.md` | AGT | STR | Creates PLAN.md from MIR context + MSP matrix |
+| MARKOS-AGT-STR-03 | `agents/markos-campaign-architect.md` | AGT | STR | Campaign structure design; channel selection |
+| MARKOS-AGT-STR-04 | `agents/markos-creative-brief.md` | AGT | STR | Creative brief generation from MIR foundation |
+| MARKOS-AGT-STR-05 | `agents/markos-cro-hypothesis.md` | AGT | STR | Conversion rate optimization hypothesis generation |
+| MARKOS-AGT-NEU-01 | `agents/markos-neuro-auditor.md` | AGT | NEU | 8-dimension neuromarketing audit of plans; returns PASSED/WARNINGS/REWRITE REQUIRED |
+| MARKOS-AGT-EXE-01 | `agents/markos-executor.md` | AGT | EXE | Executes all tasks in a PLAN.md; atomic commits; creates SUMMARY.md |
+| MARKOS-AGT-EXE-02 | `agents/markos-verifier.md` | AGT | EXE | 7-dimension post-phase verification; creates VERIFICATION.md |
+| MARKOS-AGT-EXE-03 | `agents/markos-plan-checker.md` | AGT | EXE | Pre-execution plan quality gate; validates plan structure and completeness |
+| MARKOS-AGT-CNT-01 | `agents/markos-content-creator.md` | AGT | CNT | Channel-formatted content generation; enforces VOICE-TONE constraints |
+| MARKOS-AGT-CNT-02 | `agents/markos-copy-drafter.md` | AGT | CNT | Long-form and short-form copy drafting |
+| MARKOS-AGT-CNT-03 | `agents/markos-social-drafter.md` | AGT | CNT | Social media post drafting per channel format |
+| MARKOS-AGT-CNT-04 | `agents/markos-email-sequence.md` | AGT | CNT | Email sequence generation with trigger-based logic |
+| MARKOS-AGT-CNT-05 | `agents/markos-content-brief.md` | AGT | CNT | Content brief creation from campaign objectives |
+| MARKOS-AGT-CNT-06 | `agents/markos-seo-planner.md` | AGT | CNT | SEO keyword strategy and content cluster planning |
+| MARKOS-AGT-AUD-01 | `agents/markos-audience-intel.md` | AGT | AUD | Monthly ICP behavioral signal extraction from public data |
+| MARKOS-AGT-AUD-02 | `agents/markos-market-researcher.md` | AGT | AUD | Market research; competitor positioning; demand signals |
+| MARKOS-AGT-AUD-03 | `agents/markos-competitive-monitor.md` | AGT | AUD | Ongoing competitor campaign and messaging monitoring |
+| MARKOS-AGT-AUD-04 | `agents/markos-market-scanner.md` | AGT | AUD | Emerging opportunity detection in target market |
+| MARKOS-AGT-ANA-01 | `agents/markos-funnel-analyst.md` | AGT | ANA | Funnel stage conversion analysis |
+| MARKOS-AGT-ANA-02 | `agents/markos-performance-monitor.md` | AGT | ANA | Campaign KPI monitoring against targets |
+| MARKOS-AGT-ANA-03 | `agents/markos-gap-auditor.md` | AGT | ANA | MIR gap detection; surfaces incomplete or stale files |
+| MARKOS-AGT-ANA-04 | `agents/markos-report-compiler.md` | AGT | ANA | Compiles analytics data into structured performance reports |
+| MARKOS-AGT-TRK-01 | `agents/markos-tracking-spec.md` | AGT | TRK | PostHog event schema, pixel IDs, conversion event definitions |
+| MARKOS-AGT-TRK-02 | `agents/markos-utm-architect.md` | AGT | TRK | UTM taxonomy design and parameter standards |
+| MARKOS-AGT-OPS-01 | `agents/markos-context-loader.md` | AGT | OPS | Loads and validates project context at session start |
+| MARKOS-AGT-OPS-02 | `agents/markos-librarian.md` | AGT | OPS | MIR file staleness tracking and catalogue maintenance |
+| MARKOS-AGT-OPS-03 | `agents/markos-automation-architect.md` | AGT | OPS | n8n/automation workflow design |
+| MARKOS-AGT-OPS-04 | `agents/markos-calendar-builder.md` | AGT | OPS | Campaign calendar generation from MSP matrices |
+| MARKOS-AGT-OPS-05 | `agents/markos-budget-monitor.md` | AGT | OPS | Budget threshold monitoring; escalation on overspend |
+| MARKOS-AGT-OPS-06 | `agents/markos-lead-scorer.md` | AGT | OPS | Lead scoring model definition |
+| MARKOS-AGT-OPS-07 | `agents/markos-linear-manager.md` | AGT | OPS | Linear.app ticket creation and bidirectional sync |
+| MARKOS-AGT-RES-01 | `agents/markos-researcher.md` | AGT | RES | Market Intelligence Agent — populates RESEARCH/ files from onboarding seed |
+| MARKOS-AGT-ONB-01 | `agents/markos-onboarder.md` | AGT | ONB | Onboarding Orchestrator — reads seed, drives researcher, scaffolds MIR/MSP |
+| MARKOS-PRM-OPS-01 | `prompts/telemetry_synthesizer.md` | PRM | OPS | Layer 0 Data Analyst; converts raw analytics into MIR insights |
+| MARKOS-PRM-STR-01 | `prompts/cro_landing_page_builder.md` | PRM | STR | High-conversion wireframer and copywriter for owned properties |
+| MARKOS-PRM-EXE-01 | `prompts/paid_media_creator.md` | PRM | EXE | Performance media creator (Meta/Google Ad copy) |
+| MARKOS-PRM-CNT-01 | `prompts/email_lifecycle_strategist.md` | PRM | CNT | Retention and LTV-focused email strategist |
+| MARKOS-PRM-CNT-02 | `prompts/seo_content_architect.md` | PRM | CNT | Inbound content creator focused on long-tail dominance |
+| MARKOS-PRM-CNT-03 | `prompts/social_community_manager.md` | PRM | CNT | Organic social engagement and market polarization |
+| MARKOS-PRM-OPS-02 | `prompts/brand_enforcer_qa.md` | PRM | OPS | Ruthless gatekeeper for brand and legal compliance |
 
 ---
 
@@ -113,30 +113,30 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 
 | TOKEN_ID | File Path | Class | Domain | Description |
 |----------|-----------|-------|--------|-------------|
-| MGSD-SKL-NEU-01 | `skills/mgsd-neuro-auditor/SKILL.md` | SKL | NEU | Routes to MGSD-AGT-NEU-01 |
-| MGSD-SKL-OPS-01 | `skills/mgsd-plan-phase/SKILL.md` | SKL | OPS | Routes to MGSD-AGT-STR-02 (planner) |
-| MGSD-SKL-OPS-02 | `skills/mgsd-execute-phase/SKILL.md` | SKL | OPS | Routes to MGSD-AGT-EXE-01 (executor) |
-| MGSD-SKL-OPS-03 | `skills/mgsd-discuss-phase/SKILL.md` | SKL | OPS | Routes to discuss-phase workflow |
-| MGSD-SKL-OPS-04 | `skills/mgsd-verify-work/SKILL.md` | SKL | OPS | Routes to MGSD-AGT-EXE-02 (verifier) |
-| MGSD-SKL-OPS-05 | `skills/mgsd-progress/SKILL.md` | SKL | OPS | Routes to progress dashboard workflow |
-| MGSD-SKL-OPS-06 | `skills/mgsd-health/SKILL.md` | SKL | OPS | Routes to structural health check |
-| MGSD-SKL-OPS-07 | `skills/mgsd-autonomous/SKILL.md` | SKL | OPS | Routes to autonomous multi-phase execution orchestrator |
-| MGSD-SKL-OPS-08 | `skills/mgsd-new-milestone/SKILL.md` | SKL | OPS | Routes to new milestone initialization |
-| MGSD-SKL-OPS-09 | `skills/mgsd-complete-milestone/SKILL.md` | SKL | OPS | Routes to milestone archival workflow |
-| MGSD-SKL-OPS-10 | `skills/mgsd-audit-milestone/SKILL.md` | SKL | OPS | Routes to milestone audit against KPIs |
-| MGSD-SKL-OPS-11 | `skills/mgsd-insert-phase/SKILL.md` | SKL | OPS | Routes to decimal phase insertion logic |
-| MGSD-SKL-OPS-12 | `skills/mgsd-remove-phase/SKILL.md` | SKL | OPS | Routes to phase removal and renumbering |
-| MGSD-SKL-OPS-13 | `skills/mgsd-pause-work/SKILL.md` | SKL | OPS | Routes to context handoff creation |
-| MGSD-SKL-OPS-14 | `skills/mgsd-resume-work/SKILL.md` | SKL | OPS | Routes to session context restoration |
-| MGSD-SKL-OPS-15 | `skills/mgsd-session-report/SKILL.md` | SKL | OPS | Routes to session report generation |
-| MGSD-SKL-OPS-16 | `skills/mgsd-stats/SKILL.md` | SKL | OPS | Routes to project statistics dashboard |
-| MGSD-SKL-OPS-17 | `skills/mgsd-help/SKILL.md` | SKL | OPS | Routes to MGSD command reference |
-| MGSD-SKL-OPS-18 | `skills/mgsd-discipline-activate/SKILL.md` | SKL | OPS | Routes to MSP discipline toggle |
-| MGSD-SKL-OPS-19 | `skills/mgsd-linear-sync/SKILL.md` | SKL | OPS | Routes to MGSD-AGT-OPS-07 (linear-manager) |
-| MGSD-SKL-CAM-01 | `skills/mgsd-campaign-launch/SKILL.md` | SKL | CAM | Routes to campaign launch checklist |
-| MGSD-SKL-CAM-02 | `skills/mgsd-performance-review/SKILL.md` | SKL | CAM | Routes to campaign performance analysis |
-| MGSD-SKL-CAM-03 | `skills/mgsd-mir-audit/SKILL.md` | SKL | CAM | Routes to MIR completeness audit |
-| MGSD-SKL-ANA-01 | `skills/mgsd-research-phase/SKILL.md` | SKL | ANA | Routes to standalone market research |
+| MARKOS-SKL-NEU-01 | `skills/markos-neuro-auditor/SKILL.md` | SKL | NEU | Routes to MARKOS-AGT-NEU-01 |
+| MARKOS-SKL-OPS-01 | `skills/markos-plan-phase/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-STR-02 (planner) |
+| MARKOS-SKL-OPS-02 | `skills/markos-execute-phase/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-EXE-01 (executor) |
+| MARKOS-SKL-OPS-03 | `skills/markos-discuss-phase/SKILL.md` | SKL | OPS | Routes to discuss-phase workflow |
+| MARKOS-SKL-OPS-04 | `skills/markos-verify-work/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-EXE-02 (verifier) |
+| MARKOS-SKL-OPS-05 | `skills/markos-progress/SKILL.md` | SKL | OPS | Routes to progress dashboard workflow |
+| MARKOS-SKL-OPS-06 | `skills/markos-health/SKILL.md` | SKL | OPS | Routes to structural health check |
+| MARKOS-SKL-OPS-07 | `skills/markos-autonomous/SKILL.md` | SKL | OPS | Routes to autonomous multi-phase execution orchestrator |
+| MARKOS-SKL-OPS-08 | `skills/markos-new-milestone/SKILL.md` | SKL | OPS | Routes to new milestone initialization |
+| MARKOS-SKL-OPS-09 | `skills/markos-complete-milestone/SKILL.md` | SKL | OPS | Routes to milestone archival workflow |
+| MARKOS-SKL-OPS-10 | `skills/markos-audit-milestone/SKILL.md` | SKL | OPS | Routes to milestone audit against KPIs |
+| MARKOS-SKL-OPS-11 | `skills/markos-insert-phase/SKILL.md` | SKL | OPS | Routes to decimal phase insertion logic |
+| MARKOS-SKL-OPS-12 | `skills/markos-remove-phase/SKILL.md` | SKL | OPS | Routes to phase removal and renumbering |
+| MARKOS-SKL-OPS-13 | `skills/markos-pause-work/SKILL.md` | SKL | OPS | Routes to context handoff creation |
+| MARKOS-SKL-OPS-14 | `skills/markos-resume-work/SKILL.md` | SKL | OPS | Routes to session context restoration |
+| MARKOS-SKL-OPS-15 | `skills/markos-session-report/SKILL.md` | SKL | OPS | Routes to session report generation |
+| MARKOS-SKL-OPS-16 | `skills/markos-stats/SKILL.md` | SKL | OPS | Routes to project statistics dashboard |
+| MARKOS-SKL-OPS-17 | `skills/markos-help/SKILL.md` | SKL | OPS | Routes to MARKOS command reference |
+| MARKOS-SKL-OPS-18 | `skills/markos-discipline-activate/SKILL.md` | SKL | OPS | Routes to MSP discipline toggle |
+| MARKOS-SKL-OPS-19 | `skills/markos-linear-sync/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-OPS-07 (linear-manager) |
+| MARKOS-SKL-CAM-01 | `skills/markos-campaign-launch/SKILL.md` | SKL | CAM | Routes to campaign launch checklist |
+| MARKOS-SKL-CAM-02 | `skills/markos-performance-review/SKILL.md` | SKL | CAM | Routes to campaign performance analysis |
+| MARKOS-SKL-CAM-03 | `skills/markos-mir-audit/SKILL.md` | SKL | CAM | Routes to MIR completeness audit |
+| MARKOS-SKL-ANA-01 | `skills/markos-research-phase/SKILL.md` | SKL | ANA | Routes to standalone market research |
 
 ---
 
@@ -144,8 +144,8 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 
 | TOKEN_ID | File Path | Class | Domain | Description |
 |----------|-----------|-------|--------|-------------|
-| MGSD-WFL-OPS-01 | `workflows/complete-milestone.md` | WFL | OPS | Milestone archival and next-cycle preparation |
-| MGSD-WFL-OPS-02 | `workflows/linear-sync.md` | WFL | OPS | Linear.app bidirectional sync execution |
+| MARKOS-WFL-OPS-01 | `workflows/complete-milestone.md` | WFL | OPS | Milestone archival and next-cycle preparation |
+| MARKOS-WFL-OPS-02 | `workflows/linear-sync.md` | WFL | OPS | Linear.app bidirectional sync execution |
 
 ---
 
@@ -153,23 +153,23 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 
 | TOKEN_ID | File Path | Class | Domain | Description |
 |----------|-----------|-------|--------|-------------|
-| MGSD-TPL-NEU-01 | `templates/NEURO-BRIEF.md` | TPL | NEU | Campaign neuromarketing brief scaffold |
-| MGSD-TPL-OPS-01 | `templates/UAT.md` | TPL | OPS | User acceptance testing criteria template |
-| MGSD-TPL-OPS-02 | `templates/VALIDATION.md` | TPL | OPS | Phase validation report template |
-| MGSD-TPL-OPS-03 | `templates/campaign-brief.md` | TPL | CAM | Campaign brief scaffold |
-| MGSD-TPL-OPS-04 | `templates/context.md` | TPL | OPS | Context loader template |
-| MGSD-TPL-OPS-05 | `templates/continue-here.md` | TPL | OPS | Session continuation handoff template |
-| MGSD-TPL-OPS-06 | `templates/creative-brief.md` | TPL | CNT | Creative brief template |
-| MGSD-TPL-OPS-07 | `templates/project.md` | TPL | OPS | PROJECT.md scaffold |
-| MGSD-TPL-OPS-08 | `templates/requirements.md` | TPL | OPS | REQUIREMENTS.md scaffold |
-| MGSD-TPL-OPS-09 | `templates/retrospective.md` | TPL | OPS | Phase retrospective template |
-| MGSD-TPL-OPS-10 | `templates/roadmap.md` | TPL | OPS | ROADMAP.md scaffold |
-| MGSD-TPL-OPS-11 | `templates/state.md` | TPL | OPS | STATE.md scaffold |
-| MGSD-TPL-OPS-12 | `templates/summary.md` | TPL | OPS | Phase SUMMARY.md scaffold |
-| MGSD-TPL-OPS-13 | `templates/summary-complex.md` | TPL | OPS | Complex phase summary scaffold |
-| MGSD-TPL-OPS-14 | `templates/summary-minimal.md` | TPL | OPS | Minimal phase summary scaffold |
-| MGSD-TPL-OPS-15 | `templates/verification-report.md` | TPL | OPS | VERIFICATION.md output template |
-| MGSD-TPL-OPS-16 | `templates/LINEAR-TASKS/_SCHEMA.md` | TPL | OPS | Linear issue template schema; canonical markdown structure for all MGSD-ITM files |
+| MARKOS-TPL-NEU-01 | `templates/NEURO-BRIEF.md` | TPL | NEU | Campaign neuromarketing brief scaffold |
+| MARKOS-TPL-OPS-01 | `templates/UAT.md` | TPL | OPS | User acceptance testing criteria template |
+| MARKOS-TPL-OPS-02 | `templates/VALIDATION.md` | TPL | OPS | Phase validation report template |
+| MARKOS-TPL-OPS-03 | `templates/campaign-brief.md` | TPL | CAM | Campaign brief scaffold |
+| MARKOS-TPL-OPS-04 | `templates/context.md` | TPL | OPS | Context loader template |
+| MARKOS-TPL-OPS-05 | `templates/continue-here.md` | TPL | OPS | Session continuation handoff template |
+| MARKOS-TPL-OPS-06 | `templates/creative-brief.md` | TPL | CNT | Creative brief template |
+| MARKOS-TPL-OPS-07 | `templates/project.md` | TPL | OPS | PROJECT.md scaffold |
+| MARKOS-TPL-OPS-08 | `templates/requirements.md` | TPL | OPS | REQUIREMENTS.md scaffold |
+| MARKOS-TPL-OPS-09 | `templates/retrospective.md` | TPL | OPS | Phase retrospective template |
+| MARKOS-TPL-OPS-10 | `templates/roadmap.md` | TPL | OPS | ROADMAP.md scaffold |
+| MARKOS-TPL-OPS-11 | `templates/state.md` | TPL | OPS | STATE.md scaffold |
+| MARKOS-TPL-OPS-12 | `templates/summary.md` | TPL | OPS | Phase SUMMARY.md scaffold |
+| MARKOS-TPL-OPS-13 | `templates/summary-complex.md` | TPL | OPS | Complex phase summary scaffold |
+| MARKOS-TPL-OPS-14 | `templates/summary-minimal.md` | TPL | OPS | Minimal phase summary scaffold |
+| MARKOS-TPL-OPS-15 | `templates/verification-report.md` | TPL | OPS | VERIFICATION.md output template |
+| MARKOS-TPL-OPS-16 | `templates/LINEAR-TASKS/_SCHEMA.md` | TPL | OPS | Linear issue template schema; canonical markdown structure for all MARKOS-ITM files |
 
 ---
 
@@ -177,29 +177,29 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 
 | TOKEN_ID | File Path | Class | Domain | Description |
 |----------|-----------|-------|--------|-------------|
-| MGSD-ITM-CNT-01 | `templates/LINEAR-TASKS/MGSD-ITM-CNT-01-lead-magnet.md` | ITM | CNT | Lead Magnet Design — triggers B04/B05/B07; Gate 1 |
-| MGSD-ITM-CNT-02 | `templates/LINEAR-TASKS/MGSD-ITM-CNT-02-ad-copy.md` | ITM | CNT | Ad Copywriting (Paid Media) — triggers B02/B05/B06/B09; Gate 1+2 |
-| MGSD-ITM-CNT-03 | `templates/LINEAR-TASKS/MGSD-ITM-CNT-03-email-sequence.md` | ITM | CNT | Email Sequence — triggers B01/B02/B03/B07; Gate 1 |
-| MGSD-ITM-STR-01 | `templates/LINEAR-TASKS/MGSD-ITM-STR-01-audience-research.md` | ITM | STR | Audience Research & ICP Update — trigger B08; no gate (populates Gate 1) |
-| MGSD-ITM-STR-02 | `templates/LINEAR-TASKS/MGSD-ITM-STR-02-funnel-architecture.md` | ITM | STR | Funnel Architecture & Channel Plan — triggers B02/B05/B06/B09; Gate 1+2 |
-| MGSD-ITM-TRK-01 | `templates/LINEAR-TASKS/MGSD-ITM-TRK-01-utm-tracking.md` | ITM | TRK | UTM Architecture & Tracking Setup — operational; Gate 2 |
-| MGSD-ITM-ANA-01 | `templates/LINEAR-TASKS/MGSD-ITM-ANA-01-performance-review.md` | ITM | ANA | Campaign Performance Review — trigger-failure diagnostic; Gate 2 |
-| MGSD-ITM-OPS-01 | `templates/LINEAR-TASKS/MGSD-ITM-OPS-01-campaign-launch.md` | ITM | OPS | Campaign Launch Checklist — Go/No-Go gate enforcement; Gate 1+2 hard block |
-| MGSD-ITM-CNT-04 | `templates/LINEAR-TASKS/MGSD-ITM-CNT-04-social-calendar.md` | ITM | CNT | Social Media Content Calendar — triggers B01/B03/B07/B08; Gate 1 |
-| MGSD-ITM-CNT-05 | `templates/LINEAR-TASKS/MGSD-ITM-CNT-05-landing-page-copy.md` | ITM | CNT | Landing Page Copy — triggers B02/B03/B04/B05/B06/B09; Gate 1 |
-| MGSD-ITM-CNT-06 | `templates/LINEAR-TASKS/MGSD-ITM-CNT-06-seo-article.md` | ITM | CNT | SEO Blog Article — triggers B04/B05/B07/B08; Gate 1 |
-| MGSD-ITM-CNT-07 | `templates/LINEAR-TASKS/MGSD-ITM-CNT-07-case-study.md` | ITM | CNT | Case Study / Customer Story — triggers B03/B04/B05/B07; Gate 1; B03 peer-match gate |
-| MGSD-ITM-CNT-08 | `templates/LINEAR-TASKS/MGSD-ITM-CNT-08-video-script.md` | ITM | CNT | Video Script (VSL / Short-Form) — triggers B02/B03/B05/B07/B10; Gate 1 |
+| MARKOS-ITM-CNT-01 | `templates/LINEAR-TASKS/MARKOS-ITM-CNT-01-lead-magnet.md` | ITM | CNT | Lead Magnet Design — triggers B04/B05/B07; Gate 1 |
+| MARKOS-ITM-CNT-02 | `templates/LINEAR-TASKS/MARKOS-ITM-CNT-02-ad-copy.md` | ITM | CNT | Ad Copywriting (Paid Media) — triggers B02/B05/B06/B09; Gate 1+2 |
+| MARKOS-ITM-CNT-03 | `templates/LINEAR-TASKS/MARKOS-ITM-CNT-03-email-sequence.md` | ITM | CNT | Email Sequence — triggers B01/B02/B03/B07; Gate 1 |
+| MARKOS-ITM-STR-01 | `templates/LINEAR-TASKS/MARKOS-ITM-STR-01-audience-research.md` | ITM | STR | Audience Research & ICP Update — trigger B08; no gate (populates Gate 1) |
+| MARKOS-ITM-STR-02 | `templates/LINEAR-TASKS/MARKOS-ITM-STR-02-funnel-architecture.md` | ITM | STR | Funnel Architecture & Channel Plan — triggers B02/B05/B06/B09; Gate 1+2 |
+| MARKOS-ITM-TRK-01 | `templates/LINEAR-TASKS/MARKOS-ITM-TRK-01-utm-tracking.md` | ITM | TRK | UTM Architecture & Tracking Setup — operational; Gate 2 |
+| MARKOS-ITM-ANA-01 | `templates/LINEAR-TASKS/MARKOS-ITM-ANA-01-performance-review.md` | ITM | ANA | Campaign Performance Review — trigger-failure diagnostic; Gate 2 |
+| MARKOS-ITM-OPS-01 | `templates/LINEAR-TASKS/MARKOS-ITM-OPS-01-campaign-launch.md` | ITM | OPS | Campaign Launch Checklist — Go/No-Go gate enforcement; Gate 1+2 hard block |
+| MARKOS-ITM-CNT-04 | `templates/LINEAR-TASKS/MARKOS-ITM-CNT-04-social-calendar.md` | ITM | CNT | Social Media Content Calendar — triggers B01/B03/B07/B08; Gate 1 |
+| MARKOS-ITM-CNT-05 | `templates/LINEAR-TASKS/MARKOS-ITM-CNT-05-landing-page-copy.md` | ITM | CNT | Landing Page Copy — triggers B02/B03/B04/B05/B06/B09; Gate 1 |
+| MARKOS-ITM-CNT-06 | `templates/LINEAR-TASKS/MARKOS-ITM-CNT-06-seo-article.md` | ITM | CNT | SEO Blog Article — triggers B04/B05/B07/B08; Gate 1 |
+| MARKOS-ITM-CNT-07 | `templates/LINEAR-TASKS/MARKOS-ITM-CNT-07-case-study.md` | ITM | CNT | Case Study / Customer Story — triggers B03/B04/B05/B07; Gate 1; B03 peer-match gate |
+| MARKOS-ITM-CNT-08 | `templates/LINEAR-TASKS/MARKOS-ITM-CNT-08-video-script.md` | ITM | CNT | Video Script (VSL / Short-Form) — triggers B02/B03/B05/B07/B10; Gate 1 |
 
-**Catalog:** `templates/LINEAR-TASKS/_CATALOG.md` (MGSD-IDX-001) — authoritative TOKEN_ID registry for all ITM files.
+**Catalog:** `templates/LINEAR-TASKS/_CATALOG.md` (MARKOS-IDX-001) — authoritative TOKEN_ID registry for all ITM files.
 
 ### Sub-Class: ITM-ACQ (Acquisition Templates)
 
 | TOKEN_ID | File Path | Class | Domain | Description |
 |----------|-----------|-------|--------|-------------|
-| MGSD-ITM-ACQ-01 | `templates/LINEAR-TASKS/MGSD-ITM-ACQ-01-paid-social-setup.md` | ITM | ACQ | Paid Social Campaign Setup (Meta/TikTok/LinkedIn) — triggers B02/B03/B05/B06/B09; Gate 1+2 |
-| MGSD-ITM-ACQ-02 | `templates/LINEAR-TASKS/MGSD-ITM-ACQ-02-retargeting-setup.md` | ITM | ACQ | Retargeting Campaign Setup — triggers B02/B03/B06/B09; escalating day-window sequence; Gate 2 |
-| MGSD-ITM-ACQ-03 | `templates/LINEAR-TASKS/MGSD-ITM-ACQ-03-linkedin-outbound.md` | ITM | ACQ | LinkedIn Outbound Sequence (B2B) — triggers B03/B05/B07/B08; trigger-per-touch sequence; Gate 1 |
+| MARKOS-ITM-ACQ-01 | `templates/LINEAR-TASKS/MARKOS-ITM-ACQ-01-paid-social-setup.md` | ITM | ACQ | Paid Social Campaign Setup (Meta/TikTok/LinkedIn) — triggers B02/B03/B05/B06/B09; Gate 1+2 |
+| MARKOS-ITM-ACQ-02 | `templates/LINEAR-TASKS/MARKOS-ITM-ACQ-02-retargeting-setup.md` | ITM | ACQ | Retargeting Campaign Setup — triggers B02/B03/B06/B09; escalating day-window sequence; Gate 2 |
+| MARKOS-ITM-ACQ-03 | `templates/LINEAR-TASKS/MARKOS-ITM-ACQ-03-linkedin-outbound.md` | ITM | ACQ | LinkedIn Outbound Sequence (B2B) — triggers B03/B05/B07/B08; trigger-per-touch sequence; Gate 1 |
 
 ---
 
@@ -207,7 +207,7 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 
 ```mermaid
 graph TD
-  IDX["IDX — MGSD-IDX-000\n(this file — read first)"]
+  IDX["IDX — MARKOS-IDX-000\n(this file — read first)"]
   REF["REF — References\n16 files\nNo upstream dependencies"]
   MIR["MIR — Repository Templates\n30+ files across 5 domains"]
   AGT["AGT — Agent Definitions\n32 files"]
@@ -237,9 +237,9 @@ graph TD
 ```
 
 **Navigation rule:** An agent must read documents in this order during boot:
-1. This index (`MGSD-IDX-000`)
+1. This index (`MARKOS-IDX-000`)
 2. Relevant `REF` documents for the task domain
-3. Relevant `MIR` files (check Gate 1/2 via `MGSD-REF-OPS-01`)
+3. Relevant `MIR` files (check Gate 1/2 via `MARKOS-REF-OPS-01`)
 4. Target `AGT` document
 5. Execute per AGT instructions
 
@@ -247,34 +247,34 @@ graph TD
 
 ## Override Resolution Protocol
 
-All MGSD agents that load template files MUST follow this resolution order:
+All MARKOS agents that load template files MUST follow this resolution order:
 
-1. Check `.mgsd-local/<relative-template-path>` first
-2. If found → use it and log: `[override] Using .mgsd-local/<path>`
-3. If not found → use `.agent/marketing-get-shit-done/templates/<relative-path>`
-4. Log fallback: `[override] No .mgsd-local/<path> — using protocol default`
+1. Check `.markos-local/<relative-template-path>` first
+2. If found → use it and log: `[override] Using .markos-local/<path>`
+3. If not found → use `.agent/markos/templates/<relative-path>`
+4. Log fallback: `[override] No .markos-local/<path> — using protocol default`
 
 ### Protected Paths (never touched by updates or patches)
-- `.mgsd-local/**/*` — all client overrides
+- `.markos-local/**/*` — all client overrides
 - `RESEARCH/**/*` — all generated research files
 - `MIR/**/*` — the live project MIR (distinguishable from template MIR by location)
 - `MSP/**/*` — the live project MSP
 
 ## Overridable Paths Registry
 
-Complete list of files/directories clients can place in `.mgsd-local/` to override protocol defaults.
-Any file placed here **will not be touched** by `mgsd update` or GSD patches.
+Complete list of files/directories clients can place in `.markos-local/` to override protocol defaults.
+Any file placed here **will not be touched** by `markos update` or GSD patches.
 
 | Client Override Path | Overrides Protocol File | Consumed By |
 |---------------------|------------------------|-------------|
-| `.mgsd-local/MIR/Core_Strategy/*.md` | `templates/MIR/Core_Strategy/*.md` | mgsd-new-project, mgsd-plan-phase |
-| `.mgsd-local/MIR/Market_Audiences/*.md` | `templates/MIR/Market_Audiences/*.md` | mgsd-new-project, mgsd-research-phase |
-| `.mgsd-local/MIR/Products/*.md` | `templates/MIR/Products/*.md` | mgsd-new-project, mgsd-plan-phase |
-| `.mgsd-local/MIR/Campaigns_Assets/*.md` | `templates/MIR/Campaigns_Assets/*.md` | mgsd-execute-phase |
-| `.mgsd-local/MIR/Operations/*.md` | `templates/MIR/Operations/*.md` | mgsd-execute-phase, mgsd-linear-sync |
-| `.mgsd-local/MSP/<discipline>/*.md` | `templates/MSP/<discipline>/*.md` | mgsd-plan-phase, mgsd-execute-phase |
-| `.mgsd-local/MSP/<discipline>/WINNERS/_CATALOG.md` | (None — local only) | mgsd-executor, mgsd-content-creator |
-| `.mgsd-local/config/config.json` | `templates/config.json` | All agents (project config) |
+| `.markos-local/MIR/Core_Strategy/*.md` | `templates/MIR/Core_Strategy/*.md` | markos-new-project, markos-plan-phase |
+| `.markos-local/MIR/Market_Audiences/*.md` | `templates/MIR/Market_Audiences/*.md` | markos-new-project, markos-research-phase |
+| `.markos-local/MIR/Products/*.md` | `templates/MIR/Products/*.md` | markos-new-project, markos-plan-phase |
+| `.markos-local/MIR/Campaigns_Assets/*.md` | `templates/MIR/Campaigns_Assets/*.md` | markos-execute-phase |
+| `.markos-local/MIR/Operations/*.md` | `templates/MIR/Operations/*.md` | markos-execute-phase, markos-linear-sync |
+| `.markos-local/MSP/<discipline>/*.md` | `templates/MSP/<discipline>/*.md` | markos-plan-phase, markos-execute-phase |
+| `.markos-local/MSP/<discipline>/WINNERS/_CATALOG.md` | (None — local only) | markos-executor, markos-content-creator |
+| `.markos-local/config/config.json` | `templates/config.json` | All agents (project config) |
 
 ---
 
@@ -295,17 +295,17 @@ Any file placed here **will not be touched** by `mgsd update` or GSD patches.
 
 ## RESEARCH Files
 
-Intelligence foundation generated by `mgsd-researcher`. Lives at project root `RESEARCH/`.
-Read by: mgsd-strategist, mgsd-planner, mgsd-execute-phase.
+Intelligence foundation generated by `markos-researcher`. Lives at project root `RESEARCH/`.
+Read by: markos-strategist, markos-planner, markos-execute-phase.
 
 | TOKEN_ID | File | Feeds Into | Description |
 |----------|------|-----------|-------------|
-| MGSD-RES-AUD-01 | RESEARCH/AUDIENCE-RESEARCH.md | MIR/Market_Audiences/ | Segments, psychographics, behavioral triggers, language |
-| MGSD-RES-ORG-01 | RESEARCH/ORG-PROFILE.md | MIR/Core_Strategy/ | Identity, voice, differentiators, strategic goals |
-| MGSD-RES-PRD-01 | RESEARCH/PRODUCT-RESEARCH.md | MIR/Products/ | Feature/benefit inventory, objections, proof points |
-| MGSD-RES-CMP-01 | RESEARCH/COMPETITIVE-INTEL.md | MIR/Core_Strategy/DIFFERENTIATORS.md | Competitor map, gaps, positioning angles |
-| MGSD-RES-MKT-01 | RESEARCH/MARKET-TRENDS.md | MSP discipline files | Macro trends, market sizing, seasonal patterns |
-| MGSD-RES-CNT-01 | RESEARCH/CONTENT-AUDIT.md | MIR/Campaigns_Assets/ | Content inventory, gaps, top performers |
+| MARKOS-RES-AUD-01 | RESEARCH/AUDIENCE-RESEARCH.md | MIR/Market_Audiences/ | Segments, psychographics, behavioral triggers, language |
+| MARKOS-RES-ORG-01 | RESEARCH/ORG-PROFILE.md | MIR/Core_Strategy/ | Identity, voice, differentiators, strategic goals |
+| MARKOS-RES-PRD-01 | RESEARCH/PRODUCT-RESEARCH.md | MIR/Products/ | Feature/benefit inventory, objections, proof points |
+| MARKOS-RES-CMP-01 | RESEARCH/COMPETITIVE-INTEL.md | MIR/Core_Strategy/DIFFERENTIATORS.md | Competitor map, gaps, positioning angles |
+| MARKOS-RES-MKT-01 | RESEARCH/MARKET-TRENDS.md | MSP discipline files | Macro trends, market sizing, seasonal patterns |
+| MARKOS-RES-CNT-01 | RESEARCH/CONTENT-AUDIT.md | MIR/Campaigns_Assets/ | Content inventory, gaps, top performers |
 
 ---
 
@@ -322,4 +322,4 @@ Read by: mgsd-strategist, mgsd-planner, mgsd-execute-phase.
 | Relationship | TOKEN_ID | File | Notes |
 |-------------|---------|------|-------|
 | Downstream — all corpus files reference this | ALL | All files | This index is downstream consumer of nothing; it is the root |
-| Gate logic enforced via | MGSD-REF-OPS-01 | `references/mir-gates.md` | Gate 1 and Gate 2 definitions |
+| Gate logic enforced via | MARKOS-REF-OPS-01 | `references/mir-gates.md` | Gate 1 and Gate 2 definitions |

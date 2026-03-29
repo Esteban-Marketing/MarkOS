@@ -1,7 +1,7 @@
 # BRAND-CAMPAIGNS.md — Non-Performance Brand Initiatives
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/08_BRAND-MARKETING/BRAND-CAMPAIGNS.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Outbound/08_BRAND-MARKETING/BRAND-CAMPAIGNS.md to customize it safely.
 
 
 ```

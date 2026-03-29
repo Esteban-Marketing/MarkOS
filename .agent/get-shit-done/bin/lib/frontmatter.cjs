@@ -161,6 +161,16 @@ function spliceFrontmatter(content, newObj) {
 }
 
 function parseMustHavesBlock(content, blockName) {
+  const fm = extractFrontmatter(content);
+  if (
+    fm &&
+    fm.must_haves &&
+    typeof fm.must_haves === 'object' &&
+    Array.isArray(fm.must_haves[blockName])
+  ) {
+    return fm.must_haves[blockName];
+  }
+
   // Extract a specific block from must_haves in raw frontmatter YAML
   // Handles 3-level nesting: must_haves > artifacts/key_links > [{path, provides, ...}]
   const fmMatch = content.match(/^---\r?\n([\s\S]+?)\r?\n---/);

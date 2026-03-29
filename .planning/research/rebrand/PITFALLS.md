@@ -1,4 +1,4 @@
-# Domain Pitfalls — MarkOS Rebrand
+﻿# Domain Pitfalls â€” MarkOS Rebrand
 
 **Domain:** NPM package, distribution, public-facing rebrand  
 **Researched:** 2026-03-27
@@ -12,82 +12,83 @@ Mistakes that cause data loss, broken installs, or user churn.
 **Why it happens:** Popular short names get squatted early  
 **Consequences:** Must use less desirable scoped name or negotiate transfer  
 **Prevention:** Check `npm view markos` BEFORE committing to the name in any docs/code  
-**Detection:** Run `npm view markos` — 404 = available, metadata = taken  
+**Detection:** Run `npm view markos` â€” 404 = available, metadata = taken  
 
 ### Pitfall 2: Orphaning Existing User Installs
-**What goes wrong:** Users who ran `npx marketing-get-shit-done install` can no longer update  
-**Why it happens:** update.cjs looks for `.mgsd-install-manifest.json` and `.agent/marketing-get-shit-done/` — if new installer doesn't check these old paths, it thinks it's a fresh install  
+**What goes wrong:** Users who ran `npx markos install` can no longer update  
+**Why it happens:** update.cjs looks for `.markos-install-manifest.json` and `.agent/markos/` â€” if new installer doesn't check these old paths, it thinks it's a fresh install  
 **Consequences:** Users lose update history, get duplicate installs, conflict detection breaks  
-**Prevention:** update.cjs and install.cjs MUST check both old and new paths. Auto-migrate old → new on first run.  
-**Detection:** Test: run old installer, then run new updater — verify it finds and migrates the old install  
+**Prevention:** update.cjs and install.cjs MUST check both old and new paths. Auto-migrate old â†’ new on first run.  
+**Detection:** Test: run old installer, then run new updater â€” verify it finds and migrates the old install  
 
-### Pitfall 3: ChromaDB Vector Data Orphaning
-**What goes wrong:** Existing ChromaDB collections keyed as `mgsd-{slug}-{section}` become invisible when code starts looking for `markos-{slug}-{section}`  
-**Why it happens:** chroma-client.cjs uses string interpolation: `` `mgsd-${slug}-${section}` `` in 6 places  
+### Pitfall 3: Supabase + Upstash Vector Vector Data Orphaning
+**What goes wrong:** Existing Supabase + Upstash Vector collections keyed as `markos-{slug}-{section}` become invisible when code starts looking for `markos-{slug}-{section}`  
+**Why it happens:** vector-store-client.cjs uses string interpolation: `` `markos-${slug}-${section}` `` in 6 places  
 **Consequences:** All stored AI drafts, onboarding data, and vector embeddings become inaccessible  
-**Prevention:** Migration function that lists existing `mgsd-*` collections and renames them (create new + copy + delete old)  
-**Detection:** After migration, run `/status` endpoint and verify ChromaDB health + draft retrieval still works  
+**Prevention:** Migration function that lists existing `markos-*` collections and renames them (create new + copy + delete old)  
+**Detection:** After migration, run `/status` endpoint and verify Supabase + Upstash Vector health + draft retrieval still works  
 
 ### Pitfall 4: Token ID System Contamination
-**What goes wrong:** Mass find-replace changes internal token IDs (MGSD-AGT-STR-01 → MARKOS-AGT-STR-01) causing all cross-references in 317 agent files to break  
-**Why it happens:** Token IDs reference each other via `MGSD-*` prefixes throughout the agent ecosystem. The MGSD-INDEX.md is the master registry.  
+**What goes wrong:** Mass find-replace changes internal token IDs (MARKOS-AGT-STR-01 â†’ MARKOS-AGT-STR-01) causing all cross-references in 317 agent files to break  
+**Why it happens:** Token IDs reference each other via `MARKOS-*` prefixes throughout the agent ecosystem. The MARKOS-INDEX.md is the master registry.  
 **Consequences:** Every agent that references another by token ID gets broken references  
-**Prevention:** Token ID migration must be a standalone phase with registry regeneration — NOT part of the distribution rebrand  
-**Detection:** Run `grep -r "MGSD-" .agent/ | wc -l` before and after — count must be 0 after migration, with equivalent MARKOS- references in place  
+**Prevention:** Token ID migration must be a standalone phase with registry regeneration â€” NOT part of the distribution rebrand  
+**Detection:** Run `grep -r "MARKOS-" .agent/ | wc -l` before and after â€” count must be 0 after migration, with equivalent MARKOS- references in place  
 
 ### Pitfall 5: Breaking PostHog Analytics Continuity
-**What goes wrong:** Changing `$lib: 'mgsd-backend-telemetry'` and `MGSD_TELEMETRY` env var simultaneously breaks dashboard filters and user docs  
-**Why it happens:** PostHog dashboards filter by `$lib` property; users reference `MGSD_TELEMETRY=false` in env files  
+**What goes wrong:** Changing `$lib: 'markos-backend-telemetry'` and `MARKOS_TELEMETRY` env var simultaneously breaks dashboard filters and user docs  
+**Why it happens:** PostHog dashboards filter by `$lib` property; users reference `MARKOS_TELEMETRY=false` in env files  
 **Consequences:** Historical analytics become invisible in dashboards; users' telemetry opt-out stops working  
-**Prevention:** Support both `MGSD_TELEMETRY` and `MARKOS_TELEMETRY` for one version. Use PostHog's property merging for `$lib`.  
-**Detection:** Check PostHog dashboard after deployment — verify events still appear  
+**Prevention:** Support both `MARKOS_TELEMETRY` and `MARKOS_TELEMETRY` for one version. Use PostHog's property merging for `$lib`.  
+**Detection:** Check PostHog dashboard after deployment â€” verify events still appear  
 
 ## Moderate Pitfalls
 
 ### Pitfall 6: .gitignore Desynchronization
-**What goes wrong:** After renaming `.mgsd-local/` → `.markos-local/`, the old `.gitignore` still only ignores `.mgsd-local/`  
+**What goes wrong:** After renaming `.markos-local/` â†’ `.markos-local/`, the old `.gitignore` still only ignores `.markos-local/`  
 **Prevention:** Update `.gitignore` to include both old and new patterns during transition, then remove old after one version  
 
 ### Pitfall 7: Hardcoded Paths in write-mir.cjs
-**What goes wrong:** `write-mir.cjs` generates markdown with `<!-- mgsd-generated: ... -->` HTML comments and `> 🤖 **Generated by MGSD AI**` banners. These become stale branding.  
+**What goes wrong:** `write-mir.cjs` generates markdown with `<!-- markos-generated: ... -->` HTML comments and `> ðŸ¤– **Generated by MARKOS AI**` banners. These become stale branding.  
 **Prevention:** Change generated content to "Generated by MarkOS AI" and `<!-- markos-generated: ... -->`  
 **Detection:** Run onboarding flow end-to-end, inspect generated MIR files  
 
 ### Pitfall 8: Stale localStorage Key
-**What goes wrong:** `onboarding.js` uses `STORAGE_KEY = 'mgsd-onboarding-draft'` for draft persistence. Changing it loses users' in-progress drafts.  
+**What goes wrong:** `onboarding.js` uses `STORAGE_KEY = 'markos-onboarding-draft'` for draft persistence. Changing it loses users' in-progress drafts.  
 **Prevention:** Check for old key, migrate to new key on load, then delete old key  
 
 ### Pitfall 9: onboarding-config.json Default Slug
-**What goes wrong:** `project_slug: "mgsd-client"` is the default in both `onboarding-config.json` and `handlers.cjs`. This becomes the ChromaDB namespace.  
+**What goes wrong:** `project_slug: "markos-client"` is the default in both `onboarding-config.json` and `handlers.cjs`. This becomes the Supabase + Upstash Vector namespace.  
 **Prevention:** Change default to `markos-client`  
 
 ## Minor Pitfalls
 
 ### Pitfall 10: Comment-Only References
-**What goes wrong:** JSDoc comments in 15+ backend files reference "MGSD" — purely informational, but looks unprofessional  
+**What goes wrong:** JSDoc comments in 15+ backend files reference "MARKOS" â€” purely informational, but looks unprofessional  
 **Prevention:** Include in documentation pass (Phase 4)  
 
 ### Pitfall 11: README Badge URL
-**What goes wrong:** npm badge still points to `marketing-get-shit-done` package  
+**What goes wrong:** npm badge still points to `markos` package  
 **Prevention:** Update badge URL to new package name  
 
 ### Pitfall 12: CHANGELOG Title
-**What goes wrong:** `# Changelog — marketing-get-shit-done` header doesn't match new product name  
-**Prevention:** Rename to `# Changelog — MarkOS` and add a rebrand entry  
+**What goes wrong:** `# Changelog â€” markos` header doesn't match new product name  
+**Prevention:** Rename to `# Changelog â€” MarkOS` and add a rebrand entry  
 
 ## Phase-Specific Warnings
 
 | Phase Topic | Likely Pitfall | Mitigation |
 |-------------|---------------|------------|
 | npm package rename | Name unavailable (Pitfall 1) | Check availability first; have fallback names ready |
-| bin entry rename | Old scripts break (Pitfall 2) | Keep `mgsd` as alias bin entry |
+| bin entry rename | Old scripts break (Pitfall 2) | Keep `markos` as alias bin entry |
 | .agent/ directory rename | 317 files, token ID breakage (Pitfall 4) | Rename directory only, NOT token IDs |
-| .mgsd-local/ rename | User data loss (Pitfall 2) | Auto-migrate, never delete |
-| ChromaDB prefix change | Data orphaning (Pitfall 3) | Migration function, test with real data |
+| .markos-local/ rename | User data loss (Pitfall 2) | Auto-migrate, never delete |
+| Supabase + Upstash Vector prefix change | Data orphaning (Pitfall 3) | Migration function, test with real data |
 | Telemetry rename | Dashboard break (Pitfall 5) | Dual env var support |
 | Generated content stamps | Stale branding (Pitfall 7) | Update template strings in write-mir.cjs |
 | localStorage key | Draft loss (Pitfall 8) | Migration on load |
 
 ## Sources
 
-- Direct codebase audit: bin/install.cjs, bin/update.cjs, chroma-client.cjs, telemetry.cjs, write-mir.cjs, handlers.cjs, onboarding.js, .agent/marketing-get-shit-done/MGSD-INDEX.md
+- Direct codebase audit: bin/install.cjs, bin/update.cjs, vector-store-client.cjs, telemetry.cjs, write-mir.cjs, handlers.cjs, onboarding.js, .agent/markos/MARKOS-INDEX.md
+

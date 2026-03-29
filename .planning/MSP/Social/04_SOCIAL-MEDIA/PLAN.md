@@ -1,7 +1,7 @@
 # Organic Social Media Plan
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/04_SOCIAL-MEDIA/PLAN.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Social/04_SOCIAL-MEDIA/PLAN.md to customize it safely.
 
 
 ```

@@ -19,7 +19,7 @@ const { resolveExample } = require('../onboarding/backend/agents/example-resolve
 // ─── Test fixtures ────────────────────────────────────────────────────────────
 
 function makeTmpDir() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'mgsd-resolver-test-'));
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'markos-resolver-test-'));
 }
 
 const FAKE_CONTENT = `# AUDIENCES — B2B Example\n\nPrimary segment: Mid-Market CTOs.`;

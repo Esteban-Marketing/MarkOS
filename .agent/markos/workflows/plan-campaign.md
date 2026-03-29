@@ -2,10 +2,10 @@
 description: Generate a campaign PLAN.md from MIR context and the selected MSP matrix
 ---
 
-# /mgsd-plan-campaign
+# /markos-plan-campaign
 
 <purpose>
-Generate a detailed, executable campaign plan (PLAN.md) by pulling from the client MIR knowledge base and the relevant MSP matrix. Runs pre-campaign-check hook first. Delegates to mgsd-strategist → mgsd-planner chain. Produces a neuromarketing-annotated PLAN.md that mgsd-execute-phase can consume directly.
+Generate a detailed, executable campaign plan (PLAN.md) by pulling from the client MIR knowledge base and the relevant MSP matrix. Runs pre-campaign-check hook first. Delegates to markos-strategist → markos-planner chain. Produces a neuromarketing-annotated PLAN.md that markos-execute-phase can consume directly.
 </purpose>
 
 <core_principle>
@@ -16,7 +16,7 @@ A campaign plan is not a list of intentions. It is a list of exact actions with 
 
 <step name="initialize">
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init plan-campaign "${CAMPAIGN_ARG}" --raw)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" init plan-campaign "${CAMPAIGN_ARG}" --raw)
 ```
 
 Parse JSON for: `campaign_id`, `phase_number`, `phase_dir`, `msp_matrix`, `mir_gate1`, `mir_gate2`, `discipline`.
@@ -28,10 +28,10 @@ Parse JSON for: `campaign_id`, `phase_number`, `phase_dir`, `msp_matrix`, `mir_g
 </step>
 
 <step name="gate_check">
-Run pre-campaign-check hook (MGSD-HKP-OPS-01):
+Run pre-campaign-check hook (MARKOS-HKP-OPS-01):
 
 ```bash
-GATE_STATUS=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit --raw)
+GATE_STATUS=$(node ".agent/markos/bin/markos-tools.cjs" mir-audit --raw)
 ```
 
 **gate1.ready: false** → HARD BLOCK. Display which files are missing. Stop.
@@ -51,22 +51,22 @@ RESEARCH=$(test -f "{phase_dir}/RESEARCH.md" && echo "found" || echo "missing")
 No RESEARCH.md found for Phase {N}.
 
 Options:
-  1) Run /mgsd-research-phase {N} first (recommended for new campaigns)
+  1) Run /markos-research-phase {N} first (recommended for new campaigns)
   2) Skip research — plan from MIR + MSP only
   3) Provide context now (I'll ask questions)
 
 Type 1, 2, or 3:
 ```
 
-**Human decides.** If option 3: use `mgsd-discuss-phase` questioning to gather context inline.
+**Human decides.** If option 3: use `markos-discuss-phase` questioning to gather context inline.
 </step>
 
 <step name="load_context">
-Spawn `mgsd-context-loader` to compile campaign context:
+Spawn `markos-context-loader` to compile campaign context:
 
 ```
 Task(
-  subagent_type="mgsd-context-loader",
+  subagent_type="markos-context-loader",
   prompt="
   Load full campaign planning context for Phase {phase_number}.
 
@@ -94,11 +94,11 @@ Human types "confirmed" or provides corrections.
 </step>
 
 <step name="spawn_strategist">
-Spawn `mgsd-strategist` to define campaign architecture:
+Spawn `markos-strategist` to define campaign architecture:
 
 ```
 Task(
-  subagent_type="mgsd-strategist",
+  subagent_type="markos-strategist",
   prompt="
   Design campaign architecture for Phase {phase_number}: {phase_name}
 
@@ -121,11 +121,11 @@ Task(
 </step>
 
 <step name="spawn_planner">
-Spawn `mgsd-planner` to produce PLAN.md files:
+Spawn `markos-planner` to produce PLAN.md files:
 
 ```
 Task(
-  subagent_type="mgsd-planner",
+  subagent_type="markos-planner",
   prompt="
   Create PLAN.md for Phase {phase_number}: {phase_name}
 
@@ -147,11 +147,11 @@ Task(
 </step>
 
 <step name="plan_checker">
-Run `mgsd-plan-checker` against produced PLAN.md:
+Run `markos-plan-checker` against produced PLAN.md:
 
 ```
 Task(
-  subagent_type="mgsd-plan-checker",
+  subagent_type="markos-plan-checker",
   prompt="
   Validate PLAN.md in {phase_dir} against schema in templates/LINEAR-TASKS/_SCHEMA.md.
   Check: task concreteness, neuro_spec completeness, MIR file references, acceptance criteria verifiability.
@@ -180,11 +180,11 @@ Neuro specs: {count} / {total copy tasks}
 Plan checker: {PASSED | WARNINGS}
 
 Human review required before execution:
-  → /mgsd-execute-phase {N} to begin execution
-  → /mgsd-verify-campaign {N} to validate after completion
+  → /markos-execute-phase {N} to begin execution
+  → /markos-verify-campaign {N} to validate after completion
 ```
 
-**Human must explicitly run `/mgsd-execute-phase {N}` — plan does not auto-execute.**
+**Human must explicitly run `/markos-execute-phase {N}` — plan does not auto-execute.**
 </step>
 
 </process>

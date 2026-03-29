@@ -1,4 +1,4 @@
-# Technology Stack
+﻿# Technology Stack
 
 **Project:** MarkOS
 **Researched:** 2026-03-28
@@ -15,7 +15,7 @@
 ### Database
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| ChromaDB JS client | ^3.4.0 | Vector persistence for seed data and drafts | Supports local/self-hosted and cloud-addressable retrieval for onboarding memory |
+| Supabase + Upstash Vector JS client | ^3.4.0 | Vector persistence for seed data and drafts | Supports local/self-hosted and cloud-addressable retrieval for onboarding memory |
 | Local filesystem | Native | Persistent client-owned protocol state | Keeps MIR/MSP and override data inspectable, versionable, and migration-friendly |
 
 ### Infrastructure
@@ -28,7 +28,7 @@
 ### Supporting Libraries
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| `dotenv` | ^17.3.1 | Environment loading | Use for local provider keys and Chroma host configuration |
+| `dotenv` | ^17.3.1 | Environment loading | Use for local provider keys and Vector Store host configuration |
 | `openai` | ^6.32.0 | OpenAI integration | Use when OpenAI is the selected or fallback provider |
 | `formidable` | ^3.5.4 | Multipart form/file ingestion | Use for onboarding source uploads |
 | `mammoth` | ^1.12.0 | DOCX parsing | Use for uploaded planning or strategy docs |
@@ -42,13 +42,13 @@
 |----------|-------------|-------------|---------|
 | Backend framework | Raw Node `http` | Express / Fastify | Current route surface is small enough that a framework would add weight without clear leverage |
 | Testing | `node:test` | Jest / Vitest | Built-in runner already covers current needs and keeps install footprint low |
-| Vector store | Chroma | SaaS-only vector DB | MarkOS benefits from local-first/self-hostable deployment and operator control |
+| Vector store | Vector Store | SaaS-only vector DB | MarkOS benefits from local-first/self-hostable deployment and operator control |
 | Provider strategy | Adapter over multiple vendors | Single-vendor integration | Current product value includes provider flexibility and fallback paths |
 
 ## Installation
 
 ```bash
-npm install chromadb csv-parse dotenv formidable mammoth openai pdf-parse posthog-node
+npm install upstash-vector csv-parse dotenv formidable mammoth openai pdf-parse posthog-node
 ```
 
 ## Sources
@@ -57,9 +57,10 @@ npm install chromadb csv-parse dotenv formidable mammoth openai pdf-parse postho
 - README.md
 - bin/install.cjs
 - onboarding/backend/server.cjs
-- onboarding/backend/chroma-client.cjs
+- onboarding/backend/vector-store-client.cjs
 - https://nodejs.org/api/test.html
-- https://docs.trychroma.com/docs/overview/introduction
+- https://upstash.com/docs/vector/overall/getstarted
 - https://developers.openai.com/api/reference/resources/chat
 - https://platform.claude.com/docs/en/api/messages
 - https://ai.google.dev/gemini-api/docs/text-generation
+

@@ -1,15 +1,15 @@
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-OPS-02 | Lifecycle Automation Setup -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-OPS-02 | Lifecycle Automation Setup -->
 
 ## Context Source
 
 | Field              | Value                                                          |
 |--------------------|----------------------------------------------------------------|
-| Token IDs Required | MGSD-REF-OPS-01, MGSD-AGT-OPS-03, MGSD-AGT-TRK-01            |
+| Token IDs Required | MARKOS-REF-OPS-01, MARKOS-AGT-OPS-03, MARKOS-AGT-TRK-01            |
 | MIR Gate           | Gate 2 — TRACKING.md and AUTOMATION.md must be GREEN          |
 | MSP Matrix         | MSP/Campaigns/03_LIFECYCLE_EMAIL.md                            |
-| AGT Assigned       | MGSD-AGT-OPS-03 (automation-architect), MGSD-AGT-CNT-04 (email-sequence) |
-| SKL Entry Point    | MGSD-SKL-OPS-02 (execute-phase)                                |
+| AGT Assigned       | MARKOS-AGT-OPS-03 (automation-architect), MARKOS-AGT-CNT-04 (email-sequence) |
+| SKL Entry Point    | MARKOS-SKL-OPS-02 (execute-phase)                                |
 
 ---
 
@@ -43,16 +43,16 @@
 ## Task Steps
 
 - [ ] **Step 1:** Run Gate 2 check. Block if gate2.ready: false (tracking + automation must both be configured).
-  - Agent: MGSD-AGT-OPS-01
+  - Agent: MARKOS-AGT-OPS-01
   - Output: Gate 2 status confirmed
 
-- [ ] **Step 2:** Map automation architecture using `mgsd-automation-architect`. Define: Trigger → Delay ladder → Email N → Branch condition → Exit.
-  - Agent: MGSD-AGT-OPS-03
+- [ ] **Step 2:** Map automation architecture using `markos-automation-architect`. Define: Trigger → Delay ladder → Email N → Branch condition → Exit.
+  - Agent: MARKOS-AGT-OPS-03
   - Output: `automation-flow-diagram.md` (text-based flow map)
   - **⏸ HUMAN CHECKPOINT: Review automation logic before building**
 
-- [ ] **Step 3:** Write complete email sequence using `mgsd-email-sequence`. Minimum 5 emails. Each email: Subject / Preview / Body / CTA. B01 dopamine: each email must name the specific next value the reader gets for opening the next email.
-  - Agent: MGSD-AGT-CNT-04
+- [ ] **Step 3:** Write complete email sequence using `markos-email-sequence`. Minimum 5 emails. Each email: Subject / Preview / Body / CTA. B01 dopamine: each email must name the specific next value the reader gets for opening the next email.
+  - Agent: MARKOS-AGT-CNT-04
   - Output: `lifecycle-sequence-{slug}.md`
   - **⏸ HUMAN CHECKPOINT: Review all emails before uploading to platform**
 
@@ -61,7 +61,7 @@
   - **⏸ HUMAN CHECKPOINT: Confirm workflow is built and in TEST mode**
 
 - [ ] **Step 5:** Test automation: trigger the workflow manually with a test lead. Verify all emails send at correct delays. Check that exit condition fires on `{{EXIT_EVENT}}`.
-  - Agent: MGSD-AGT-TRK-01 (tracking-spec verifies events)
+  - Agent: MARKOS-AGT-TRK-01 (tracking-spec verifies events)
   - Output: Test results documented in SUMMARY.md
   - **⏸ HUMAN CHECKPOINT: Human confirms test emails received and correct**
 
@@ -70,11 +70,11 @@
   - **⏸ HUMAN CHECKPOINT: Human confirms first real send occurred correctly**
 
 - [ ] **Step 7:** Document automation in `AUTOMATION.md`: flow name, trigger event, email count, delay schedule, exit condition, go-live date.
-  - Agent: MGSD-AGT-OPS-03
+  - Agent: MARKOS-AGT-OPS-03
   - Output: `AUTOMATION.md` updated
 
 - [ ] **Step 8:** Commit: `mktg(lifecycle): {sequence-slug} — automation live`
-  - Agent: MGSD-AGT-EXE-01
+  - Agent: MARKOS-AGT-EXE-01
   - Output: SUMMARY.md
 
 ---
@@ -89,8 +89,8 @@
 | 4 — Tracking | Trigger event + exit event confirmed firing | PostHog shows both events in event log |
 | 5 — Creative Compliance | All emails comply with VOICE-TONE | No prohibited words; tone-by-context: email matched |
 | 6 — Budget Alignment | N/A — lifecycle email is organic | Mark as N/A |
-| 7 — Linear Sync | Issue status reflects execution | `mgsd-linear-manager` sync returns 0 drift |
-| Neuro Audit | B01 anticipation loop present in sequence | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue status reflects execution | `markos-linear-manager` sync returns 0 drift |
+| Neuro Audit | B01 anticipation loop present in sequence | `MARKOS-AGT-NEU-01` returns `PASSED` |
 | Live Confirmation | Human confirmed first real automation send | Human checkpoint Step 6 marked complete |
 
 ---
@@ -99,10 +99,10 @@
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-OPS-02 |
+| Template ID | MARKOS-ITM-OPS-02 |
 | Task Category | Campaign Ops — Lifecycle Automation |
-| Labels | `mgsd`, `lifecycle`, `automation`, `email`, `retention` |
+| Labels | `markos`, `lifecycle`, `automation`, `email`, `retention` |
 | Priority | High |
 | Estimate | 8–12 story points |
 | Parent Issue | Campaign Epic ID |
-| Linear Title Format | `[MGSD] Lifecycle Automation: {sequence_name} — {trigger_event}` |
+| Linear Title Format | `[MARKOS] Lifecycle Automation: {sequence_name} — {trigger_event}` |

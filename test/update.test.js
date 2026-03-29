@@ -14,17 +14,17 @@ test('Suite 2: Agentic Patch Engine', async (t) => {
       env.seedInstallForUpdate();
       
       // Create a local override to protect the index file
-      const localDir = path.join(env.dir, '.mgsd-local');
+      const localDir = path.join(env.dir, '.markos-local');
       fs.mkdirSync(localDir, { recursive: true });
-      fs.writeFileSync(path.join(localDir, 'MGSD-INDEX.md'), 'My Custom Layout');
+      fs.writeFileSync(path.join(localDir, 'MARKOS-INDEX.md'), 'My Custom Layout');
 
       const { code, output } = await runCLI(UPDATE_SCRIPT, env.dir, []);
       
       assert.equal(code, 0, 'Exit code should be 0');
       assert.match(output, /MarkOS Update Engine/, 'Banner should reflect MarkOS branding');
-      assert.match(output, /Skipped: 1 files \(\.mgsd-local\/ compatibility override active\)/, 'Output should mention skipping a compatibility override');
+      assert.match(output, /Skipped: 1 files \(\.markos-local\/ compatibility override active\)/, 'Output should mention skipping a compatibility override');
 
-      const installedFile = path.join(env.dir, '.agent', 'marketing-get-shit-done', 'MGSD-INDEX.md');
+      const installedFile = path.join(env.dir, '.agent', 'markos', 'MARKOS-INDEX.md');
       const content = fs.readFileSync(installedFile, 'utf8');
       
       // Because we skipped it, it should NOT have been updated to the real pkg file. 
@@ -41,8 +41,8 @@ test('Suite 2: Agentic Patch Engine', async (t) => {
     try {
       env.seedInstallForUpdate();
       
-      // Manually manipulate a file OUTSIDE of .mgsd-local/
-      const rogueEditFile = path.join(env.dir, '.agent', 'marketing-get-shit-done', 'agents', 'mgsd-researcher.md');
+      // Manually manipulate a file OUTSIDE of .markos-local/
+      const rogueEditFile = path.join(env.dir, '.agent', 'markos', 'agents', 'markos-researcher.md');
       fs.writeFileSync(rogueEditFile, 'Rogue Manual Edit');
 
       // 3-way conflict resolution: choose 'k' to keep mine.
@@ -69,7 +69,7 @@ test('Suite 2: Agentic Patch Engine', async (t) => {
       assert.equal(code, 0, 'Exit code should be 0');
       assert.match(output, /Applied: \d+ files updated/, 'Output should confirm applied files');
       
-      const mgsdDest = path.join(env.dir, '.agent', 'marketing-get-shit-done');
+      const markosDest = path.join(env.dir, '.agent', 'markos');
       
       // Ensure the NEW VERSION number is written down cleanly
       const manifest = readManifest(env.dir);
@@ -77,7 +77,7 @@ test('Suite 2: Agentic Patch Engine', async (t) => {
       assert.notEqual(manifest.version, '0.9.0', 'Manifest version must be upgraded');
       assert.equal(manifest.previous_version, '0.9.0', 'Manifest must record that we came from 0.9.0');
       
-      const versionFile = fs.readFileSync(path.join(mgsdDest, 'VERSION'), 'utf8').trim();
+      const versionFile = fs.readFileSync(path.join(markosDest, 'VERSION'), 'utf8').trim();
       assert.notEqual(versionFile, '0.9.0', 'Protocol VERSION file must match upgraded state');
     } finally {
       env.cleanup();

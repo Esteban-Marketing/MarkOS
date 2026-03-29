@@ -1,7 +1,7 @@
 # AD-COPY-TEMPLATE.md — Paid Ad Copy Framework
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/TEMPLATES/AD-COPY.md to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MIR/Campaigns_Assets/07_CONTENT/TEMPLATES/AD-COPY.md to customize it safely.
 
 
 ```

@@ -1,12 +1,12 @@
 # 📱 {{COMPANY_NAME}} - Content & Social Distribution Grid
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Campaigns/04_CONTENT_SOCIAL.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Campaigns/04_CONTENT_SOCIAL.md to customize it safely.
 
 
 **Dependencies:** MIR Audience Research (`{{MIR_STRATEGY_FILE}}`)
-**Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-content-creator)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `{{LEAD_AGENT}}` (markos-content-creator)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## Distribution Mechanics
 - **Core Narrative/Villain:** `{{VILLAIN_NARRATIVE}}`
@@ -20,7 +20,7 @@
 
 ## 2. Content Engine: Production Sprint
 - [ ] Scripting Phase: Generate 10 discrete video scripts natively relying on PAS framework (Problem -> Agitation -> Solution).
-- [ ] Agentic Scripting: Deploy LLM prompt chains (mgsd-copy-drafter) to programmatically generate 50 variated short-form text hooks.
+- [ ] Agentic Scripting: Deploy LLM prompt chains (markos-copy-drafter) to programmatically generate 50 variated short-form text hooks.
 - [ ] Scripting Phase 2: Design 5 high-impact viral Twitter/LinkedIn text threads.
 - [ ] AI Synthesis Generation: Generate A/B testable variations using AI Avatars (HeyGen/Synthesia) or Voice Cloning (ElevenLabs) to scale faceless video volume.
 - [ ] Asset Generation: Source, design, or generate all visual assets ensuring compliance with `{{VOICE_AND_TONE}}`.

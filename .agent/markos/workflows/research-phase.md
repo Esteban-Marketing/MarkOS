@@ -1,5 +1,5 @@
 <purpose>
-Research channel approaches, competitor campaigns, audience signals, and benchmarks for a marketing phase before planning begins. Produces RESEARCH.md used by mgsd-planner.
+Research channel approaches, competitor campaigns, audience signals, and benchmarks for a marketing phase before planning begins. Produces RESEARCH.md used by markos-planner.
 </purpose>
 
 <process>
@@ -7,8 +7,8 @@ Research channel approaches, competitor campaigns, audience signals, and benchma
 ## 1. Initialize
 
 ```bash
-PHASE_INFO=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" roadmap get-phase "${PHASE}" --raw)
-PHASE_DIR=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" find-phase "${PHASE}" --raw)
+PHASE_INFO=$(node ".agent/markos/bin/markos-tools.cjs" roadmap get-phase "${PHASE}" --raw)
+PHASE_DIR=$(node ".agent/markos/bin/markos-tools.cjs" find-phase "${PHASE}" --raw)
 ```
 
 If phase not found → Error: "Phase {N} not found in ROADMAP.md".
@@ -16,13 +16,13 @@ If phase not found → Error: "Phase {N} not found in ROADMAP.md".
 Display:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► RESEARCHING — Phase {N}: {Name}
+ MARKOS ► RESEARCHING — Phase {N}: {Name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ◆ Spawning market researcher...
 ```
 
-## 2. Spawn mgsd-market-researcher
+## 2. Spawn markos-market-researcher
 
 ```
 Task(
@@ -73,7 +73,7 @@ Required sections:
 End with: ## RESEARCH COMPLETE
 </output>
   ",
-  subagent_type="mgsd-market-researcher",
+  subagent_type="markos-market-researcher",
   description="Research Phase {N}"
 )
 ```
@@ -86,25 +86,25 @@ End with: ## RESEARCH COMPLETE
 ## 4. Commit and Next Up
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-${PHASE}): market research complete"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(phase-${PHASE}): market research complete"
 ```
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► RESEARCH COMPLETE ✓
+ MARKOS ► RESEARCH COMPLETE ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Research saved: {phase_dir}/{padded_phase}-RESEARCH.md
 
 ## ▶ Next Up
 
-/mgsd-plan-phase {N}
+/markos-plan-phase {N}
 ```
 
 </process>
 
 <success_criteria>
-- [ ] mgsd-market-researcher spawned with phase context
+- [ ] markos-market-researcher spawned with phase context
 - [ ] RESEARCH.md created with all required sections
 - [ ] Benchmark table includes measurable targets
 - [ ] Validation Architecture section present

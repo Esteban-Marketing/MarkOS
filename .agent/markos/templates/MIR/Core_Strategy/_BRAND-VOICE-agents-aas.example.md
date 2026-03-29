@@ -1,7 +1,7 @@
 # BRAND-VOICE.md — Voice, Tone & Personality
 # Reference Example: **Agents-aaS** (AI Marketing Operations Agent Platform)
 
-<!-- mgsd-token: MIR | model: Agents-aaS -->
+<!-- markos-token: MIR | model: Agents-aaS -->
 > [!NOTE] Agents-aaS voice is for an emerging category. It must simultaneously convey frontier expertise, calm authority over complexity, and transparent honesty about AI limitations.
 
 ---

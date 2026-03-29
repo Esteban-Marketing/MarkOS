@@ -1,20 +1,20 @@
 ---
-name: mgsd-discipline-activate
+name: markos-discipline-activate
 description: Activate or deactivate an MSP discipline with documented rationale
 ---
 
-# mgsd-discipline-activate
+# markos-discipline-activate
 
 <context>
 Updates the ON/OFF state of marketing disciplines (Ads, SEO, Social, Email, etc).
 </context>
 
 <execution_context>
-@.agent/marketing-get-shit-done/workflows/discipline-activate.md
+@.agent/markos/workflows/discipline-activate.md
 </execution_context>
 
 <process>
-Execute the `/mgsd-discipline-activate` workflow exactly as documented in the workflow file.
+Execute the `/markos-discipline-activate` workflow exactly as documented in the workflow file.
 </process>
 
 <success_criteria>

@@ -10,7 +10,7 @@ created: [FILL — ISO date]
 
 # Neuromarketing Brief — {Campaign ID}: {Campaign Name}
 
-> This brief is read by mgsd-planner, mgsd-copy-drafter, and mgsd-creative-brief agents.
+> This brief is read by markos-planner, markos-copy-drafter, and markos-creative-brief agents.
 > Every copy block, creative asset, and CTA in this campaign executes from this document.
 
 ---

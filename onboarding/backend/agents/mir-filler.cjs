@@ -8,10 +8,10 @@
  *   and returns a standardized { ok, text, provider } response object.
  *
  * SECTION-TO-FILE MAP:
- *   generateCompanyProfile      → .mgsd-local/MIR/Core_Strategy/01_COMPANY/PROFILE.md
- *   generateMissionVisionValues → .mgsd-local/MIR/Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md
- *   generateAudienceProfile     → .mgsd-local/MIR/Market_Audiences/03_MARKET/AUDIENCES.md
- *   generateCompetitiveLandscape → .mgsd-local/MIR/Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md
+ *   generateCompanyProfile      → .markos-local/MIR/Core_Strategy/01_COMPANY/PROFILE.md
+ *   generateMissionVisionValues → .markos-local/MIR/Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md
+ *   generateAudienceProfile     → .markos-local/MIR/Market_Audiences/03_MARKET/AUDIENCES.md
+ *   generateCompetitiveLandscape → .markos-local/MIR/Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md
  *
  * INPUT:
  *   seed — parsed JSON from onboarding-seed.schema.json. Expected fields:

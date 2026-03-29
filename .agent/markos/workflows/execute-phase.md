@@ -1,5 +1,5 @@
 <purpose>
-Execute all plans in a marketing phase using wave-based parallel execution. Orchestrator stays lean — delegates plan execution to mgsd-executor subagents. Coordinates campaign artifacts, creative checkpoints, and budget decision gates.
+Execute all plans in a marketing phase using wave-based parallel execution. Orchestrator stays lean — delegates plan execution to markos-executor subagents. Coordinates campaign artifacts, creative checkpoints, and budget decision gates.
 </purpose>
 
 <core_principle>
@@ -8,18 +8,18 @@ Orchestrator coordinates, not executes. Each subagent loads full context from it
 
 <runtime_compatibility>
 **Subagent spawning is runtime-specific:**
-- **Claude Code / Antigravity:** Uses `Task(subagent_type="mgsd-executor", ...)` — blocks until complete, returns result
+- **Claude Code / Antigravity:** Uses `Task(subagent_type="markos-executor", ...)` — blocks until complete, returns result
 - **Other runtimes:** If Task/subagent API is unavailable, use sequential inline execution: read and follow execute-plan.md directly for each plan
 
 **Fallback rule:** If agent completes work (commits visible, SUMMARY.md exists) but orchestrator never receives completion signal — treat as successful based on spot-checks and continue. Never block indefinitely.
 </runtime_compatibility>
 
 <available_agent_types>
-- mgsd-executor — Executes plan tasks, commits, creates SUMMARY.md
-- mgsd-verifier — Verifies phase deliverables across 7 dimensions, creates VERIFICATION.md
-- mgsd-gap-auditor — Scans MIR for [FILL] placeholders
-- mgsd-tracking-spec — PostHog/GA event specifications
-- mgsd-librarian — Updates STATE.md and CHANGELOG
+- markos-executor — Executes plan tasks, commits, creates SUMMARY.md
+- markos-verifier — Verifies phase deliverables across 7 dimensions, creates VERIFICATION.md
+- markos-gap-auditor — Scans MIR for [FILL] placeholders
+- markos-tracking-spec — PostHog/GA event specifications
+- markos-librarian — Updates STATE.md and CHANGELOG
 </available_agent_types>
 
 <process>
@@ -28,29 +28,29 @@ Orchestrator coordinates, not executes. Each subagent loads full context from it
 Load all context in one call:
 
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init execute-phase "${PHASE_ARG}" --raw)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" init execute-phase "${PHASE_ARG}" --raw)
 ```
 
 Parse JSON for: `executor_model`, `verifier_model`, `commit_docs`, `parallelization`, `phase_found`, `phase_dir`, `phase_number`, `phase_name`, `phase_slug`, `plans`, `incomplete_plans`, `plan_count`, `incomplete_count`, `state_exists`, `roadmap_exists`, `phase_req_ids`, `mir_gate1`, `mir_gate2`, `verification_passed`, `project_valid`.
 
-**If `phase_found` is false:** Error — phase directory not found. Run `/mgsd-plan-phase {N}` first.
-**If `plan_count` is 0:** Error — no plans found. Run `/mgsd-plan-phase {N}`.
+**If `phase_found` is false:** Error — phase directory not found. Run `/markos-plan-phase {N}` first.
+**If `plan_count` is 0:** Error — no plans found. Run `/markos-plan-phase {N}`.
 
 ### 1.5. Prerequisite Enforcement (v1.1 Hardening)
 
 **If `project_valid` is false:**
 Error — `PROJECT.md` is missing, too short, or contains `[FILL]`.
-Execution requires a grounded business identity. Run `/mgsd-mir-audit` to find identity gaps.
+Execution requires a grounded business identity. Run `/markos-mir-audit` to find identity gaps.
 
 **If `verification_passed` is false:**
 Error — Phase plans have not passed verification or `VERIFICATION.md` is missing.
 **Bullet-proof rule**: Never execute unverified marketing plans.
-Run `/mgsd-plan-phase {PHASE_NUMBER}` (without `--skip-verify`) to generate a passing verification report.
+Run `/markos-plan-phase {PHASE_NUMBER}` (without `--skip-verify`) to generate a passing verification report.
 
 **REQUIRED — Sync chain flag with intent.** If user invoked manually (no `--auto`), clear stale chain flag:
 ```bash
 if [[ ! "$ARGUMENTS" =~ --auto ]]; then
-  node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-set workflow._auto_chain_active false 2>/dev/null
+  node ".agent/markos/bin/markos-tools.cjs" config-set workflow._auto_chain_active false 2>/dev/null
 fi
 ```
 </step>
@@ -58,7 +58,7 @@ fi
 <step name="check_interactive_mode">
 **Parse `--interactive` flag from $ARGUMENTS.**
 
-**If `--interactive` flag present:** Execute plans sequentially inline (no subagent spawning) with user checkpoints between tasks. Best for: small phases, creative review phases, learning MGSD.
+**If `--interactive` flag present:** Execute plans sequentially inline (no subagent spawning) with user checkpoints between tasks. Best for: small phases, creative review phases, learning MARKOS.
 
 Interactive flow:
 1. Load plan inventory normally
@@ -77,7 +77,7 @@ Display: "Found {plan_count} plans in {phase_dir} ({incomplete_count} incomplete
 
 **Update STATE.md for phase start:**
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" state begin-phase --phase "${PHASE_NUMBER}" --name "${PHASE_NAME}" --plans "${PLAN_COUNT}"
+node ".agent/markos/bin/markos-tools.cjs" state begin-phase --phase "${PHASE_NUMBER}" --name "${PHASE_NAME}" --plans "${PLAN_COUNT}"
 ```
 </step>
 
@@ -85,7 +85,7 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" state begin-phase --pha
 Load plan inventory with wave grouping:
 
 ```bash
-PLAN_INDEX=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" phase-plan-index "${PHASE_NUMBER}" --raw)
+PLAN_INDEX=$(node ".agent/markos/bin/markos-tools.cjs" phase-plan-index "${PHASE_NUMBER}" --raw)
 ```
 
 Parse JSON for: `phase`, `plans[]` (each with `id`, `wave`, `autonomous`, `discipline`, `objective`, `tracking_required`, `requires_human_approval`, `task_count`, `has_summary`), `waves` (wave number → plan IDs), `incomplete`, `has_checkpoints`.
@@ -95,7 +95,7 @@ Parse JSON for: `phase`, `plans[]` (each with `id`, `wave`, `autonomous`, `disci
 Report:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► EXECUTING — Phase {X}: {Name}
+ MARKOS ► EXECUTING — Phase {X}: {Name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | Wave | Plans | Discipline | What it delivers |
@@ -126,13 +126,13 @@ Execute each wave in sequence. Within a wave: parallel if `PARALLELIZATION=true`
    ───────────────────────────────────────────────────────────────
    ```
 
-2. **Spawn mgsd-executor per plan:**
+2. **Spawn markos-executor per plan:**
 
    Pass paths only — executors load fresh context.
 
    ```
    Task(
-     subagent_type="mgsd-executor",
+     subagent_type="markos-executor",
      model="{executor_model}",
      prompt="
 <objective>
@@ -146,10 +146,10 @@ to avoid pre-commit hook contention. Orchestrator validates hooks after wave com
 </parallel_execution>
 
 <execution_context>
-@.agent/marketing-get-shit-done/workflows/execute-plan.md
-@.agent/marketing-get-shit-done/templates/summary.md
-@.agent/marketing-get-shit-done/references/checkpoints.md
-@.agent/marketing-get-shit-done/references/verification-patterns.md
+@.agent/markos/workflows/execute-plan.md
+@.agent/markos/templates/summary.md
+@.agent/markos/references/checkpoints.md
+@.agent/markos/references/verification-patterns.md
 </execution_context>
 
 <files_to_read>
@@ -235,8 +235,8 @@ Plans with `autonomous: false` OR `requires_human_approval: true` require user i
 
 **Auto-mode handling:**
 ```bash
-AUTO_CHAIN=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-get workflow._auto_chain_active 2>/dev/null || echo "false")
-AUTO_CFG=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-get workflow.auto_advance 2>/dev/null || echo "false")
+AUTO_CHAIN=$(node ".agent/markos/bin/markos-tools.cjs" config-get workflow._auto_chain_active 2>/dev/null || echo "false")
+AUTO_CFG=$(node ".agent/markos/bin/markos-tools.cjs" config-get workflow.auto_advance 2>/dev/null || echo "false")
 ```
 
 When executor returns a checkpoint AND auto-mode is active:
@@ -283,7 +283,7 @@ After all waves:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► PHASE {X} EXECUTION COMPLETE
+ MARKOS ► PHASE {X} EXECUTION COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Waves: {N} | Plans: {M}/{total} complete
@@ -313,7 +313,7 @@ Waves: {N} | Plans: {M}/{total} complete
 4. If all resolved: update UAT frontmatter status → `resolved`
 5. Commit:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-${PARENT_PHASE}): resolve campaign UAT gaps after ${PHASE_NUMBER} closure"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(phase-${PARENT_PHASE}): resolve campaign UAT gaps after ${PHASE_NUMBER} closure"
 ```
 </step>
 
@@ -341,7 +341,7 @@ Options: 1) Acknowledge and continue  2) Revert risky changes
 </step>
 
 <step name="verify_phase_goal">
-Spawn `mgsd-verifier` to check all 7 dimensions:
+Spawn `markos-verifier` to check all 7 dimensions:
 
 ```
 Task(
@@ -354,11 +354,11 @@ MIR Gate 1: {mir_gate1} | Gate 2: {mir_gate2}
 
 Read all PLAN.md + SUMMARY.md in phase directory.
 Check must_haves against actual deliverables.
-Run 7-dimension verification per .agent/marketing-get-shit-done/references/verification-patterns.md.
+Run 7-dimension verification per .agent/markos/references/verification-patterns.md.
 Create VERIFICATION.md in phase directory.
 Return: passed | human_needed | gaps_found
   ",
-  subagent_type="mgsd-verifier",
+  subagent_type="markos-verifier",
   model="{verifier_model}"
 )
 ```
@@ -369,7 +369,7 @@ Read status from VERIFICATION.md.
 |--------|--------|
 | `passed` | → update_roadmap |
 | `human_needed` | Persist as UAT.md; present to user; on "approved" → update_roadmap |
-| `gaps_found` | Display gap summary; offer `/mgsd-plan-phase {N} --gaps` |
+| `gaps_found` | Display gap summary; offer `/markos-plan-phase {N} --gaps` |
 
 **If human_needed:** Create `{phase_dir}/{padded_phase}-HUMAN-UAT.md`:
 
@@ -400,7 +400,7 @@ Commit UAT file. Present to user with "approved" / "issues found" options.
 Mark phase complete and update all tracking files:
 
 ```bash
-COMPLETION=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" phase complete "${PHASE_NUMBER}")
+COMPLETION=$(node ".agent/markos/bin/markos-tools.cjs" phase complete "${PHASE_NUMBER}")
 ```
 
 The CLI handles:
@@ -409,7 +409,7 @@ The CLI handles:
 - Checking for verification debt
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(phase-${PHASE_NUMBER}): mark phase complete" --files .planning/ROADMAP.md .planning/STATE.md
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(phase-${PHASE_NUMBER}): mark phase complete" --files .planning/ROADMAP.md .planning/STATE.md
 ```
 </step>
 
@@ -433,12 +433,12 @@ Check auto-advance config. If auto: trigger next phase chain.
 Otherwise:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► PHASE {X} COMPLETE ✓
+ MARKOS ► PHASE {X} COMPLETE ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-/mgsd-progress — see updated roadmap
-/mgsd-discuss-phase {next} — start next phase
-/mgsd-performance-review — review active campaign performance
+/markos-progress — see updated roadmap
+/markos-discuss-phase {next} — start next phase
+/markos-performance-review — review active campaign performance
 ```
 </step>
 
@@ -458,7 +458,7 @@ For 1M+ context models: pass richer context directly to executors (campaign brie
 </failure_handling>
 
 <resumption>
-Re-run `/mgsd-execute-phase {phase}` → discover_plans finds completed SUMMARYs → skips them → resumes from first incomplete plan → continues wave execution.
+Re-run `/markos-execute-phase {phase}` → discover_plans finds completed SUMMARYs → skips them → resumes from first incomplete plan → continues wave execution.
 STATE.md tracks: last completed plan, current wave, pending checkpoints.
 </resumption>
 
@@ -470,7 +470,7 @@ STATE.md tracks: last completed plan, current wave, pending checkpoints.
 - [ ] Creative/budget checkpoints handled with human interaction
 - [ ] Wave completion spot-checks pass
 - [ ] KPI baseline gate checked
-- [ ] mgsd-verifier spawned — VERIFICATION.md created
+- [ ] markos-verifier spawned — VERIFICATION.md created
 - [ ] Human UAT items persisted if needed
 - [ ] ROADMAP.md marked complete
 - [ ] User sees clear next steps

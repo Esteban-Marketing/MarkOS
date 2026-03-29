@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-CNT-05
+token_id: MARKOS-ITM-CNT-05
 document_class: ITM
 domain: CNT
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 1
 ---
 
-# MGSD-ITM-CNT-05 — Landing Page Copy
+# MARKOS-ITM-CNT-05 — Landing Page Copy
 
-<!-- TOKEN: MGSD-ITM-CNT-05 | CLASS: ITM | DOMAIN: CNT -->
-<!-- PURPOSE: Linear issue template for writing conversion-focused landing page copy. Consumed by mgsd-linear-manager when creating [MGSD] Landing Page Copy tickets. Gate 1 required. -->
+<!-- TOKEN: MARKOS-ITM-CNT-05 | CLASS: ITM | DOMAIN: CNT -->
+<!-- PURPOSE: Linear issue template for writing conversion-focused landing page copy. Consumed by markos-linear-manager when creating [MARKOS] Landing Page Copy tickets. Gate 1 required. -->
 
-**Linear Title format:** `[MGSD] Landing Page Copy: {offer_name} — {funnel_stage}`
+**Linear Title format:** `[MARKOS] Landing Page Copy: {offer_name} — {funnel_stage}`
 **Category:** Content Creation
 **Primary Triggers:** B05 (Pain Relief), B02 (Loss Aversion), B09 (Anchoring), B03 (Social Proof)
 **Secondary:** B04 (Authority Signal), B06 (Scarcity)
@@ -29,27 +29,27 @@ mir_gate_required: 1
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B02, §B03, §B04, §B05, §B06, §B09 |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
-| MGSD-AGT-CNT-02 | agents/mgsd-copy-drafter.md | Writes full long-form page copy |
-| MGSD-AGT-STR-05 | agents/mgsd-cro-hypothesis.md | Generates CRO hypotheses per section |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Section-by-section neuro audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B02, §B03, §B04, §B05, §B06, §B09 |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
+| MARKOS-AGT-CNT-02 | agents/markos-copy-drafter.md | Writes full long-form page copy |
+| MARKOS-AGT-STR-05 | agents/markos-cro-hypothesis.md | Generates CRO hypotheses per section |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Section-by-section neuro audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-CNT-05 | Content Creation — Landing Page -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-CNT-05 | Content Creation — Landing Page -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B02, §B03, §B04, §B05, §B06, §B09; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B02, §B03, §B04, §B05, §B06, §B09; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 GREEN |
 | MSP Matrix | `MSP/Campaigns/` or `MSP/Inbound/` — relevant discipline section |
-| AGT Assigned | MGSD-AGT-CNT-02 (copy-drafter) + MGSD-AGT-STR-05 (cro-hypothesis) |
-| SKL Entry Point | MGSD-SKL-OPS-01 (mgsd-plan-phase) |
+| AGT Assigned | MARKOS-AGT-CNT-02 (copy-drafter) + MARKOS-AGT-STR-05 (cro-hypothesis) |
+| SKL Entry Point | MARKOS-SKL-OPS-01 (markos-plan-phase) |
 
 ---
 
@@ -93,23 +93,23 @@ mir_gate_required: 1
 
 ## Task Steps
 
-- [ ] **Step 1:** Run Gate 1 check via `mgsd-tools.cjs mir-audit`. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run Gate 1 check via `markos-tools.cjs mir-audit`. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status
-- [ ] **Step 2:** Generate CRO hypothesis for each page section using `MGSD-AGT-STR-05` — output: which trigger and copy structure to test per section (hero, features, social proof, pricing, CTA, FAQ).
-  - Agent: MGSD-AGT-STR-05
+- [ ] **Step 2:** Generate CRO hypothesis for each page section using `MARKOS-AGT-STR-05` — output: which trigger and copy structure to test per section (hero, features, social proof, pricing, CTA, FAQ).
+  - Agent: MARKOS-AGT-STR-05
   - Output: `LP-CRO-HYPOTHESIS.md`
-- [ ] **Step 3:** Draft full page copy using `MGSD-AGT-CNT-02` — follow section order and trigger assignments from CRO hypothesis; pain-first hero; loss-frame all CTAs; embodied cognition language in features section.
-  - Agent: MGSD-AGT-CNT-02
+- [ ] **Step 3:** Draft full page copy using `MARKOS-AGT-CNT-02` — follow section order and trigger assignments from CRO hypothesis; pain-first hero; loss-frame all CTAs; embodied cognition language in features section.
+  - Agent: MARKOS-AGT-CNT-02
   - Output: `LP-COPY-DRAFT.md` (hero → sub-hero → pain → mechanism → features → social proof → pricing → CTA → FAQ → footer)
-- [ ] **Step 4:** Run `MGSD-AGT-NEU-01` section-by-section — flag: solution-first hero, gain-framed CTAs, abstract feature descriptions, testimonials without before/after metrics.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 4:** Run `MARKOS-AGT-NEU-01` section-by-section — flag: solution-first hero, gain-framed CTAs, abstract feature descriptions, testimonials without before/after metrics.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Section audit report
 - [ ] **Step 5:** Resolve all `REWRITE REQUIRED` flags. Rerun audit until `PASSED`.
-  - Agent: MGSD-AGT-CNT-02
+  - Agent: MARKOS-AGT-CNT-02
   - Output: Revised `LP-COPY-DRAFT.md`
-- [ ] **Step 6:** Commit with message `mgsd(content): landing-page {offer_slug} {funnel_stage} copy complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 6:** Commit with message `markos(content): landing-page {offer_slug} {funnel_stage} copy complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -121,11 +121,11 @@ mir_gate_required: 1
 | 1 — MIR Completeness | All 7 input items present and non-empty | `mir-audit` gate1.ready: true |
 | 2 — Variable Resolution | No `[FILL]` or `{{VAR}}` tokens in copy | `grep` returns empty |
 | 3 — KPI Baseline | CVR target logged in KPI-FRAMEWORK.md | KPI row present |
-| 4 — Tracking | N/A (tracked separately via MGSD-ITM-TRK-01) | N/A |
+| 4 — Tracking | N/A (tracked separately via MARKOS-ITM-TRK-01) | N/A |
 | 5 — Creative Compliance | No prohibited words; hero section pain-first; all CTAs loss-framed | VOICE-TONE diff clean |
 | 6 — Budget Alignment | N/A — copy production only | N/A |
-| 7 — Linear Sync | Issue marked Done; LP-COPY-DRAFT.md committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | All 6 sections PASSED — no REWRITE REQUIRED | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue marked Done; LP-COPY-DRAFT.md committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | All 6 sections PASSED — no REWRITE REQUIRED | `MARKOS-AGT-NEU-01` returns `PASSED` |
 
 ---
 
@@ -133,9 +133,9 @@ mir_gate_required: 1
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-CNT-05 |
+| Template ID | MARKOS-ITM-CNT-05 |
 | Task Category | Content Creation |
-| Labels | `[mgsd]`, `[content]`, `[landing-page]`, `[decision]` |
+| Labels | `[markos]`, `[content]`, `[landing-page]`, `[decision]` |
 | Priority | High |
 | Estimate | 4–6h |
 | Parent Issue | Campaign or Product Launch Epic |

@@ -1,5 +1,5 @@
 ---
-token_id: MGSD-RES-AUD-01
+token_id: MARKOS-RES-AUD-01
 document_class: RESEARCH
 version: "1.0.0"
 status: unpopulated
@@ -12,8 +12,8 @@ feeds_into:
 
 # Audience Research
 
-<!-- mgsd-token: RESEARCH -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/RESEARCH/AUDIENCE-RESEARCH.md to customize it safely.
+<!-- markos-token: RESEARCH -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/RESEARCH/AUDIENCE-RESEARCH.md to customize it safely.
 
 
 <!-- AGENT: Populate this file from onboarding-seed.json (audience section) + direct research.
@@ -52,4 +52,4 @@ feeds_into:
 
 ---
 *Research Quality Gate: Each section must include evidence source, confidence level, and strategic implication.*
-*Last populated: [DATE] | Populated by: mgsd-researcher | Source: onboarding-seed.json*
+*Last populated: [DATE] | Populated by: markos-researcher | Source: onboarding-seed.json*

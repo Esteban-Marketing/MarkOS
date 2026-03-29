@@ -1,13 +1,13 @@
 # INDUSTRY.md — Market Definition & Dynamics
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Market_Audiences/03_MARKET/INDUSTRY.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Market_Audiences/03_MARKET/INDUSTRY.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This file defines the external operational environment. `mgsd-analyst` MUST monitor structural shifts (Section 2) and platform trends (Section 3). `mgsd-executor` MUST flag any `Seasonality` (Section 4) shifts that require budget reallocation in `MCB-BUDGET.md`.
+> **AGENT LOGIC**: This file defines the external operational environment. `markos-analyst` MUST monitor structural shifts (Section 2) and platform trends (Section 3). `markos-executor` MUST flag any `Seasonality` (Section 4) shifts that require budget reallocation in `MCB-BUDGET.md`.
 
 **Dependencies:** MCB-BUDGET (`../../Core_Strategy/01_STRATEGY/MCB-BUDGET.md`), CORE-STRATEGY (`../../Core_Strategy/01_STRATEGY/CORE-STRATEGY.md`)
-**Assigned Agent:** `mgsd-analyst`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-analyst`
+**Linear Project Manager:** `markos-linear-manager`
 
 ---
 

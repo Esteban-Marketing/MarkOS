@@ -1,5 +1,5 @@
-# This .gitignore is copied to the project root .gitignore by mgsd-new-project
-# It ensures .mgsd-local/ client overrides are not accidentally committed
-.mgsd-local/
+# This .gitignore is copied to the project root .gitignore by markos-new-project
+# It ensures .markos-local/ client overrides are not accidentally committed
+.markos-local/
 onboarding-seed.json
-.mgsd-install-manifest.json
+.markos-install-manifest.json

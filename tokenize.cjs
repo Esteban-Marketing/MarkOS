@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const TEMPLATES_DIR = path.join(__dirname, '.agent/marketing-get-shit-done/templates');
+const TEMPLATES_DIR = path.join(__dirname, '.agent/markos/templates');
 
 function walkDir(dir, callback) {
   if (!fs.existsSync(dir)) return;
@@ -20,9 +20,9 @@ components.forEach(comp => {
     if (!filePath.endsWith('.md')) return;
 
     let content = fs.readFileSync(filePath, 'utf8');
-    const token = `<!-- mgsd-token: ${comp} -->`;
+    const token = `<!-- markos-token: ${comp} -->`;
     const relPath = path.relative(__dirname, filePath).replace(/\\/g, '/');
-    const overrideMsg = `\n> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/${relPath.split('templates/')[1]} to customize it safely.\n`;
+    const overrideMsg = `\n> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/${relPath.split('templates/')[1]} to customize it safely.\n`;
 
     let changed = false;
 

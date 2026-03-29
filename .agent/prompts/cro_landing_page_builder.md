@@ -6,11 +6,11 @@ Before drafting, ingest the following state files:
 1. Business Physics (Offer & Constraints): {{ inject: MIR/Core_Strategy/02_BUSINESS/LEAN-CANVAS.md }}
 2. Buyer Psychology (Pain/Gain): {{ inject: MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md }}
 3. Brand Rules: {{ inject: MIR/Core_Strategy/01_COMPANY/BRAND-ONTOLOGY.md }}
-4. Historical Winners (Anchor): {{ inject: .mgsd-local/MSP/Landing_Pages/WINNERS/_CATALOG.md }}
+4. Historical Winners (Anchor): {{ inject: .markos-local/MSP/Landing_Pages/WINNERS/_CATALOG.md }}
 
 # BOOT REQUIREMENTS
-- Approved local MIR state must be available through `.mgsd-local/MIR/` override resolution.
-- Winners anchor must exist at `.mgsd-local/MSP/Landing_Pages/WINNERS/_CATALOG.md`.
+- Approved local MIR state must be available through `.markos-local/MIR/` override resolution.
+- Winners anchor must exist at `.markos-local/MSP/Landing_Pages/WINNERS/_CATALOG.md`.
 - If winners anchor is missing, execution is blocked and should not silently fall back to templates.
 
 # EXECUTION RULES

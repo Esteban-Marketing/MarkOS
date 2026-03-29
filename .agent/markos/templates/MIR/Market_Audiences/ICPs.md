@@ -1,10 +1,10 @@
 # ICPs.md — Ideal Customer Profiles (Firmographics)
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Market_Audiences/ICPs.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Market_Audiences/ICPs.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: Before filling this file, read `RESEARCH/AUDIENCE-RESEARCH.md` (§ ICP section) in full. `mgsd-lead-gen` MUST use these profiles to filter any outbound lists.
+> **AGENT LOGIC**: Before filling this file, read `RESEARCH/AUDIENCE-RESEARCH.md` (§ ICP section) in full. `markos-lead-gen` MUST use these profiles to filter any outbound lists.
 
 ---
 

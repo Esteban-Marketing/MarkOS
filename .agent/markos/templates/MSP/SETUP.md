@@ -1,6 +1,6 @@
 # SETUP.md — Quick-Start Guide for the MSP
 
-<!-- mgsd-token: MSP -->
+<!-- markos-token: MSP -->
 
 > **Read this when starting a Marketing Strategic Plan for a new project.**
 > The MSP is always created alongside — and after — the MIR (Marketing Intelligence Repository).
@@ -97,7 +97,7 @@ For each ACTIVE discipline, fill in this order:
 
 ---
 
-## Step 5: Link MSP to MIR and mGSD
+## Step 5: Link MSP to MIR and MarkOS
 
 **In every discipline PLAN.md**, verify these references exist:
 - Audience segment IDs link to `MIR/Market_Audiences/03_MARKET/AUDIENCES.md`
@@ -105,7 +105,7 @@ For each ACTIVE discipline, fill in this order:
 - Budget numbers match `Strategy/00_MASTER-PLAN/BUDGET-ALLOCATION.md`
 - KPI targets are registered in `Strategy/00_MASTER-PLAN/STRATEGIC-GOALS.md`
 
-**In every mGSD campaign**, add this field:
+**In every MarkOS campaign**, add this field:
 ```yaml
 discipline_plan   : "[e.g. Outbound/01_ADVERTISING/paid-social/STRATEGY.md]"
 msp_goal_id       : "[e.g. G-ACQ-01]"

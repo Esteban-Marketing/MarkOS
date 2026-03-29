@@ -7,7 +7,7 @@
 <domain>
 ## Phase Boundary
 
-Create a dedicated `RESEARCH/` directory system (peer to `MIR/` and `MSP/`) with 6 canonical tokenized research file templates. Each template feeds specific MIR/MSP fields via explicit token cross-references. Auto-trigger research generation via `mgsd-new-project`. Create the `mgsd-researcher` agent.
+Create a dedicated `RESEARCH/` directory system (peer to `MIR/` and `MSP/`) with 6 canonical tokenized research file templates. Each template feeds specific MIR/MSP fields via explicit token cross-references. Auto-trigger research generation via `markos-new-project`. Create the `markos-researcher` agent.
 </domain>
 
 <decisions>
@@ -31,17 +31,17 @@ Each file MUST contain:
 - RESEARCH files: section headers include `<!-- FEEDS → [MIR-TOKEN, MSP-TOKEN] -->`
 - MIR/MSP templates: relevant fields gain `<!-- SOURCED_FROM → [RESEARCH-TOKEN] -->` comment
 - This creates a navigable dependency graph for agents to follow
-- Token IDs follow pattern: `MGSD-RES-{TYPE}-{NN}` (e.g. `MGSD-RES-AUD-01`)
+- Token IDs follow pattern: `MARKOS-RES-{TYPE}-{NN}` (e.g. `MARKOS-RES-AUD-01`)
 
-### mgsd-researcher Agent
-- New agent defined at: `.agent/marketing-get-shit-done/agents/mgsd-researcher.md`
+### markos-researcher Agent
+- New agent defined at: `.agent/markos/agents/markos-researcher.md`
 - Role: reads `onboarding-seed.json` + raw client input → writes processed insights to RESEARCH/ files
 - Research protocol: market sources → competitive → audience synthesis (in order)
 - Output standard per insight: `{finding} | Source: {origin} | Confidence: {High/Med/Low} | Implication: {strategic consequence}`
 - If no `onboarding-seed.json`: agent asks 5 seed questions per file before generating
 
-### mgsd-new-project Integration
-- After scaffold creates `MIR/`, `MSP/`, `.mgsd-local/`: auto-trigger `mgsd-researcher` for each RESEARCH/ file
+### markos-new-project Integration
+- After scaffold creates `MIR/`, `MSP/`, `.markos-local/`: auto-trigger `markos-researcher` for each RESEARCH/ file
 - Generation sequence: ORG-PROFILE → PRODUCT-RESEARCH → AUDIENCE-RESEARCH → MARKET-TRENDS → COMPETITIVE-INTEL → CONTENT-AUDIT (order matters for context dependencies)
 
 ### Agent Discretion
@@ -54,13 +54,13 @@ Each file MUST contain:
 ## Canonical References
 
 ### Existing Templates
-- `.agent/marketing-get-shit-done/templates/research/RESEARCH.md` — existing base template to extend
-- `.agent/marketing-get-shit-done/templates/research/MARKET.md` — market research template
-- `.agent/marketing-get-shit-done/templates/research/BENCHMARKS.md` — benchmarks template
-- `.agent/marketing-get-shit-done/templates/MIR/` — all MIR subdirs (for adding SOURCED_FROM tokens)
-- `.agent/marketing-get-shit-done/templates/MSP/` — all MSP discipline files (for adding SOURCED_FROM tokens)
-- `.agent/marketing-get-shit-done/MGSD-INDEX.md` — master registry (register new RESEARCH tokens here)
-- `.agent/marketing-get-shit-done/agents/` — existing agent definitions for pattern reference
+- `.agent/markos/templates/research/RESEARCH.md` — existing base template to extend
+- `.agent/markos/templates/research/MARKET.md` — market research template
+- `.agent/markos/templates/research/BENCHMARKS.md` — benchmarks template
+- `.agent/markos/templates/MIR/` — all MIR subdirs (for adding SOURCED_FROM tokens)
+- `.agent/markos/templates/MSP/` — all MSP discipline files (for adding SOURCED_FROM tokens)
+- `.agent/markos/MARKOS-INDEX.md` — master registry (register new RESEARCH tokens here)
+- `.agent/markos/agents/` — existing agent definitions for pattern reference
 
 ### Requirements
 - `.planning/REQUIREMENTS.md` — RES-01, RES-02 must be addressed
@@ -69,7 +69,7 @@ Each file MUST contain:
 <specifics>
 ## Specific File Targets
 
-### 6 RESEARCH Template Files (in `.agent/marketing-get-shit-done/templates/RESEARCH/`):
+### 6 RESEARCH Template Files (in `.agent/markos/templates/RESEARCH/`):
 1. `AUDIENCE-RESEARCH.md` — Feeds: MIR/Market_Audiences/. Covers: psychographics, behavioral triggers, segments, pain points, language/vocabulary patterns, channel preferences
 2. `ORG-PROFILE.md` — Feeds: MIR/Core_Strategy/. Covers: org history, culture code, voice & tone baseline, differentiators, strategic goals, team structure, decision-making style
 3. `PRODUCT-RESEARCH.md` — Feeds: MIR/Products/. Covers: feature inventory, benefits hierarchy, pricing architecture, use cases, objection library, proof points, comparison vs. alternatives
@@ -78,7 +78,7 @@ Each file MUST contain:
 6. `CONTENT-AUDIT.md` — Feeds: MIR/Campaigns_Assets/. Covers: existing content inventory (format, channel, date, performance), gap map, reusable asset list, top performers by type
 
 ### New Agent:
-- `.agent/marketing-get-shit-done/agents/mgsd-researcher.md`
+- `.agent/markos/agents/markos-researcher.md`
 </specifics>
 
 <deferred>

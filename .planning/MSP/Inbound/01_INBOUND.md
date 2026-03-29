@@ -1,12 +1,12 @@
 # 📥 {{COMPANY_NAME}} - Inbound Marketing Pipeline
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/01_INBOUND.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/01_INBOUND.md to customize it safely.
 
 
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`), MIR Gate 1 required
-**Assigned Agents:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-content-creator, mgsd-seo-planner)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agents:** `{{LEAD_AGENT}}` (markos-strategist, markos-content-creator, markos-seo-planner)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## Inbound Parameters
 - **Primary Inbound Goal:** `{{INBOUND_GOAL}}` (e.g., 50 organic leads / month)
@@ -26,30 +26,30 @@
 ## 2. SEO Foundation
 
 - [ ] Run keyword research for primary ICP job-title intent queries (`{{TARGET_KEYWORDS_CLUSTER}}`).
-- [ ] Produce keyword strategy using `mgsd-seo-planner`.
+- [ ] Produce keyword strategy using `markos-seo-planner`.
 - [ ] Map keywords to content pillars (awareness / consideration / decision).
 - [ ] Populate `MSP/Inbound/SEO/KEYWORD-STRATEGY.md` with ranked target list.
 - [ ] Identify top 3 quick-win pages for on-page optimization.
 
 ## 3. Lead Magnet Pipeline
 
-- [ ] Design lead magnet from `MGSD-ITM-CNT-01` (Lead Magnet template).
-- [ ] Write lead magnet copy using `mgsd-content-creator` with VOICE-TONE constraints.
-- [ ] Build lead capture page — spec in `MGSD-ITM-CNT-05` (Landing Page Copy).
+- [ ] Design lead magnet from `MARKOS-ITM-CNT-01` (Lead Magnet template).
+- [ ] Write lead magnet copy using `markos-content-creator` with VOICE-TONE constraints.
+- [ ] Build lead capture page — spec in `MARKOS-ITM-CNT-05` (Landing Page Copy).
 - [ ] Configure automation: form submission → CRM entry → email sequence trigger.
 - [ ] Track conversion: `{{LEAD_CAPTURE_EVENT}}` PostHog event fires on submit.
 
 ## 4. Content Calendar Execution
 
-- [ ] Build monthly content calendar via `mgsd-calendar-builder`.
-- [ ] Produce SEO article briefs for target keyword slots (use `MGSD-ITM-CNT-06`).
-- [ ] Draft long-form articles using `mgsd-content-creator`.
+- [ ] Build monthly content calendar via `markos-calendar-builder`.
+- [ ] Produce SEO article briefs for target keyword slots (use `MARKOS-ITM-CNT-06`).
+- [ ] Draft long-form articles using `markos-content-creator`.
 - [ ] Human approves all articles before publication.
 - [ ] Publish schedule: `{{PUBLISH_DAYS}}`. Track organic traffic in weekly reports.
 
 ## 5. Email Nurture Sequence
 
-- [ ] Design welcome/nurture sequence (5-email minimum) using `MGSD-ITM-CNT-03`.
+- [ ] Design welcome/nurture sequence (5-email minimum) using `MARKOS-ITM-CNT-03`.
 - [ ] Map each email to a funnel stage and B0N trigger (see `neuromarketing.md`).
 - [ ] Configure sequence in `{{EMAIL_PLATFORM}}` automation linked to lead capture.
 - [ ] A/B test subject lines on emails 1 and 3: `{{SUBJECT_LINE_A}}` vs `{{SUBJECT_LINE_B}}`.
@@ -58,7 +58,7 @@
 ## 6. CRO Foundation
 
 - [ ] Identify top 2 conversion pages (home, demo/contact page).
-- [ ] Generate CRO hypothesis via `mgsd-cro-hypothesis`: `{{CRO_HYPOTHESIS_01}}`.
+- [ ] Generate CRO hypothesis via `markos-cro-hypothesis`: `{{CRO_HYPOTHESIS_01}}`.
 - [ ] Human approves hypothesis before implementing change.
 - [ ] Run test for minimum `{{AB_TEST_RUNTIME}}` days. Track CVR vs `{{CVR_TARGET}}`.
 
@@ -67,4 +67,4 @@
 - [ ] Weekly: check top-5 inbound keywords for ranking movement.
 - [ ] Weekly: check lead magnet download count vs. target `{{LEAD_MAGNET_TARGET}}`.
 - [ ] Bi-weekly: email sequence open rates vs. target.
-- [ ] Monthly: organic traffic vs. `{{ORGANIC_TRAFFIC_TARGET}}`. Report to `mgsd-analyst`.
+- [ ] Monthly: organic traffic vs. `{{ORGANIC_TRAFFIC_TARGET}}`. Report to `markos-analyst`.

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * orchestrator.cjs — MGSD Draft Generation Orchestrator
+ * orchestrator.cjs — MARKOS Draft Generation Orchestrator
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
- *   Coordinates all AI draft generators and persists results to ChromaDB.
+ *   Coordinates all AI draft generators and persists results to the vector storage layer.
  *   Called by `onboarding/backend/server.cjs` when handling POST /submit.
  *
  * EXECUTION FLOW:
- *   Step 1 — Store raw seed JSON in ChromaDB for RAG retrieval later.
+ *   Step 1 — Store raw seed JSON for retrieval-augmented generation.
  *   Step 2 — Run MIR generators sequentially (batched to avoid LLM rate limits):
  *              generateCompanyProfile, generateMissionVisionValues,
  *              generateAudienceProfile, generateCompetitiveLandscape
@@ -15,7 +15,7 @@
  *              generateBrandVoice, generateChannelStrategy
  *   Step 3.5 — Run Neuro-Auditor validation if skill file exists.
  *   Step 4 — Collect all draft texts into a {section_key: text} map.
- *   Step 5 — Store each draft in ChromaDB under mgsd-{slug} collection.
+ *   Step 5 — Store each draft in vector storage under project namespaces.
  *
  * RETRY STRATEGY (executeWithRetry):
  *   - 3 attempts with exponential backoff (1.5s, 3s, 6s)
@@ -23,9 +23,9 @@
  *   - Returns { ok: false, text: "[DRAFT UNAVAILABLE...]" } on all retries exhausted
  *
  * EXPORTS:
- *   orchestrate(seed, slug) → Promise<{ drafts, chromaResults, errors }>
+ *   orchestrate(seed, slug) → Promise<{ drafts, vectorStoreResults, errors }>
  *     drafts          — { company_profile, mission_values, audience, competitive, brand_voice, channel_strategy }
- *     chromaResults   — array of Chroma store operation results
+ *     vectorStoreResults — array of vector store operation results
  *     errors          — array of { phase, error } objects for failed steps
  *
  * RELATED FILES:
@@ -33,7 +33,7 @@
  *   onboarding/backend/agents/mir-filler.cjs    (MIR section generators)
  *   onboarding/backend/agents/msp-filler.cjs    (MSP section generators)
  *   onboarding/backend/agents/llm-adapter.cjs   (LLM call wrapper)
- *   onboarding/backend/chroma-client.cjs        (ChromaDB operations)
+ *   onboarding/backend/vector-store-client.cjs   (Vector store operations)
  *   onboarding/backend/write-mir.cjs            (writes approved drafts → MIR files)
  * ═══════════════════════════════════════════════════════════════════════════════
  */
@@ -42,7 +42,7 @@
 
 const mirFiller  = require('./mir-filler.cjs');
 const mspFiller  = require('./msp-filler.cjs');
-const chroma     = require('../chroma-client.cjs');
+const vectorStore = require('../vector-store-client.cjs');
 const telemetry  = require('./telemetry.cjs');
 const llm        = require('./llm-adapter.cjs');
 const fs         = require('fs');
@@ -101,8 +101,8 @@ async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
 
 /**
  * Run all draft-generation agents for a given seed.
- * Persists results to ChromaDB.
- * Returns: { drafts: { ... }, chromaResults: [...], errors: [...] }
+ * Persists results to vector storage.
+ * Returns: { drafts: { ... }, vectorStoreResults: [...], errors: [...] }
  *
  * @param {object} seed   — parsed onboarding-seed.json
  * @param {string} slug   — project slug (e.g. "acme-corp")
@@ -110,9 +110,9 @@ async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
 /**
  * @llm_context
  * intent: Coordinate the end-to-end onboarding draft pipeline and return usable output even
- * when optional infrastructure (ChromaDB, neuro-auditor) is partially unavailable.
+ * when optional infrastructure (vector storage, neuro-auditor) is partially unavailable.
  * failure_boundaries:
- * - ChromaDB seed upsert/store failures are non-fatal and recorded in errors.
+ * - Vector store seed upsert/store failures are non-fatal and recorded in errors.
  * - Individual generator failure becomes section-local placeholder text; other sections continue.
  * - The function always returns a structured result object with drafts and error metadata.
  */
@@ -127,14 +127,14 @@ async function orchestrate(seed, slug) {
     console.warn(message);
   };
 
-  // ── 1. Store raw seed in ChromaDB ─────────────────────────────────────────
-  let chromaResults = [];
+  // ── 1. Store raw seed in vector memory stores ─────────────────────────────
+  let vectorStoreResults = [];
   try {
-    chromaResults = await chroma.upsertSeed(slug, seed);
-    console.log(`[orchestrator] Seed stored in ChromaDB (${chromaResults.length} collections)`);
+    vectorStoreResults = await vectorStore.upsertSeed(slug, seed);
+    console.log(`[orchestrator] Seed stored in vector memory (${vectorStoreResults.length} sections)`);
   } catch (err) {
-    warnOnce('chroma-upsert', `[orchestrator] ChromaDB upsert failed: ${err.message} — continuing without persistence`);
-    errors.push({ phase: 'chroma-upsert', error: err.message });
+    warnOnce('vector-store-upsert', `[orchestrator] Vector memory upsert failed: ${err.message} — continuing without persistence`);
+    errors.push({ phase: 'vector-store-upsert', error: err.message });
   }
 
   // ── 2. Run MIR agents (Batched to prevent 429s) ──────────────────────────
@@ -146,8 +146,8 @@ async function orchestrate(seed, slug) {
 
   // ── 3. Run MSP agents ─────────────────────────────────────────────────────
   console.log('[orchestrator] Generating MSP drafts...');
-  const brandVoiceResult      = await executeWithRetry(() => mspFiller.generateBrandVoice(seed), 'Brand Voice', slug);
-  const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed), 'Channel Strategy', slug);
+  const brandVoiceResult      = await executeWithRetry(() => mspFiller.generateBrandVoice(seed, slug), 'Brand Voice', slug);
+  const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed, slug), 'Channel Strategy', slug);
 
   // ── 3.5. Neuro-Auditor Validation ─────────────────────────────────────────
   /**
@@ -160,7 +160,9 @@ async function orchestrate(seed, slug) {
    */
   console.log('[orchestrator] Running Neuro-Auditor verification...');
   try {
-    const auditorPath = path.resolve(__dirname, '../../../.agent/marketing-get-shit-done/agents/mgsd-neuro-auditor.md');
+    const canonicalAuditorPath = path.resolve(__dirname, '../../../.agent/markos/agents/markos-neuro-auditor.md');
+    const legacyAuditorPath = path.resolve(__dirname, '../../../.agent/markos/agents/markos-neuro-auditor.md');
+    const auditorPath = fs.existsSync(canonicalAuditorPath) ? canonicalAuditorPath : legacyAuditorPath;
     if (fs.existsSync(auditorPath) && audienceResult.ok && brandVoiceResult.ok) {
       const systemPrompt = fs.readFileSync(auditorPath, 'utf8');
       const userPrompt = `Review the following Audience logic and Brand Voice for psychological archetype alignment:\n\nAUDIENCE:\n${audienceResult.text}\n\nBRAND VOICE:\n${brandVoiceResult.text}\n\nOutput ONLY a concise 2-sentence verification summary (e.g. "Archetype alignment confirmed. The Rebel brand voice accurately attacks the Target Audience's core fear of conformity.") No preamble or pleasantries.`;
@@ -201,22 +203,22 @@ async function orchestrate(seed, slug) {
     }
   }
 
-  // ── 5. Store drafts in ChromaDB ───────────────────────────────────────────
+  // ── 5. Store drafts in vector memory ──────────────────────────────────────
   for (const [section, content] of Object.entries(drafts)) {
     try {
-      const storeResult = await chroma.storeDraft(slug, section, content);
+      const storeResult = await vectorStore.storeDraft(slug, section, content);
       if (storeResult && storeResult.ok === false) {
-        warnOnce(`chroma-store-${section}`, `[orchestrator] Failed to store ${section}: ${storeResult.error || 'Unknown Chroma persistence error'}`);
-        errors.push({ phase: `chroma-store-${section}`, error: storeResult.error || 'Unknown Chroma persistence error' });
+        warnOnce(`vector-store-${section}`, `[orchestrator] Failed to store ${section}: ${storeResult.error || 'Unknown vector persistence error'}`);
+        errors.push({ phase: `vector-store-${section}`, error: storeResult.error || 'Unknown vector persistence error' });
       }
     } catch (storeErr) {
-      warnOnce(`chroma-store-${section}`, `[orchestrator] Failed to store ${section}: ${storeErr.message}`);
-      errors.push({ phase: `chroma-store-${section}`, error: storeErr.message });
+      warnOnce(`vector-store-${section}`, `[orchestrator] Failed to store ${section}: ${storeErr.message}`);
+      errors.push({ phase: `vector-store-${section}`, error: storeErr.message });
     }
   }
 
   console.log(`[orchestrator] Done. Errors: ${errors.length}`);
-  return { drafts, chromaResults, errors };
+  return { drafts, vectorStoreResults, errors };
 }
 
 module.exports = { orchestrate };

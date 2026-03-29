@@ -1,7 +1,7 @@
 # _CHANNEL-STRATEGY-b2b.example.md
 # Reference Example: **B2B** (HR Technology — Applicant Tracking)
 
-<!-- mgsd-token: MSP | model: B2B -->
+<!-- markos-token: MSP | model: B2B -->
 > [!NOTE] B2B channel strategy is content-led and community-driven. Paid acquisition is secondary — trust is built through education and peer proof, not reach.
 
 ---

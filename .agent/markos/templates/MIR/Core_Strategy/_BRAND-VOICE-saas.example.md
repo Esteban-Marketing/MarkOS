@@ -1,7 +1,7 @@
 # BRAND-VOICE.md — Voice, Tone & Personality
 # Reference Example: **SaaS** (Developer Observability Platform)
 
-<!-- mgsd-token: MIR | model: SaaS -->
+<!-- markos-token: MIR | model: SaaS -->
 > [!NOTE] SaaS voice targets technical buyers. It must demonstrate depth over polish — engineers trust precision, not hype.
 
 ---

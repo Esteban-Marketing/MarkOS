@@ -1,7 +1,7 @@
 # ICPs.md — Ideal Customer Profiles
 # Reference Example: **B2B2C** (Property Management Platform)
 
-<!-- mgsd-token: MIR | model: B2B2C -->
+<!-- markos-token: MIR | model: B2B2C -->
 > [!NOTE] B2B2C requires dual ICP definition: one for the B (business buyer) and one for the C (end consumer profile that influences retention/renewal).
 
 ---

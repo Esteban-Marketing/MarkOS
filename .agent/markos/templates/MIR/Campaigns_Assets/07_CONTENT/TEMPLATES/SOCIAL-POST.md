@@ -1,7 +1,7 @@
 # SOCIAL-POST-TEMPLATE.md — Organic Social Copy Framework
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/07_CONTENT/TEMPLATES/SOCIAL-POST.md to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MIR/Campaigns_Assets/07_CONTENT/TEMPLATES/SOCIAL-POST.md to customize it safely.
 
 
 ```

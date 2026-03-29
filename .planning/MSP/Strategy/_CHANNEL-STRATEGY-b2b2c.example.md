@@ -1,11 +1,28 @@
-# _CHANNEL-STRATEGY-b2b2c.example.md
-# Reference Example: **B2B2C** (Property Management Platform)
 
-<!-- mgsd-token: MSP | model: B2B2C -->
+# MarkOS Channel Strategy Example: B2B2C (Property Management Platform)
+
+<!-- markos-token: MSP | model: B2B2C -->
 
 ---
 
+## LLM-Optimized Summary
+
+This file provides a reference channel strategy for B2B2C property management platform go-to-market. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts. Structured for LLM chunking and cross-referencing.
+
+**See also:**
+- [MARKETING-PLAN.md](MARKETING-PLAN.md)
+- [STRATEGIC-GOALS.md](STRATEGIC-GOALS.md)
+- [README.md](../../../../README.md)
+
+---
+
+---
+
+
 ## Channel Priority Stack
+
+**Summary:**
+Ranks and explains the most effective channels for B2B2C property management, with rationale, content format, frequency, and KPIs for each.
 
 **1. Industry Events + Trade Associations (B Side)**
 - Why: Property management decision-makers are reached most efficiently in person. NAA (National Apartment Association) and NMHC conferences are where $100K+ software decisions are made.
@@ -37,13 +54,33 @@
 - Posting frequency: Triggered (event-based), not broadcast.
 - KPI: Day 30 / Day 90 retention rates, monthly active tenants / total tenants ratio, NPS score.
 
+
 ## Quick Wins (First 30 Days)
+
+**Summary:**
+Tactical actions to drive early traction and credibility for a B2B2C property management launch.
 
 1. **NAA/NMHC Outreach**: Identify 3 upcoming regional property management events. Submit a speaking proposal for the CEO on "Technology adoption in property management: what actually works." No brand pitch — pure practitioner content.
 2. **App Store Review Request Campaign**: Send in-app prompt to tenants who have logged in 3+ times asking for a store review. Target: 50 new reviews in 30 days to move rating above 4.4.
 3. **LinkedIn Case Study Series**: With one existing customer's permission, document their journey from pre-platform chaos to post-platform metrics in a 3-part LinkedIn article sequence. Share on executive account.
 
+
 ## Channels to Explicitly Avoid (For Now)
+
+**Summary:**
+Lists channels that are not recommended for this audience or stage, with rationale.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 - **Instagram / TikTok (B Side)**: Property management executives are not discovering enterprise SaaS vendors on social video platforms.
 - **B2C Paid Social for Tenant Acquisition**: Tenants are acquired through the property manager — not independently. Consumer acquisition campaigns have no ROI path without a corresponding property manager relationship.

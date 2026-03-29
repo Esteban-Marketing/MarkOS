@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-ACQ-02
+token_id: MARKOS-ITM-ACQ-02
 document_class: ITM
 domain: ACQ
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 2
 ---
 
-# MGSD-ITM-ACQ-02 — Retargeting Campaign Setup
+# MARKOS-ITM-ACQ-02 — Retargeting Campaign Setup
 
-<!-- TOKEN: MGSD-ITM-ACQ-02 | CLASS: ITM | DOMAIN: ACQ -->
-<!-- PURPOSE: Linear issue template for designing pixel-based and list-based retargeting campaigns with escalating loss-aversion sequences. Consumed by mgsd-linear-manager when creating [MGSD] Retargeting Setup tickets. Gate 2 required (pixel data prerequisite). -->
+<!-- TOKEN: MARKOS-ITM-ACQ-02 | CLASS: ITM | DOMAIN: ACQ -->
+<!-- PURPOSE: Linear issue template for designing pixel-based and list-based retargeting campaigns with escalating loss-aversion sequences. Consumed by markos-linear-manager when creating [MARKOS] Retargeting Setup tickets. Gate 2 required (pixel data prerequisite). -->
 
-**Linear Title format:** `[MGSD] Retargeting: {platform} — {audience_segment} — {campaign_name}`
+**Linear Title format:** `[MARKOS] Retargeting: {platform} — {audience_segment} — {campaign_name}`
 **Category:** Acquisition
 **Primary Triggers:** B02 (Loss Aversion), B06 (Scarcity), B09 (Anchoring)
 **Secondary:** B03 (Social Proof — mid-funnel retouch)
@@ -29,28 +29,28 @@ mir_gate_required: 2
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B02, §B03, §B06, §B09 |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 2 enforcement (pixel events must exist) |
-| MGSD-AGT-STR-03 | agents/mgsd-campaign-architect.md | Retargeting audience segmentation and window map |
-| MGSD-AGT-CNT-02 | agents/mgsd-copy-drafter.md | Escalating sequence copy per day-window |
-| MGSD-AGT-TRK-02 | agents/mgsd-utm-architect.md | UTM per retargeting window |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Loss-escalation sequence audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B02, §B03, §B06, §B09 |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 2 enforcement (pixel events must exist) |
+| MARKOS-AGT-STR-03 | agents/markos-campaign-architect.md | Retargeting audience segmentation and window map |
+| MARKOS-AGT-CNT-02 | agents/markos-copy-drafter.md | Escalating sequence copy per day-window |
+| MARKOS-AGT-TRK-02 | agents/markos-utm-architect.md | UTM per retargeting window |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Loss-escalation sequence audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-ACQ-02 | Acquisition — Retargeting -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-ACQ-02 | Acquisition — Retargeting -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B02, §B03, §B06, §B09; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B02, §B03, §B06, §B09; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 2 GREEN (pixel events must fire, audiences must be seeded) |
 | MSP Matrix | `MSP/Campaigns/01_PAID_ACQUISITION.md` — retargeting section |
-| AGT Assigned | MGSD-AGT-STR-03 (campaign-architect) + MGSD-AGT-CNT-02 (copy-drafter) + MGSD-AGT-TRK-02 |
-| SKL Entry Point | MGSD-SKL-OPS-02 (mgsd-execute-phase) |
+| AGT Assigned | MARKOS-AGT-STR-03 (campaign-architect) + MARKOS-AGT-CNT-02 (copy-drafter) + MARKOS-AGT-TRK-02 |
+| SKL Entry Point | MARKOS-SKL-OPS-02 (markos-execute-phase) |
 
 ---
 
@@ -92,26 +92,26 @@ mir_gate_required: 2
 
 ## Task Steps
 
-- [ ] **Step 1:** Run Gate 2 audit via `mgsd-tools.cjs mir-audit` — confirm pixel events firing and TRACKING.md non-empty. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run Gate 2 audit via `markos-tools.cjs mir-audit` — confirm pixel events firing and TRACKING.md non-empty. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate 2 status
-- [ ] **Step 2:** Generate retargeting audience map using `MGSD-AGT-STR-03` — output: window boundaries (Day 1–3 / Day 4–7 / Day 8–14 / Day 15+), audience size per window, exclusion rules between windows, frequency cap.
-  - Agent: MGSD-AGT-STR-03
+- [ ] **Step 2:** Generate retargeting audience map using `MARKOS-AGT-STR-03` — output: window boundaries (Day 1–3 / Day 4–7 / Day 8–14 / Day 15+), audience size per window, exclusion rules between windows, frequency cap.
+  - Agent: MARKOS-AGT-STR-03
   - Output: `RETARGETING-ARCHITECTURE-{campaign_slug}.md`
-- [ ] **Step 3:** Draft copy per window using `MGSD-AGT-CNT-02` — follow trigger sequence: Day 1–3 (B03 proof) → Day 4–7 (B02 phantom ownership) → Day 8–14 (B02 escalation) → Day 15 (B06 + B09 anchor-and-scarcity). 2–3 copy variants per window.
-  - Agent: MGSD-AGT-CNT-02
+- [ ] **Step 3:** Draft copy per window using `MARKOS-AGT-CNT-02` — follow trigger sequence: Day 1–3 (B03 proof) → Day 4–7 (B02 phantom ownership) → Day 8–14 (B02 escalation) → Day 15 (B06 + B09 anchor-and-scarcity). 2–3 copy variants per window.
+  - Agent: MARKOS-AGT-CNT-02
   - Output: `RETARGETING-COPY-{campaign_slug}.md`
-- [ ] **Step 4:** Generate UTM parameters per window using `MGSD-AGT-TRK-02` (window ID embedded in UTM content parameter).
-  - Agent: MGSD-AGT-TRK-02
+- [ ] **Step 4:** Generate UTM parameters per window using `MARKOS-AGT-TRK-02` (window ID embedded in UTM content parameter).
+  - Agent: MARKOS-AGT-TRK-02
   - Output: `UTM-SPEC-RETARGETING-{campaign_slug}.md`
-- [ ] **Step 5:** Run `MGSD-AGT-NEU-01` — flag: B02 pressure in Day 1 window, gain-framed CTAs in any window, unverified scarcity element in Day 15 window.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 5:** Run `MARKOS-AGT-NEU-01` — flag: B02 pressure in Day 1 window, gain-framed CTAs in any window, unverified scarcity element in Day 15 window.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Per-window audit report
 - [ ] **Step 6:** Resolve all `REWRITE REQUIRED` flags. Rerun until all windows `PASSED`.
-  - Agent: MGSD-AGT-CNT-02
+  - Agent: MARKOS-AGT-CNT-02
   - Output: Revised copy
-- [ ] **Step 7:** Commit with message `mgsd(acquisition): retargeting {platform} {campaign_slug} setup complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 7:** Commit with message `markos(acquisition): retargeting {platform} {campaign_slug} setup complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -126,8 +126,8 @@ mir_gate_required: 2
 | 4 — Tracking | All window pixels and UTMs confirmed | UTM-SPEC committed; window IDs distinct |
 | 5 — Creative Compliance | Day 1 is B03; all CTAs loss-framed; Day 15 scarcity is verified | Neuro audit PASSED per window |
 | 6 — Budget Alignment | Budget per window ≤ paid acquisition cap | Allocation ≤ BUDGET-ALLOCATION.md cap |
-| 7 — Linear Sync | Issue marked Done; all docs committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | Trigger sequence respected across windows; no B02 in Day 1 | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue marked Done; all docs committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | Trigger sequence respected across windows; no B02 in Day 1 | `MARKOS-AGT-NEU-01` returns `PASSED` |
 
 ---
 
@@ -135,9 +135,9 @@ mir_gate_required: 2
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-ACQ-02 |
+| Template ID | MARKOS-ITM-ACQ-02 |
 | Task Category | Acquisition |
-| Labels | `[mgsd]`, `[retargeting]`, `[acquisition]`, `[decision]` |
+| Labels | `[markos]`, `[retargeting]`, `[acquisition]`, `[decision]` |
 | Priority | High |
 | Estimate | 3–4h |
 | Parent Issue | Paid Acquisition Epic |

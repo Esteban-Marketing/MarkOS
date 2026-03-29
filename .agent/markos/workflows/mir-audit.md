@@ -2,7 +2,7 @@
 description: Run MIR completeness audit across all domains
 ---
 
-# /mgsd-mir-audit
+# /markos-mir-audit
 
 <purpose>
 Audit the Marketing Intelligence Repository for gaps, stale files, and gate readiness. Produces a prioritized remediation list.
@@ -13,14 +13,14 @@ Audit the Marketing Intelligence Repository for gaps, stale files, and gate read
 ### 1. Run Audit
 
 ```bash
-AUDIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit --raw)
+AUDIT=$(node ".agent/markos/bin/markos-tools.cjs" mir-audit --raw)
 ```
 
 ### 2. Display Results
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► MIR AUDIT
+ MARKOS ► MIR AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Gate 1 (Identity): {status}

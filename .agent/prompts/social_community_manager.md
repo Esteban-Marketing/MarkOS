@@ -4,11 +4,11 @@ You are an expert social media strategist. Your goal is not direct conversion; y
 # REQUIRED CONTEXT INJECTIONS
 1. The Enemy/Status Quo: {{ inject: MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md }}
 2. Risk Tolerance: {{ inject: MIR/Core_Strategy/01_COMPANY/BRAND-ONTOLOGY.md }}
-3. Social Winners: {{ inject: .mgsd-local/MSP/Social/WINNERS/_CATALOG.md }}
+3. Social Winners: {{ inject: .markos-local/MSP/Social/WINNERS/_CATALOG.md }}
 
 # BOOT REQUIREMENTS
-- Approved local MIR state must be available through `.mgsd-local/MIR/` override resolution.
-- Winners anchor must exist at `.mgsd-local/MSP/Social/WINNERS/_CATALOG.md`.
+- Approved local MIR state must be available through `.markos-local/MIR/` override resolution.
+- Winners anchor must exist at `.markos-local/MSP/Social/WINNERS/_CATALOG.md`.
 - If winners anchor is missing, execution is blocked and should not silently fall back to templates.
 
 # EXECUTION RULES
@@ -24,6 +24,6 @@ You are an expert social media strategist. Your goal is not direct conversion; y
 ## CONTEXT RELAY
 - Align risk posture with `MIR/Core_Strategy/01_COMPANY/BRAND-ONTOLOGY.md` before drafting.
 - Align enemy framing with `MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md`.
-- Use historical hook patterns from `.mgsd-local/MSP/Social/WINNERS/_CATALOG.md`.
+- Use historical hook patterns from `.markos-local/MSP/Social/WINNERS/_CATALOG.md`.
 - Validate execution boundaries in `.protocol-lore/WORKFLOWS.md` and `.protocol-lore/DEFCON.md`.
 - Use `.agent/prompts/examples/GOLD-STANDARD.md` for baseline output quality and consistency.

@@ -1,34 +1,34 @@
 ---
-token_id: MGSD-REF-CNT-01
+token_id: MARKOS-REF-CNT-01
 document_class: REF
 domain: CNT
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+  - MARKOS-IDX-000    # MARKOS-INDEX.md — master registry
 downstream:
-  - MGSD-REF-OPS-07  # checkpoints.md — checkpoint box format defined here
-  - MGSD-REF-OPS-06  # continuation-format.md — references checkpoint box format
-  - MGSD-AGT-EXE-01  # mgsd-executor.md — primary consumer of UI patterns
-  - MGSD-AGT-STR-01  # mgsd-strategist.md — uses stage banners and progress formats
+  - MARKOS-REF-OPS-07  # checkpoints.md — checkpoint box format defined here
+  - MARKOS-REF-OPS-06  # continuation-format.md — references checkpoint box format
+  - MARKOS-AGT-EXE-01  # markos-executor.md — primary consumer of UI patterns
+  - MARKOS-AGT-STR-01  # markos-strategist.md — uses stage banners and progress formats
 mir_gate_required: false
 ---
 
-<!-- TOKEN: MGSD-REF-CNT-01 | CLASS: REF | DOMAIN: CNT -->
-<!-- PURPOSE: Defines all visual output patterns used by MGSD agents in user-facing responses: stage banners, progress bars, checkpoint boxes, plan summaries, and MIR gate callouts. All orchestrators @-reference this file. -->
+<!-- TOKEN: MARKOS-REF-CNT-01 | CLASS: REF | DOMAIN: CNT -->
+<!-- PURPOSE: Defines all visual output patterns used by MARKOS agents in user-facing responses: stage banners, progress bars, checkpoint boxes, plan summaries, and MIR gate callouts. All orchestrators @-reference this file. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
-| MGSD-REF-OPS-07 | checkpoints.md | Checkpoint types whose boxes are defined here |
-| MGSD-REF-OPS-06 | continuation-format.md | Continuation blocks reference checkpoint box format |
-| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Primary agent rendering these UI patterns |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this document |
+| MARKOS-REF-OPS-07 | checkpoints.md | Checkpoint types whose boxes are defined here |
+| MARKOS-REF-OPS-06 | continuation-format.md | Continuation blocks reference checkpoint box format |
+| MARKOS-AGT-EXE-01 | agents/markos-executor.md | Primary agent rendering these UI patterns |
 
 <ui_patterns>
 
-Visual patterns for user-facing MGSD output. Orchestrators @-reference this file.
+Visual patterns for user-facing MARKOS output. Orchestrators @-reference this file.
 
 ## Stage Banners
 
@@ -36,7 +36,7 @@ Use for major workflow transitions.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► {STAGE NAME}
+ MARKOS ► {STAGE NAME}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -146,8 +146,8 @@ Always at end of major completions.
 ───────────────────────────────────────────────────────────────
 
 **Also available:**
-- `/mgsd-alternative-1` — description
-- `/mgsd-alternative-2` — description
+- `/markos-alternative-1` — description
+- `/markos-alternative-2` — description
 
 ───────────────────────────────────────────────────────────────
 ```
@@ -184,9 +184,9 @@ Always at end of major completions.
 
 - Varying box/banner widths
 - Mixing banner styles (`===`, `---`, `***`)
-- Skipping `MGSD ►` prefix in banners
+- Skipping `MARKOS ►` prefix in banners
 - Random emoji (`🚀`, `✨`, `💫`)
 - Missing Next Up block after completions
-- Using `GSD ►` in MGSD workflows
+- Using `GSD ►` in MARKOS workflows
 
 </ui_patterns>

@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-STR-01
+token_id: MARKOS-ITM-STR-01
 document_class: ITM
 domain: STR
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: none
 ---
 
-# MGSD-ITM-STR-01 — Audience Research & ICP Update
+# MARKOS-ITM-STR-01 — Audience Research & ICP Update
 
-<!-- TOKEN: MGSD-ITM-STR-01 | CLASS: ITM | DOMAIN: STR -->
-<!-- PURPOSE: Linear issue template for extracting ICP behavioral signals and updating AUDIENCES.md. No gate required — this task populates Gate 1 files. Consumed by mgsd-linear-manager when creating [MGSD] Audience Intel tickets. -->
+<!-- TOKEN: MARKOS-ITM-STR-01 | CLASS: ITM | DOMAIN: STR -->
+<!-- PURPOSE: Linear issue template for extracting ICP behavioral signals and updating AUDIENCES.md. No gate required — this task populates Gate 1 files. Consumed by markos-linear-manager when creating [MARKOS] Audience Intel tickets. -->
 
-**Linear Title format:** `[MGSD] Audience Intel: {segment_name} — {month}-{year}`
+**Linear Title format:** `[MARKOS] Audience Intel: {segment_name} — {month}-{year}`
 **Category:** Audience Research
 **Primary Triggers:** B08 (In-Group Identity — for segment definition), B03 (Social Proof — for validation)
 **Funnel Stage:** Pre-campaign (feeds Awareness stage assets)
@@ -28,26 +28,26 @@ mir_gate_required: none
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B08 identity encoding rules |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Output feeds Gate 1 check |
-| MGSD-AGT-AUD-01 | agents/mgsd-audience-intel.md | Extracts behavioral signals |
-| MGSD-AGT-AUD-02 | agents/mgsd-market-researcher.md | Market research execution |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B08 identity encoding rules |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Output feeds Gate 1 check |
+| MARKOS-AGT-AUD-01 | agents/markos-audience-intel.md | Extracts behavioral signals |
+| MARKOS-AGT-AUD-02 | agents/markos-market-researcher.md | Market research execution |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-STR-01 | Audience Research -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-STR-01 | Audience Research -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B03, §B08; MGSD-REF-OPS-01 (gate output target) |
+| Token IDs Required | MARKOS-REF-NEU-01 §B03, §B08; MARKOS-REF-OPS-01 (gate output target) |
 | MIR Gate | none — this task populates Gate 1 files |
 | MSP Matrix | N/A |
-| AGT Assigned | MGSD-AGT-AUD-01 (audience-intel) + MGSD-AGT-AUD-02 (market-researcher) |
-| SKL Entry Point | MGSD-SKL-ANA-01 (mgsd-research-phase) |
+| AGT Assigned | MARKOS-AGT-AUD-01 (audience-intel) + MARKOS-AGT-AUD-02 (market-researcher) |
+| SKL Entry Point | MARKOS-SKL-ANA-01 (markos-research-phase) |
 
 ---
 
@@ -84,16 +84,16 @@ mir_gate_required: none
 ## Task Steps
 
 - [ ] **Step 1:** Extract current AUDIENCES.md signals — flag data fields older than 90 days as stale.
-  - Agent: MGSD-AGT-AUD-01
+  - Agent: MARKOS-AGT-AUD-01
   - Output: Staleness report (list of stale fields)
-- [ ] **Step 2:** Run market research using `MGSD-AGT-AUD-02` — extract: job-to-be-done, pain hierarchy (ranked), vocabulary, competitors named by ICP, channels they use.
-  - Agent: MGSD-AGT-AUD-02
+- [ ] **Step 2:** Run market research using `MARKOS-AGT-AUD-02` — extract: job-to-be-done, pain hierarchy (ranked), vocabulary, competitors named by ICP, channels they use.
+  - Agent: MARKOS-AGT-AUD-02
   - Output: `RESEARCH-REPORT.md`
 - [ ] **Step 3:** Update AUDIENCES.md — add: ICP inclusion statement, exclusion statement, archetype assignment, insider vocabulary (3–5 words), enemy framing.
-  - Agent: MGSD-AGT-AUD-01
+  - Agent: MARKOS-AGT-AUD-01
   - Output: Updated `AUDIENCES.md` (status: verified)
-- [ ] **Step 4:** Commit with message `mgsd(audience): audience-intel {segment_slug} updated {month}-{year}`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 4:** Commit with message `markos(audience): audience-intel {segment_slug} updated {month}-{year}`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -108,8 +108,8 @@ mir_gate_required: none
 | 4 — Tracking | N/A | N/A |
 | 5 — Creative Compliance | N/A | N/A |
 | 6 — Budget Alignment | N/A | N/A |
-| 7 — Linear Sync | Issue marked Done; AUDIENCES.md committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | All segments have exclusion clauses and insider vocabulary | `MGSD-AGT-NEU-01` B08 check returns `PASSED` |
+| 7 — Linear Sync | Issue marked Done; AUDIENCES.md committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | All segments have exclusion clauses and insider vocabulary | `MARKOS-AGT-NEU-01` B08 check returns `PASSED` |
 
 ---
 
@@ -117,9 +117,9 @@ mir_gate_required: none
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-STR-01 |
+| Template ID | MARKOS-ITM-STR-01 |
 | Task Category | Audience Research |
-| Labels | `[mgsd]`, `[research]`, `[pre-campaign]` |
+| Labels | `[markos]`, `[research]`, `[pre-campaign]` |
 | Priority | High (blocks Gate 1) |
 | Estimate | 2–4h |
 | Parent Issue | MIR Population Epic |

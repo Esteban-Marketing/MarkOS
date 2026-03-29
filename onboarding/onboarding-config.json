@@ -6,9 +6,9 @@
   "completion_message": "MIR templates populated. AI agents are now context-aware.",
   "logo_url": "",
   "primary_color": "#6366f1",
-  "chroma_host": "http://localhost:8000",
-  "project_slug": "mgsd-client",
-  "mir_output_path": ".mgsd-local/MIR",
-  "msp_output_path": ".mgsd-local/MSP",
+  "vector_endpoint": "",
+  "project_slug": "markos-client",
+  "mir_output_path": ".markos-local/MIR",
+  "msp_output_path": ".markos-local/MSP",
   "ollama_model": "llama3:8b"
 }

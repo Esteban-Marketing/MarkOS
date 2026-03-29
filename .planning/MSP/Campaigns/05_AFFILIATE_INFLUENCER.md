@@ -1,12 +1,12 @@
 # 🤝 {{COMPANY_NAME}} - Affiliate & Influencer Engine
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Campaigns/05_AFFILIATE_INFLUENCER.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Campaigns/05_AFFILIATE_INFLUENCER.md to customize it safely.
 
 
 **Dependencies:** MIR Network Strategy (`{{MIR_STRATEGY_FILE}}`)
-**Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `{{LEAD_AGENT}}` (markos-strategist)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## Partnership Economics
 - **Standard Revenue Share:** `{{REV_SHARE_PERCENT}}`

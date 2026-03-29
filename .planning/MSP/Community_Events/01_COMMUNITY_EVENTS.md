@@ -1,12 +1,12 @@
 # 🎪 {{COMPANY_NAME}} - Community & Events Pipeline
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Community_Events/01_COMMUNITY_EVENTS.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Community_Events/01_COMMUNITY_EVENTS.md to customize it safely.
 
 
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`), MIR Gate 1 required
-**Assigned Agents:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-content-creator, mgsd-calendar-builder)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agents:** `{{LEAD_AGENT}}` (markos-strategist, markos-content-creator, markos-calendar-builder)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## Community & Events Parameters
 - **Primary Community Goal:** `{{COMMUNITY_GOAL}}` (e.g., build LinkedIn community of 500 engaged followers)
@@ -28,7 +28,7 @@
 ## 2. Community Content Calendar
 
 - [ ] Define content categories for community: Education / Inspiration / Discussion / Promotion (80/10/5/5 ratio).
-- [ ] Build monthly community content calendar via `mgsd-calendar-builder`.
+- [ ] Build monthly community content calendar via `markos-calendar-builder`.
 - [ ] Weekly post cadence: `{{COMMUNITY_POST_CADENCE}}` posts per week.
 - [ ] Engagement posts: 1x question / poll per week to drive interaction.
 - [ ] Human reviews weekly batch of posts before scheduling.
@@ -36,9 +36,9 @@
 ## 3. Event Production — Webinar / Live
 
 - [ ] Define event theme aligned to ICP-1 pain point from `AUDIENCES.md`: `{{EVENT_TOPIC}}`.
-- [ ] Build event registration page copy using `MGSD-ITM-CNT-05` (Landing Page Copy template).
+- [ ] Build event registration page copy using `MARKOS-ITM-CNT-05` (Landing Page Copy template).
 - [ ] Create promotional sequence: Announcement (3 weeks out) → Reminder (1 week) → Last chance (48h) → Day-of.
-- [ ] Produce event script / slide deck using `mgsd-content-creator` with B07/B03 trigger mapping.
+- [ ] Produce event script / slide deck using `markos-content-creator` with B07/B03 trigger mapping.
 - [ ] Human approves: topic, registration page, promo sequence, and slide deck.
 - [ ] Launch registration. Track sign-up rate vs. target: `{{SIGNUP_RATE_TARGET}}`.
 
@@ -73,4 +73,4 @@
 - [ ] Monthly: new member growth rate vs. `{{COMMUNITY_GROWTH_TARGET}}`.
 - [ ] Per event: attendee count, show-up rate, NPS score (1-question post-event survey), leads generated.
 - [ ] Quarterly: community review — prune inactive channels, add new content categories if needed.
-- [ ] Report metrics to `mgsd-analyst` for KPI variance computation.
+- [ ] Report metrics to `markos-analyst` for KPI variance computation.

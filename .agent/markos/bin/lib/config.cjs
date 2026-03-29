@@ -1,5 +1,5 @@
 /**
- * Config — Planning config CRUD operations for MGSD
+ * Config — Planning config CRUD operations for MARKOS
  */
 
 const fs = require('fs');

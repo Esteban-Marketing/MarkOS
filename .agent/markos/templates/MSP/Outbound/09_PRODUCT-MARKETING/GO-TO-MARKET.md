@@ -1,7 +1,7 @@
 # GO-TO-MARKET.md — Product Launch Playbook
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/09_PRODUCT-MARKETING/GO-TO-MARKET.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Outbound/09_PRODUCT-MARKETING/GO-TO-MARKET.md to customize it safely.
 
 
 ```

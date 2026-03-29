@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-CNT-06
+token_id: MARKOS-ITM-CNT-06
 document_class: ITM
 domain: CNT
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 1
 ---
 
-# MGSD-ITM-CNT-06 — SEO Blog Article
+# MARKOS-ITM-CNT-06 — SEO Blog Article
 
-<!-- TOKEN: MGSD-ITM-CNT-06 | CLASS: ITM | DOMAIN: CNT -->
-<!-- PURPOSE: Linear issue template for producing a keyword-targeted, conversion-linked long-form blog article. Consumed by mgsd-linear-manager when creating [MGSD] SEO Article tickets. Gate 1 required. -->
+<!-- TOKEN: MARKOS-ITM-CNT-06 | CLASS: ITM | DOMAIN: CNT -->
+<!-- PURPOSE: Linear issue template for producing a keyword-targeted, conversion-linked long-form blog article. Consumed by markos-linear-manager when creating [MARKOS] SEO Article tickets. Gate 1 required. -->
 
-**Linear Title format:** `[MGSD] SEO Article: {primary_keyword} — {target_funnel_stage}`
+**Linear Title format:** `[MARKOS] SEO Article: {primary_keyword} — {target_funnel_stage}`
 **Category:** Content Creation
 **Primary Triggers:** B07 (Curiosity Gap), B05 (Pain Relief), B04 (Authority Signal)
 **Secondary:** B08 (In-Group Identity)
@@ -29,27 +29,27 @@ mir_gate_required: 1
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B04, §B05, §B07, §B08 |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
-| MGSD-AGT-CNT-06 | agents/mgsd-seo-planner.md | Keyword strategy and article outline |
-| MGSD-AGT-CNT-02 | agents/mgsd-copy-drafter.md | Long-form article body generation |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Article-level neuro audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B04, §B05, §B07, §B08 |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
+| MARKOS-AGT-CNT-06 | agents/markos-seo-planner.md | Keyword strategy and article outline |
+| MARKOS-AGT-CNT-02 | agents/markos-copy-drafter.md | Long-form article body generation |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Article-level neuro audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-CNT-06 | Content Creation — SEO -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-CNT-06 | Content Creation — SEO -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B04, §B05, §B07, §B08; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B04, §B05, §B07, §B08; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 GREEN |
 | MSP Matrix | `MSP/Inbound/` — SEO / content discipline section |
-| AGT Assigned | MGSD-AGT-CNT-06 (seo-planner) → MGSD-AGT-CNT-02 (copy-drafter) |
-| SKL Entry Point | MGSD-SKL-OPS-02 (mgsd-execute-phase) |
+| AGT Assigned | MARKOS-AGT-CNT-06 (seo-planner) → MARKOS-AGT-CNT-02 (copy-drafter) |
+| SKL Entry Point | MARKOS-SKL-OPS-02 (markos-execute-phase) |
 
 ---
 
@@ -80,9 +80,9 @@ mir_gate_required: 1
 
 | # | Required Input | Source Document | Status |
 |---|---------------|-----------------|--------|
-| 1 | Primary keyword, secondary keywords (3–5), search volume if known | `MGSD-AGT-CNT-06` output or Human-provided | [ ] |
+| 1 | Primary keyword, secondary keywords (3–5), search volume if known | `MARKOS-AGT-CNT-06` output or Human-provided | [ ] |
 | 2 | ICP primary pain and insider vocabulary | `MIR/Market_Audiences/03_MARKET/AUDIENCES.md` | [ ] |
-| 3 | Competing articles for this keyword (URLs, their headings) | `MGSD-AGT-AUD-02` (market-researcher) output or Human-provided | [ ] |
+| 3 | Competing articles for this keyword (URLs, their headings) | `MARKOS-AGT-AUD-02` (market-researcher) output or Human-provided | [ ] |
 | 4 | Internal CTA destination (lead magnet, landing page, or trial) | Human-provided | [ ] |
 | 5 | Prohibited words and tone rules | `MIR/Core_Strategy/02_BRAND/VOICE-TONE.md` | [ ] |
 | 6 | Target word count and article format (listicle / narrative / how-to / comparison) | Human-provided | [ ] |
@@ -91,23 +91,23 @@ mir_gate_required: 1
 
 ## Task Steps
 
-- [ ] **Step 1:** Run Gate 1 check via `mgsd-tools.cjs mir-audit`. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run Gate 1 check via `markos-tools.cjs mir-audit`. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status
-- [ ] **Step 2:** Generate SEO outline using `MGSD-AGT-CNT-06` — produce: H1 (B07 gap), H2 structure (each H2 opens a new gap), keyword placement map, internal CTA position, meta title and description.
-  - Agent: MGSD-AGT-CNT-06
+- [ ] **Step 2:** Generate SEO outline using `MARKOS-AGT-CNT-06` — produce: H1 (B07 gap), H2 structure (each H2 opens a new gap), keyword placement map, internal CTA position, meta title and description.
+  - Agent: MARKOS-AGT-CNT-06
   - Output: `SEO-OUTLINE-{keyword_slug}.md`
-- [ ] **Step 3:** Draft full article body using `MGSD-AGT-CNT-02` — pain-first opening; each section body follows: pain context → data (B04 cited) → mechanism → partial resolution; insider vocabulary placed in proximity to keyword-dense paragraphs.
-  - Agent: MGSD-AGT-CNT-02
+- [ ] **Step 3:** Draft full article body using `MARKOS-AGT-CNT-02` — pain-first opening; each section body follows: pain context → data (B04 cited) → mechanism → partial resolution; insider vocabulary placed in proximity to keyword-dense paragraphs.
+  - Agent: MARKOS-AGT-CNT-02
   - Output: `SEO-ARTICLE-DRAFT-{keyword_slug}.md`
-- [ ] **Step 4:** Run `MGSD-AGT-NEU-01` — flag: solution-first opening, uncited data claims, missing insider vocabulary, same-type H2 patterns, CTAs placed before pain induction.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 4:** Run `MARKOS-AGT-NEU-01` — flag: solution-first opening, uncited data claims, missing insider vocabulary, same-type H2 patterns, CTAs placed before pain induction.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Article audit report
 - [ ] **Step 5:** Resolve all `REWRITE REQUIRED` flags. Rerun until `PASSED`.
-  - Agent: MGSD-AGT-CNT-02
+  - Agent: MARKOS-AGT-CNT-02
   - Output: Revised article draft
-- [ ] **Step 6:** Commit with message `mgsd(seo): article {keyword_slug} draft complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 6:** Commit with message `markos(seo): article {keyword_slug} draft complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -122,8 +122,8 @@ mir_gate_required: 1
 | 4 — Tracking | N/A (tracked via page analytics, not pixel) | N/A |
 | 5 — Creative Compliance | No prohibited words; opening is pain-first; all data cited with source+year | VOICE-TONE diff clean |
 | 6 — Budget Alignment | N/A — content production | N/A |
-| 7 — Linear Sync | Issue marked Done; article draft committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | H1 unresolvable without reading; opening 2 paragraphs pain-only | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue marked Done; article draft committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | H1 unresolvable without reading; opening 2 paragraphs pain-only | `MARKOS-AGT-NEU-01` returns `PASSED` |
 
 ---
 
@@ -131,9 +131,9 @@ mir_gate_required: 1
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-CNT-06 |
+| Template ID | MARKOS-ITM-CNT-06 |
 | Task Category | Content Creation |
-| Labels | `[mgsd]`, `[seo]`, `[content]`, `[awareness]` |
+| Labels | `[markos]`, `[seo]`, `[content]`, `[awareness]` |
 | Priority | Medium |
 | Estimate | 3–5h per article |
 | Parent Issue | Inbound / SEO Content Epic |

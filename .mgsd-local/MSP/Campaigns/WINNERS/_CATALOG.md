@@ -13,4 +13,4 @@ Historical high-performance campaign structures and assets.
 | (none)   | —                  | —          | —    |
 
 > [!NOTE]
-> All MGSD creator agents must anchor against this catalog before generation.
+> All MarkOS creator agents must anchor against this catalog before generation.

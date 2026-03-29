@@ -1,6 +1,6 @@
 /**
- * Core — Shared utilities, constants, and internal helpers for MGSD
- * Marketing Get Shit Done protocol engine
+ * Core — Shared utilities, constants, and internal helpers for MARKOS
+ * MarkOS protocol engine
  */
 
 const fs = require('fs');
@@ -9,9 +9,9 @@ const { execSync, execFileSync, spawnSync } = require('child_process');
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const MGSD_ROOT_REL = '.agent/markos';
-const LEGACY_MGSD_ROOT_REL = '.agent/marketing-get-shit-done';
-const PROTOCOL_PREFIX = 'MGSD';
+const MARKOS_ROOT_REL = '.agent/markos';
+const LEGACY_MARKOS_ROOT_REL = '.agent/markos';
+const PROTOCOL_PREFIX = 'MARKOS';
 
 // ─── Path helpers ────────────────────────────────────────────────────────────
 
@@ -36,16 +36,16 @@ function planningPaths(cwd) {
   };
 }
 
-function mgsdRoot(cwd) {
-  const canonicalRoot = path.join(cwd, MGSD_ROOT_REL);
+function markosRoot(cwd) {
+  const canonicalRoot = path.join(cwd, MARKOS_ROOT_REL);
   if (fs.existsSync(canonicalRoot)) {
     return canonicalRoot;
   }
-  return path.join(cwd, LEGACY_MGSD_ROOT_REL);
+  return path.join(cwd, LEGACY_MARKOS_ROOT_REL);
 }
 
-function mgsdPaths(cwd) {
-  const root = mgsdRoot(cwd);
+function markosPaths(cwd) {
+  const root = markosRoot(cwd);
   return {
     root,
     agents: path.join(root, 'agents'),
@@ -67,7 +67,7 @@ function output(result, raw, rawValue) {
   } else {
     const json = JSON.stringify(result, null, 2);
     if (json.length > 50000) {
-      const tmpPath = path.join(require('os').tmpdir(), `mgsd-${Date.now()}.json`);
+      const tmpPath = path.join(require('os').tmpdir(), `markos-${Date.now()}.json`);
       fs.writeFileSync(tmpPath, json, 'utf-8');
       process.stdout.write('@file:' + tmpPath);
     } else {
@@ -299,13 +299,13 @@ function checkMirGates(mirPath) {
 // ─── Exports ─────────────────────────────────────────────────────────────────
 
 module.exports = {
-  MGSD_ROOT_REL,
+  MARKOS_ROOT_REL,
   PROTOCOL_PREFIX,
   toPosixPath,
   planningDir,
   planningPaths,
-  mgsdRoot,
-  mgsdPaths,
+  markosRoot,
+  markosPaths,
   output,
   error,
   safeReadFile,

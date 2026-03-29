@@ -1,31 +1,31 @@
 ---
-token_id: MGSD-REF-OPS-09
+token_id: MARKOS-REF-OPS-09
 document_class: REF
 domain: OPS
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
-  - MGSD-REF-OPS-10 # model-profile-resolution.md — resolution order for profiles
+  - MARKOS-IDX-000    # MARKOS-INDEX.md — master registry
+  - MARKOS-REF-OPS-10 # model-profile-resolution.md — resolution order for profiles
 downstream:
-  - MGSD-REF-OPS-05  # planning-config.md — model_profile config key references these values
-  - MGSD-AGT-EXE-01  # mgsd-executor.md — profile selection at runtime
+  - MARKOS-REF-OPS-05  # planning-config.md — model_profile config key references these values
+  - MARKOS-AGT-EXE-01  # markos-executor.md — profile selection at runtime
 mir_gate_required: false
 ---
 
-# Model Profiles — Agent Model Assignments for MGSD
+# Model Profiles — Agent Model Assignments for MARKOS
 
-<!-- TOKEN: MGSD-REF-OPS-09 | CLASS: REF | DOMAIN: OPS -->
-<!-- PURPOSE: Defines the four MGSD model profile tiers (quality/balanced/budget/inherit), their cost characteristics, and which agent roles each tier targets. Resolution order is defined in MGSD-REF-OPS-10. -->
+<!-- TOKEN: MARKOS-REF-OPS-09 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines the four MARKOS model profile tiers (quality/balanced/budget/inherit), their cost characteristics, and which agent roles each tier targets. Resolution order is defined in MARKOS-REF-OPS-10. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
-| MGSD-REF-OPS-10 | model-profile-resolution.md | Resolution cascade that selects the active profile |
-| MGSD-REF-OPS-05 | planning-config.md | Config schema where model_profile key is set |
-| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Agent that applies profile at execution time |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this document |
+| MARKOS-REF-OPS-10 | model-profile-resolution.md | Resolution cascade that selects the active profile |
+| MARKOS-REF-OPS-05 | planning-config.md | Config schema where model_profile key is set |
+| MARKOS-AGT-EXE-01 | agents/markos-executor.md | Agent that applies profile at execution time |
 
 ## Profiles
 
@@ -52,10 +52,10 @@ mir_gate_required: false
 
 ```bash
 # Set profile
-node mgsd-tools.cjs config-set model_profile quality
+node markos-tools.cjs config-set model_profile quality
 
 # Check current profile
-node mgsd-tools.cjs config-get model_profile
+node markos-tools.cjs config-get model_profile
 ```
 
 ## Resolution Order

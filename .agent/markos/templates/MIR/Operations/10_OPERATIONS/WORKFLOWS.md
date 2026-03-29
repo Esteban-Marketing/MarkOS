@@ -1,13 +1,13 @@
 # WORKFLOWS.md — Standard Operating Procedures
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Operations/10_OPERATIONS/WORKFLOWS.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Operations/10_OPERATIONS/WORKFLOWS.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: These SOPs are executable directives. `mgsd-executor` MUST follow the checkboxes in sequence. If a step cannot be completed (e.g., "Meta CAPI receiving test"), the agent MUST flag the task as BLOCKED and specify exactly which SOP step failed.
+> **AGENT LOGIC**: These SOPs are executable directives. `markos-executor` MUST follow the checkboxes in sequence. If a step cannot be completed (e.g., "Meta CAPI receiving test"), the agent MUST flag the task as BLOCKED and specify exactly which SOP step failed.
 
 **Dependencies:** APPROVALS (`APPROVALS.md`), CAMPAIGN (`../../Campaigns_Assets/08_CAMPAIGNS/_CAMPAIGN-TEMPLATE.md`)
-**Assigned Agent:** `mgsd-executor`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-executor`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : Document recurring operational tasks as step-by-step procedures.
@@ -241,7 +241,7 @@ WEEK 2–3 — STRATEGY:
 □ Complete Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md
 □ Complete Market_Audiences/03_MARKET/POSITIONING.md
 □ Complete Core_Strategy/09_ANALYTICS/KPI-FRAMEWORK.md — set targets
-□ First campaign planning begins (mGSD Protocol Phase 1)
+□ First campaign planning begins (MarkOS Protocol Phase 1)
 
 GATE CHECK:
 □ All Gate 1 files = complete or verified → can proceed to campaigns

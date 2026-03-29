@@ -1,7 +1,7 @@
 # MESSAGING-MATRIX.md — Official Stances & Talking Points
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/07_PR-COMMUNICATIONS/MESSAGING-MATRIX.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Outbound/07_PR-COMMUNICATIONS/MESSAGING-MATRIX.md to customize it safely.
 
 
 ```

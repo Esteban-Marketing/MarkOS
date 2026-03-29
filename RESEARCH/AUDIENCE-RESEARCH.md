@@ -1,9 +1,9 @@
 ---
-token_id: MGSD-RES-AUD-01
+token_id: MARKOS-RES-AUD-01
 document_class: RESEARCH
 version: "1.0.0"
 status: populated
-populated_by: mgsd-onboarder
+populated_by: markos-onboarder
 populated_at: 2025-07-18
 feeds_into:
   - MIR/Market_Audiences/AUDIENCES.md
@@ -14,7 +14,7 @@ feeds_into:
 
 # Audience Research — MarkOS
 
-<!-- mgsd-token: RESEARCH -->
+<!-- markos-token: RESEARCH -->
 
 ---
 
@@ -158,4 +158,5 @@ Source: Gate 1 audience channels input ("X/Reddit/dev communities"), Gate 2 KPI-
 
 ---
 *Research Quality Gate: All sections include evidence source, confidence level, and strategic implication.*
-*Last populated: 2025-07-18 | Populated by: mgsd-onboarder | Source: Gate 1 + Gate 2 MIR intake*
+*Last populated: 2025-07-18 | Populated by: markos-onboarder | Source: Gate 1 + Gate 2 MIR intake*
+

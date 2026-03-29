@@ -1,6 +1,6 @@
 # STATE.md — Live Project Status
 
-<!-- mgsd-token: MIR -->
+<!-- markos-token: MIR -->
 
 > **This is the most current file in the repository.**
 > Update this file whenever anything significant changes.

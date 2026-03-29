@@ -1,13 +1,13 @@
 # MISSION-VISION-VALUES.md — Strategic North Star
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/01_COMPANY/MISSION-VISION-VALUES.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This is the recursive source for all strategic decisions. `mgsd-strategist` MUST refer back to these values (Section 3) and principles (Section 4) when resolving multi-agent conflicts or prioritizing roadmap phases.
+> **AGENT LOGIC**: This is the recursive source for all strategic decisions. `markos-strategist` MUST refer back to these values (Section 3) and principles (Section 4) when resolving multi-agent conflicts or prioritizing roadmap phases.
 
 **Dependencies:** PROJECT (`../00_META/PROJECT.md`), PROFILE (`PROFILE.md`)
-**Assigned Agent:** `mgsd-strategist`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-strategist`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : Define the why, the what, and the how of this business at a strategic level.

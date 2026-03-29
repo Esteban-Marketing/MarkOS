@@ -6,9 +6,9 @@ Archive a completed marketing milestone: wrap ROADMAP.md section, archive phase 
 
 ## 1. Pre-flight Check
 
-Run `/mgsd-audit-milestone` first. If not clean:
+Run `/markos-audit-milestone` first. If not clean:
 ```
-⚠ Milestone audit found gaps. Run /mgsd-audit-milestone to review.
+⚠ Milestone audit found gaps. Run /markos-audit-milestone to review.
 
 → 1) Proceed anyway (accept gaps)
   2) Close gaps first
@@ -19,14 +19,14 @@ If `--force` flag: skip audit check.
 ## 2. Load Context
 
 ```bash
-VERSION=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-get project.version 2>/dev/null || echo "1.0")
+VERSION=$(node ".agent/markos/bin/markos-tools.cjs" config-get project.version 2>/dev/null || echo "1.0")
 NEW_VERSION=$(echo "$VERSION" | awk -F. '{printf "%d.%d", $1, $2+1}')
 ```
 
 Display:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► COMPLETING MILESTONE v{VERSION}
+ MARKOS ► COMPLETING MILESTONE v{VERSION}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -83,25 +83,25 @@ Write `.planning/milestones/v{VERSION}-REPORT.md`:
 ## 6. Update State
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" state update --milestone "v${NEW_VERSION}" --status "planning"
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-set project.version "${NEW_VERSION}"
+node ".agent/markos/bin/markos-tools.cjs" state update --milestone "v${NEW_VERSION}" --status "planning"
+node ".agent/markos/bin/markos-tools.cjs" config-set project.version "${NEW_VERSION}"
 ```
 
 ## 7. Run MIR Audit for New Baseline
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit
+node ".agent/markos/bin/markos-tools.cjs" mir-audit
 ```
 
 ## 8. Commit and Next Steps
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(milestone): complete v${VERSION} → start v${NEW_VERSION}"
+node ".agent/markos/bin/markos-tools.cjs" commit "markos(milestone): complete v${VERSION} → start v${NEW_VERSION}"
 ```
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► MILESTONE v{VERSION} COMPLETE ✓
+ MARKOS ► MILESTONE v{VERSION} COMPLETE ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Archived {N} phases to .planning/milestones/v{VERSION}-phases/
@@ -110,8 +110,8 @@ New milestone: v{NEW_VERSION}
 
 ## ▶ Next Up
 
-/mgsd-new-milestone — define next cycle phases
-/mgsd-review-backlog — promote backlog items to new milestone
+/markos-new-milestone — define next cycle phases
+/markos-review-backlog — promote backlog items to new milestone
 ```
 
 </process>

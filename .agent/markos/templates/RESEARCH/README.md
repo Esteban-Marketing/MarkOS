@@ -1,13 +1,13 @@
 # RESEARCH/ Templates
 
-<!-- mgsd-token: RESEARCH -->
+<!-- markos-token: RESEARCH -->
 
-Six canonical research files that form the intelligence foundation of every MGSD project.
+Six canonical research files that form the intelligence foundation of every MARKOS project.
 
 ## Directory Role
 - Peer to MIR/ and MSP/ in client project root
 - Contains post-processed, insight-dense analysis only — no raw notes
-- Auto-populated by `mgsd-researcher` during `mgsd-new-project`
+- Auto-populated by `markos-researcher` during `markos-new-project`
 
 ## Files
 | File | Feeds Into | Description |
@@ -20,9 +20,9 @@ Six canonical research files that form the intelligence foundation of every MGSD
 | CONTENT-AUDIT.md | MIR/Campaigns_Assets/ | Existing content inventory, gaps, top performers |
 
 ## Token ID Namespace
-- `MGSD-RES-AUD-XX` — Audience Research tokens
-- `MGSD-RES-ORG-XX` — Org Profile tokens
-- `MGSD-RES-PRD-XX` — Product Research tokens
-- `MGSD-RES-CMP-XX` — Competitive Intel tokens
-- `MGSD-RES-MKT-XX` — Market Trends tokens
-- `MGSD-RES-CNT-XX` — Content Audit tokens
+- `MARKOS-RES-AUD-XX` — Audience Research tokens
+- `MARKOS-RES-ORG-XX` — Org Profile tokens
+- `MARKOS-RES-PRD-XX` — Product Research tokens
+- `MARKOS-RES-CMP-XX` — Competitive Intel tokens
+- `MARKOS-RES-MKT-XX` — Market Trends tokens
+- `MARKOS-RES-CNT-XX` — Content Audit tokens

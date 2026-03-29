@@ -33,7 +33,7 @@ Expected outcome:
 - [x] v2.1 planning docs reference the compatibility contract as Phase 23 output
 
 ## Residual Risk
-- Legacy MGSD compatibility surfaces remain intentionally present until dedicated migration phases execute. This is accepted by design and not treated as identity drift.
+- Legacy MARKOS compatibility surfaces remain intentionally present until dedicated migration phases execute. This is accepted by design and not treated as identity drift.
 
 ## Verdict
 Phase 23 is complete and verified against IDN-01, IDN-02, and IDN-03.

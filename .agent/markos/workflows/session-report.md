@@ -2,7 +2,7 @@
 description: Generate marketing session report with work summary and outcomes
 ---
 
-# /mgsd-session-report
+# /markos-session-report
 
 <purpose>
 Generate a session summary with work completed, decisions made, campaigns impacted, and next steps.
@@ -12,7 +12,7 @@ Generate a session summary with work completed, decisions made, campaigns impact
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► SESSION REPORT
+ MARKOS ► SESSION REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Date: {date}

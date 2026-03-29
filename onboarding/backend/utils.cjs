@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Shared Utilities for MGSD Onboarding Backend
+ * Shared Utilities for MARKOS Onboarding Backend
  */
 
 function readBody(req) {

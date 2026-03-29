@@ -66,6 +66,6 @@ created        : "YYYY-MM-DD"
 - [ ] Tracking verified (pixel, events, UTM)
 - [ ] Budget confirmed in BUDGET-ALLOCATION.md
 - [ ] Landing page live and load-tested
-- [ ] Linear ticket created with [MGSD] prefix
+- [ ] Linear ticket created with [MARKOS] prefix
 - [ ] Campaign launched in platform
 - [ ] Optimization log created

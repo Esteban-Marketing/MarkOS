@@ -1,12 +1,12 @@
 # 📱 {{COMPANY_NAME}} - Social Media Pipeline
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/01_SOCIAL.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Social/01_SOCIAL.md to customize it safely.
 
 
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`), MIR Gate 1 required
-**Assigned Agents:** `{{LEAD_AGENT}}` (mgsd-social-drafter, mgsd-calendar-builder, mgsd-content-creator)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agents:** `{{LEAD_AGENT}}` (markos-social-drafter, markos-calendar-builder, markos-content-creator)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## Social Media Parameters
 - **Active Platforms:** `{{ACTIVE_PLATFORMS}}` (e.g., LinkedIn, Instagram, TikTok)
@@ -18,8 +18,8 @@
 
 ---
 
-<!-- SOURCED_FROM → MGSD-RES-MKT-01 (MARKET-TRENDS.md) -->
-<!-- SOURCED_FROM → MGSD-RES-AUD-01 (AUDIENCE-RESEARCH.md § Channel Preferences) -->
+<!-- SOURCED_FROM → MARKOS-RES-MKT-01 (MARKET-TRENDS.md) -->
+<!-- SOURCED_FROM → MARKOS-RES-AUD-01 (AUDIENCE-RESEARCH.md § Channel Preferences) -->
 
 ## 1. Social Foundation
 
@@ -39,7 +39,7 @@ Define posting ratio across content pillars:
 - **Engagement (10%):** Questions, polls, controversies in the niche
 - **Promotional (5%):** Direct offer or CTA posts
 
-- [ ] Build monthly content calendar via `MGSD-ITM-CNT-04` (Social Media Content Calendar template).
+- [ ] Build monthly content calendar via `MARKOS-ITM-CNT-04` (Social Media Content Calendar template).
 - [ ] Map each post to: pillar, B0N trigger, platform format, and publish date.
 - [ ] Human approves full monthly calendar before scheduling begins.
 
@@ -47,7 +47,7 @@ Define posting ratio across content pillars:
 
 - [ ] weekly personal brand post from `{{FOUNDERS_ACCOUNT}}`: 1 text post + 1 document/carousel per week.
 - [ ] Company page posts: 3×/week. Format split: 1 insight post / 1 proof post / 1 engagement question.
-- [ ] Write posts using `mgsd-social-drafter` with VOICE-TONE constraints.
+- [ ] Write posts using `markos-social-drafter` with VOICE-TONE constraints.
 - [ ] Post format: Hook (1–2 lines) + Body (problem → insight → proof) + CTA (single next step).
 - [ ] Kill metric: posts with organic reach < `{{MIN_REACH_PER_POST}}` at 48h → analyze and adjust hook.
 
@@ -62,7 +62,7 @@ Define posting ratio across content pillars:
 ## 5. Short-Form Video (TikTok / Reels)
 
 - [ ] Content type: quick tips / myth-busting / before-after / trending audio with niche angle.
-- [ ] Produce video scripts using `MGSD-ITM-CNT-08` (Video Script template).
+- [ ] Produce video scripts using `MARKOS-ITM-CNT-08` (Video Script template).
 - [ ] Hook rule: first 1.5 seconds must state the specific outcome or contradiction. No brand intro.
 - [ ] Target: `{{VIDEO_COMPLETION_RATE_TARGET}}` completion rate. Below → rewrite hook.
 - [ ] Human approves script before filming. Human approves final edit before posting.
@@ -71,7 +71,7 @@ Define posting ratio across content pillars:
 
 - [ ] Repurposing logic: Best-performing LinkedIn post this week → Reels script → Stories quote card → Email PS section.
 - [ ] Track top-performing content ID each week. Repurpose if engagement rate > `{{REPURPOSE_THRESHOLD}}`.
-- [ ] `mgsd-calibrate`: update `CONTENT-STRATEGY.md` with format performance data each month.
+- [ ] `markos-calibrate`: update `CONTENT-STRATEGY.md` with format performance data each month.
 
 ## 7. Social QA Loop
 
@@ -80,4 +80,4 @@ Define posting ratio across content pillars:
 - [ ] Monthly: follower growth vs. `{{FOLLOWER_GROWTH_TARGET}}`.
 - [ ] Kill format: any post format averaging < `{{FORMAT_KILL_THRESHOLD}}` engagement over 4 weeks → retire.
 - [ ] Scale format: post types averaging > `{{FORMAT_SCALE_THRESHOLD}}` → increase frequency by 50%.
-- [ ] Monthly report: reach, engagement, profile visits, link clicks → `mgsd-analyst` for KPI variance.
+- [ ] Monthly report: reach, engagement, profile visits, link clicks → `markos-analyst` for KPI variance.

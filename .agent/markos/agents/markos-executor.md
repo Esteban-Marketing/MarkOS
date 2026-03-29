@@ -80,13 +80,13 @@ campaign_id: {if applicable}
 ```text
 
 ## Constraints
-- Never modify ROADMAP.md or STATE.md directly — use mgsd-tools.cjs CLI
+- Never modify ROADMAP.md or STATE.md directly — use markos-tools.cjs CLI
 - Never skip acceptance_criteria — verify each one before committing
 - If acceptance criteria fails → note in SUMMARY.md Self-Check as FAILED, continue (don't abort)
 
 ## Neuromarketing Alignment
 
-**Reference:** `.agent/marketing-get-shit-done/references/neuromarketing.md`
+**Reference:** `.agent/markos/references/neuromarketing.md`
 
 When executing a task that contains a `<neuro_spec>` block, add a neuro execution check to the SUMMARY.md Self-Check:
 

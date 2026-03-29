@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-CNT-07
+token_id: MARKOS-ITM-CNT-07
 document_class: ITM
 domain: CNT
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 1
 ---
 
-# MGSD-ITM-CNT-07 — Case Study / Customer Story
+# MARKOS-ITM-CNT-07 — Case Study / Customer Story
 
-<!-- TOKEN: MGSD-ITM-CNT-07 | CLASS: ITM | DOMAIN: CNT -->
-<!-- PURPOSE: Linear issue template for producing a peer-matched customer case study as a social proof asset. Consumed by mgsd-linear-manager when creating [MGSD] Case Study tickets. Gate 1 required. -->
+<!-- TOKEN: MARKOS-ITM-CNT-07 | CLASS: ITM | DOMAIN: CNT -->
+<!-- PURPOSE: Linear issue template for producing a peer-matched customer case study as a social proof asset. Consumed by markos-linear-manager when creating [MARKOS] Case Study tickets. Gate 1 required. -->
 
-**Linear Title format:** `[MGSD] Case Study: {customer_name} — {outcome_metric}`
+**Linear Title format:** `[MARKOS] Case Study: {customer_name} — {outcome_metric}`
 **Category:** Content Creation
 **Primary Triggers:** B03 (Social Proof Cascade), B05 (Pain Relief), B07 (Curiosity Gap)
 **Secondary:** B04 (Authority Signal)
@@ -29,26 +29,26 @@ mir_gate_required: 1
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B03, §B04, §B05, §B07 |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
-| MGSD-AGT-CNT-02 | agents/mgsd-copy-drafter.md | Writes case study narrative |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | B03 peer-match audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B03, §B04, §B05, §B07 |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
+| MARKOS-AGT-CNT-02 | agents/markos-copy-drafter.md | Writes case study narrative |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | B03 peer-match audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-CNT-07 | Content Creation — Case Study -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-CNT-07 | Content Creation — Case Study -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B03, §B04, §B05, §B07; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B03, §B04, §B05, §B07; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 GREEN |
 | MSP Matrix | `MSP/Inbound/` or `MSP/Campaigns/` — social proof asset section |
-| AGT Assigned | MGSD-AGT-CNT-02 (copy-drafter) |
-| SKL Entry Point | MGSD-SKL-OPS-02 (mgsd-execute-phase) |
+| AGT Assigned | MARKOS-AGT-CNT-02 (copy-drafter) |
+| SKL Entry Point | MARKOS-SKL-OPS-02 (markos-execute-phase) |
 
 ---
 
@@ -91,23 +91,23 @@ mir_gate_required: 1
 
 ## Task Steps
 
-- [ ] **Step 1:** Run Gate 1 check via `mgsd-tools.cjs mir-audit`. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run Gate 1 check via `markos-tools.cjs mir-audit`. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status
 - [ ] **Step 2:** Verify peer-match quality — confirm customer role, company size, and industry match ≥ 2 of 3 ICP identifiers in AUDIENCES.md. Flag mismatch and block if <2 match.
-  - Agent: MGSD-AGT-OPS-07
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Peer-match verification result (PASS / BLOCK)
-- [ ] **Step 3:** Draft case study using `MGSD-AGT-CNT-02` — follow structure: [Pain paragraph] → [Old approach failure] → [Discovery moment] → [Decision rationale] → [Implementation] → [Result with before/after metrics] → [CTA]. Written from customer perspective, not brand perspective.
-  - Agent: MGSD-AGT-CNT-02
+- [ ] **Step 3:** Draft case study using `MARKOS-AGT-CNT-02` — follow structure: [Pain paragraph] → [Old approach failure] → [Discovery moment] → [Decision rationale] → [Implementation] → [Result with before/after metrics] → [CTA]. Written from customer perspective, not brand perspective.
+  - Agent: MARKOS-AGT-CNT-02
   - Output: `CASE-STUDY-{customer_slug}.md`
-- [ ] **Step 4:** Run `MGSD-AGT-NEU-01` — flag: brand-perspective narration, missing friction sentence, aspirational metrics without baseline, solution-first opening.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 4:** Run `MARKOS-AGT-NEU-01` — flag: brand-perspective narration, missing friction sentence, aspirational metrics without baseline, solution-first opening.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: B03 peer audit report
 - [ ] **Step 5:** Resolve all `REWRITE REQUIRED` flags. Rerun until `PASSED`.
-  - Agent: MGSD-AGT-CNT-02
+  - Agent: MARKOS-AGT-CNT-02
   - Output: Revised `CASE-STUDY-{customer_slug}.md`
-- [ ] **Step 6:** Commit with message `mgsd(content): case-study {customer_slug} draft complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 6:** Commit with message `markos(content): case-study {customer_slug} draft complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -122,8 +122,8 @@ mir_gate_required: 1
 | 4 — Tracking | N/A — content asset | N/A |
 | 5 — Creative Compliance | Customer perspective narration; friction sentence present; metrics specific | VOICE-TONE diff clean + manual check |
 | 6 — Budget Alignment | N/A | N/A |
-| 7 — Linear Sync | Issue marked Done; draft committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | Peer-match ≥ 2/3 identifiers; friction sentence verbatim; before/after metrics present | `MGSD-AGT-NEU-01` B03 audit `PASSED` |
+| 7 — Linear Sync | Issue marked Done; draft committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | Peer-match ≥ 2/3 identifiers; friction sentence verbatim; before/after metrics present | `MARKOS-AGT-NEU-01` B03 audit `PASSED` |
 
 ---
 
@@ -131,9 +131,9 @@ mir_gate_required: 1
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-CNT-07 |
+| Template ID | MARKOS-ITM-CNT-07 |
 | Task Category | Content Creation |
-| Labels | `[mgsd]`, `[content]`, `[social-proof]`, `[consideration]` |
+| Labels | `[markos]`, `[content]`, `[social-proof]`, `[consideration]` |
 | Priority | High |
 | Estimate | 2–3h (requires human interview inputs pre-filled) |
 | Parent Issue | Social Proof / Consideration Epic |

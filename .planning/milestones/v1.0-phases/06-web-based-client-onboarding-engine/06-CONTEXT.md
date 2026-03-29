@@ -7,7 +7,7 @@
 <domain>
 ## Phase Boundary
 
-Build a lightweight, white-labeled, step-by-step web onboarding form that collects all seed data needed to populate `RESEARCH/`, `MIR/`, and `MSP/` for a new client. Form output is a structured `onboarding-seed.json`. An orchestrator agent then reads this file and drives `mgsd-researcher` to generate all 6 RESEARCH files, then scaffolds derived MIR/MSP fields.
+Build a lightweight, white-labeled, step-by-step web onboarding form that collects all seed data needed to populate `RESEARCH/`, `MIR/`, and `MSP/` for a new client. Form output is a structured `onboarding-seed.json`. An orchestrator agent then reads this file and drives `markos-researcher` to generate all 6 RESEARCH files, then scaffolds derived MIR/MSP fields.
 </domain>
 
 <decisions>
@@ -16,7 +16,7 @@ Build a lightweight, white-labeled, step-by-step web onboarding form that collec
 ### Technology Stack
 - Pure HTML + Vanilla JS + CSS — zero dependencies, no build step required
 - Single self-contained file (`onboarding.html`) OR a minimal multi-file folder (`onboarding/`)
-- Served locally via Node.js `http.createServer` launched by `mgsd-new-project` CLI
+- Served locally via Node.js `http.createServer` launched by `markos-new-project` CLI
 - Opens automatically in the user's default browser on port 4242
 
 ### Form Structure (Multi-Step)
@@ -36,7 +36,7 @@ Step 6 — Existing Content (CONTENT-AUDIT seed): Best performing piece of conte
 ### White-Label Configurability
 - Config file: `onboarding-config.json` at project root
 - Configurable: `logo_url`, `primary_color`, `company_name`, `form_title`, `completion_message`
-- Default config ships with neutral MGSD branding
+- Default config ships with neutral MARKOS branding
 
 ### UX Standards
 - Progress bar showing current step / total steps
@@ -46,8 +46,8 @@ Step 6 — Existing Content (CONTENT-AUDIT seed): Best performing piece of conte
 - Mobile-responsive (used on tablets during in-person client sessions)
 
 ### Orchestrator Agent Integration
-- After form submission, the `mgsd-onboarder` orchestrator reads `onboarding-seed.json`
-- Drives `mgsd-researcher` in sequence: ORG → PRODUCT → AUDIENCE → MARKET → COMPETITIVE → CONTENT
+- After form submission, the `markos-onboarder` orchestrator reads `onboarding-seed.json`
+- Drives `markos-researcher` in sequence: ORG → PRODUCT → AUDIENCE → MARKET → COMPETITIVE → CONTENT
 - Each researcher call receives the relevant seed section as context
 - Final step: scaffolds derived fields into MIR/ and MSP/ templates
 
@@ -61,14 +61,14 @@ Step 6 — Existing Content (CONTENT-AUDIT seed): Best performing piece of conte
 ## Canonical References
 
 ### Phase 5 Artifacts (MUST be complete first)
-- `.agent/marketing-get-shit-done/templates/RESEARCH/` — all 6 research templates (from Phase 5)
-- `.agent/marketing-get-shit-done/agents/mgsd-researcher.md` — researcher agent (from Phase 5)
+- `.agent/markos/templates/RESEARCH/` — all 6 research templates (from Phase 5)
+- `.agent/markos/agents/markos-researcher.md` — researcher agent (from Phase 5)
 - `.planning/phases/05-research-architecture-and-tokenization/` — Phase 5 plans
 
 ### Existing Patterns
-- `.agent/marketing-get-shit-done/bin/mgsd-tools.cjs` — existing CLI tool for patterns
-- `.agent/marketing-get-shit-done/templates/MIR/SETUP.md` — scaffold reference
-- `.agent/skills/mgsd-new-project/SKILL.md` — skill to update with onboarding trigger
+- `.agent/markos/bin/markos-tools.cjs` — existing CLI tool for patterns
+- `.agent/markos/templates/MIR/SETUP.md` — scaffold reference
+- `.agent/skills/markos-new-project/SKILL.md` — skill to update with onboarding trigger
 
 ### Requirements
 - `.planning/REQUIREMENTS.md` — ONB-01, ONB-02 must be addressed
@@ -87,7 +87,7 @@ Step 6 — Existing Content (CONTENT-AUDIT seed): Best performing piece of conte
 - `bin/serve-onboarding.cjs` — Node.js HTTP server that serves the onboarding app locally
 
 ### Orchestrator Agent
-- `.agent/marketing-get-shit-done/agents/mgsd-onboarder.md` — orchestrates seed → research → scaffold pipeline
+- `.agent/markos/agents/markos-onboarder.md` — orchestrates seed → research → scaffold pipeline
 
 ### Schema File
 - `onboarding/onboarding-seed.schema.json` — JSON schema for validation

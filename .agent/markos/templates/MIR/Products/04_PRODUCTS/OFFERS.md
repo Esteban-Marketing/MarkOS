@@ -1,13 +1,13 @@
 # OFFERS.md — Active Promotions, Bundles & Limited-Time Offers
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Products/04_PRODUCTS/OFFERS.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Products/04_PRODUCTS/OFFERS.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This is the source of truth for all commercial incentives. `mgsd-content-creator` MUST verify that an offer ID is `ACTIVE` before including it in any copy. `mgsd-executor` MUST NOT launch any campaign referencing an offer that has passed its `valid_until` date or is marked as `EXPIRED`.
+> **AGENT LOGIC**: This is the source of truth for all commercial incentives. `markos-content-creator` MUST verify that an offer ID is `ACTIVE` before including it in any copy. `markos-executor` MUST NOT launch any campaign referencing an offer that has passed its `valid_until` date or is marked as `EXPIRED`.
 
 **Dependencies:** CATALOG (`CATALOG.md`), PRICING (`PRICING.md`), CUSTOMER-JOURNEY (`CUSTOMER-JOURNEY.md`), ACTIVE-CAMPAIGNS (`../../Campaigns_Assets/08_CAMPAIGNS/`)
-**Assigned Agent:** `mgsd-product-manager`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-product-manager`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : Track all active, scheduled, and historical offers.

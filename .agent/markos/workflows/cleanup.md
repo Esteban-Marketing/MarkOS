@@ -9,13 +9,13 @@ Archive accumulated phase directories from completed milestones to keep .plannin
 ```bash
 # Find phases marked complete in ROADMAP.md
 COMPLETED=$(grep -oP '### Phase \K\d+(?=.*\[x\])' .planning/ROADMAP.md 2>/dev/null)
-VERSION=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" config-get project.version 2>/dev/null || echo "1.0")
+VERSION=$(node ".agent/markos/bin/markos-tools.cjs" config-get project.version 2>/dev/null || echo "1.0")
 ```
 
 Display archivable phases:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► CLEANUP — Archive Completed Phases
+ MARKOS ► CLEANUP — Archive Completed Phases
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Archivable phases: {list}
@@ -37,7 +37,7 @@ done
 ## 3. Commit
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(cleanup): archive completed phases to milestone v${VERSION}"
+node ".agent/markos/bin/markos-tools.cjs" commit "markos(cleanup): archive completed phases to milestone v${VERSION}"
 ```
 
 Display:

@@ -1,7 +1,7 @@
 # BRAND-VOICE.md — Voice, Tone & Personality
 # Reference Example: **B2B** (HR Technology — Applicant Tracking)
 
-<!-- mgsd-token: MIR | model: B2B -->
+<!-- markos-token: MIR | model: B2B -->
 > [!NOTE] This is a completed B2B brand voice example. B2B voice is authoritative and credibility-first, but never cold or corporate.
 
 ---

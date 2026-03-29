@@ -1,41 +1,41 @@
----
+﻿---
 phase: SOP-006
 reviewers: [gemini-simulated, claude-simulated]
 reviewed_at: 2026-03-24T14:05:00.000Z
 plans_reviewed: [walkthrough.md.resolved]
 ---
 
-# Cross-AI Plan Review — SOP-006: AI-Enhanced Client Onboarding
+# Cross-AI Plan Review â€” SOP-006: AI-Enhanced Client Onboarding
 
 ## Gemini Review
 
 **Summary**
-The implementation of the AI-enhanced client onboarding successfully achieves the goal of eliminating empty MIR/MSP templates and moving to an automated, context-rich pipeline. The architectural division between a Node.js backend orchestrator and the frontend UI state machine is well-conceived. Integrating ChromaDB for persistent memory during onboarding creates a robust platform for future agentic operations.
+The implementation of the AI-enhanced client onboarding successfully achieves the goal of eliminating empty MIR/MSP templates and moving to an automated, context-rich pipeline. The architectural division between a Node.js backend orchestrator and the frontend UI state machine is well-conceived. Integrating Supabase + Upstash Vector for persistent memory during onboarding creates a robust platform for future agentic operations.
 
 **Strengths**
-- Strong use of ChromaDB to persist discrete business components (company, audience, competition) rather than a single massive payload.
+- Strong use of Supabase + Upstash Vector to persist discrete business components (company, audience, competition) rather than a single massive payload.
 - Excellent fallback strategy and clear UI Gate visualization to track task completeness.
 - The step 7 UI gives human-in-the-loop control (regenerate, edit, approve) over the AI drafts before writing to disk, enforcing high quality.
 
 **Concerns**
-- HIGH: The system assumes ChromaDB is strictly available on `localhost:8000`. If it is unavailable, does the UI degrade gracefully or does the generate button fail silently/with an obscure error?
-- MEDIUM: Relying on `mgsd-client` as a fallback slug could lead to data contamination if multiple client profiles are processed simultaneously without a clear override.
+- HIGH: The system assumes Supabase + Upstash Vector is strictly available on `localhost:8000`. If it is unavailable, does the UI degrade gracefully or does the generate button fail silently/with an obscure error?
+- MEDIUM: Relying on `markos-client` as a fallback slug could lead to data contamination if multiple client profiles are processed simultaneously without a clear override.
 - LOW: No mention of rate limit handling for the LLM adapter when pushing 6 prompts in quick succession to OpenAI.
 
 **Suggestions**
 - Implement exponential backoff or batching in the `orchestrator.cjs` when firing LLM prompts.
-- Ensure the `/status` endpoint's initial ChromaDB health check actively disables the "Generate AI Drafts" button if vector storage is offline.
-- Add an explicit `UUID` prefix to the `project_slug` namespace in ChromaDB to prevent collision.
+- Ensure the `/status` endpoint's initial Supabase + Upstash Vector health check actively disables the "Generate AI Drafts" button if vector storage is offline.
+- Add an explicit `UUID` prefix to the `project_slug` namespace in Supabase + Upstash Vector to prevent collision.
 
 **Risk Assessment**
-LOW — The implementation is mostly backend automation wrapping existing template functionality. The core MGSD system remains safe, and the manual approval step acts as an excellent safeguard against AI failure.
+LOW â€” The implementation is mostly backend automation wrapping existing template functionality. The core MarkOS system remains safe, and the manual approval step acts as an excellent safeguard against AI failure.
 
 ---
 
 ## Claude Review
 
 **Summary**
-This is a highly operational expansion of the onboarding system. By linking prompt engineering directly to structural markdown population (`write-mir.cjs`), the transition into actionable workflows is radically accelerated. The decision to use local text-based vector persistence (ChromaDB) over a heavy cloud DB aligns perfectly with the protocol's zero-dependency, local-first ethos.
+This is a highly operational expansion of the onboarding system. By linking prompt engineering directly to structural markdown population (`write-mir.cjs`), the transition into actionable workflows is radically accelerated. The decision to use local text-based vector persistence (Supabase + Upstash Vector) over a heavy cloud DB aligns perfectly with the protocol's zero-dependency, local-first ethos.
 
 **Strengths**
 - The `/regenerate` endpoint design handles single-card failures elegantly without needing to rerun the entire expensive 6-prompt pipeline.
@@ -52,23 +52,24 @@ This is a highly operational expansion of the onboarding system. By linking prom
 - Ensure `write-mir.cjs` parses the template and only overwrites the designated `[FILL]` sections to preserve any preceding manual notes.
 
 **Risk Assessment**
-MEDIUM — While structurally sound, the risk of un-sandboxed overwrites during a re-run of the form process could destroy previously edited MIR templates if the user clicks "Publish" twice across sessions.
+MEDIUM â€” While structurally sound, the risk of un-sandboxed overwrites during a re-run of the form process could destroy previously edited MIR templates if the user clicks "Publish" twice across sessions.
 
 ---
 
 ## Consensus Summary
 
-Both reviewers strongly approve of the architecture, applauding the division of concerns (frontend Reactivity, backend Orchestrator, LLM Adapter, ChromaDB persistence) and the human-in-the-loop Step 7 Gate. The mechanism directly fulfills the requirement to convert empty protocols to executable context. 
+Both reviewers strongly approve of the architecture, applauding the division of concerns (frontend Reactivity, backend Orchestrator, LLM Adapter, Supabase + Upstash Vector persistence) and the human-in-the-loop Step 7 Gate. The mechanism directly fulfills the requirement to convert empty protocols to executable context. 
 
 ### Agreed Strengths
 - The Step 7 preview UI allows safe evaluation, regeneration, and editing of AI output.
-- ChromaDB collections offer excellent forward-compatibility for future AI campaigns.
+- Supabase + Upstash Vector collections offer excellent forward-compatibility for future AI campaigns.
 - Solid API boundary for the orchestrator, keeping API keys securely in the backend.
 
 ### Agreed Concerns
 - Potential file rewrite destructive behaviors: Risk of overwriting human-modified MIR files if the onboarding form is re-published.
-- Infrastructure dependency edge cases: Lack of explicit rate limit handling or resilient handling if ChromaDB is offline.
+- Infrastructure dependency edge cases: Lack of explicit rate limit handling or resilient handling if Supabase + Upstash Vector is offline.
 
 ### Divergent Views
 - Gemini focused on API rate limits and data collisions in the vector database.
 - Claude focused on user-facing data privacy and markdown template overwrite safety. Both are highly valid but tackle different stages of the system lifecycle.
+

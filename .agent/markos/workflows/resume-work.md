@@ -2,7 +2,7 @@
 description: Resume marketing work from previous session with full context restoration
 ---
 
-# /mgsd-resume-work
+# /markos-resume-work
 
 <purpose>
 Restore context from a paused session and continue execution from where it stopped.
@@ -18,7 +18,7 @@ Search `.planning/phases/` for the most recent `CONTINUE-HERE.md`.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► RESUMING WORK
+ MARKOS ► RESUMING WORK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Paused: {timestamp}

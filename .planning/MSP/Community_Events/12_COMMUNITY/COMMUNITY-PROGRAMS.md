@@ -1,7 +1,7 @@
 # COMMUNITY-PROGRAMS.md — Engagement Programs & Rituals
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Community_Events/12_COMMUNITY/COMMUNITY-PROGRAMS.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Community_Events/12_COMMUNITY/COMMUNITY-PROGRAMS.md to customize it safely.
 
 
 ```

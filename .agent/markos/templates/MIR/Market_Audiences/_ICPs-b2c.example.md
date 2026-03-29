@@ -1,7 +1,7 @@
 # ICPs.md — Ideal Customer Profiles (Consumer Persona)
 # Reference Example: **B2C** (Premium Home Fitness Brand)
 
-<!-- mgsd-token: MIR | model: B2C -->
+<!-- markos-token: MIR | model: B2C -->
 > [!NOTE] B2C ICPs are demographic + psychographic profiles, not firmographic. Replace the attributes table with consumer dimensions.
 
 ---

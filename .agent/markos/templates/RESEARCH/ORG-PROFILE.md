@@ -1,5 +1,5 @@
 ---
-token_id: MGSD-RES-ORG-01
+token_id: MARKOS-RES-ORG-01
 document_class: RESEARCH
 version: "1.0.0"
 status: unpopulated
@@ -12,8 +12,8 @@ feeds_into:
 
 # Org Profile
 
-<!-- mgsd-token: RESEARCH -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/RESEARCH/ORG-PROFILE.md to customize it safely.
+<!-- markos-token: RESEARCH -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/RESEARCH/ORG-PROFILE.md to customize it safely.
 
 
 <!-- AGENT: Populate from onboarding-seed.json (company section) + founder/team interviews if available.
@@ -47,4 +47,4 @@ feeds_into:
 
 ---
 *Research Quality Gate: Each section must include evidence source, confidence level, and strategic implication.*
-*Last populated: [DATE] | Populated by: mgsd-researcher | Source: onboarding-seed.json*
+*Last populated: [DATE] | Populated by: markos-researcher | Source: onboarding-seed.json*

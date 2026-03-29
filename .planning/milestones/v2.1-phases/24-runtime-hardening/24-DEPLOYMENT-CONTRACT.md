@@ -6,7 +6,7 @@
 - Entry: `node onboarding/backend/server.cjs`
 - Runtime mode: `local`
 - Local persistence: enabled
-- Supported write flows: `POST /submit` seed write, `POST /approve` MIR write to `.mgsd-local/MIR/`
+- Supported write flows: `POST /submit` seed write, `POST /approve` MIR write to `.markos-local/MIR/`
 
 ### Hosted API-Wrapper Mode
 - Entry: `api/*.js` wrappers delegating to shared handlers
@@ -24,7 +24,7 @@
 2. `onboarding/onboarding-config.json` overrides
 3. Request-provided slug (`project_slug` body/query, `client` query legacy fallback)
 4. Fallback slug from configured/default project slug and normalized company name
-5. Local mode can persist slug in `.mgsd-project.json`; hosted mode is read-only for local persistence
+5. Local mode can persist slug in `.markos-project.json`; hosted mode is read-only for local persistence
 
 ## Persistence Contract
 - Local filesystem writes are only supported in local mode.

@@ -2,7 +2,7 @@
 description: Add a new marketing phase to the end of the current milestone roadmap
 ---
 
-# /mgsd-add-phase
+# /markos-add-phase
 
 <purpose>
 Append a new phase to the current milestone in ROADMAP.md.
@@ -22,5 +22,5 @@ Append a new phase to the current milestone in ROADMAP.md.
 5. Commit
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(roadmap): add phase {N+1} — {name}"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(roadmap): add phase {N+1} — {name}"
 ```

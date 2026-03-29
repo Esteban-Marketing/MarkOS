@@ -1,7 +1,7 @@
 # SEO Plan — Search Engine Optimization Strategy
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/06_SEO/PLAN.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/06_SEO/PLAN.md to customize it safely.
 
 
 ```

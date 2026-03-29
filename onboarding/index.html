@@ -17,7 +17,7 @@
         <div class="loading-spinner"></div>
         <div class="loading-message" id="loadingMessage">Generating AI drafts...</div>
         <div class="loading-steps" id="loadingSteps">
-            Storing intelligence in ChromaDB<br>
+            Storing intelligence in Supabase + Upstash Vector<br>
             Running MIR agent — Company Profile<br>
             Running MIR agent — Audience Persona<br>
             Running MSP agent — Brand Voice
@@ -104,6 +104,7 @@
                 <div class="draft-review-header">
                     <h2 class="step-title">Let's fill in the gaps...</h2>
                     <p class="draft-review-subtext">Our AI has mapped your existing content. Now, let's complete your profile together.</p>
+                    <p class="draft-review-subtext" id="interviewProgress">Question 0 of 5</p>
                 </div>
                 
                 <div class="chat-container" id="interviewContainer">
@@ -196,3 +197,4 @@
     <script src="onboarding.js"></script>
 </body>
 </html>
+

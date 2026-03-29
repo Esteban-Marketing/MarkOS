@@ -1,7 +1,7 @@
 # STRATEGIC-GOALS.md — Annual Marketing Goals
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/STRATEGIC-GOALS.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/00_MASTER-PLAN/STRATEGIC-GOALS.md to customize it safely.
 
 
 ```

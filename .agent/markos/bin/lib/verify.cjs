@@ -1,5 +1,5 @@
 /**
- * verify.cjs — Verification utilities for MGSD
+ * verify.cjs — Verification utilities for MARKOS
  * Checks MIR gate status, tracking setup, and template variables
  */
 

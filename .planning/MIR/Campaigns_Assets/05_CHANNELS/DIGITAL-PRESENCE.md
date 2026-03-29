@@ -1,7 +1,7 @@
 # DIGITAL-PRESENCE.md — Complete Digital Footprint
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/05_CHANNELS/DIGITAL-PRESENCE.md to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MIR/Campaigns_Assets/05_CHANNELS/DIGITAL-PRESENCE.md to customize it safely.
 
 
 ```

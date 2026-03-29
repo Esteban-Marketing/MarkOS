@@ -1,10 +1,10 @@
 # BRAND-VOICE.md — Voice, Tone & Personality
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/BRAND-VOICE.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/BRAND-VOICE.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: Before filling this file, read `RESEARCH/ORG-PROFILE.md` (§ Voice & Tone Baseline). All `mgsd-copy-drafter` outputs MUST be audited against these rules.
+> **AGENT LOGIC**: Before filling this file, read `RESEARCH/ORG-PROFILE.md` (§ Voice & Tone Baseline). All `markos-copy-drafter` outputs MUST be audited against these rules.
 
 ---
 

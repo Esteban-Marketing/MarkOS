@@ -1,7 +1,7 @@
 # ICPs.md — Ideal Customer Profiles (Firmographics)
 # Reference Example: **B2B** (HR Technology — Applicant Tracking & Onboarding)
 
-<!-- mgsd-token: MIR | model: B2B -->
+<!-- markos-token: MIR | model: B2B -->
 > [!NOTE] This is a completed B2B ICP example. The ICP section is firmographic — it defines the ideal company, not the individual.
 
 ---

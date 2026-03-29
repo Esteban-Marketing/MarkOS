@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-STR-02
+token_id: MARKOS-ITM-STR-02
 document_class: ITM
 domain: STR
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 2
 ---
 
-# MGSD-ITM-STR-02 — Funnel Architecture & Channel Plan
+# MARKOS-ITM-STR-02 — Funnel Architecture & Channel Plan
 
-<!-- TOKEN: MGSD-ITM-STR-02 | CLASS: ITM | DOMAIN: STR -->
-<!-- PURPOSE: Linear issue template for designing the full-funnel campaign architecture and channel selection. Consumed by mgsd-linear-manager when creating [MGSD] Funnel Build tickets. Gate 1 + Gate 2 required. -->
+<!-- TOKEN: MARKOS-ITM-STR-02 | CLASS: ITM | DOMAIN: STR -->
+<!-- PURPOSE: Linear issue template for designing the full-funnel campaign architecture and channel selection. Consumed by markos-linear-manager when creating [MARKOS] Funnel Build tickets. Gate 1 + Gate 2 required. -->
 
-**Linear Title format:** `[MGSD] Funnel Build: {campaign_name} — {funnel_type}`
+**Linear Title format:** `[MARKOS] Funnel Build: {campaign_name} — {funnel_type}`
 **Category:** Funnel Build
 **Primary Triggers:** B02 (Loss Aversion), B05 (Pain Relief), B06 (Scarcity), B09 (Anchoring)
 **Funnel Stage:** All stages (architecture spans full funnel)
@@ -28,27 +28,27 @@ mir_gate_required: 2
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B02, §B05, §B06, §B09; Funnel Stage table |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 + Gate 2 enforcement |
-| MGSD-AGT-STR-01 | agents/mgsd-strategist.md | Validates MIR → MSP dependencies |
-| MGSD-AGT-STR-03 | agents/mgsd-campaign-architect.md | Generates FUNNEL-ARCHITECTURE.md |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Architecture trigger audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B02, §B05, §B06, §B09; Funnel Stage table |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 + Gate 2 enforcement |
+| MARKOS-AGT-STR-01 | agents/markos-strategist.md | Validates MIR → MSP dependencies |
+| MARKOS-AGT-STR-03 | agents/markos-campaign-architect.md | Generates FUNNEL-ARCHITECTURE.md |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Architecture trigger audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-STR-02 | Funnel Build -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-STR-02 | Funnel Build -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B02, §B05, §B06, §B09; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B02, §B05, §B06, §B09; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 AND Gate 2 GREEN |
 | MSP Matrix | `MSP/Campaigns/01_PAID_ACQUISITION.md` + `MSP/Inbound/` — depends on funnel type |
-| AGT Assigned | MGSD-AGT-STR-01 (strategist) + MGSD-AGT-STR-03 (campaign-architect) |
-| SKL Entry Point | MGSD-SKL-OPS-01 (mgsd-plan-phase) |
+| AGT Assigned | MARKOS-AGT-STR-01 (strategist) + MARKOS-AGT-STR-03 (campaign-architect) |
+| SKL Entry Point | MARKOS-SKL-OPS-01 (markos-plan-phase) |
 
 ---
 
@@ -88,20 +88,20 @@ mir_gate_required: 2
 
 ## Task Steps
 
-- [ ] **Step 1:** Run `mgsd-tools.cjs mir-audit` — confirm Gate 1 AND Gate 2 GREEN. Block if either RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run `markos-tools.cjs mir-audit` — confirm Gate 1 AND Gate 2 GREEN. Block if either RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status
-- [ ] **Step 2:** Generate funnel architecture using `MGSD-AGT-STR-03` — map: channels per stage, asset types per stage, primary trigger per stage, handoff event between stages.
-  - Agent: MGSD-AGT-STR-03
+- [ ] **Step 2:** Generate funnel architecture using `MARKOS-AGT-STR-03` — map: channels per stage, asset types per stage, primary trigger per stage, handoff event between stages.
+  - Agent: MARKOS-AGT-STR-03
   - Output: `FUNNEL-ARCHITECTURE.md`
 - [ ] **Step 3:** Populate MSP campaign matrix checkboxes from funnel architecture — one checkbox per asset type per channel.
-  - Agent: MGSD-AGT-STR-01
+  - Agent: MARKOS-AGT-STR-01
   - Output: Updated MSP matrix section
-- [ ] **Step 4:** Run `MGSD-AGT-NEU-01` on architecture — verify trigger-per-stage assignments match neuromarketing.md funnel table.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 4:** Run `MARKOS-AGT-NEU-01` on architecture — verify trigger-per-stage assignments match neuromarketing.md funnel table.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Architecture audit report
-- [ ] **Step 5:** Commit with message `mgsd(strategy): funnel {campaign_slug} architecture committed`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 5:** Commit with message `markos(strategy): funnel {campaign_slug} architecture committed`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -116,8 +116,8 @@ mir_gate_required: 2
 | 4 — Tracking | Conversion events mapped to funnel stages | TRACKING.md non-empty |
 | 5 — Creative Compliance | N/A — architecture doc, no copy | N/A |
 | 6 — Budget Alignment | Channel budget within discipline cap | Stated budget ≤ BUDGET-ALLOCATION.md cap |
-| 7 — Linear Sync | Issue status updated; MSP matrix committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | Each funnel stage trigger matches neuromarketing.md table | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue status updated; MSP matrix committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | Each funnel stage trigger matches neuromarketing.md table | `MARKOS-AGT-NEU-01` returns `PASSED` |
 
 ---
 
@@ -125,9 +125,9 @@ mir_gate_required: 2
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-STR-02 |
+| Template ID | MARKOS-ITM-STR-02 |
 | Task Category | Funnel Build |
-| Labels | `[mgsd]`, `[strategy]`, `[funnel]` |
+| Labels | `[markos]`, `[strategy]`, `[funnel]` |
 | Priority | Urgent (blocks all campaign execution) |
 | Estimate | 3–5h |
 | Parent Issue | Campaign Strategy Epic |

@@ -1,9 +1,9 @@
 ---
-token_id: MGSD-RES-CMP-01
+token_id: MARKOS-RES-CMP-01
 document_class: RESEARCH
 version: "1.0.0"
 status: populated
-populated_by: mgsd-onboarder
+populated_by: markos-onboarder
 populated_at: 2025-07-18
 feeds_into:
   - MIR/Core_Strategy/DIFFERENTIATORS.md
@@ -12,7 +12,7 @@ feeds_into:
 
 # Competitive Intel — MarkOS
 
-<!-- mgsd-token: RESEARCH -->
+<!-- markos-token: RESEARCH -->
 
 > [!NOTE] This analysis is founder-hypothesis based at pre-alpha stage. No user research or third-party competitive tools have been applied yet. Update at 30-install milestone with real competitive data from user conversations.
 
@@ -130,5 +130,6 @@ Source: Gate 1 competitive positioning, MESSAGING-FRAMEWORK.md (positioning stat
 
 ---
 *Research Quality Gate: All sections include evidence source, confidence level, and strategic implication.*
-*Last populated: 2025-07-18 | Populated by: mgsd-onboarder | Source: Gate 1 + Gate 2 MIR intake + market knowledge*
+*Last populated: 2025-07-18 | Populated by: markos-onboarder | Source: Gate 1 + Gate 2 MIR intake + market knowledge*
 *Next update required: 30-install milestone (validate with real user competitive data)*
+

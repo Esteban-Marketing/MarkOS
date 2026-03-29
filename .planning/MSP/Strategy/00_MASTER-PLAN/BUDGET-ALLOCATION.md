@@ -1,21 +1,39 @@
-# BUDGET-ALLOCATION.md — Marketing Budget Structure
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/BUDGET-ALLOCATION.md to customize it safely.
+# MarkOS Marketing Budget Structure
 
-
-```
-file_purpose  : Define the total marketing budget and how it is distributed
-                across disciplines, quarters, and categories.
-                All discipline plans must stay within their allocated budget.
-status        : empty
-plan_period   : YYYY
-last_updated  : YYYY-MM-DD
-```
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/00_MASTER-PLAN/BUDGET-ALLOCATION.md to customize it safely.
 
 ---
 
+## LLM-Optimized Summary
+
+This document defines the total marketing budget and its distribution across disciplines, quarters, and categories for MarkOS. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts. Structured for LLM chunking and cross-referencing.
+
+**See also:**
+- [ANNUAL-CALENDAR.md](ANNUAL-CALENDAR.md)
+- [README.md](../../../../README.md)
+
+
+
+---
+
+**File Purpose:**
+Define the total marketing budget and how it is distributed across disciplines, quarters, and categories. All discipline plans must stay within their allocated budget. Updated for MarkOS v2.2.
+
+**Status:** [FILL]
+**Plan Period:** [FILL]
+**Last Updated:** 2026-03-28
+
+---
+
+---
+
+
 ## 1. Budget Philosophy
+
+**Summary:**
+Describes how budget decisions are made and the flexibility rules. Aligns with MarkOS v2.2 governance.
 
 **How budget decisions are made:**
 [FILL — e.g. "Budget follows evidence. Channels that demonstrate CPL at or below target receive continued investment. New channels receive a test budget capped at 10% of total until proof of concept."]
@@ -30,7 +48,11 @@ emergency_reserve       : "[% of total held for unplanned opportunities or crise
 
 ---
 
+
 ## 2. Total Budget
+
+**Summary:**
+Defines the total annual and monthly budget, currency, and source. Includes a breakdown by category for MarkOS planning.
 
 ```yaml
 total_annual_budget     : "$[FILL]"
@@ -54,7 +76,11 @@ budget_source           : "[Client ad spend only | Agency + client | Agency only
 
 ---
 
+
 ## 3. Discipline Allocation
+
+**Summary:**
+Allocates budget by discipline and quarter. Use for discipline-level planning and compliance.
 
 | Discipline | Annual Budget | Monthly Avg | Q1 | Q2 | Q3 | Q4 |
 |-----------|--------------|------------|----|----|----|----|
@@ -76,7 +102,11 @@ budget_source           : "[Client ad spend only | Agency + client | Agency only
 
 ---
 
+
 ## 4. Paid Media Platform Allocation
+
+**Summary:**
+Sub-allocates the advertising budget by platform. Use for channel-level optimization and reporting.
 
 > Sub-allocation within the Advertising discipline budget.
 
@@ -92,7 +122,11 @@ budget_source           : "[Client ad spend only | Agency + client | Agency only
 
 ---
 
+
 ## 5. Quarterly Budget Plan
+
+**Summary:**
+Breaks down the budget by quarter and major category. Use for quarterly reviews and adjustments.
 
 | Quarter | Total Budget | Paid Media | Content/Creative | Tools | Other |
 |---------|-------------|-----------|-----------------|-------|-------|
@@ -106,7 +140,11 @@ budget_source           : "[Client ad spend only | Agency + client | Agency only
 
 ---
 
+
 ## 6. Budget Performance Tracking
+
+**Summary:**
+Tracks monthly actuals vs. plan. Use for ongoing budget management and variance analysis.
 
 **Monthly actuals vs. plan:**
 
@@ -116,7 +154,11 @@ budget_source           : "[Client ad spend only | Agency + client | Agency only
 
 ---
 
+
 ## 7. Budget Reallocation Log
+
+**Summary:**
+Documents all budget reallocations between disciplines or categories. Ensures transparency in MarkOS workflows.
 
 > Document every time budget is moved between disciplines or categories.
 
@@ -126,7 +168,23 @@ budget_source           : "[Client ad spend only | Agency + client | Agency only
 
 ---
 
+
 ## 8. ROI Expectations
+
+**Summary:**
+Defines ROI targets, triggers for budget increases/decreases, and payback period expectations. Aligns with MarkOS v2.2 performance standards.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 ```yaml
 target_mer            : "[Total revenue / total marketing spend ≥ X]"

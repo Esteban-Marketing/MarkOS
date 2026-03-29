@@ -1,7 +1,7 @@
 # _CHANNEL-STRATEGY-marketplace.example.md
 # Reference Example: **Marketplace** (Freelance Creative Platform)
 
-<!-- mgsd-token: MSP | model: Marketplace -->
+<!-- markos-token: MSP | model: Marketplace -->
 
 ---
 

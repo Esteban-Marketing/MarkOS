@@ -1,7 +1,7 @@
 # THOUGHT-LEADERSHIP.md — Long-Form Positioning Content
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/02_CONTENT-MARKETING/THOUGHT-LEADERSHIP.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/02_CONTENT-MARKETING/THOUGHT-LEADERSHIP.md to customize it safely.
 
 
 ```

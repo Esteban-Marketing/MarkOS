@@ -11,7 +11,7 @@ affects:
   - onboarding/index.html
   - .planning/phases/23-identity-normalization/23-IDENTITY-AUDIT.md
 decisions:
-  - Treat legacy MGSD strings as compatibility-critical unless explicitly cosmetic
+  - Treat legacy MARKOS strings as compatibility-critical unless explicitly cosmetic
 metrics:
   completed_at: 2026-03-28
   commits:
@@ -20,7 +20,7 @@ metrics:
 
 # Phase 23 Plan 01: Identity Audit Summary
 
-Completed a repository-wide identity audit and classified MarkOS vs MGSD string usage into compatibility-critical and cosmetic groups.
+Completed a repository-wide identity audit and classified MarkOS vs MARKOS string usage into compatibility-critical and cosmetic groups.
 
 ## Completed Work
 

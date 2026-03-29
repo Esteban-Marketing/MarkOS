@@ -1,7 +1,7 @@
 # COMMUNITY-PLAYBOOK.md — Engagement & Conversation Rules
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/04_SOCIAL-MEDIA/COMMUNITY-PLAYBOOK.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Social/04_SOCIAL-MEDIA/COMMUNITY-PLAYBOOK.md to customize it safely.
 
 
 ```

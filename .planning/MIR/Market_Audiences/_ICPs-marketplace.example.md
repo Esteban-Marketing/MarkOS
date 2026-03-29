@@ -1,7 +1,7 @@
 # ICPs.md — Ideal Customer Profiles (Dual Side)
 # Reference Example: **Marketplace** (Freelance Creative Services Platform)
 
-<!-- mgsd-token: MIR | model: Marketplace -->
+<!-- markos-token: MIR | model: Marketplace -->
 > [!NOTE] Marketplace ICP requires separate profiles for supply side (sellers) and demand side (buyers). Both sides must reach critical mass for the platform to function.
 
 ---

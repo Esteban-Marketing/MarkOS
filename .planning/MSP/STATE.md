@@ -1,6 +1,6 @@
 # STATE.md — MSP Live Status
 
-<!-- mgsd-token: MSP -->
+<!-- markos-token: MSP -->
 
 ```
 project_id        : P[N]

@@ -1,17 +1,17 @@
 # 🤖 {{COMPANY_NAME}} - LLM RAG & Agent Context Knowledge Base
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/06_TECH-STACK/LLM_RAG_CONTEXT.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/06_TECH-STACK/LLM_RAG_CONTEXT.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This file defines the external-facing persona. `mgsd-content-creator` MUST adhere to the `Primary Persona Override` and `Restricted Topics` (Section 1) to maintain brand safety across all LLM-generated output.
+> **AGENT LOGIC**: This file defines the external-facing persona. `markos-content-creator` MUST adhere to the `Primary Persona Override` and `Restricted Topics` (Section 1) to maintain brand safety across all LLM-generated output.
 
 > [!IMPORTANT]
-> **HARDENING PATTERN**: This document is hardened. Any LLM-generated output MUST be reviewed by a human `mgsd-strategist` before external publication.
+> **HARDENING PATTERN**: This document is hardened. Any LLM-generated output MUST be reviewed by a human `markos-strategist` before external publication.
 
 **Dependencies:** Core Positioning (`{{MIR_STRATEGY_FILE}}`)
-**Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `{{LEAD_AGENT}}` (markos-strategist)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## 1. Context Injection Framework
 <description>This file serves as the canonical ground truth structured for external LLMs, Perplexity, ChatGPT, and internal RAG applications traversing the brand's entity.</description>

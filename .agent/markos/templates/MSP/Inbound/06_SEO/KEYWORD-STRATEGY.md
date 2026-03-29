@@ -1,7 +1,7 @@
 # KEYWORD-STRATEGY.md — Keyword Clusters & Priority
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/06_SEO/KEYWORD-STRATEGY.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/06_SEO/KEYWORD-STRATEGY.md to customize it safely.
 
 
 ```

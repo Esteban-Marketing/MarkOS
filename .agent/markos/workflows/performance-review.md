@@ -2,7 +2,7 @@
 description: Campaign performance analysis and optimization recommendations
 ---
 
-# /mgsd-performance-review
+# /markos-performance-review
 
 <purpose>
 Analyze campaign performance against KPI targets. Surface optimization opportunities, budget reallocation recommendations, and creative refresh signals.
@@ -22,7 +22,7 @@ Read all `CAMPAIGN.md` files in `Campaigns_Assets/08_CAMPAIGNS/ACTIVE/`.
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► PERFORMANCE REVIEW
+ MARKOS ► PERFORMANCE REVIEW
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | Campaign | Platform | CPL | Target | ROAS | Budget Used | Status |

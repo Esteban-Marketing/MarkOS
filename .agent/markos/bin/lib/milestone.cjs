@@ -1,5 +1,5 @@
 /**
- * milestone.cjs — Milestone management for MGSD
+ * milestone.cjs — Milestone management for MARKOS
  * Handles archiving, closing, and listing marketing milestones
  */
 

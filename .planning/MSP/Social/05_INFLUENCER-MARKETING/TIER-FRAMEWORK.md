@@ -1,7 +1,7 @@
 # TIER-FRAMEWORK.md — Influencer Tier Definitions
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/05_INFLUENCER-MARKETING/TIER-FRAMEWORK.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Social/05_INFLUENCER-MARKETING/TIER-FRAMEWORK.md to customize it safely.
 
 
 ```

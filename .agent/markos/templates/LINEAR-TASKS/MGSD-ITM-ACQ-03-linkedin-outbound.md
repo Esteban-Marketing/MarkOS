@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-ACQ-03
+token_id: MARKOS-ITM-ACQ-03
 document_class: ITM
 domain: ACQ
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 1
 ---
 
-# MGSD-ITM-ACQ-03 — LinkedIn Outbound Sequence (B2B)
+# MARKOS-ITM-ACQ-03 — LinkedIn Outbound Sequence (B2B)
 
-<!-- TOKEN: MGSD-ITM-ACQ-03 | CLASS: ITM | DOMAIN: ACQ -->
-<!-- PURPOSE: Linear issue template for producing a LinkedIn outbound prospecting sequence: connection request, follow-up messages, and pivot to meeting. Consumed by mgsd-linear-manager when creating [MGSD] LinkedIn Outbound tickets. Gate 1 required. -->
+<!-- TOKEN: MARKOS-ITM-ACQ-03 | CLASS: ITM | DOMAIN: ACQ -->
+<!-- PURPOSE: Linear issue template for producing a LinkedIn outbound prospecting sequence: connection request, follow-up messages, and pivot to meeting. Consumed by markos-linear-manager when creating [MARKOS] LinkedIn Outbound tickets. Gate 1 required. -->
 
-**Linear Title format:** `[MGSD] LinkedIn Outbound: {segment_name} — {sequence_name} — {N}-touch`
+**Linear Title format:** `[MARKOS] LinkedIn Outbound: {segment_name} — {sequence_name} — {N}-touch`
 **Category:** Acquisition
 **Primary Triggers:** B08 (In-Group Identity), B05 (Pain Relief), B03 (Social Proof)
 **Secondary:** B07 (Curiosity Gap — subject/hook line)
@@ -29,27 +29,27 @@ mir_gate_required: 1
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B03, §B05, §B07, §B08 |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
-| MGSD-AGT-CNT-04 | agents/mgsd-email-sequence.md | Message sequence generation |
-| MGSD-AGT-AUD-01 | agents/mgsd-audience-intel.md | Prospect segment validation |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Message-level neuro audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B03, §B05, §B07, §B08 |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
+| MARKOS-AGT-CNT-04 | agents/markos-email-sequence.md | Message sequence generation |
+| MARKOS-AGT-AUD-01 | agents/markos-audience-intel.md | Prospect segment validation |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Message-level neuro audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-ACQ-03 | Acquisition — LinkedIn Outbound -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-ACQ-03 | Acquisition — LinkedIn Outbound -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B03, §B05, §B07, §B08; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B03, §B05, §B07, §B08; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 GREEN |
 | MSP Matrix | `MSP/Campaigns/` — outbound / B2B pipeline section |
-| AGT Assigned | MGSD-AGT-CNT-04 (email-sequence — adapted for LinkedIn messages) + MGSD-AGT-AUD-01 |
-| SKL Entry Point | MGSD-SKL-OPS-02 (mgsd-execute-phase) |
+| AGT Assigned | MARKOS-AGT-CNT-04 (email-sequence — adapted for LinkedIn messages) + MARKOS-AGT-AUD-01 |
+| SKL Entry Point | MARKOS-SKL-OPS-02 (markos-execute-phase) |
 
 ---
 
@@ -81,7 +81,7 @@ mir_gate_required: 1
 |---|---------------|-----------------|--------|
 | 1 | ICP role, seniority, industry, company size | `MIR/Market_Audiences/03_MARKET/AUDIENCES.md` | [ ] |
 | 2 | Specific shared signal for connection note (event, community, niche challenge) | Human-provided | [ ] |
-| 3 | ICP primary pain and the industry-specific trigger event that surfaces it | Human-provided or `MGSD-AGT-AUD-02` output | [ ] |
+| 3 | ICP primary pain and the industry-specific trigger event that surfaces it | Human-provided or `MARKOS-AGT-AUD-02` output | [ ] |
 | 4 | 1 peer-matched proof subject (same role, same vertical, named outcome) | Human-provided | [ ] |
 | 5 | Prohibited words and tone rules | `MIR/Core_Strategy/02_BRAND/VOICE-TONE.md` | [ ] |
 
@@ -89,23 +89,23 @@ mir_gate_required: 1
 
 ## Task Steps
 
-- [ ] **Step 1:** Run Gate 1 check via `mgsd-tools.cjs mir-audit`. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run Gate 1 check via `markos-tools.cjs mir-audit`. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status
-- [ ] **Step 2:** Validate prospect segment peer-match using `MGSD-AGT-AUD-01` — confirm segment role, seniority, and industry match ≥ 2/3 ICP identifiers in AUDIENCES.md. Block if <2 match.
-  - Agent: MGSD-AGT-AUD-01
+- [ ] **Step 2:** Validate prospect segment peer-match using `MARKOS-AGT-AUD-01` — confirm segment role, seniority, and industry match ≥ 2/3 ICP identifiers in AUDIENCES.md. Block if <2 match.
+  - Agent: MARKOS-AGT-AUD-01
   - Output: Segment validation report (PASS / BLOCK)
-- [ ] **Step 3:** Draft all 4 messages + connection request note using `MGSD-AGT-CNT-04` — follow trigger-per-message sequence. Connection note ≤ 300 chars. Messages ≤ 500 chars each. No pitch before Message 4.
-  - Agent: MGSD-AGT-CNT-04
+- [ ] **Step 3:** Draft all 4 messages + connection request note using `MARKOS-AGT-CNT-04` — follow trigger-per-message sequence. Connection note ≤ 300 chars. Messages ≤ 500 chars each. No pitch before Message 4.
+  - Agent: MARKOS-AGT-CNT-04
   - Output: `LI-OUTBOUND-SEQUENCE-{segment_slug}.md` (5 texts: note + 4 messages, with day-window labels)
-- [ ] **Step 4:** Run `MGSD-AGT-NEU-01` — flag: connection note with pitch or benefit claim, Message 1 with product mention, Message 3 with "we helped" framing, Message 4 asking for more than 15 minutes.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 4:** Run `MARKOS-AGT-NEU-01` — flag: connection note with pitch or benefit claim, Message 1 with product mention, Message 3 with "we helped" framing, Message 4 asking for more than 15 minutes.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Per-message audit report
 - [ ] **Step 5:** Resolve all `REWRITE REQUIRED` flags. Rerun until all messages `PASSED`.
-  - Agent: MGSD-AGT-CNT-04
+  - Agent: MARKOS-AGT-CNT-04
   - Output: Revised sequence file
-- [ ] **Step 6:** Commit with message `mgsd(acquisition): li-outbound {segment_slug} {N}-touch sequence complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 6:** Commit with message `markos(acquisition): li-outbound {segment_slug} {N}-touch sequence complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -120,8 +120,8 @@ mir_gate_required: 1
 | 4 — Tracking | N/A — LinkedIn DM tracking via CRM only | N/A |
 | 5 — Creative Compliance | No pitch before Message 4; connection note pure identity signal | VOICE-TONE diff clean |
 | 6 — Budget Alignment | N/A — outbound production only | N/A |
-| 7 — Linear Sync | Issue marked Done; sequence file committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | Trigger-per-message sequence intact; connection note ≤ 300 chars; no "we helped" in Message 3 | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue marked Done; sequence file committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | Trigger-per-message sequence intact; connection note ≤ 300 chars; no "we helped" in Message 3 | `MARKOS-AGT-NEU-01` returns `PASSED` |
 
 ---
 
@@ -129,9 +129,9 @@ mir_gate_required: 1
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-ACQ-03 |
+| Template ID | MARKOS-ITM-ACQ-03 |
 | Task Category | Acquisition |
-| Labels | `[mgsd]`, `[linkedin]`, `[outbound]`, `[b2b]`, `[awareness]` |
+| Labels | `[markos]`, `[linkedin]`, `[outbound]`, `[b2b]`, `[awareness]` |
 | Priority | Medium |
 | Estimate | 2–3h |
 | Parent Issue | B2B Pipeline / Outbound Epic |

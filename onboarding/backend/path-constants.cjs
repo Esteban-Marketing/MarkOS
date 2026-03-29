@@ -6,7 +6,7 @@
  * PURPOSE:
  *   Prevents "dot-hell" path resolution bugs by defining canonical project locations
  *   in one place. MarkOS remains publicly canonical while several filesystem
- *   surfaces stay on legacy MGSD-compatible paths during v2.1.
+ *   surfaces stay on legacy MARKOS-compatible paths during v2.1.
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 
@@ -20,7 +20,7 @@ const PROJECT_ROOT = path.resolve(ONBOARDING_DIR, '..');
 
 // Template & Resource Locations (MarkOS-first with legacy fallback)
 const CANONICAL_PROTOCOL_DIR = path.join(PROJECT_ROOT, '.agent/markos');
-const LEGACY_PROTOCOL_DIR = path.join(PROJECT_ROOT, '.agent/marketing-get-shit-done');
+const LEGACY_PROTOCOL_DIR = path.join(PROJECT_ROOT, '.agent/markos');
 const PROTOCOL_DIR = fs.existsSync(CANONICAL_PROTOCOL_DIR) ? CANONICAL_PROTOCOL_DIR : LEGACY_PROTOCOL_DIR;
 const TEMPLATES_DIR = path.join(PROTOCOL_DIR, 'templates');
 const MIR_TEMPLATES = path.join(TEMPLATES_DIR, 'MIR');
@@ -29,13 +29,16 @@ const MSP_TEMPLATES = path.join(TEMPLATES_DIR, 'MSP');
 // State surfaces (MarkOS-first with legacy fallback)
 const LEGACY_LOCAL_DIR = fs.existsSync(path.join(PROJECT_ROOT, '.markos-local'))
   ? path.join(PROJECT_ROOT, '.markos-local')
-  : path.join(PROJECT_ROOT, '.mgsd-local');
+  : path.join(PROJECT_ROOT, '.markos-local');
+const MARKOS_LOCAL_DIR = path.join(PROJECT_ROOT, '.markos-local');
+const MARKOS_LOCAL_DIR = path.join(PROJECT_ROOT, '.markos-local');
+const COMPATIBILITY_LOCAL_DIRS = [MARKOS_LOCAL_DIR, MARKOS_LOCAL_DIR];
 const PROJECT_CONFIG_PATH = fs.existsSync(path.join(PROJECT_ROOT, '.markos-project.json'))
   ? path.join(PROJECT_ROOT, '.markos-project.json')
-  : path.join(PROJECT_ROOT, '.mgsd-project.json');
+  : path.join(PROJECT_ROOT, '.markos-project.json');
 const INSTALL_MANIFEST_PATH = fs.existsSync(path.join(PROJECT_ROOT, '.markos-install-manifest.json'))
   ? path.join(PROJECT_ROOT, '.markos-install-manifest.json')
-  : path.join(PROJECT_ROOT, '.mgsd-install-manifest.json');
+  : path.join(PROJECT_ROOT, '.markos-install-manifest.json');
 
 // Config & Seed
 const CONFIG_PATH = path.join(ONBOARDING_DIR, 'onboarding-config.json');
@@ -50,6 +53,9 @@ module.exports = {
   MIR_TEMPLATES,
   MSP_TEMPLATES,
   LEGACY_LOCAL_DIR,
+  MARKOS_LOCAL_DIR,
+  MARKOS_LOCAL_DIR,
+  COMPATIBILITY_LOCAL_DIRS,
   PROJECT_CONFIG_PATH,
   INSTALL_MANIFEST_PATH,
   CONFIG_PATH,

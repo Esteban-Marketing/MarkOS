@@ -1,12 +1,12 @@
 # 🏗️ {{COMPANY_NAME}} - SEO & GEO (Generative Engine Optimization) Infrastructure
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Campaigns/02_SEO_ORGANIC.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Campaigns/02_SEO_ORGANIC.md to customize it safely.
 
 
 **Dependencies:** MIR Content Strategy (`{{MIR_STRATEGY_FILE}}`)
-**Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-content-creator)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `{{LEAD_AGENT}}` (markos-strategist, markos-content-creator)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## Core Organic Parameters
 - **Primary Keyword Target:** `{{PRIMARY_KEYWORD}}`

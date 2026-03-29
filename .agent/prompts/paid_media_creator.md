@@ -11,13 +11,13 @@ Respect the CPA limits and business model constraints defined in:
 {{ inject: MIR/Core_Strategy/02_BUSINESS/LEAN-CANVAS.md }}
 
 ## Boot Requirements
-- Approved local MIR state must be available through `.mgsd-local/MIR/` override resolution.
-- Winners anchor must exist at `.mgsd-local/MSP/Paid_Media/WINNERS/_CATALOG.md`.
+- Approved local MIR state must be available through `.markos-local/MIR/` override resolution.
+- Winners anchor must exist at `.markos-local/MSP/Paid_Media/WINNERS/_CATALOG.md`.
 - If winners anchor is missing, execution is blocked and should not silently fall back to templates.
 
 ## Instructions
 1. Analyze the Audience Research in: {{ inject: MIR/Market_Audiences/AUDIENCES.md }}
-2. Reference previous winners to anchor tone: {{ inject: .mgsd-local/MSP/Paid_Media/WINNERS/_CATALOG.md }}
+2. Reference previous winners to anchor tone: {{ inject: .markos-local/MSP/Paid_Media/WINNERS/_CATALOG.md }}
 3. Output 3 ad variations (Hook-driven, Story-driven, Benefit-driven) that oppose the Status Quo Enemy.
 
 ## FAILURE MODE AWARENESS

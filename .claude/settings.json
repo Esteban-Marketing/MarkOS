@@ -6,7 +6,7 @@
       ".planning/REQUIREMENTS.md",
       ".planning/ROADMAP.md",
       ".planning/STATE.md",
-      ".agent/marketing-get-shit-done/references/marketing-living-system.md"
+      ".agent/markos/references/marketing-living-system.md"
     ],
     "notes": "CLAUDE.md is the compressed orientation. .planning/ contains the canonical project state. marketing-living-system.md is the protocol optimization roadmap."
   }

@@ -1,5 +1,5 @@
 /**
- * Phase — Phase discovery, plan indexing, and wave grouping for MGSD
+ * Phase — Phase discovery, plan indexing, and wave grouping for MARKOS
  */
 
 const fs = require('fs');

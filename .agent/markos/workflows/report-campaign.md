@@ -2,17 +2,17 @@
 description: Generate a structured campaign performance report from KPI data, VERIFICATION.md records, and analytics inputs
 ---
 
-# /mgsd-report-campaign
+# /markos-report-campaign
 
 <purpose>
-Compile a structured performance report for one or more campaign phases. Aggregates KPI actuals from VERIFICATION.md records, SUMMARY.md campaign_impact fields, and human-provided analytics data. Spawns mgsd-analyst for variance computation. Produces a LINEAR-ready report and a markdown REPORT.md artifact for the client record.
+Compile a structured performance report for one or more campaign phases. Aggregates KPI actuals from VERIFICATION.md records, SUMMARY.md campaign_impact fields, and human-provided analytics data. Spawns markos-analyst for variance computation. Produces a LINEAR-ready report and a markdown REPORT.md artifact for the client record.
 </purpose>
 
 <process>
 
 <step name="initialize">
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init report-campaign "${PERIOD_ARG}" --raw)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" init report-campaign "${PERIOD_ARG}" --raw)
 ```
 
 **Arguments:**
@@ -26,7 +26,7 @@ Parse: `report_scope`, `phases[]`, `campaign_ids[]`, `kpi_framework_path`, `veri
 <step name="collect_data">
 Load all available data sources:
 
-**From MGSD artifacts (automatic):**
+**From MARKOS artifacts (automatic):**
 ```bash
 SUMMARIES=$(find ".planning/phases" -name "*-SUMMARY.md" -newer "${PERIOD_START}")
 VERIFICATIONS=$(find ".planning/phases" -name "VERIFICATION.md" -newer "${PERIOD_START}")
@@ -64,11 +64,11 @@ Write human-provided data to `{phase_dir}/ANALYTICS-INPUT.md`.
 </step>
 
 <step name="spawn_analyst">
-Spawn `mgsd-analyst` for KPI variance computation:
+Spawn `markos-analyst` for KPI variance computation:
 
 ```
 Task(
-  subagent_type="mgsd-analyst",
+  subagent_type="markos-analyst",
   prompt="
   Compute KPI variance report for {report_scope}.
 
@@ -94,7 +94,7 @@ Present analyst findings to human for review:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► CAMPAIGN REPORT — {scope}
+ MARKOS ► CAMPAIGN REPORT — {scope}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Period: {start} → {end}
@@ -124,11 +124,11 @@ Record human decisions in report.
 </step>
 
 <step name="compile_report">
-Spawn `mgsd-report-compiler` to produce final REPORT.md:
+Spawn `markos-report-compiler` to produce final REPORT.md:
 
 ```
 Task(
-  subagent_type="mgsd-report-compiler",
+  subagent_type="markos-report-compiler",
   prompt="
   Compile final campaign report for {report_scope}.
 
@@ -149,15 +149,15 @@ Task(
 Create Linear report ticket:
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear create \
-  --title "[MGSD] Campaign Report: {scope} — {overall_health}" \
+node ".agent/markos/bin/markos-tools.cjs" linear create \
+  --title "[MARKOS] Campaign Report: {scope} — {overall_health}" \
   --body "{report_summary}" \
   --label "report,campaign-review"
 ```
 
 Trigger post-execution-sync hook:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear sync \
+node ".agent/markos/bin/markos-tools.cjs" linear sync \
   --period "${REPORT_PERIOD}" \
   --direction bidirectional
 ```
@@ -166,22 +166,22 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear sync \
 <step name="completion">
 Commit report:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit \
+node ".agent/markos/bin/markos-tools.cjs" commit \
   "mktg(report): campaign report {scope} — {overall_health}"
 ```
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► REPORT COMPLETE ✓
+ MARKOS ► REPORT COMPLETE ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Report:  .planning/reports/REPORT-{YYYYMM}.md
-Linear:  [MGSD] Campaign Report ticket created
+Linear:  [MARKOS] Campaign Report ticket created
 Health:  {overall_health}
 
 Next:
-/mgsd-performance-review   → detailed performance analysis
-/mgsd-discuss-phase {N+1}  → plan next cycle based on findings
+/markos-performance-review   → detailed performance analysis
+/markos-discuss-phase {N+1}  → plan next cycle based on findings
 ```
 </step>
 
@@ -189,7 +189,7 @@ Next:
 
 <success_criteria>
 - [ ] Analytics data collected (automated + human-provided)
-- [ ] mgsd-analyst spawned — ANALYTICS-REPORT created
+- [ ] markos-analyst spawned — ANALYTICS-REPORT created
 - [ ] Human reviewed analyst findings and responded to all required decisions
 - [ ] Final REPORT.md compiled
 - [ ] Linear ticket created

@@ -1,28 +1,28 @@
 ---
-token_id: MGSD-IDX-001
+token_id: MARKOS-IDX-001
 document_class: index
 domain: ops
 version: "1.2.0"
 status: active
 upstream:
-  - MGSD-IDX-000
+  - MARKOS-IDX-000
 downstream:
-  - MGSD-AGT-OPS-07
+  - MARKOS-AGT-OPS-07
 mir_gate_required: none
 ---
 
-# MGSD-ITM Master Catalog — Linear Issue Templates
+# MARKOS-ITM Master Catalog — Linear Issue Templates
 
-<!-- TOKEN: MGSD-IDX-001 | CLASS: IDX | DOMAIN: OPS -->
-<!-- PURPOSE: Registers all MGSD-ITM task templates. Consumed by mgsd-linear-manager when resolving which template to use for a given task category. Updated whenever a new template is added or deprecated. -->
+<!-- TOKEN: MARKOS-IDX-001 | CLASS: IDX | DOMAIN: OPS -->
+<!-- PURPOSE: Registers all MARKOS-ITM task templates. Consumed by markos-linear-manager when resolving which template to use for a given task category. Updated whenever a new template is added or deprecated. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Root index — ITM class registered there |
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema all templates conform to |
-| MGSD-AGT-OPS-07 | agents/mgsd-linear-manager.md | Primary consumer of this catalog |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Root index — ITM class registered there |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema all templates conform to |
+| MARKOS-AGT-OPS-07 | agents/markos-linear-manager.md | Primary consumer of this catalog |
 
 ---
 
@@ -30,26 +30,26 @@ mir_gate_required: none
 
 | TOKEN_ID | File | Category | Triggers | Gate | Status |
 |----------|------|----------|----------|------|--------|
-| MGSD-ITM-CNT-01 | `LINEAR-TASKS/MGSD-ITM-CNT-01-lead-magnet.md` | Content Creation | B04, B05, B07 | Gate 1 | active |
-| MGSD-ITM-CNT-02 | `LINEAR-TASKS/MGSD-ITM-CNT-02-ad-copy.md` | Ad Copywriting | B02, B05, B06, B09 | Gate 1 + Gate 2 | active |
-| MGSD-ITM-CNT-03 | `LINEAR-TASKS/MGSD-ITM-CNT-03-email-sequence.md` | Email Sequence | B01, B02, B03, B07 | Gate 1 | active |
-| MGSD-ITM-STR-01 | `LINEAR-TASKS/MGSD-ITM-STR-01-audience-research.md` | Audience Research | B08 | none | active |
-| MGSD-ITM-STR-02 | `LINEAR-TASKS/MGSD-ITM-STR-02-funnel-architecture.md` | Funnel Build | B02, B05, B06, B09 | Gate 1 + Gate 2 | active |
-| MGSD-ITM-TRK-01 | `LINEAR-TASKS/MGSD-ITM-TRK-01-utm-tracking.md` | Tracking & UTM Setup | N/A | Gate 2 | active |
-| MGSD-ITM-ANA-01 | `LINEAR-TASKS/MGSD-ITM-ANA-01-performance-review.md` | Campaign Analytics | Diagnostic | Gate 2 | active |
-| MGSD-ITM-OPS-01 | `LINEAR-TASKS/MGSD-ITM-OPS-01-campaign-launch.md` | Campaign Ops | N/A | Gate 1 + Gate 2 | active |
-| MGSD-ITM-CNT-04 | `LINEAR-TASKS/MGSD-ITM-CNT-04-social-calendar.md` | Content Creation | B01, B03, B07, B08 | Gate 1 | active |
-| MGSD-ITM-CNT-05 | `LINEAR-TASKS/MGSD-ITM-CNT-05-landing-page-copy.md` | Content Creation | B02, B03, B04, B05, B06, B09 | Gate 1 | active |
-| MGSD-ITM-CNT-06 | `LINEAR-TASKS/MGSD-ITM-CNT-06-seo-article.md` | Content Creation | B04, B05, B07, B08 | Gate 1 | active |
-| MGSD-ITM-CNT-07 | `LINEAR-TASKS/MGSD-ITM-CNT-07-case-study.md` | Content Creation | B03, B04, B05, B07 | Gate 1 | active |
-| MGSD-ITM-CNT-08 | `LINEAR-TASKS/MGSD-ITM-CNT-08-video-script.md` | Content Creation | B02, B03, B05, B07, B10 | Gate 1 | active |
-| MGSD-ITM-ACQ-01 | `LINEAR-TASKS/MGSD-ITM-ACQ-01-paid-social-setup.md` | Acquisition | B02, B03, B05, B06, B09 | Gate 1 + Gate 2 | active |
-| MGSD-ITM-ACQ-02 | `LINEAR-TASKS/MGSD-ITM-ACQ-02-retargeting-setup.md` | Acquisition | B02, B03, B06, B09 | Gate 2 | active |
-| MGSD-ITM-ACQ-03 | `LINEAR-TASKS/MGSD-ITM-ACQ-03-linkedin-outbound.md` | Acquisition | B03, B05, B07, B08 | Gate 1 | active |
-| MGSD-ITM-ACQ-04 | `LINEAR-TASKS/MGSD-ITM-ACQ-04-affiliate-influencer.md` | Acquisition — Affiliate/Influencer | B03, B05 | Gate 1 + legal | active |
-| MGSD-ITM-COM-01 | `LINEAR-TASKS/MGSD-ITM-COM-01-community-event.md` | Community & Events | B07 | Gate 1 | active |
-| MGSD-ITM-OPS-02 | `LINEAR-TASKS/MGSD-ITM-ANA-02-ab-test.md` | Campaign Ops — Lifecycle Automation | B01, B02 | Gate 2 | active |
-| MGSD-ITM-ANA-02 | `LINEAR-TASKS/MGSD-ITM-ANA-02-ab-test-config.md` | Campaign Analytics — A/B Test | B08, B09 | Gate 2 | active |
+| MARKOS-ITM-CNT-01 | `LINEAR-TASKS/MARKOS-ITM-CNT-01-lead-magnet.md` | Content Creation | B04, B05, B07 | Gate 1 | active |
+| MARKOS-ITM-CNT-02 | `LINEAR-TASKS/MARKOS-ITM-CNT-02-ad-copy.md` | Ad Copywriting | B02, B05, B06, B09 | Gate 1 + Gate 2 | active |
+| MARKOS-ITM-CNT-03 | `LINEAR-TASKS/MARKOS-ITM-CNT-03-email-sequence.md` | Email Sequence | B01, B02, B03, B07 | Gate 1 | active |
+| MARKOS-ITM-STR-01 | `LINEAR-TASKS/MARKOS-ITM-STR-01-audience-research.md` | Audience Research | B08 | none | active |
+| MARKOS-ITM-STR-02 | `LINEAR-TASKS/MARKOS-ITM-STR-02-funnel-architecture.md` | Funnel Build | B02, B05, B06, B09 | Gate 1 + Gate 2 | active |
+| MARKOS-ITM-TRK-01 | `LINEAR-TASKS/MARKOS-ITM-TRK-01-utm-tracking.md` | Tracking & UTM Setup | N/A | Gate 2 | active |
+| MARKOS-ITM-ANA-01 | `LINEAR-TASKS/MARKOS-ITM-ANA-01-performance-review.md` | Campaign Analytics | Diagnostic | Gate 2 | active |
+| MARKOS-ITM-OPS-01 | `LINEAR-TASKS/MARKOS-ITM-OPS-01-campaign-launch.md` | Campaign Ops | N/A | Gate 1 + Gate 2 | active |
+| MARKOS-ITM-CNT-04 | `LINEAR-TASKS/MARKOS-ITM-CNT-04-social-calendar.md` | Content Creation | B01, B03, B07, B08 | Gate 1 | active |
+| MARKOS-ITM-CNT-05 | `LINEAR-TASKS/MARKOS-ITM-CNT-05-landing-page-copy.md` | Content Creation | B02, B03, B04, B05, B06, B09 | Gate 1 | active |
+| MARKOS-ITM-CNT-06 | `LINEAR-TASKS/MARKOS-ITM-CNT-06-seo-article.md` | Content Creation | B04, B05, B07, B08 | Gate 1 | active |
+| MARKOS-ITM-CNT-07 | `LINEAR-TASKS/MARKOS-ITM-CNT-07-case-study.md` | Content Creation | B03, B04, B05, B07 | Gate 1 | active |
+| MARKOS-ITM-CNT-08 | `LINEAR-TASKS/MARKOS-ITM-CNT-08-video-script.md` | Content Creation | B02, B03, B05, B07, B10 | Gate 1 | active |
+| MARKOS-ITM-ACQ-01 | `LINEAR-TASKS/MARKOS-ITM-ACQ-01-paid-social-setup.md` | Acquisition | B02, B03, B05, B06, B09 | Gate 1 + Gate 2 | active |
+| MARKOS-ITM-ACQ-02 | `LINEAR-TASKS/MARKOS-ITM-ACQ-02-retargeting-setup.md` | Acquisition | B02, B03, B06, B09 | Gate 2 | active |
+| MARKOS-ITM-ACQ-03 | `LINEAR-TASKS/MARKOS-ITM-ACQ-03-linkedin-outbound.md` | Acquisition | B03, B05, B07, B08 | Gate 1 | active |
+| MARKOS-ITM-ACQ-04 | `LINEAR-TASKS/MARKOS-ITM-ACQ-04-affiliate-influencer.md` | Acquisition — Affiliate/Influencer | B03, B05 | Gate 1 + legal | active |
+| MARKOS-ITM-COM-01 | `LINEAR-TASKS/MARKOS-ITM-COM-01-community-event.md` | Community & Events | B07 | Gate 1 | active |
+| MARKOS-ITM-OPS-02 | `LINEAR-TASKS/MARKOS-ITM-ANA-02-ab-test.md` | Campaign Ops — Lifecycle Automation | B01, B02 | Gate 2 | active |
+| MARKOS-ITM-ANA-02 | `LINEAR-TASKS/MARKOS-ITM-ANA-02-ab-test-config.md` | Campaign Analytics — A/B Test | B08, B09 | Gate 2 | active |
 
 ---
 
@@ -71,26 +71,26 @@ mir_gate_required: none
 
 | TOKEN_ID | Linear Title Format |
 |----------|-------------------|
-| MGSD-ITM-CNT-01 | `[MGSD] Lead Magnet: {magnet_title} — {audience_segment}` |
-| MGSD-ITM-CNT-02 | `[MGSD] Ad Copy: {platform} — {campaign_name} — {variant_id}` |
-| MGSD-ITM-CNT-03 | `[MGSD] Email Sequence: {sequence_name} — {trigger_event} — {N}-email` |
-| MGSD-ITM-CNT-04 | `[MGSD] Social Calendar: {channel} — {month}-{year}` |
-| MGSD-ITM-CNT-05 | `[MGSD] Landing Page Copy: {offer_name} — {funnel_stage}` |
-| MGSD-ITM-CNT-06 | `[MGSD] SEO Article: {primary_keyword} — {target_funnel_stage}` |
-| MGSD-ITM-CNT-07 | `[MGSD] Case Study: {customer_name} — {outcome_metric}` |
-| MGSD-ITM-CNT-08 | `[MGSD] Video Script: {format} — {offer_or_topic} — {duration}s` |
-| MGSD-ITM-STR-01 | `[MGSD] Audience Intel: {segment_name} — {month}-{year}` |
-| MGSD-ITM-STR-02 | `[MGSD] Funnel Build: {campaign_name} — {funnel_type}` |
-| MGSD-ITM-TRK-01 | `[MGSD] Tracking Setup: {campaign_name} — {platform}` |
-| MGSD-ITM-ANA-01 | `[MGSD] Performance Review: {campaign_name} — {period}` |
-| MGSD-ITM-OPS-01 | `[MGSD] Launch: {campaign_name} — Go/No-Go` |
-| MGSD-ITM-ACQ-01 | `[MGSD] Paid Social Setup: {platform} — {campaign_name} — {objective}` |
-| MGSD-ITM-ACQ-02 | `[MGSD] Retargeting: {platform} — {audience_segment} — {campaign_name}` |
-| MGSD-ITM-ACQ-03 | `[MGSD] LinkedIn Outbound: {segment_name} — {sequence_name} — {N}-touch` |
-| MGSD-ITM-ACQ-04 | `[MGSD] Influencer Activation: {creator_name} — {platform} — {campaign_name}` |
-| MGSD-ITM-COM-01 | `[MGSD] Community Event: {event_name} — {date}` |
-| MGSD-ITM-OPS-02 | `[MGSD] Lifecycle Automation: {sequence_name} — {trigger_event}` |
-| MGSD-ITM-ANA-02 | `[MGSD] A/B Test: {element_tested} — {page_or_channel} — {hypothesis_slug}` |
+| MARKOS-ITM-CNT-01 | `[MARKOS] Lead Magnet: {magnet_title} — {audience_segment}` |
+| MARKOS-ITM-CNT-02 | `[MARKOS] Ad Copy: {platform} — {campaign_name} — {variant_id}` |
+| MARKOS-ITM-CNT-03 | `[MARKOS] Email Sequence: {sequence_name} — {trigger_event} — {N}-email` |
+| MARKOS-ITM-CNT-04 | `[MARKOS] Social Calendar: {channel} — {month}-{year}` |
+| MARKOS-ITM-CNT-05 | `[MARKOS] Landing Page Copy: {offer_name} — {funnel_stage}` |
+| MARKOS-ITM-CNT-06 | `[MARKOS] SEO Article: {primary_keyword} — {target_funnel_stage}` |
+| MARKOS-ITM-CNT-07 | `[MARKOS] Case Study: {customer_name} — {outcome_metric}` |
+| MARKOS-ITM-CNT-08 | `[MARKOS] Video Script: {format} — {offer_or_topic} — {duration}s` |
+| MARKOS-ITM-STR-01 | `[MARKOS] Audience Intel: {segment_name} — {month}-{year}` |
+| MARKOS-ITM-STR-02 | `[MARKOS] Funnel Build: {campaign_name} — {funnel_type}` |
+| MARKOS-ITM-TRK-01 | `[MARKOS] Tracking Setup: {campaign_name} — {platform}` |
+| MARKOS-ITM-ANA-01 | `[MARKOS] Performance Review: {campaign_name} — {period}` |
+| MARKOS-ITM-OPS-01 | `[MARKOS] Launch: {campaign_name} — Go/No-Go` |
+| MARKOS-ITM-ACQ-01 | `[MARKOS] Paid Social Setup: {platform} — {campaign_name} — {objective}` |
+| MARKOS-ITM-ACQ-02 | `[MARKOS] Retargeting: {platform} — {audience_segment} — {campaign_name}` |
+| MARKOS-ITM-ACQ-03 | `[MARKOS] LinkedIn Outbound: {segment_name} — {sequence_name} — {N}-touch` |
+| MARKOS-ITM-ACQ-04 | `[MARKOS] Influencer Activation: {creator_name} — {platform} — {campaign_name}` |
+| MARKOS-ITM-COM-01 | `[MARKOS] Community Event: {event_name} — {date}` |
+| MARKOS-ITM-OPS-02 | `[MARKOS] Lifecycle Automation: {sequence_name} — {trigger_event}` |
+| MARKOS-ITM-ANA-02 | `[MARKOS] A/B Test: {element_tested} — {page_or_channel} — {hypothesis_slug}` |
 
 ---
 

@@ -1,7 +1,7 @@
 # Phase 08 Context: Protocol Hardening & Hybrid Team categorisation
 
 ## Background
-The baseline MGSD framework (`v1.0.0`) provides MIR, MSP, RESEARCH, agent scaffolding, and onboarding flows. As the team scales to run mixed workloads (AI agents + human marketers), there is a need to harden the protocol around cross-referencing capabilities, tokenizing documentation for precise agent retrieval, and instituting strict human-vs-AI boundaries.
+The baseline MARKOS framework (`v1.0.0`) provides MIR, MSP, RESEARCH, agent scaffolding, and onboarding flows. As the team scales to run mixed workloads (AI agents + human marketers), there is a need to harden the protocol around cross-referencing capabilities, tokenizing documentation for precise agent retrieval, and instituting strict human-vs-AI boundaries.
 
 ## Objectives
 1. **Documentation Hardening**: Resolving inconsistencies in naming patterns, directory paths, and definitions across template documents.

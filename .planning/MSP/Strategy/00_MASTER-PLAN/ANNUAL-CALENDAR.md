@@ -1,21 +1,41 @@
-# ANNUAL-CALENDAR.md — Year-View Marketing Calendar
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/ANNUAL-CALENDAR.md to customize it safely.
+# MarkOS Annual Marketing Calendar (Year-View)
 
-
-```
-file_purpose  : Map all planned marketing activity across the year.
-                Provides a single view of what is happening, when, and across
-                which disciplines. Prevents conflict and reveals gaps.
-status        : empty
-plan_period   : YYYY
-last_updated  : YYYY-MM-DD
-```
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/00_MASTER-PLAN/ANNUAL-CALENDAR.md to customize it safely.
 
 ---
 
+## LLM-Optimized Summary
+
+This document maps all planned marketing activity across the year for MarkOS. It provides a single view of what is happening, when, and across which disciplines. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts. Structured for LLM chunking and cross-referencing.
+
+**See also:**
+- [MIR Market_Audiences/03_MARKET/INDUSTRY.md](../../../../MIR/Market_Audiences/03_MARKET/INDUSTRY.md)
+- [MIR Products/04_PRODUCTS/CATALOG.md](../../../../MIR/Products/04_PRODUCTS/CATALOG.md)
+- [MIR Products/04_PRODUCTS/OFFERS.md](../../../../MIR/Products/04_PRODUCTS/OFFERS.md)
+- [README.md](../../../../README.md)
+
+
+
+---
+
+**File Purpose:**
+Map all planned marketing activity across the year. Prevents conflict and reveals gaps. Updated for MarkOS v2.2.
+
+**Status:** [FILL]
+**Plan Period:** [FILL]
+**Last Updated:** 2026-03-28
+
+---
+
+---
+
+
 ## 1. Calendar Philosophy
+
+**Summary:**
+Describes how the annual calendar is used and the key planning inputs. Aligns with MarkOS v2.2 and MIR artifacts.
 
 **How this calendar is used:**
 [FILL — e.g. "The annual calendar is set at plan creation. It is updated quarterly. Individual campaigns are planned within these blocks, not around them."]
@@ -28,7 +48,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 2. Key Dates & Constraints
+
+**Summary:**
+Lists non-negotiable dates and constraints that all campaigns plan around. Ensures alignment across all MarkOS disciplines.
 
 > These dates are non-negotiable constraints that all campaigns plan around.
 
@@ -43,7 +67,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 3. Quarterly Plan Summary
+
+**Summary:**
+Breaks down the annual plan into quarterly themes, initiatives, budgets, and KPIs. Use for high-level planning and review.
 
 ### Q1: [YYYY-MM] — [YYYY-MM]
 
@@ -114,7 +142,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 4. Month-by-Month View
+
+**Summary:**
+Provides a granular, month-by-month breakdown of campaigns, launches, budgets, and key notes. Use for detailed scheduling.
 
 | Month | Active Campaigns | Key Launch | Budget | Notes |
 |-------|----------------|-----------|--------|-------|
@@ -133,7 +165,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 5. Seasonal & Promotional Windows
+
+**Summary:**
+Identifies key seasonal and promotional windows, their dates, involved disciplines, and budget impact. Aligns with MarkOS v2.2 planning.
 
 | Window | Dates | Disciplines Involved | Budget Impact |
 |--------|-------|---------------------|--------------|
@@ -143,7 +179,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 6. Creative Production Calendar
+
+**Summary:**
+Ensures all creative assets are ready before campaign launches. Works backward from launch dates for disciplined execution.
 
 > Ensures assets are ready before campaigns launch. Works backward from launch dates.
 
@@ -153,7 +193,23 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 7. Review & Reporting Calendar
+
+**Summary:**
+Defines the cadence and ownership of reviews and reporting throughout the year. Ensures accountability in MarkOS workflows.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 | Event | Date | Owner | Output |
 |-------|------|-------|--------|

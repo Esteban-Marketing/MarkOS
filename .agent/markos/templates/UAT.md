@@ -36,7 +36,7 @@ status: pending
 - [ ] Mobile rendering verified
 
 ### Linear Sync
-- [ ] Campaign ticket created with `[MGSD]` prefix
+- [ ] Campaign ticket created with `[MARKOS]` prefix
 - [ ] All sub-tasks created and assigned
 - [ ] Status set to correct state
 

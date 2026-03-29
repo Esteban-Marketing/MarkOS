@@ -1,5 +1,5 @@
 /**
- * Frontmatter — YAML frontmatter parser for MGSD markdown files
+ * Frontmatter — YAML frontmatter parser for MARKOS markdown files
  */
 
 /**

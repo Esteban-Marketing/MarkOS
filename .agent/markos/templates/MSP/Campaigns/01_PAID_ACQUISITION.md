@@ -1,12 +1,12 @@
 # 💸 {{COMPANY_NAME}} - Paid Acquisition Pipeline
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Campaigns/01_PAID_ACQUISITION.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Campaigns/01_PAID_ACQUISITION.md to customize it safely.
 
 
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`)
-**Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist, mgsd-content-creator)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `{{LEAD_AGENT}}` (markos-strategist, markos-content-creator)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## Phase Budget & Parameters
 - **Target CAC Limits:** `{{CAC_LIMIT}}`

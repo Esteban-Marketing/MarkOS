@@ -1,20 +1,20 @@
 ---
-name: mgsd-help
-description: Show available MGSD commands and usage guide
+name: markos-help
+description: Show available MARKOS commands and usage guide
 ---
 
-# mgsd-help
+# markos-help
 
 <context>
-Displays the MGSD CLI help and list of commands.
+Displays the MARKOS CLI help and list of commands.
 </context>
 
 <execution_context>
-@.agent/marketing-get-shit-done/workflows/help.md
+@.agent/markos/workflows/help.md
 </execution_context>
 
 <process>
-Execute the `/mgsd-help` workflow exactly as documented in the workflow file.
+Execute the `/markos-help` workflow exactly as documented in the workflow file.
 </process>
 
 <success_criteria>

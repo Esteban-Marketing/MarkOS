@@ -1,6 +1,6 @@
 # 🛠️ Phase 14 Context: Codebase Mastery
 
-This phase formalizes the auditing results and hardening of the MGSD protocol core infrastructure, focusing on fixing technical debt and optimizing the backend architecture for production-ready autonomous operations.
+This phase formalizes the auditing results and hardening of the MARKOS protocol core infrastructure, focusing on fixing technical debt and optimizing the backend architecture for production-ready autonomous operations.
 
 ## ✨ Objectives
 - Eliminate installer crashes.

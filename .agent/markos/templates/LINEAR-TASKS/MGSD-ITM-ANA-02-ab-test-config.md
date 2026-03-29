@@ -1,15 +1,15 @@
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-ANA-02 | A/B Test Configuration -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-ANA-02 | A/B Test Configuration -->
 
 ## Context Source
 
 | Field              | Value                                                          |
 |--------------------|----------------------------------------------------------------|
-| Token IDs Required | MGSD-REF-OPS-01, MGSD-REF-OPS-03, MGSD-AGT-STR-05            |
+| Token IDs Required | MARKOS-REF-OPS-01, MARKOS-REF-OPS-03, MARKOS-AGT-STR-05            |
 | MIR Gate           | Gate 2 — tracking must be active to measure test results       |
 | MSP Matrix         | N/A — cross-discipline (attach to relevant campaign phase)     |
-| AGT Assigned       | MGSD-AGT-STR-05 (cro-hypothesis), MGSD-AGT-ANA-01 (funnel-analyst) |
-| SKL Entry Point    | MGSD-SKL-OPS-02 (execute-phase)                                |
+| AGT Assigned       | MARKOS-AGT-STR-05 (cro-hypothesis), MARKOS-AGT-ANA-01 (funnel-analyst) |
+| SKL Entry Point    | MARKOS-SKL-OPS-02 (execute-phase)                                |
 
 ---
 
@@ -31,7 +31,7 @@
 
 | # | Required Input | Source Document | Status |
 |---|---------------|-----------------|--------|
-| 1 | Hypothesis: what behavior we expect to change and why | MGSD-AGT-STR-05 output | [ ] |
+| 1 | Hypothesis: what behavior we expect to change and why | MARKOS-AGT-STR-05 output | [ ] |
 | 2 | Control variant (current version) identified | Human-provided | [ ] |
 | 3 | Tracked conversion event defined | `Core_Strategy/06_TECH-STACK/TRACKING.md` | [ ] |
 | 4 | KPI baseline (current conversion rate) | `Core_Strategy/09_ANALYTICS/KPI-FRAMEWORK.md` | [ ] |
@@ -43,21 +43,21 @@
 ## Task Steps
 
 - [ ] **Step 1:** Run Gate 2 check. Block if gate2.ready: false — test results are unmeasurable without tracking.
-  - Agent: MGSD-AGT-OPS-01
+  - Agent: MARKOS-AGT-OPS-01
   - Output: Gate 2 confirmed
 
-- [ ] **Step 2:** Generate CRO hypothesis using `mgsd-cro-hypothesis`. Format: "We believe that changing [element] from [control] to [variant] will increase [metric] for [ICP segment] because [B0N trigger mechanism]."
-  - Agent: MGSD-AGT-STR-05
+- [ ] **Step 2:** Generate CRO hypothesis using `markos-cro-hypothesis`. Format: "We believe that changing [element] from [control] to [variant] will increase [metric] for [ICP segment] because [B0N trigger mechanism]."
+  - Agent: MARKOS-AGT-STR-05
   - Output: `cro-hypothesis-{slug}.md`
   - **⏸ HUMAN CHECKPOINT: Human approves hypothesis before any test is built**
 
 - [ ] **Step 3:** Compute minimum sample size: `n = (z-score² × p(1-p)) / MDE²`. Compute minimum test runtime at current traffic volume. Document in test brief.
-  - Agent: MGSD-AGT-ANA-01 (funnel-analyst)
+  - Agent: MARKOS-AGT-ANA-01 (funnel-analyst)
   - Output: `test-brief.md` with sample size and runtime requirement
   - **⏸ HUMAN CHECKPOINT: Human confirms sample size and runtime are achievable**
 
 - [ ] **Step 4:** Write variant copy/design spec. Control = current version. Variant = single-variable change (never change more than 1 element per test).
-  - Agent: MGSD-AGT-CNT-02 (copy-drafter for copy tests) or MGSD-AGT-STR-04 (creative-brief for design tests)
+  - Agent: MARKOS-AGT-CNT-02 (copy-drafter for copy tests) or MARKOS-AGT-STR-04 (creative-brief for design tests)
   - Output: `variant-spec.md`
   - **⏸ HUMAN CHECKPOINT: Human reviews both variants before launching test**
 
@@ -66,21 +66,21 @@
   - **⏸ HUMAN CHECKPOINT: Human confirms test is live in platform**
 
 - [ ] **Step 6:** Monitor test. Check at intervals: `{{CHECK_INTERVAL}}` days. Do NOT call winner until: (a) minimum runtime reached AND (b) statistical significance ≥ 95%.
-  - Agent: MGSD-AGT-ANA-01 monitors conversion data
+  - Agent: MARKOS-AGT-ANA-01 monitors conversion data
   - Output: interim check notes added to `test-brief.md`
   - **DO NOT stop test early — premature stopping rule enforced**
 
 - [ ] **Step 7:** Read winner. Compute: conversion rate control vs. variant, lift %, confidence interval, p-value.
-  - Agent: MGSD-AGT-ANA-01
+  - Agent: MARKOS-AGT-ANA-01
   - Output: `test-results.md`
   - **⏸ HUMAN CHECKPOINT: Human reviews results and calls winner**
 
 - [ ] **Step 8:** If winner found: implement winning variant permanently. Update MESSAGING-FRAMEWORK.md or VOICE-TONE.md with winning formula.
-  - Agent: MGSD-AGT-OPS-02 (librarian updates MIR)
+  - Agent: MARKOS-AGT-OPS-02 (librarian updates MIR)
   - Output: MIR file updated, `SUMMARY.md` documents winner
 
 - [ ] **Step 9:** Commit: `mktg(cro): {test-slug} — {winner: control|variant} — {lift}% lift`
-  - Agent: MGSD-AGT-EXE-01
+  - Agent: MARKOS-AGT-EXE-01
   - Output: SUMMARY.md
 
 ---
@@ -95,8 +95,8 @@
 | 4 — Tracking | Conversion event confirmed firing in test platform | Event visible in PostHog / test platform |
 | 5 — Creative Compliance | Variant copy complies with VOICE-TONE | No prohibited words; tone matched |
 | 6 — Budget Alignment | N/A — test is organic conversion optimization | Mark as N/A |
-| 7 — Linear Sync | Issue status reflects execution | `mgsd-linear-manager` sync returns 0 drift |
-| Neuro Audit | Hypothesis tied to specific B0N mechanism | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue status reflects execution | `markos-linear-manager` sync returns 0 drift |
+| Neuro Audit | Hypothesis tied to specific B0N mechanism | `MARKOS-AGT-NEU-01` returns `PASSED` |
 | Statistical Validity | Winner called at ≥95% confidence | p-value ≤ 0.05; minimum runtime complete |
 
 ---
@@ -105,10 +105,10 @@
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-ANA-02 |
+| Template ID | MARKOS-ITM-ANA-02 |
 | Task Category | Campaign Analytics — A/B Test |
-| Labels | `mgsd`, `cro`, `ab-test`, `analytics`, `optimization` |
+| Labels | `markos`, `cro`, `ab-test`, `analytics`, `optimization` |
 | Priority | Medium |
 | Estimate | 4–8 story points (setup) + ongoing monitoring |
 | Parent Issue | Campaign Epic ID |
-| Linear Title Format | `[MGSD] A/B Test: {element_tested} — {page_or_channel} — {hypothesis_slug}` |
+| Linear Title Format | `[MARKOS] A/B Test: {element_tested} — {page_or_channel} — {hypothesis_slug}` |

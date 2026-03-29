@@ -1,7 +1,7 @@
 # KPI-FRAMEWORK.md — KPIs, Targets & Measurement Logic
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/09_ANALYTICS/KPI-FRAMEWORK.md to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MIR/Core_Strategy/09_ANALYTICS/KPI-FRAMEWORK.md to customize it safely.
 
 
 ```

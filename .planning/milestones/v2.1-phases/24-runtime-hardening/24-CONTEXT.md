@@ -1,4 +1,4 @@
-# Phase 24 Context — Runtime Hardening
+﻿# Phase 24 Context â€” Runtime Hardening
 
 ## Objective
 
@@ -16,7 +16,7 @@ This phase follows Phase 23 deliberately. Phase 23 defines which identifiers and
 
 ### Out of Scope
 - Broad onboarding quality improvements unrelated to runtime parity.
-- Chroma namespace migration or destructive local-state renames.
+- Vector Store namespace migration or destructive local-state renames.
 - Full execution-loop hardening outside the onboarding/runtime boundary.
 - UI or copy refresh except where needed to accurately document runtime behavior.
 
@@ -43,7 +43,7 @@ This phase follows Phase 23 deliberately. Phase 23 defines which identifiers and
 | `api/*.js` | Hosted wrappers define the other side of the parity contract | Verified wrapper consistency, clearer limitations |
 | `onboarding/backend/path-constants.cjs` | Canonical filesystem roots and config path source | Reused by runtime helpers, reduced ad hoc path logic |
 | `onboarding/backend/write-mir.cjs` | Approval flow persistence target and write semantics | Explicit contract for when writes are local-only versus hosted-compatible |
-| `onboarding/backend/chroma-client.cjs` | Shared persistence and namespace behavior | Documented expectations for local and hosted execution |
+| `onboarding/backend/vector-store-client.cjs` | Shared persistence and namespace behavior | Documented expectations for local and hosted execution |
 | `test/onboarding-server.test.js`, related runtime tests | Fast proof that both runtime modes behave consistently | Additional tests for parity and guarded failure modes |
 
 ## Risks
@@ -57,12 +57,13 @@ This phase follows Phase 23 deliberately. Phase 23 defines which identifiers and
 
 ## Deliverables
 
-1. `24-CONTEXT.md` — this document.
-2. `24-01-PLAN.md` — audit local-only and hosted-only runtime branches.
-3. `24-02-PLAN.md` — centralize config precedence and environment detection.
-4. `24-03-PLAN.md` — add parity coverage for local-server and API-wrapper execution.
-5. `24-04-PLAN.md` — document deployment and persistence constraints for approve/write flows.
+1. `24-CONTEXT.md` â€” this document.
+2. `24-01-PLAN.md` â€” audit local-only and hosted-only runtime branches.
+3. `24-02-PLAN.md` â€” centralize config precedence and environment detection.
+4. `24-03-PLAN.md` â€” add parity coverage for local-server and API-wrapper execution.
+5. `24-04-PLAN.md` â€” document deployment and persistence constraints for approve/write flows.
 
 ## Exit Criteria
 
 Phase 24 is complete when the onboarding runtime has one documented environment model, shared handlers behave consistently across local and hosted entrypoints, write-sensitive flows either operate from a clear contract or fail explicitly, and the most important assumptions are proven by tests rather than scattered comments.
+

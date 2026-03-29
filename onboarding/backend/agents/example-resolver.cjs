@@ -27,7 +27,7 @@
  * RELATED FILES:
  *   onboarding/backend/agents/mir-filler.cjs  (imports resolveExample)
  *   onboarding/backend/agents/msp-filler.cjs  (imports resolveExample)
- *   .agent/marketing-get-shit-done/templates/ (example files live here)
+ *   .agent/markos/templates/ (example files live here)
  *   onboarding/onboarding-seed.schema.json    (business_model field definition)
  * ═══════════════════════════════════════════════════════════════════════════════
  */
@@ -37,7 +37,7 @@ const fs   = require('fs');
 const path = require('path');
 
 // ─── DEFAULT BASE PATH ─────────────────────────────────────────────────────────
-// Resolves to .agent/marketing-get-shit-done/templates/ relative to repo root.
+// Resolves to .agent/markos/templates/ relative to repo root.
 // Callers can override this for testing.
 const { TEMPLATES_DIR } = require('../path-constants.cjs');
 const DEFAULT_BASE = TEMPLATES_DIR;

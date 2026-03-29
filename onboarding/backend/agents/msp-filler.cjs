@@ -7,9 +7,9 @@
  *   These are strategic outputs (how to market) vs MIR (what we know).
  *
  * SECTION-TO-FILE MAP:
- *   generateBrandVoice      → .mgsd-local/MIR/Core_Strategy/02_BRAND/VOICE-TONE.md
- *   generateChannelStrategy → .mgsd-local/MSP/Strategy/00_MASTER-PLAN/CHANNEL-STRATEGY.md
- *   generatePaidAcquisition → .mgsd-local/MSP/Campaigns/01_PAID_ACQUISITION.md
+ *   generateBrandVoice      → .markos-local/MIR/Core_Strategy/02_BRAND/VOICE-TONE.md
+ *   generateChannelStrategy → .markos-local/MSP/Strategy/00_MASTER-PLAN/CHANNEL-STRATEGY.md
+ *   generatePaidAcquisition → .markos-local/MSP/Campaigns/01_PAID_ACQUISITION.md
  *
  * EXPORTS:
  *   generateBrandVoice(seed)       → Promise<{ ok, text, provider }>
@@ -27,6 +27,7 @@
 
 const path = require('path');
 const llm  = require('./llm-adapter.cjs');
+const vectorStore = require('../vector-store-client.cjs');
 const { resolveExample } = require('./example-resolver.cjs');
 
 // ─── EXAMPLE BASE PATHS ────────────────────────────────────────────────────────
@@ -43,9 +44,35 @@ RULES:
 3. Output clean markdown only. No preamble, no meta-commentary.
 4. Where data is missing, output "[REQUIRES HUMAN INPUT — reason]" as a placeholder.`;
 
-async function generateBrandVoice(seed) {
+async function buildWinnersAnchor(slug, discipline) {
+  if (!slug) return '';
+  try {
+    const patterns = await vectorStore.getWinningCampaignPatterns(slug, discipline, 3);
+    if (!patterns || patterns.length === 0) {
+      return '';
+    }
+
+    const lines = patterns.map((entry, idx) => {
+      const metric = entry.metadata?.metric ? `${entry.metadata.metric}: ${entry.metadata.metric_value}` : 'metric unavailable';
+      return `${idx + 1}. ${metric}\n${entry.document}`;
+    });
+
+    return [
+      '',
+      'HISTORICAL WINNERS ANCHOR (SUCCESS ONLY):',
+      lines.join('\n\n'),
+      '',
+      'Anchor your recommendations to these winning patterns when relevant.',
+    ].join('\n');
+  } catch {
+    return '';
+  }
+}
+
+async function generateBrandVoice(seed, slug) {
   const company = seed.company || {};
   const audience = seed.audience || {};
+  const winnersAnchor = await buildWinnersAnchor(slug, 'Strategy');
 
   const exampleBlock = resolveExample('BRAND-VOICE', company.business_model || '', '', CORE_STRAT_DIR);
 
@@ -57,6 +84,8 @@ Brand Values: ${company.brand_values?.join(', ')}
 Mission: ${company.mission}
 Primary Audience: ${audience.segment_name} — ${audience.job_title}
 Audience Vocabulary: ${audience.vocabulary || 'Not specified'}
+
+${winnersAnchor}
 
 ${exampleBlock}
 Write:
@@ -81,11 +110,12 @@ Create 4 dimensions using this format:
   return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1000 });
 }
 
-async function generateChannelStrategy(seed) {
+async function generateChannelStrategy(seed, slug) {
   const company = seed.company || {};
   const audience = seed.audience || {};
   const content = seed.content || {};
   const market = seed.market || {};
+  const winnersAnchor = await buildWinnersAnchor(slug, 'Strategy');
 
   const exampleBlock = resolveExample('CHANNEL-STRATEGY', company.business_model || '', '', MSP_STRAT_DIR);
 
@@ -103,6 +133,8 @@ CURRENT CHANNELS (self-reported):
 - Active Channels: ${content.active_channels?.join(', ') || 'None specified'}
 - Monthly Output: ${content.monthly_output}
 - Best Performing Format: ${content.best_format || 'Not specified'}
+
+${winnersAnchor}
 
 ${exampleBlock}
 Write:
@@ -123,11 +155,12 @@ Rank channels 1-5 in execution priority. For each:
   return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1000 });
 }
 
-async function generatePaidAcquisition(seed) {
+async function generatePaidAcquisition(seed, slug) {
   const company = seed.company || {};
   const audience = seed.audience || {};
   const market = seed.market || {};
   const product = seed.product || {};
+  const winnersAnchor = await buildWinnersAnchor(slug, 'Paid_Media');
 
   const exampleBlock = resolveExample('PAID-ACQUISITION', company.business_model || '', '', MSP_CAMPAIGNS_DIR);
 
@@ -140,6 +173,8 @@ Top Pain Points: ${[audience.pain_point_1, audience.pain_point_2, audience.pain_
 Product Pricing Model: ${product?.pricing_model || 'Not specified'}
 Key Differentiator vs Competitors: ${company.differentiator || 'Not specified'}
 Market Maturity: ${market?.maturity || 'Not specified'}
+
+${winnersAnchor}
 
 ${exampleBlock}
 Write a complete Paid Acquisition Pipeline covering:

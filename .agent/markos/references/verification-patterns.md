@@ -1,33 +1,33 @@
 ---
-token_id: MGSD-REF-OPS-03
+token_id: MARKOS-REF-OPS-03
 document_class: REF
 domain: OPS
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
-  - MGSD-REF-OPS-01 # mir-gates.md — gates verified against these patterns
+  - MARKOS-IDX-000    # MARKOS-INDEX.md — master registry
+  - MARKOS-REF-OPS-01 # mir-gates.md — gates verified against these patterns
 downstream:
-  - MGSD-AGT-EXE-02  # mgsd-verifier.md — primary consumer
-  - MGSD-SKL-VER-01  # mgsd-verify-work/SKILL.md — entry point skill
+  - MARKOS-AGT-EXE-02  # markos-verifier.md — primary consumer
+  - MARKOS-SKL-VER-01  # markos-verify-work/SKILL.md — entry point skill
 mir_gate_required: false
 ---
 
 # Verification Patterns — Marketing Deliverable Verification
 
-<!-- TOKEN: MGSD-REF-OPS-03 | CLASS: REF | DOMAIN: OPS -->
-<!-- PURPOSE: Defines the 7-dimension framework used by mgsd-verifier.md to evaluate completed marketing phases. All verification agents load this file before producing VERIFICATION.md. -->
+<!-- TOKEN: MARKOS-REF-OPS-03 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines the 7-dimension framework used by markos-verifier.md to evaluate completed marketing phases. All verification agents load this file before producing VERIFICATION.md. -->
 
-How MGSD verifies marketing work is complete and correct.
+How MARKOS verifies marketing work is complete and correct.
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
-| MGSD-REF-OPS-01 | mir-gates.md | MIR gate statuses checked in Dimension 1 |
-| MGSD-AGT-EXE-02 | agents/mgsd-verifier.md | Agent that executes these patterns |
-| MGSD-REF-CNT-01 | ui-brand.md | Verification report formatting standards |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this document |
+| MARKOS-REF-OPS-01 | mir-gates.md | MIR gate statuses checked in Dimension 1 |
+| MARKOS-AGT-EXE-02 | agents/markos-verifier.md | Agent that executes these patterns |
+| MARKOS-REF-CNT-01 | ui-brand.md | Verification report formatting standards |
 
 ## Verification Dimensions
 
@@ -35,7 +35,7 @@ How MGSD verifies marketing work is complete and correct.
 Verify all referenced MIR files have content (no `[FILL]` placeholders in used fields).
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit
+node ".agent/markos/bin/markos-tools.cjs" mir-audit
 ```
 
 ### 2. Template Variable Resolution
@@ -43,7 +43,7 @@ All `{{VARIABLE}}` tokens in MSP matrices and campaign docs must resolve to popu
 
 Check pattern:
 ```bash
-grep -r '{{[A-Z_]*}}' .agent/marketing-get-shit-done/templates/MSP/
+grep -r '{{[A-Z_]*}}' .agent/markos/templates/MSP/
 ```
 
 Any unresolved variables = verification failure.
@@ -78,7 +78,7 @@ Verify campaign budget fits within allocation:
 
 ### 7. Linear Sync
 Verify all campaign tasks are synced to Linear:
-- [ ] Campaign ticket created with `[MGSD]` prefix
+- [ ] Campaign ticket created with `[MARKOS]` prefix
 - [ ] Sub-tasks match campaign checklist items
 - [ ] Status reflects current execution state
 

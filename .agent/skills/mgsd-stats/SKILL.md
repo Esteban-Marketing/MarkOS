@@ -1,20 +1,20 @@
 ---
-name: mgsd-stats
+name: markos-stats
 description: Display marketing project statistics and metrics
 ---
 
-# mgsd-stats
+# markos-stats
 
 <context>
 Displays metrics about phases, plans, MIR coverage, and repository info.
 </context>
 
 <execution_context>
-@.agent/marketing-get-shit-done/workflows/stats.md
+@.agent/markos/workflows/stats.md
 </execution_context>
 
 <process>
-Execute the `/mgsd-stats` workflow exactly as documented in the workflow file.
+Execute the `/markos-stats` workflow exactly as documented in the workflow file.
 </process>
 
 <success_criteria>

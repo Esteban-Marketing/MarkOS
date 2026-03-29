@@ -1,11 +1,11 @@
 /**
- * Init — Context builder for each MGSD workflow command
+ * Init — Context builder for each MARKOS workflow command
  * Returns JSON with all context an orchestrator needs
  */
 
 const fs = require('fs');
 const path = require('path');
-const { output, error, planningPaths, mgsdPaths, findPhaseInternal, loadConfig, safeReadFile, toPosixPath, checkMirGates } = require('./core.cjs');
+const { output, error, planningPaths, markosPaths, findPhaseInternal, loadConfig, safeReadFile, toPosixPath, checkMirGates } = require('./core.cjs');
 
 function resolveModel(config, agentType) {
   const profile = config.model_profile || 'balanced';
@@ -21,14 +21,14 @@ function resolveModel(config, agentType) {
 
 function cmdInit(cwd, command, args, raw) {
   const pp = planningPaths(cwd);
-  const mp = mgsdPaths(cwd);
+  const mp = markosPaths(cwd);
   const config = loadConfig(cwd);
 
   const planningExists = fs.existsSync(pp.planning);
   const stateExists = fs.existsSync(pp.state);
   const roadmapExists = fs.existsSync(pp.roadmap);
   const projectExists = fs.existsSync(pp.project);
-  const mgsdExists = fs.existsSync(mp.root);
+  const markosExists = fs.existsSync(mp.root);
   const hasGit = fs.existsSync(path.join(cwd, '.git'));
 
   // Check MIR gates
@@ -42,7 +42,7 @@ function cmdInit(cwd, command, args, raw) {
     state_exists: stateExists,
     roadmap_exists: roadmapExists,
     project_exists: projectExists,
-    mgsd_exists: mgsdExists,
+    markos_exists: markosExists,
     has_git: hasGit,
     commit_docs: config.commit_docs,
     parallelization: config.parallelization,

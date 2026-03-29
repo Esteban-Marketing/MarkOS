@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * pre-push: MGSD MIR Gate pre-push check
- * Install: cp .agent/marketing-get-shit-done/hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
+ * pre-push: MARKOS MIR Gate pre-push check
+ * Install: cp .agent/markos/hooks/pre-push .git/hooks/pre-push && chmod +x .git/hooks/pre-push
  * 
  * Warns if pushing with Gate 2 RED (execution content missing).
  * Never blocks the push — only informs.
@@ -12,9 +12,9 @@ const path = require('path');
 const fs = require('fs');
 
 const projectRoot = process.cwd();
-const toolsPath = path.join(projectRoot, '.agent', 'marketing-get-shit-done', 'bin', 'mgsd-tools.cjs');
+const toolsPath = path.join(projectRoot, '.agent', 'markos', 'bin', 'markos-tools.cjs');
 
-// Only run if MGSD planning exists
+// Only run if MARKOS planning exists
 const planningExists = fs.existsSync(path.join(projectRoot, '.planning'));
 if (!planningExists) process.exit(0);
 if (!fs.existsSync(toolsPath)) process.exit(0);
@@ -30,13 +30,13 @@ try {
 
   if (status.gate1 && status.gate1.status === 'red') {
     console.error('');
-    console.error('⚠  MGSD MIR Gate 1 (Identity) is RED');
+    console.error('⚠  MARKOS MIR Gate 1 (Identity) is RED');
     console.error(`   ${status.gate1.gaps.length} gap(s) in core identity files:`);
     for (const gap of status.gate1.gaps.slice(0, 5)) {
       console.error(`   • ${gap}`);
     }
     console.error('');
-    console.error('   Run /mgsd-mir-audit for the full list.');
+    console.error('   Run /markos-mir-audit for the full list.');
     console.error('   Fill gaps before pushing for cleaner commit history.');
     console.error('   (Push will continue — this is advisory only)');
     console.error('');
@@ -44,8 +44,8 @@ try {
 
   if (status.gate2 && status.gate2.status === 'red') {
     const gapCount = status.gate2.gaps.length;
-    console.warn(`ℹ  MGSD MIR Gate 2 (Execution) — ${gapCount} gap(s) in execution files.`);
-    console.warn('   Campaign planning may use placeholder data. Run /mgsd-mir-audit.');
+    console.warn(`ℹ  MARKOS MIR Gate 2 (Execution) — ${gapCount} gap(s) in execution files.`);
+    console.warn('   Campaign planning may use placeholder data. Run /markos-mir-audit.');
     console.warn('');
   }
 

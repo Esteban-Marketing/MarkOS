@@ -1,31 +1,31 @@
 ---
-token_id: MGSD-REF-OPS-08
+token_id: MARKOS-REF-OPS-08
 document_class: REF
 domain: OPS
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+  - MARKOS-IDX-000    # MARKOS-INDEX.md — master registry
 downstream:
-  - MGSD-AGT-STR-01  # mgsd-strategist.md — reads profile to frame checkpoints
-  - MGSD-REF-OPS-04  # questioning.md — informs discovery question selection
-  - MGSD-REF-OPS-07  # checkpoints.md — checkpoint framing uses stakeholder type
+  - MARKOS-AGT-STR-01  # markos-strategist.md — reads profile to frame checkpoints
+  - MARKOS-REF-OPS-04  # questioning.md — informs discovery question selection
+  - MARKOS-REF-OPS-07  # checkpoints.md — checkpoint framing uses stakeholder type
 mir_gate_required: false
 ---
 
-# Client and Stakeholder Profiling for MGSD
+# Client and Stakeholder Profiling for MARKOS
 
-<!-- TOKEN: MGSD-REF-OPS-08 | CLASS: REF | DOMAIN: OPS -->
+<!-- TOKEN: MARKOS-REF-OPS-08 | CLASS: REF | DOMAIN: OPS -->
 <!-- PURPOSE: Defines stakeholder archetypes, communication patterns, approval styles, and profiling instructions. Used by agents to select checkpoint framing and question sequences. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
-| MGSD-REF-OPS-04 | questioning.md | Discovery questions that surface profile data |
-| MGSD-REF-OPS-07 | checkpoints.md | Checkpoint presenter adapts framing to profile |
-| MGSD-REF-NEU-01 | neuromarketing.md | Archetype triggers mapped to stakeholder types |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this document |
+| MARKOS-REF-OPS-04 | questioning.md | Discovery questions that surface profile data |
+| MARKOS-REF-OPS-07 | checkpoints.md | Checkpoint presenter adapts framing to profile |
+| MARKOS-REF-NEU-01 | neuromarketing.md | Archetype triggers mapped to stakeholder types |
 
 ## Purpose
 
@@ -57,7 +57,7 @@ Understanding who makes decisions and how they communicate enables faster approv
 - Approvals: Pilot-first framing, clear kill conditions
 - Avoid: Big commitments without evidence
 
-## Profiling Checklist (during /mgsd-discuss-phase)
+## Profiling Checklist (during /markos-discuss-phase)
 
 Gather these signals from the first 2-3 interactions:
 

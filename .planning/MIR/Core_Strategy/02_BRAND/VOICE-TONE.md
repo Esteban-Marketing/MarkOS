@@ -1,13 +1,13 @@
 # VOICE-TONE.md — Language Personality & Style Rules
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/02_BRAND/VOICE-TONE.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/02_BRAND/VOICE-TONE.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This is the authoritative personality filter for all written output. `mgsd-copywriter` MUST perform a 0-th pass through Section 4 (Vocabulary) to purge prohibited words. `mgsd-auditor` MUST use Section 1 (Voice) to reject any copy that drifts from defined attributes.
+> **AGENT LOGIC**: This is the authoritative personality filter for all written output. `markos-copywriter` MUST perform a 0-th pass through Section 4 (Vocabulary) to purge prohibited words. `markos-auditor` MUST use Section 1 (Voice) to reject any copy that drifts from defined attributes.
 
 **Dependencies:** PROFILE (`../01_COMPANY/PROFILE.md`), MESSAGING (`MESSAGING-FRAMEWORK.md`)
-**Assigned Agent:** `mgsd-copywriter`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-copywriter`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : Define exactly how this brand communicates in writing.

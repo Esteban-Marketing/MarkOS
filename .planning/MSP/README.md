@@ -1,11 +1,11 @@
 # Marketing Strategic Plans (MSP)
 
-<!-- mgsd-token: MSP -->
+<!-- markos-token: MSP -->
 ### Template v1.0 — maintained by esteban.marketing
 
 > **The strategic layer of the marketing system.**
 > Where the MIR declares *what the business is*, the MSP declares *how the business will grow through marketing*.
-> Where campaigns in mGSD execute *specific initiatives*, the MSP defines *the annual program those initiatives belong to*.
+> Where campaigns in MarkOS execute *specific initiatives*, the MSP defines *the annual program those initiatives belong to*.
 
 ---
 
@@ -27,7 +27,7 @@
                      │ generates
                      ▼
 ┌─────────────────────────────────────────────────────┐
-│           mGSD CAMPAIGN EXECUTION                    │
+│           MarkOS CAMPAIGN EXECUTION                    │
 │   Individual campaigns · Briefs · Tracking · Reports │
 │   (The execution layer — one campaign at a time)     │
 └─────────────────────────────────────────────────────┘
@@ -171,7 +171,7 @@ P[N]-[client-slug]-MSP/
 
 ---
 
-## Relationship to mGSD Campaigns
+## Relationship to MarkOS Campaigns
 
 When a campaign is created in `Campaigns_Assets/08_CAMPAIGNS/ACTIVE/` inside the MIR:
 - It must reference the discipline strategy it belongs to (e.g., `Outbound/01_ADVERTISING/paid-social/STRATEGY.md`)

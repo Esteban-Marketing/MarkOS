@@ -3,7 +3,7 @@
  * llm-adapter.cjs — Unified Multi-Model LLM Call Wrapper
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
- *   Single entry point for all LLM calls in the MGSD onboarding pipeline.
+ *   Single entry point for all LLM calls in the MARKOS onboarding pipeline.
  *   Abstracts away provider-specific APIs so all agents use the same interface.
  *
  * PROVIDER PRIORITY (auto-detected from .env):

@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-CNT-08
+token_id: MARKOS-ITM-CNT-08
 document_class: ITM
 domain: CNT
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 1
 ---
 
-# MGSD-ITM-CNT-08 — Video Script (VSL / Short-Form)
+# MARKOS-ITM-CNT-08 — Video Script (VSL / Short-Form)
 
-<!-- TOKEN: MGSD-ITM-CNT-08 | CLASS: ITM | DOMAIN: CNT -->
-<!-- PURPOSE: Linear issue template for writing video sales letter (VSL) or short-form video scripts (Reels, TikTok, YouTube Shorts). Consumed by mgsd-linear-manager when creating [MGSD] Video Script tickets. Gate 1 required. -->
+<!-- TOKEN: MARKOS-ITM-CNT-08 | CLASS: ITM | DOMAIN: CNT -->
+<!-- PURPOSE: Linear issue template for writing video sales letter (VSL) or short-form video scripts (Reels, TikTok, YouTube Shorts). Consumed by markos-linear-manager when creating [MARKOS] Video Script tickets. Gate 1 required. -->
 
-**Linear Title format:** `[MGSD] Video Script: {format} — {offer_or_topic} — {duration}s`
+**Linear Title format:** `[MARKOS] Video Script: {format} — {offer_or_topic} — {duration}s`
 **Category:** Content Creation
 **Primary Triggers:** B05 (Pain Relief), B10 (Embodied Cognition), B07 (Curiosity Gap)
 **Secondary:** B02 (Loss Aversion for VSL CTA), B03 (Social Proof)
@@ -29,26 +29,26 @@ mir_gate_required: 1
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B02, §B03, §B05, §B07, §B10 |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
-| MGSD-AGT-CNT-02 | agents/mgsd-copy-drafter.md | Script drafting |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Script-level neuro audit |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B02, §B03, §B05, §B07, §B10 |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
+| MARKOS-AGT-CNT-02 | agents/markos-copy-drafter.md | Script drafting |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Script-level neuro audit |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-CNT-08 | Content Creation — Video Script -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-CNT-08 | Content Creation — Video Script -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B02, §B03, §B05, §B07, §B10; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B02, §B03, §B05, §B07, §B10; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 GREEN |
 | MSP Matrix | `MSP/Social/` (short-form) or `MSP/Campaigns/` (VSL) |
-| AGT Assigned | MGSD-AGT-CNT-02 (copy-drafter) |
-| SKL Entry Point | MGSD-SKL-OPS-02 (mgsd-execute-phase) |
+| AGT Assigned | MARKOS-AGT-CNT-02 (copy-drafter) |
+| SKL Entry Point | MARKOS-SKL-OPS-02 (markos-execute-phase) |
 
 ---
 
@@ -90,20 +90,20 @@ mir_gate_required: 1
 
 ## Task Steps
 
-- [ ] **Step 1:** Run Gate 1 check via `mgsd-tools.cjs mir-audit`. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run Gate 1 check via `markos-tools.cjs mir-audit`. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status
-- [ ] **Step 2:** Draft script using `MGSD-AGT-CNT-02` — follow structure for the declared format. First word of script must not be a greeting or brand name. Sensation verbs used in product demonstration section. Duration tracked by word count (≈2.5 words/sec).
-  - Agent: MGSD-AGT-CNT-02
+- [ ] **Step 2:** Draft script using `MARKOS-AGT-CNT-02` — follow structure for the declared format. First word of script must not be a greeting or brand name. Sensation verbs used in product demonstration section. Duration tracked by word count (≈2.5 words/sec).
+  - Agent: MARKOS-AGT-CNT-02
   - Output: `VIDEO-SCRIPT-{format}-{slug}.md` (with scene notes and speaker cues)
-- [ ] **Step 3:** Run `MGSD-AGT-NEU-01` — flag: hook starts with greeting; product section uses abstract adjectives; VSL CTA is gain-framed; proof section missing friction sentence; script exceeds target duration.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 3:** Run `MARKOS-AGT-NEU-01` — flag: hook starts with greeting; product section uses abstract adjectives; VSL CTA is gain-framed; proof section missing friction sentence; script exceeds target duration.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Script audit report
 - [ ] **Step 4:** Resolve all `REWRITE REQUIRED` flags. Rerun until `PASSED`.
-  - Agent: MGSD-AGT-CNT-02
+  - Agent: MARKOS-AGT-CNT-02
   - Output: Revised script
-- [ ] **Step 5:** Commit with message `mgsd(content): video-script {format} {slug} complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 5:** Commit with message `markos(content): video-script {format} {slug} complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -118,8 +118,8 @@ mir_gate_required: 1
 | 4 — Tracking | N/A (tracked via platform analytics) | N/A |
 | 5 — Creative Compliance | Hook starts with pain/gap; sensation verbs in product section; VSL CTA loss-framed | VOICE-TONE diff clean |
 | 6 — Budget Alignment | N/A — script production only | N/A |
-| 7 — Linear Sync | Issue marked Done; script committed | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | Hook word count ≤ 15 words; first word not a greeting; script within target duration | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue marked Done; script committed | markos-linear-manager sync 0 drift |
+| Neuro Audit | Hook word count ≤ 15 words; first word not a greeting; script within target duration | `MARKOS-AGT-NEU-01` returns `PASSED` |
 
 ---
 
@@ -127,9 +127,9 @@ mir_gate_required: 1
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-CNT-08 |
+| Template ID | MARKOS-ITM-CNT-08 |
 | Task Category | Content Creation |
-| Labels | `[mgsd]`, `[video]`, `[content]`, `[awareness]` or `[decision]` |
+| Labels | `[markos]`, `[video]`, `[content]`, `[awareness]` or `[decision]` |
 | Priority | High |
 | Estimate | 2–4h (short-form: 2h; VSL: 4h) |
 | Parent Issue | Video / Creative Production Epic |

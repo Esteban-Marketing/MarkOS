@@ -1,7 +1,7 @@
 # Event Marketing Plan
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Community_Events/13_EVENT-MARKETING/PLAN.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Community_Events/13_EVENT-MARKETING/PLAN.md to customize it safely.
 
 
 ```

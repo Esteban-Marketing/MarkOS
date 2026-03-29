@@ -1,16 +1,16 @@
-# Domain Pitfalls
+﻿# Domain Pitfalls
 
 **Domain:** AI-native marketing operating system
 **Researched:** 2026-03-28
 
 ## Critical Pitfalls
 
-### Pitfall 1: Brand Identity Split Between MarkOS and MGSD Runtime Paths
-**What goes wrong:** The product presents itself as MarkOS while runtime files, manifests, local directories, and Chroma collection names still rely on MGSD naming.
+### Pitfall 1: Brand Identity Split Between MarkOS and MARKOS Runtime Paths
+**What goes wrong:** The product presents itself as MarkOS while runtime files, manifests, local directories, and Vector Store collection names still rely on MARKOS naming.
 **Why it happens:** The package and README were rebranded before all internal paths and persistence conventions were migrated.
 **Consequences:** Confusing operator experience, brittle migrations, and increased risk of broken updates during future rename work.
 **Prevention:** Introduce an explicit compatibility layer and a phased migration plan rather than ad hoc renames.
-**Detection:** Search for `mgsd`, `.mgsd-`, and `marketing-get-shit-done` across runtime code and docs before every identity-related release.
+**Detection:** Search for `markos`, `.markos-`, and `markos` across runtime code and docs before every identity-related release.
 
 ### Pitfall 2: Local Runtime and Hosted Runtime Drift
 **What goes wrong:** Features work in `server.cjs` locally but behave differently through `api/*.js` wrappers or hosted filesystems.
@@ -27,10 +27,10 @@
 **Detection:** Compare approved output files against expected fixtures after changes to templates or merge logic.
 
 ### Pitfall 4: Vector Persistence Assumptions Age Faster Than Product Messaging
-**What goes wrong:** Chroma host configuration, namespace rules, or client initialization behavior diverge from the product's docs and tests.
+**What goes wrong:** Vector Store host configuration, namespace rules, or client initialization behavior diverge from the product's docs and tests.
 **Why it happens:** Vector infrastructure and SDKs evolve quickly, while local-first tools often pin assumptions for long periods.
 **Consequences:** Noisy warnings, degraded portability, or migration surprises when customers move between local and cloud modes.
-**Prevention:** Periodically validate Chroma integration against current docs and add an explicit compatibility note in release planning.
+**Prevention:** Periodically validate Vector Store integration against current docs and add an explicit compatibility note in release planning.
 **Detection:** Treat SDK warnings in tests as product signals, not harmless noise.
 
 ## Moderate Pitfalls
@@ -74,11 +74,12 @@
 - onboarding/backend/server.cjs
 - onboarding/backend/handlers.cjs
 - onboarding/backend/write-mir.cjs
-- onboarding/backend/chroma-client.cjs
+- onboarding/backend/vector-store-client.cjs
 - test/onboarding-server.test.js
 - test/update.test.js
 - test/protocol.test.js
-- https://docs.trychroma.com/docs/overview/introduction
+- https://upstash.com/docs/vector/overall/getstarted
 - https://developers.openai.com/api/reference/resources/chat
 - https://platform.claude.com/docs/en/api/messages
 - https://ai.google.dev/gemini-api/docs/text-generation
+

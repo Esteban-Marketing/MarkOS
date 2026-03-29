@@ -1,4 +1,4 @@
----
+﻿---
 phase: 25
 plan: 25-04
 subsystem: warning-burndown
@@ -8,7 +8,7 @@ provides: [ONQ-03]
 affects:
   - onboarding/backend/agents/orchestrator.cjs
   - onboarding/backend/agents/llm-adapter.cjs
-  - onboarding/backend/chroma-client.cjs
+  - onboarding/backend/vector-store-client.cjs
   - test/protocol.test.js
   - README.md
   - .planning/PROJECT.md
@@ -33,7 +33,7 @@ Reduced warning noise where locally owned and documented intentional residual fa
 ## Completed Work
 
 - Reduced warning noise by deduping recurring orchestrator warnings and downgrading retry chatter.
-- Added non-fatal Chroma draft persistence error capture in orchestrator result errors.
+- Added non-fatal Vector Store draft persistence error capture in orchestrator result errors.
 - Added fallback_kind metadata and sanitized generic fallback output in llm-adapter.
 - Added documentation and protocol-test guardrails for residual onboarding warning behavior.
 
@@ -46,11 +46,11 @@ Reduced warning noise where locally owned and documented intentional residual fa
 
 ### Auto-fixed Issues
 
-1. [Rule 3 - Blocking] Reduced Chroma client option deprecation behavior
+1. [Rule 3 - Blocking] Reduced Vector Store client option deprecation behavior
 - Found during: warning-burndown verification
 - Issue: SDK option usage caused repetitive deprecation noise
 - Fix: switched host parsing to prefer host/port/ssl options with URL and host-only compatibility
-- Files modified: onboarding/backend/chroma-client.cjs
+- Files modified: onboarding/backend/vector-store-client.cjs
 - Commit: 606abfb
 
 ## Known Stubs
@@ -60,3 +60,4 @@ None.
 ## Self-Check: PASSED
 
 - Commit found: 606abfb
+

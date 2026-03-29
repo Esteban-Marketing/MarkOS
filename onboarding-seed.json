@@ -32,7 +32,7 @@
       "Multi-LLM adapter — OpenAI, Anthropic, Gemini, Ollama with graceful fallback",
       "Override resolution system — client overrides in .mgsd-local/ without modifying base templates",
       "25+ specialized AI marketing agents",
-      "Vector memory via ChromaDB for episodic learning and RAG",
+      "Vector memory via Supabase + Upstash for episodic learning and RAG",
       "Winners catalog for anchoring new assets to historical high-performers"
     ],
     "pricing_model": "Freemium + per-seat + usage-based",

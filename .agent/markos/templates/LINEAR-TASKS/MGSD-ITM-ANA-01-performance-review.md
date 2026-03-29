@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-ANA-01
+token_id: MARKOS-ITM-ANA-01
 document_class: ITM
 domain: ANA
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-03
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-03
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 2
 ---
 
-# MGSD-ITM-ANA-01 — Campaign Performance Review
+# MARKOS-ITM-ANA-01 — Campaign Performance Review
 
-<!-- TOKEN: MGSD-ITM-ANA-01 | CLASS: ITM | DOMAIN: ANA -->
-<!-- PURPOSE: Linear issue template for post-launch campaign analysis with trigger-failure diagnosis. Consumed by mgsd-linear-manager when creating [MGSD] Performance Review tickets. Gate 2 required. -->
+<!-- TOKEN: MARKOS-ITM-ANA-01 | CLASS: ITM | DOMAIN: ANA -->
+<!-- PURPOSE: Linear issue template for post-launch campaign analysis with trigger-failure diagnosis. Consumed by markos-linear-manager when creating [MARKOS] Performance Review tickets. Gate 2 required. -->
 
-**Linear Title format:** `[MGSD] Performance Review: {campaign_name} — {period}`
+**Linear Title format:** `[MARKOS] Performance Review: {campaign_name} — {period}`
 **Category:** Campaign Analytics
 **Primary Triggers:** N/A — diagnostic task (cross-references active neuro triggers)
 **Funnel Stage:** Post-launch (Retention optimization)
@@ -28,27 +28,27 @@ mir_gate_required: 2
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | Failure Mode catalog used in trigger diagnosis |
-| MGSD-REF-OPS-03 | references/verification-patterns.md | All 7 dimensions evaluated in this task |
-| MGSD-AGT-ANA-01 | agents/mgsd-funnel-analyst.md | Funnel stage conversion analysis |
-| MGSD-AGT-ANA-02 | agents/mgsd-performance-monitor.md | KPI variance computation |
-| MGSD-AGT-ANA-04 | agents/mgsd-report-compiler.md | Performance report generation |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | Failure Mode catalog used in trigger diagnosis |
+| MARKOS-REF-OPS-03 | references/verification-patterns.md | All 7 dimensions evaluated in this task |
+| MARKOS-AGT-ANA-01 | agents/markos-funnel-analyst.md | Funnel stage conversion analysis |
+| MARKOS-AGT-ANA-02 | agents/markos-performance-monitor.md | KPI variance computation |
+| MARKOS-AGT-ANA-04 | agents/markos-report-compiler.md | Performance report generation |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-ANA-01 | Campaign Analytics -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-ANA-01 | Campaign Analytics -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-OPS-03 §all dimensions; MGSD-REF-NEU-01 (trigger failure diagnosis) |
+| Token IDs Required | MARKOS-REF-OPS-03 §all dimensions; MARKOS-REF-NEU-01 (trigger failure diagnosis) |
 | MIR Gate | Gate 2 GREEN |
 | MSP Matrix | Active campaign matrix — reads `[x]` completion status |
-| AGT Assigned | MGSD-AGT-ANA-01 + MGSD-AGT-ANA-02 + MGSD-AGT-ANA-04 |
-| SKL Entry Point | MGSD-SKL-CAM-02 (mgsd-performance-review) |
+| AGT Assigned | MARKOS-AGT-ANA-01 + MARKOS-AGT-ANA-02 + MARKOS-AGT-ANA-04 |
+| SKL Entry Point | MARKOS-SKL-CAM-02 (markos-performance-review) |
 
 ---
 
@@ -57,7 +57,7 @@ mir_gate_required: 2
 ```xml
 <neuro_spec>
   <trigger>Diagnostic — cross-reference live KPIs against PSY-KPIs from active NEURO-BRIEF.md to identify underperforming triggers</trigger>
-  <brain_region>Maps failure signals to brain regions from MGSD-REF-NEU-01 failure mode catalog</brain_region>
+  <brain_region>Maps failure signals to brain regions from MARKOS-REF-NEU-01 failure mode catalog</brain_region>
   <activation_method>
     Compare CTR vs. predicted CTR for B07-headlined ads — gap indicates curiosity gap not landing.
     Compare loss-frame CTA CVR vs. gain-frame CTA CVR — if lift &lt; 15%, B02 not activating.
@@ -86,19 +86,19 @@ mir_gate_required: 2
 ## Task Steps
 
 - [ ] **Step 1:** Load KPI baselines from KPI-FRAMEWORK.md and live data — compute variance per metric.
-  - Agent: MGSD-AGT-ANA-02
+  - Agent: MARKOS-AGT-ANA-02
   - Output: KPI variance table (target vs. actual, % delta)
-- [ ] **Step 2:** Map underperforming KPIs to trigger failure modes using MGSD-REF-NEU-01 Failure Mode catalog.
-  - Agent: MGSD-AGT-ANA-01
+- [ ] **Step 2:** Map underperforming KPIs to trigger failure modes using MARKOS-REF-NEU-01 Failure Mode catalog.
+  - Agent: MARKOS-AGT-ANA-01
   - Output: Trigger failure diagnosis (which triggers not activating and mechanism reason)
-- [ ] **Step 3:** Generate performance report using `MGSD-AGT-ANA-04` — include: KPI table, trigger diagnosis, ranked optimization actions (each action cites a specific trigger and an implementable change).
-  - Agent: MGSD-AGT-ANA-04
+- [ ] **Step 3:** Generate performance report using `MARKOS-AGT-ANA-04` — include: KPI table, trigger diagnosis, ranked optimization actions (each action cites a specific trigger and an implementable change).
+  - Agent: MARKOS-AGT-ANA-04
   - Output: `PERFORMANCE-REPORT-{period}.md`
 - [ ] **Step 4:** Update MSP matrix — mark completed tasks `[x]`, flag underperforming tasks for revision.
-  - Agent: MGSD-AGT-OPS-07
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Updated MSP matrix
-- [ ] **Step 5:** Commit with message `mgsd(analytics): {campaign_slug} performance-report {period} committed`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 5:** Commit with message `markos(analytics): {campaign_slug} performance-report {period} committed`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -113,7 +113,7 @@ mir_gate_required: 2
 | 4 — Tracking | UTM attribution resolves for all measured variants | UTM-SPEC.md cross-referenced; no unmapped sessions |
 | 5 — Creative Compliance | N/A | N/A |
 | 6 — Budget Alignment | N/A | N/A |
-| 7 — Linear Sync | MSP matrix updated; Linear status reflects state | mgsd-linear-manager sync 0 drift |
+| 7 — Linear Sync | MSP matrix updated; Linear status reflects state | markos-linear-manager sync 0 drift |
 | Neuro Audit | Every underperforming KPI has a trigger-failure diagnosis | No "underperforming KPI" row without a diagnosis entry |
 
 ---
@@ -122,9 +122,9 @@ mir_gate_required: 2
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-ANA-01 |
+| Template ID | MARKOS-ITM-ANA-01 |
 | Task Category | Campaign Analytics |
-| Labels | `[mgsd]`, `[analytics]`, `[retention]` |
+| Labels | `[markos]`, `[analytics]`, `[retention]` |
 | Priority | Medium |
 | Estimate | 2–3h |
 | Parent Issue | Active Campaign Epic |

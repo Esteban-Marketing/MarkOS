@@ -13,4 +13,4 @@ Historical high-performance strategy frameworks and MIR/MSP examples.
 | (none)   | —                  | —          | —    |
 
 > [!NOTE]
-> All MGSD creator agents must anchor against this catalog before generation.
+> All MarkOS creator agents must anchor against this catalog before generation.

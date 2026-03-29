@@ -1,7 +1,7 @@
 # TECHNICAL-SEO.md — Site Health & Infrastructure
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/06_SEO/TECHNICAL-SEO.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/06_SEO/TECHNICAL-SEO.md to customize it safely.
 
 
 ```

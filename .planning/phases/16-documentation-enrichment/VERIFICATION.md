@@ -1,8 +1,8 @@
-# Phase 16 Verification — Documentation Enrichment
+﻿# Phase 16 Verification â€” Documentation Enrichment
 
 ## Automated Checks
 
-### T16-C01 — Backend Context Block Coverage
+### T16-C01 â€” Backend Context Block Coverage
 
 Action:
 
@@ -14,7 +14,7 @@ Pass Criteria:
 - At least 3 matches in `orchestrator.cjs`.
 - At least 3 matches in `llm-adapter.cjs`.
 
-### T16-P01 — Prompt Section Completeness
+### T16-P01 â€” Prompt Section Completeness
 
 Action:
 
@@ -26,19 +26,19 @@ Pass Criteria:
 - Each of the 7 prompt files has both section headers.
 - No file has duplicate section headers.
 
-### T16-L01 — Lore Link Presence
+### T16-L01 â€” Lore Link Presence
 
 Action:
 
 ```bash
-rg -n "orchestrator.cjs|llm-adapter.cjs|server.cjs|chroma-client.cjs" .protocol-lore/INDEX.md .protocol-lore/CODEBASE-MAP.md
+rg -n "orchestrator.cjs|llm-adapter.cjs|server.cjs|vector-store-client.cjs" .protocol-lore/INDEX.md .protocol-lore/CODEBASE-MAP.md
 ```
 
 Pass Criteria:
 - Both files contain implementation references.
 - All referenced files exist.
 
-### T16-G01 — Gold-Standard Catalog Exists
+### T16-G01 â€” Gold-Standard Catalog Exists
 
 Action:
 
@@ -53,7 +53,7 @@ Pass Criteria:
 
 ## Manual Checks
 
-### T16-A01 — Context Retrieval Audit
+### T16-A01 â€” Context Retrieval Audit
 
 Task:
 - Ask an agent: "Explain llm-adapter failure boundaries and provider priority using project docs."
@@ -62,7 +62,7 @@ Pass Criteria:
 - Response references adapter context blocks.
 - Priority order and fatal boundaries are correctly described.
 
-### T16-B01 — Prompt Grounding Audit
+### T16-B01 â€” Prompt Grounding Audit
 
 Task:
 - Trigger one specialized prompt role and compare output structure against `GOLD-STANDARD.md`.
@@ -86,3 +86,4 @@ Pass Criteria:
 - Phase 16 work may proceed to Phase 17 once all automated checks (T16-C01, T16-P01, T16-L01, T16-G01) are marked `[x]` by the Agent.
 - Manual checks T16-A01 and T16-B01 constitute a separate human sign-off gate. Until both are marked `[x]` by a Human with a completion date, Phase 16 is treated as "Complete (Manual Sign-off Pending)" in `SUMMARY.md`.
 - No final closure of Phase 16 is allowed in project tracking (e.g., release readiness) until the manual sign-off gate has been satisfied.
+

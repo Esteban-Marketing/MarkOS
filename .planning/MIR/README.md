@@ -1,6 +1,6 @@
 # Marketing Intelligence Repository (MIR)
 
-<!-- mgsd-token: MIR -->
+<!-- markos-token: MIR -->
 ### Template v1.0 — maintained by esteban.marketing
 
 > **The single source of truth for every business that markets online.**
@@ -95,7 +95,7 @@ P[N]-[client-slug]/
 │
 ├── Campaigns_Assets/08_CAMPAIGNS/                      ── CAMPAIGN EXECUTION
 │   ├── _CAMPAIGN-TEMPLATE.md          ← Base file for all new campaigns
-│   ├── ACTIVE/                        ← Live campaigns (mGSD protocol)
+│   ├── ACTIVE/                        ← Live campaigns (MarkOS protocol)
 │   └── ARCHIVE/                       ← Completed campaigns + learnings
 │
 ├── Core_Strategy/09_ANALYTICS/                      ── MEASUREMENT SYSTEM

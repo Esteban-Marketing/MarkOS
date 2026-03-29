@@ -1,7 +1,7 @@
 # COMPETITIVE-POSITIONING.md — Feature-Level Competitive Messaging
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/09_PRODUCT-MARKETING/COMPETITIVE-POSITIONING.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Outbound/09_PRODUCT-MARKETING/COMPETITIVE-POSITIONING.md to customize it safely.
 
 
 ```

@@ -1,4 +1,4 @@
-# Phase 24 Verification
+﻿# Phase 24 Verification
 
 ## Scope
 - Phase 24-01: Runtime split audit
@@ -46,7 +46,8 @@ Result:
 - Includes hosted wrapper guard assertions in `Suite 3.4`.
 
 ## Residual Risk
-- Test output still includes existing Chroma path deprecation warnings in mocked flows. These warnings are pre-existing and do not invalidate runtime contract behavior, but should be addressed in a later hardening pass.
+- Test output still includes existing Vector Store path deprecation warnings in mocked flows. These warnings are pre-existing and do not invalidate runtime contract behavior, but should be addressed in a later hardening pass.
 
 ## Verdict
 Phase 24 is complete and verified against RTH-01, RTH-02, and RTH-03.
+

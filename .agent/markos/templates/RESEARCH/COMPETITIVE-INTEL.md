@@ -1,5 +1,5 @@
 ---
-token_id: MGSD-RES-CMP-01
+token_id: MARKOS-RES-CMP-01
 document_class: RESEARCH
 version: "1.0.0"
 status: unpopulated
@@ -10,8 +10,8 @@ feeds_into:
 
 # Competitive Intel
 
-<!-- mgsd-token: RESEARCH -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/RESEARCH/COMPETITIVE-INTEL.md to customize it safely.
+<!-- markos-token: RESEARCH -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/RESEARCH/COMPETITIVE-INTEL.md to customize it safely.
 
 
 <!-- AGENT: Populate from onboarding-seed.json + direct research.
@@ -45,4 +45,4 @@ feeds_into:
 
 ---
 *Research Quality Gate: Each section must include evidence source, confidence level, and strategic implication.*
-*Last populated: [DATE] | Populated by: mgsd-researcher | Source: onboarding-seed.json*
+*Last populated: [DATE] | Populated by: markos-researcher | Source: onboarding-seed.json*

@@ -1,24 +1,43 @@
-# FUNNEL-OWNERSHIP-MAP.md — Discipline × Funnel Stage Ownership
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/FUNNEL-OWNERSHIP-MAP.md to customize it safely.
+# MarkOS Funnel Ownership Map (Discipline × Funnel Stage)
 
-
-```
-file_purpose  : Declare which marketing discipline owns each stage of the
-                customer funnel. Eliminates confusion, gaps, and duplication
-                across disciplines. Every stage must have exactly one owner.
-status        : empty
-plan_period   : YYYY
-last_updated  : YYYY-MM-DD
-```
-
-> **Rule:** Every funnel stage has exactly one primary owner and may have contributing disciplines.
-> The owner is accountable for the KPI at that stage. Contributors support but do not own.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/00_MASTER-PLAN/FUNNEL-OWNERSHIP-MAP.md to customize it safely.
 
 ---
 
+## LLM-Optimized Summary
+
+This document defines which marketing discipline owns each stage of the customer funnel in MarkOS. It eliminates confusion, gaps, and duplication across disciplines, and is structured for LLM chunking and cross-referencing. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts.
+
+**See also:**
+- [MIR Products/04_PRODUCTS/CUSTOMER-JOURNEY.md](../../../../MIR/Products/04_PRODUCTS/CUSTOMER-JOURNEY.md)
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md)
+- [README.md](../../../../README.md)
+
+
+
+---
+
+**File Purpose:**
+Declare which marketing discipline owns each stage of the customer funnel. Every stage must have exactly one owner. Updated for MarkOS v2.2.
+
+**Status:** [FILL]
+**Plan Period:** [FILL]
+**Last Updated:** 2026-03-28
+
+---
+
+
+> **Rule:** Every funnel stage has exactly one primary owner and may have contributing disciplines. The owner is accountable for the KPI at that stage. Contributors support but do not own.
+
+---
+
+
 ## 1. Funnel Stage Definitions
+
+**Summary:**
+Defines each funnel stage, aligned with MIR and MarkOS v2.2. See [CUSTOMER-JOURNEY.md](../../../../MIR/Products/04_PRODUCTS/CUSTOMER-JOURNEY.md).
 
 > Align with stages defined in MIR `Products/04_PRODUCTS/CUSTOMER-JOURNEY.md`.
 
@@ -36,7 +55,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 2. Funnel Ownership Assignment
+
+**Summary:**
+Assigns primary and contributing disciplines, KPIs, and targets for each funnel stage. Use this as a reference for accountability and planning.
 
 | Funnel Stage | Primary Owner (Discipline) | Contributing Disciplines | Primary KPI | KPI Target |
 |-------------|--------------------------|------------------------|-------------|-----------|
@@ -52,7 +75,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 3. Handoff Points
+
+**Summary:**
+Defines explicit handoff triggers and ownership transitions between disciplines at each funnel stage boundary. Ensures clarity in MarkOS workflows.
 
 > Define exactly where one discipline's job ends and another begins.
 
@@ -90,7 +117,11 @@ owned_by      : "Email Marketing — onboarding sequence"
 
 ---
 
+
 ## 4. Coverage Gaps
+
+**Summary:**
+Identifies funnel stages with no current owner or tool. Use this section to track and resolve gaps in MarkOS coverage.
 
 > Stages where marketing currently has NO owner or tool.
 
@@ -100,7 +131,11 @@ owned_by      : "Email Marketing — onboarding sequence"
 
 ---
 
+
 ## 5. Funnel Visualization
+
+**Summary:**
+Visualizes discipline ownership across the funnel. Use as a quick reference for onboarding and planning.
 
 ```
 UNAWARE
@@ -124,7 +159,23 @@ ADVOCATING
 
 ---
 
+
 ## 6. Coverage by Marketing Investment
+
+**Summary:**
+Shows % of marketing budget allocated to each funnel zone and the rationale for the split. Aligns with MarkOS v2.2 strategy.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 **% of marketing budget allocated to each funnel zone:**
 

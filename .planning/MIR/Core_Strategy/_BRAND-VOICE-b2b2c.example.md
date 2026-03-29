@@ -1,7 +1,7 @@
 # BRAND-VOICE.md — Voice, Tone & Personality
 # Reference Example: **B2B2C** (Property Management Platform)
 
-<!-- mgsd-token: MIR | model: B2B2C -->
+<!-- markos-token: MIR | model: B2B2C -->
 > [!NOTE] B2B2C requires a dual register — authoritative/professional for the B side, and warm/reliable for the C side (tenants). Both voices must feel like the same brand family.
 
 ---

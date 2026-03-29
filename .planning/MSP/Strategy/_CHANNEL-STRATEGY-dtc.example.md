@@ -1,11 +1,28 @@
-# _CHANNEL-STRATEGY-dtc.example.md
-# Reference Example: **DTC** (Premium Skincare Brand)
 
-<!-- mgsd-token: MSP | model: DTC -->
+# MarkOS Channel Strategy Example: DTC (Premium Skincare Brand)
+
+<!-- markos-token: MSP | model: DTC -->
 
 ---
 
+## LLM-Optimized Summary
+
+This file provides a reference channel strategy for DTC premium skincare go-to-market. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts. Structured for LLM chunking and cross-referencing.
+
+**See also:**
+- [MARKETING-PLAN.md](MARKETING-PLAN.md)
+- [STRATEGIC-GOALS.md](STRATEGIC-GOALS.md)
+- [README.md](../../../../README.md)
+
+---
+
+---
+
+
 ## Channel Priority Stack
+
+**Summary:**
+Ranks and explains the most effective channels for DTC skincare, with rationale, content format, frequency, and KPIs for each.
 
 **1. Instagram (Organic + Paid)**
 - Why: Primary discovery channel for skincare consumers. Visual-first, aspirational, and drives purchase intent through atmosphere and skin result imagery.
@@ -37,13 +54,33 @@
 - Posting frequency: 1 video/week.
 - KPI: Watch time, video-attributed conversions, SEO ranking for target keywords.
 
+
 ## Quick Wins (First 30 Days)
+
+**Summary:**
+Tactical actions to drive early traction and credibility for a DTC skincare launch.
 
 1. **Reddit Sampling Program**: Identify top 10 contributors in r/SkincareAddiction who match the ICP profile. DM with a transparent outreach: "We're a small brand and would love your honest opinion — no strings attached." 1–2 honest positive threads can move needle significantly.
 2. **Post-Purchase Email Sequence**: Build a 5-email onboarding sequence for new customers (day 1, 3, 7, 14, 30). Each email: one usage tip + one educational ingredient explainer. Goal: Day 30 repurchase rate >20%.
 3. **TikTok Ingredient Series**: Produce 7 short videos (60 seconds each) — one per hero ingredient. Script: "Most serums use X but it causes Y — here's why we use Z instead." Batch produce in one shoot. Published over 2 weeks.
 
+
 ## Channels to Explicitly Avoid (For Now)
+
+**Summary:**
+Lists channels that are not recommended for this audience or stage, with rationale.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 - **LinkedIn**: Our consumer does not make personal care purchasing decisions in professional mode.
 - **Influencer Mega-Deals (1M+ followers)**: High CPM, low trust signal, hard to attribute. Micro-influencer (10K–100K) seeding outperforms at 1/10th the cost for skincare specifically.

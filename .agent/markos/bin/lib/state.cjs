@@ -1,5 +1,5 @@
 /**
- * State — STATE.md read/write operations for MGSD
+ * State — STATE.md read/write operations for MARKOS
  */
 
 const fs = require('fs');

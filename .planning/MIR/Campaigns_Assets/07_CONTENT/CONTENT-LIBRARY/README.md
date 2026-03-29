@@ -1,6 +1,6 @@
 # CONTENT-LIBRARY — Index of Existing Assets
 
-<!-- mgsd-token: MIR -->
+<!-- markos-token: MIR -->
 
 ```
 file_purpose  : Track all existing content assets owned by this business.

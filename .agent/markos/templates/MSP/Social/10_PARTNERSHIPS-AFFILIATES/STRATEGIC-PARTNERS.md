@@ -1,7 +1,7 @@
 # STRATEGIC-PARTNERS.md — Co-Marketing & Integration Partners
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/10_PARTNERSHIPS-AFFILIATES/STRATEGIC-PARTNERS.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Social/10_PARTNERSHIPS-AFFILIATES/STRATEGIC-PARTNERS.md to customize it safely.
 
 
 ```

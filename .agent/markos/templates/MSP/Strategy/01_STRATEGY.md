@@ -1,12 +1,12 @@
 # 🧭 {{COMPANY_NAME}} - Marketing Strategy Pipeline
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/01_STRATEGY.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/01_STRATEGY.md to customize it safely.
 
 
 **Dependencies:** MIR Core Strategy (`{{MIR_STRATEGY_FILE}}`), MIR Gate 1 required
-**Assigned Agent:** `{{LEAD_AGENT}}` (mgsd-strategist)
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `{{LEAD_AGENT}}` (markos-strategist)
+**Linear Project Manager:** `markos-linear-manager`
 
 ## Strategic Parameters
 - **Active Milestone:** `{{MILESTONE_GOAL}}`
@@ -16,14 +16,14 @@
 
 ---
 
-<!-- SOURCED_FROM → MGSD-RES-MKT-01 (MARKET-TRENDS.md) -->
-<!-- SOURCED_FROM → MGSD-RES-AUD-01 (AUDIENCE-RESEARCH.md § Channel Preferences) -->
+<!-- SOURCED_FROM → MARKOS-RES-MKT-01 (MARKET-TRENDS.md) -->
+<!-- SOURCED_FROM → MARKOS-RES-AUD-01 (AUDIENCE-RESEARCH.md § Channel Preferences) -->
 
 ## 1. Situation Analysis
 
 - [ ] Pull current MIR STATE.md and assess Gate 1 and Gate 2 readiness.
 - [ ] Extract active campaign performance data from `09_ANALYTICS/KPI-FRAMEWORK.md`.
-- [ ] Run gap audit via `mgsd-tools.cjs mir-audit` and identify all CRITICAL and HIGH gaps.
+- [ ] Run gap audit via `markos-tools.cjs mir-audit` and identify all CRITICAL and HIGH gaps.
 - [ ] Document business context: seasonality, pending launches, budget constraints (`{{BUDGET_PERIOD}}`).
 
 ## 2. Milestone Goal Setting
@@ -37,7 +37,7 @@
 
 - [ ] Review all activated disciplines in `.planning/config.json`.
 - [ ] For each active discipline: does it have a plan for this milestone period?
-- [ ] Flag any discipline that lacks a supporting plan → create plan via `/mgsd-plan-campaign --discipline {slug}`.
+- [ ] Flag any discipline that lacks a supporting plan → create plan via `/markos-plan-campaign --discipline {slug}`.
 - [ ] Flag disciplines with low ROI from last period → propose pausing or reallocating budget.
 
 ## 4. Budget Allocation
@@ -62,7 +62,7 @@
 
 ## 7. Algorithmic Optimization Loop
 
-- [ ] Check if previous milestone had a performance report (`/mgsd-report-campaign`).
+- [ ] Check if previous milestone had a performance report (`/markos-report-campaign`).
 - [ ] Extract top 3 recommendations from analyst.
 - [ ] Incorporate top recommendations into this milestone's phase planning.
 - [ ] Update `KPI-FRAMEWORK.md` targets if recommendations require target revision.

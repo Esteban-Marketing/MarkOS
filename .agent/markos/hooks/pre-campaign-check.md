@@ -1,33 +1,33 @@
 ---
-token_id: MGSD-HKP-OPS-01
+token_id: MARKOS-HKP-OPS-01
 document_class: HOOK
 domain: OPS
 version: "1.0.0"
 status: active
 hook_type: pre-execution
-runs_before: [mgsd-execute-phase, mgsd-campaign-launch, mgsd-linear-sync]
+runs_before: [markos-execute-phase, markos-campaign-launch, markos-linear-sync]
 upstream:
-  - MGSD-REF-OPS-01  # mir-gates.md
-  - MGSD-IDX-000
+  - MARKOS-REF-OPS-01  # mir-gates.md
+  - MARKOS-IDX-000
 downstream:
-  - MGSD-AGT-STR-01  # mgsd-strategist
-  - MGSD-AGT-EXE-01  # mgsd-executor
+  - MARKOS-AGT-STR-01  # markos-strategist
+  - MARKOS-AGT-EXE-01  # markos-executor
 ---
 
 # pre-campaign-check — MIR Gate Enforcement Hook
 
-<!-- TOKEN: MGSD-HKP-OPS-01 | CLASS: HOOK | DOMAIN: OPS -->
+<!-- TOKEN: MARKOS-HKP-OPS-01 | CLASS: HOOK | DOMAIN: OPS -->
 <!-- PURPOSE: Validates Gate 1 (Identity) and Gate 2 (Execution) readiness before any campaign execution begins. Hard blocks if gates are RED. Must be run by orchestrators before spawning executor subagents. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-REF-OPS-01 | references/mir-gates.md | Authoritative gate definitions — this hook enforces them |
-| MGSD-HKP-OPS-02 | hooks/pre-content-check.md | Content-specific gate check (runs after this hook for copy tasks) |
-| MGSD-HKP-OPS-03 | hooks/post-execution-sync.md | Runs after execution to sync Linear |
-| MGSD-AGT-OPS-01 | agents/mgsd-context-loader.md | Always runs before this hook |
-| MGSD-SKL-CAM-03 | skills/mgsd-mir-audit/SKILL.md | Full MIR audit skill — run this for detailed gap output |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Authoritative gate definitions — this hook enforces them |
+| MARKOS-HKP-OPS-02 | hooks/pre-content-check.md | Content-specific gate check (runs after this hook for copy tasks) |
+| MARKOS-HKP-OPS-03 | hooks/post-execution-sync.md | Runs after execution to sync Linear |
+| MARKOS-AGT-OPS-01 | agents/markos-context-loader.md | Always runs before this hook |
+| MARKOS-SKL-CAM-03 | skills/markos-mir-audit/SKILL.md | Full MIR audit skill — run this for detailed gap output |
 
 ---
 
@@ -36,7 +36,7 @@ downstream:
 Run this hook at the start of every orchestrator workflow before spawning executors:
 
 ```bash
-GATE_STATUS=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit --raw)
+GATE_STATUS=$(node ".agent/markos/bin/markos-tools.cjs" mir-audit --raw)
 ```
 
 Parse JSON for: `gate1.ready`, `gate2.ready`, `gate1.missing[]`, `gate2.missing[]`.
@@ -68,15 +68,15 @@ Agent cannot generate copy, briefs, strategy, or campaign drafts.
 
 REQUIRED HUMAN ACTION:
   1. Populate the missing files listed above with verified business data
-  2. Run /mgsd-health to confirm gate status
-  3. Re-run /mgsd-execute-phase {N} after Gate 1 is GREEN
+  2. Run /markos-health to confirm gate status
+  3. Re-run /markos-execute-phase {N} after Gate 1 is GREEN
 
-Linear ticket created: [MGSD-BLOCK] Gate 1 — {missing_file_count} files required
+Linear ticket created: [MARKOS-BLOCK] Gate 1 — {missing_file_count} files required
 ```
 
 **Create Linear block ticket:**
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear create-block \
+node ".agent/markos/bin/markos-tools.cjs" linear create-block \
   --type "gate1" \
   --missing "${GATE1_MISSING}" \
   --phase "${PHASE_NUMBER}"
@@ -111,10 +111,10 @@ confirm pixel coverage, or approve campaign launch.
 
 REQUIRED HUMAN ACTION:
   1. Complete the missing execution infrastructure files
-  2. Run /mgsd-health to confirm Gate 2 status
-  3. Re-run /mgsd-execute-phase {N} after Gate 2 is GREEN
+  2. Run /markos-health to confirm Gate 2 status
+  3. Re-run /markos-execute-phase {N} after Gate 2 is GREEN
 
-Linear ticket created: [MGSD-BLOCK] Gate 2 — {missing_file_count} files required
+Linear ticket created: [MARKOS-BLOCK] Gate 2 — {missing_file_count} files required
 ```
 
 **Gate 2 is allowed to be RED for planning-only phases.** Gate 2 blocks execution and launch, not research or strategy.
@@ -147,7 +147,7 @@ Gate status changes always require human review. When a gate transitions:
 
 Human verifies gate readiness by running:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit
+node ".agent/markos/bin/markos-tools.cjs" mir-audit
 ```
 
 **The gate check is non-bypassable without config override. No agent may skip it.**

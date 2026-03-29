@@ -1,4 +1,4 @@
----
+﻿---
 phase: 27-execution-loop-telemetry-expansion
 verified: 2026-03-28T00:00:00Z
 status: passed
@@ -60,7 +60,7 @@ Inputs reviewed:
 | node --test test/onboarding-server.test.js | PASS (9/9 tests, 0 fail) | Confirms blocked vs ready handoff behavior and checkpoint emission via tests 3.7 and 3.9 ([onboarding-server.test.js](test/onboarding-server.test.js#L263), [onboarding-server.test.js](test/onboarding-server.test.js#L398)). |
 
 Observed note from runtime logs during tests:
-- Chroma/default embedding warnings were emitted in mocked/isolated test runs, but did not fail the suite; all assertions passed.
+- Vector Store/default embedding warnings were emitted in mocked/isolated test runs, but did not fail the suite; all assertions passed.
 
 ## Residual Risks
 - End-to-end execution agent invocation after readiness-ready is not covered by a single integration test; current coverage proves readiness contract and prompt prerequisites, but not a full creator/executor run.
@@ -74,3 +74,4 @@ All targeted requirements are satisfied with repository-backed implementation ev
 - EXE-01: PASS
 - EXE-02: PASS
 - TLM-02: PASS
+

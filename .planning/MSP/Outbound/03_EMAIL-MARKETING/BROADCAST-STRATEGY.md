@@ -1,7 +1,7 @@
 # BROADCAST-STRATEGY.md — Newsletter & Campaign Sends
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/03_EMAIL-MARKETING/BROADCAST-STRATEGY.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Outbound/03_EMAIL-MARKETING/BROADCAST-STRATEGY.md to customize it safely.
 
 
 ```

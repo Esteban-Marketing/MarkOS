@@ -1,7 +1,7 @@
 # BRAND-VOICE.md — Voice, Tone & Personality
 # Reference Example: **Marketplace** (Freelance Creative Platform)
 
-<!-- mgsd-token: MIR | model: Marketplace -->
+<!-- markos-token: MIR | model: Marketplace -->
 > [!NOTE] Marketplace voice maintains a trust-building neutral register across both sides. It must feel equally credible to the creative selling and the business buying.
 
 ---

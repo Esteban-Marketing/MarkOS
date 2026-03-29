@@ -1,7 +1,7 @@
 # _PAID-ACQUISITION-b2b.example.md
 # Reference Example: **B2B** (HR Technology — Applicant Tracking)
 
-<!-- mgsd-token: MSP | model: B2B -->
+<!-- markos-token: MSP | model: B2B -->
 
 ---
 

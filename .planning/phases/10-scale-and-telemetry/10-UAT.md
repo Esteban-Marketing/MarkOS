@@ -1,4 +1,4 @@
----
+﻿---
 status: testing
 phase: 10-scale-and-telemetry
 source: 10-01-PLAN.md, 10-02-PLAN.md, 10-VERIFICATION.md
@@ -22,7 +22,7 @@ expected: Start the application from scratch (`node onboarding/backend/server.cj
 result: [pending]
 
 ### 2. Multi-Tenant Project Isolation
-expected: Submitting a form with a specific `project_slug` isolates vector data (Chroma) and any file side-effects to that specific tenant environment dynamically, rather than globally in `.mgsd-local`.
+expected: Submitting a form with a specific `project_slug` isolates vector data (Vector Store) and any file side-effects to that specific tenant environment dynamically, rather than globally in `.markos-local`.
 result: [pending]
 
 ### 3. Frontend Telemetry Initialization and Events
@@ -34,7 +34,7 @@ expected: When generating AI drafts, the backend wrapper fires `agent_execution_
 result: [pending]
 
 ### 5. Telemetry Opt-Out
-expected: Defining `MGSD_TELEMETRY=false` cleanly disables the PostHog backend client and prevents sending the API key to the frontend UI, with zero tracking events fired.
+expected: Defining `MARKOS_TELEMETRY=false` cleanly disables the PostHog backend client and prevents sending the API key to the frontend UI, with zero tracking events fired.
 result: [pending]
 
 ## Summary
@@ -47,4 +47,5 @@ skipped: 0
 blocked: 0
 
 ## Gaps
+
 

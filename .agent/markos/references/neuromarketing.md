@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-REF-NEU-01
+token_id: MARKOS-REF-NEU-01
 document_class: reference
 domain: neu
 version: 1.0
 status: active
 upstream: []
 downstream:
-  - token_id: MGSD-AGT-NEU-01
-    path: agents/mgsd-neuro-auditor.md
+  - token_id: MARKOS-AGT-NEU-01
+    path: agents/markos-neuro-auditor.md
     relationship: reads_trigger_catalog
-  - token_id: MGSD-AGT-STR-01
-    path: agents/mgsd-strategist.md
+  - token_id: MARKOS-AGT-STR-01
+    path: agents/markos-strategist.md
     relationship: reads_trigger_architecture_rules
-  - token_id: MGSD-AGT-EXE-01
-    path: agents/mgsd-executor.md
+  - token_id: MARKOS-AGT-EXE-01
+    path: agents/markos-executor.md
     relationship: reads_neuro_spec_schema
-  - token_id: MGSD-AGT-EXE-03
-    path: agents/mgsd-plan-checker.md
+  - token_id: MARKOS-AGT-EXE-03
+    path: agents/markos-plan-checker.md
     relationship: reads_neuro_spec_schema_for_validation
-  - token_id: MGSD-TPL-NEU-01
+  - token_id: MARKOS-TPL-NEU-01
     path: templates/NEURO-BRIEF.md
     relationship: is_source_schema_for
 mir_gate_required: none
@@ -30,11 +30,11 @@ mir_gate_required: none
 
 **Function:** Defines the complete biological trigger catalog (B01–B10), ICP→archetype mapping, funnel stage→trigger assignments, and the `<neuro_spec>` XML block schema required in every campaign plan.
 **Produces:** Reference data consumed by audit, strategy, execution, and verification agents; no artifact is written directly from this file.
-**Consumed by:** MGSD-AGT-NEU-01 (audit), MGSD-AGT-STR-01 (strategy), MGSD-AGT-EXE-01 (execution), MGSD-AGT-EXE-03 (plan checking), MGSD-TPL-NEU-01 (brief scaffold)
+**Consumed by:** MARKOS-AGT-NEU-01 (audit), MARKOS-AGT-STR-01 (strategy), MARKOS-AGT-EXE-01 (execution), MARKOS-AGT-EXE-03 (plan checking), MARKOS-TPL-NEU-01 (brief scaffold)
 
 ## Scope of Authority
 
-Every document class (AGT, SKL, WFL, TPL) that references a biological trigger (B01–B10) or a psychological archetype **must** cite this file by TOKEN_ID `MGSD-REF-NEU-01` and the specific section heading containing the trigger definition.
+Every document class (AGT, SKL, WFL, TPL) that references a biological trigger (B01–B10) or a psychological archetype **must** cite this file by TOKEN_ID `MARKOS-REF-NEU-01` and the specific section heading containing the trigger definition.
 
 ## Verification Frequency
 
@@ -42,7 +42,7 @@ Human operators verify this catalog against current neuroscience literature on a
 
 ---
 
-**Scope:** Applied to every MGSD campaign plan. Executors MUST include a `<neuro_spec>` block in every plan targeting an external audience.
+**Scope:** Applied to every MARKOS campaign plan. Executors MUST include a `<neuro_spec>` block in every plan targeting an external audience.
 
 ---
 

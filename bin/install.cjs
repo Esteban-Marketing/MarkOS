@@ -7,12 +7,12 @@
  *   Ensures parallel co-existence with the `get-shit-done` (GSD) protocol.
  *
  * INSTALLATION FLOW:
- *   1. Detection: Checks for existing GSD or legacy MGSD-compatible installations in `.agent/`.
+ *   1. Detection: Checks for existing GSD or legacy MARKOS-compatible installations in `.agent/`.
  *   2. User Prompt: Asks for installation scope (Project Local vs Global Home).
- *   3. Template Copy: Deep-copies `.agent/marketing-get-shit-done/` templates.
+ *   3. Template Copy: Deep-copies `.agent/markos/` templates.
  *   4. GSD Integration: If GSD exists, merges ITM templates but keeps files isolated.
- *   5. Vector Boot: Delegates to `bin/ensure-chroma.cjs` to start the local DB.
- *   6. Manifest: Writes `.mgsd-install-manifest.json` for idempotent updates later.
+ *   5. Vector Boot: Delegates to `bin/ensure-vector.cjs` to validate vector providers.
+ *   6. Manifest: Writes `.markos-install-manifest.json` for idempotent updates later.
  *
  * COMMANDS:
  *   npx markos                    → runs interactive install
@@ -20,7 +20,7 @@
  *
  * RELATED FILES:
  *   bin/update.cjs             (Handles idempotent SHA256 patches)
- *   bin/ensure-chroma.cjs      (Handles vector memory boot)
+ *   bin/ensure-vector.cjs      (Handles vector memory provider checks)
  *   README.md                  (User-facing install guide)
  * ═══════════════════════════════════════════════════════════════════════════════
  */
@@ -33,8 +33,9 @@ const { execSync, exec } = require('child_process');
 
 // ── Environment Settings ───────────────────────────────────────────────────
 const PKG_DIR = path.resolve(__dirname, '..');
-const VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/marketing-get-shit-done/VERSION'), 'utf8').trim();
+const VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/markos/VERSION'), 'utf8').trim();
 const CWD = process.cwd(); // Target project directory
+const MIN_NODE_VERSION = '20.16.0';
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
@@ -52,15 +53,96 @@ function banner(text) {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 
+function compareSemver(a, b) {
+  const pa = String(a).split('.').map((part) => Number.parseInt(part, 10) || 0);
+  const pb = String(b).split('.').map((part) => Number.parseInt(part, 10) || 0);
+  const max = Math.max(pa.length, pb.length);
+  for (let i = 0; i < max; i++) {
+    const left = pa[i] || 0;
+    const right = pb[i] || 0;
+    if (left > right) return 1;
+    if (left < right) return -1;
+  }
+  return 0;
+}
+
+function getEffectiveNodeVersion() {
+  return process.env.MARKOS_NODE_VERSION_OVERRIDE || process.versions.node;
+}
+
+function assertSupportedNodeVersion() {
+  const nodeVersion = getEffectiveNodeVersion();
+  if (compareSemver(nodeVersion, MIN_NODE_VERSION) >= 0) {
+    return true;
+  }
+
+  console.error('\n✗ MarkOS requires Node.js >= 20.16.0.');
+  console.error(`  Current version: ${nodeVersion}`);
+  console.error('  Upgrade Node.js and rerun `npx markos` (or `npx markos update`).\n');
+  return false;
+}
+
+function applyGitignoreProtections(projectDir) {
+  const gitignorePath = path.join(projectDir, '.gitignore');
+  const blockStart = '# >>> MarkOS private local artifacts >>>';
+  const blockEnd = '# <<< MarkOS private local artifacts <<<';
+  const protectedEntries = [
+    '.markos-local/',
+    '.markos-local/',
+    '.markos-install-manifest.json',
+    '.markos-install-manifest.json',
+    '.markos-project.json',
+    '.markos-project.json',
+    'onboarding-seed.json',
+  ];
+
+  const managedBlock = [
+    blockStart,
+    '# Auto-managed by MarkOS installer. Keeps private local artifacts out of source control.',
+    ...protectedEntries,
+    blockEnd,
+  ].join('\n');
+
+  const existing = fs.existsSync(gitignorePath)
+    ? fs.readFileSync(gitignorePath, 'utf8')
+    : '';
+
+  let next = existing;
+  let changed = false;
+
+  if (existing.includes(blockStart) && existing.includes(blockEnd)) {
+    const blockPattern = new RegExp(`${blockStart}[\\s\\S]*?${blockEnd}`);
+    const replacement = managedBlock;
+    next = existing.replace(blockPattern, replacement);
+    changed = next !== existing;
+  } else {
+    const hasAllEntries = protectedEntries.every((entry) => existing.includes(entry));
+    if (!hasAllEntries) {
+      const separator = existing.length > 0 && !existing.endsWith('\n') ? '\n\n' : (existing.length > 0 ? '\n' : '');
+      next = `${existing}${separator}${managedBlock}\n`;
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    fs.writeFileSync(gitignorePath, next, 'utf8');
+  }
+
+  return {
+    changed,
+    gitignorePath,
+  };
+}
+
 // ── Detection Logic ────────────────────────────────────────────────────────
 /** @returns {boolean} true if GSD protocol is already active in this project */
 function detectGSD(targetDir) {
   return fs.existsSync(path.join(targetDir, '.agent', 'get-shit-done', 'VERSION'));
 }
 
-/** @returns {boolean} true if the legacy MGSD-compatible protocol path is already active in this project */
-function detectExistingMGSD(targetDir) {
-  return fs.existsSync(path.join(targetDir, '.agent', 'marketing-get-shit-done', 'VERSION'));
+/** @returns {boolean} true if the legacy MARKOS-compatible protocol path is already active in this project */
+function detectExistingMarkOS(targetDir) {
+  return fs.existsSync(path.join(targetDir, '.agent', 'markos', 'VERSION'));
 }
 
 function copyRecursive(src, dest) {
@@ -77,6 +159,11 @@ function copyRecursive(src, dest) {
 }
 
 async function run() {
+  if (!assertSupportedNodeVersion()) {
+    rl.close();
+    process.exit(1);
+  }
+
   // Handle: npx markos update → defer to update.cjs
   if (process.argv[2] === 'update') {
     require('./update.cjs');
@@ -87,9 +174,9 @@ async function run() {
 
   // Detect GSD
   const hasGSD = detectGSD(CWD);
-  const hasMGSD = detectExistingMGSD(CWD);
+  const hasMarkOS = detectExistingMarkOS(CWD);
 
-  if (hasMGSD) {
+  if (hasMarkOS) {
     console.log(`\n📦 MarkOS is already installed in this project.`);
     const choice = await ask('Run update instead? (y/n): ');
     if (choice.trim().toLowerCase() === 'y') {
@@ -143,10 +230,10 @@ async function run() {
   // Step 5: Install
   banner('Installing MarkOS...');
 
-  const mgsdSrc = path.join(PKG_DIR, '.agent', 'marketing-get-shit-done');
-  const mgsdDest = path.join(agentDir, 'marketing-get-shit-done');
-  copyRecursive(mgsdSrc, mgsdDest);
-  console.log('✓ MarkOS protocol files installed (.agent/marketing-get-shit-done compatibility path)');
+  const markosSrc = path.join(PKG_DIR, '.agent', 'markos');
+  const markosDest = path.join(agentDir, 'markos');
+  copyRecursive(markosSrc, markosDest);
+  console.log('✓ MarkOS protocol files installed (.agent/markos path)');
 
   // Copy onboarding
   const onboardingSrc = path.join(PKG_DIR, 'onboarding');
@@ -157,10 +244,10 @@ async function run() {
   }
 
   // Write VERSION
-  fs.writeFileSync(path.join(mgsdDest, 'VERSION'), VERSION);
+  fs.writeFileSync(path.join(markosDest, 'VERSION'), VERSION);
 
   // Write install manifest
-  const manifestPath = path.join(CWD, '.mgsd-install-manifest.json');
+  const manifestPath = path.join(CWD, '.markos-install-manifest.json');
   
   // Build file hash manifest for accurate conflict detection during updates
   function buildFileHashes(dir, baseDir = dir, hashes = {}) {
@@ -181,15 +268,19 @@ async function run() {
     installed: new Date().toISOString(),
     location: isGlobal ? 'global' : 'project',
     project_name: projectName,
-    file_hashes: buildFileHashes(mgsdDest)
+    file_hashes: buildFileHashes(markosDest)
   };
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-  console.log('✓ Install manifest written (.mgsd-install-manifest.json compatibility manifest)');
+  console.log('✓ Install manifest written (.markos-install-manifest.json)');
+
+  const gitignoreResult = applyGitignoreProtections(CWD);
+  if (gitignoreResult.changed) {
+    console.log('✓ .gitignore updated with private local artifact protections');
+  }
 
   // Non-destructive GSD append (if GSD detected)
   if (hasGSD) {
-    const gsdSkillsDir = path.join(agentDir, 'skills');
-    const mgsdSkillsDir = path.join(mgsdDest, 'skills');
+    const markosSkillsDir = path.join(agentDir, 'markos', 'skills');
     // Skills already in correct place — just confirm
     console.log('✓ MarkOS skills co-exist with GSD (no conflicts)');
   }
@@ -202,17 +293,17 @@ async function run() {
     if (fs.existsSync(aiMdPath)) {
       const existing = fs.readFileSync(aiMdPath, 'utf8');
       if (!existing.includes('MarkOS')) {
-        fs.appendFileSync(aiMdPath, `\n\n## MarkOS — Marketing Operating System\n\nMarkOS protocol installed at \`.agent/marketing-get-shit-done/\`.\nSee \`.agent/marketing-get-shit-done/MGSD-INDEX.md\` for full documentation.\nMigration note: this path remains legacy until the MarkOS directory/index migration is applied.\n`);
+        fs.appendFileSync(aiMdPath, `\n\n## MarkOS — Marketing Operating System\n\nMarkOS protocol installed at \`.agent/markos/\`.\nSee \`.agent/markos/MARKOS-INDEX.md\` for full documentation.\n`);
         console.log(`✓ MarkOS section appended to ${aiMd}`);
       }
     }
   }
 
   banner(`MarkOS v${VERSION} installed ✓`);
-  console.log(`\n  Protocol: ${mgsdDest}`);
+  console.log(`\n  Protocol: ${markosDest}`);
   console.log(`  Update:   npx markos update`);
   // Keep this docs path aligned with current runtime filesystem layout.
-  console.log(`  Docs:     .agent/marketing-get-shit-done/MGSD-INDEX.md  (temporary legacy path; will migrate to .agent/markos/MARKOS-INDEX.md in a future release)\n`);
+  console.log(`  Docs:     .agent/markos/MARKOS-INDEX.md\n`);
 
   if (launchOnboarding.trim().toLowerCase() === 'y') {
     // ── 1. Interactive .env Setup ───────────────────────────────────────────
@@ -256,8 +347,8 @@ async function run() {
     }
 
     // ── 2. Vector Memory Daemon ─────────────────────────────────────────────
-    const { ensureChroma } = require('./ensure-chroma.cjs');
-    await ensureChroma();
+    const { ensureVectorStores } = require('./ensure-vector.cjs');
+    await ensureVectorStores();
 
     // ── 3. Server Handoff ───────────────────────────────────────────────────
     console.log('\n🚀 Starting MarkOS Orchestrator Sequence...\n');

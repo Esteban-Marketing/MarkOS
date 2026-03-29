@@ -1,20 +1,20 @@
 ---
-name: mgsd-research-phase
+name: markos-research-phase
 description: Standalone market research for a phase — competitor campaigns, audience signals, benchmarks, tracking requirements
 ---
 
-# mgsd-research-phase
+# markos-research-phase
 
 <context>
-Spawns mgsd-market-researcher to produce RESEARCH.md for the specified phase. Use before /mgsd-plan-phase when deeper channel or competitive research is needed.
+Spawns markos-market-researcher to produce RESEARCH.md for the specified phase. Use before /markos-plan-phase when deeper channel or competitive research is needed.
 </context>
 
 <execution_context>
-@.agent/marketing-get-shit-done/workflows/research-phase.md
+@.agent/markos/workflows/research-phase.md
 </execution_context>
 
 <process>
-Execute the `/mgsd-research-phase` workflow exactly as documented in the workflow file.
+Execute the `/markos-research-phase` workflow exactly as documented in the workflow file.
 </process>
 
 <success_criteria>
@@ -31,12 +31,12 @@ Execute the `/mgsd-research-phase` workflow exactly as documented in the workflo
 
 ## Template Paths
 
-This skill operates within the MGSD structure. It honors overrides placed in the client .mgsd-local/ directory before falling back to the default .agent/marketing-get-shit-done/ templates.
+This skill operates within the MARKOS structure. It honors overrides placed in the client .markos-local/ directory before falling back to the default .agent/markos/ templates.
 
-<!-- OVERRIDABLE: .mgsd-local/MIR/Core_Strategy/ overrides .agent/marketing-get-shit-done/templates/MIR/Core_Strategy/ -->
-<!-- OVERRIDABLE: .mgsd-local/MIR/Market_Audiences/ overrides .agent/marketing-get-shit-done/templates/MIR/Market_Audiences/ -->
-<!-- OVERRIDABLE: .mgsd-local/MIR/Products/ overrides .agent/marketing-get-shit-done/templates/MIR/Products/ -->
-<!-- OVERRIDABLE: .mgsd-local/MIR/Campaigns_Assets/ overrides .agent/marketing-get-shit-done/templates/MIR/Campaigns_Assets/ -->
-<!-- OVERRIDABLE: .mgsd-local/MIR/Operations/ overrides .agent/marketing-get-shit-done/templates/MIR/Operations/ -->
-<!-- OVERRIDABLE: .mgsd-local/MSP/ overrides .agent/marketing-get-shit-done/templates/MSP/ -->
-<!-- OVERRIDABLE: .mgsd-local/config/config.json overrides .agent/marketing-get-shit-done/templates/config.json -->
+<!-- OVERRIDABLE: .markos-local/MIR/Core_Strategy/ overrides .agent/markos/templates/MIR/Core_Strategy/ -->
+<!-- OVERRIDABLE: .markos-local/MIR/Market_Audiences/ overrides .agent/markos/templates/MIR/Market_Audiences/ -->
+<!-- OVERRIDABLE: .markos-local/MIR/Products/ overrides .agent/markos/templates/MIR/Products/ -->
+<!-- OVERRIDABLE: .markos-local/MIR/Campaigns_Assets/ overrides .agent/markos/templates/MIR/Campaigns_Assets/ -->
+<!-- OVERRIDABLE: .markos-local/MIR/Operations/ overrides .agent/markos/templates/MIR/Operations/ -->
+<!-- OVERRIDABLE: .markos-local/MSP/ overrides .agent/markos/templates/MSP/ -->
+<!-- OVERRIDABLE: .markos-local/config/config.json overrides .agent/markos/templates/config.json -->

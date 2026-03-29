@@ -2,17 +2,17 @@
 description: Freeze an active campaign mid-execution, snapshot full state, and create a human-readable handoff context
 ---
 
-# /mgsd-pause-campaign
+# /markos-pause-campaign
 
 <purpose>
-Cleanly pause a campaign mid-execution: commits all in-progress work, creates CONTINUE-HERE.md with full context for resumption, updates STATE.md to paused status, and creates a Linear [MGSD-PAUSE] ticket. Ensures no context is lost between sessions or operator handoffs.
+Cleanly pause a campaign mid-execution: commits all in-progress work, creates CONTINUE-HERE.md with full context for resumption, updates STATE.md to paused status, and creates a Linear [MARKOS-PAUSE] ticket. Ensures no context is lost between sessions or operator handoffs.
 </purpose>
 
 <process>
 
 <step name="initialize">
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init pause-campaign "${PHASE_ARG}" --raw)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" init pause-campaign "${PHASE_ARG}" --raw)
 ```
 
 Parse: `phase_dir`, `phase_number`, `phase_name`, `current_wave`, `completed_plans[]`, `active_plan`, `incomplete_plans[]`, `last_commit`.
@@ -20,7 +20,7 @@ Parse: `phase_dir`, `phase_number`, `phase_name`, `current_wave`, `completed_pla
 Display:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► PAUSING — Phase {N}: {Name}
+ MARKOS ► PAUSING — Phase {N}: {Name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Completed plans: {completed list}
@@ -39,13 +39,13 @@ UNCOMMITTED=$(git status --porcelain | grep -v "^?" | wc -l)
 
 If uncommitted files exist:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit \
+node ".agent/markos/bin/markos-tools.cjs" commit \
   "mktg(phase-${PHASE_NUMBER}): wip — pausing mid-execution at ${ACTIVE_TASK}"
 ```
 
 If no active plan (between waves):
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit \
+node ".agent/markos/bin/markos-tools.cjs" commit \
   "mktg(phase-${PHASE_NUMBER}): pause — between waves, ${COMPLETED_COUNT} of ${TOTAL_COUNT} plans complete"
 ```
 </step>
@@ -54,7 +54,7 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit \
 Create `{phase_dir}/CONTINUE-HERE.md` using the HANDOFF.md template:
 
 ```bash
-cp ".agent/marketing-get-shit-done/templates/HANDOFF.md" "{phase_dir}/CONTINUE-HERE.md"
+cp ".agent/markos/templates/HANDOFF.md" "{phase_dir}/CONTINUE-HERE.md"
 ```
 
 Fill CONTINUE-HERE.md with:
@@ -70,7 +70,7 @@ phase: {phase_number} — {phase_name}
 plan_id: {active_plan | "between-waves"}
 blocking_artifact: none — voluntary pause
 state_set_to: paused
-resume_command: /mgsd-execute-phase {phase_number}
+resume_command: /markos-execute-phase {phase_number}
 ---
 
 ## Campaign State at Pause
@@ -103,7 +103,7 @@ resume_command: /mgsd-execute-phase {phase_number}
 ## How to Resume
 
 1. Open this repository
-2. Run: `/mgsd-execute-phase {phase_number}`
+2. Run: `/markos-execute-phase {phase_number}`
 3. Execution auto-resumes from the first plan without a SUMMARY.md
 
 ## Open Questions / Decisions Needed
@@ -113,14 +113,14 @@ resume_command: /mgsd-execute-phase {phase_number}
 
 Commit CONTINUE-HERE.md:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit \
+node ".agent/markos/bin/markos-tools.cjs" commit \
   "mktg(phase-${PHASE_NUMBER}): create pause handoff context"
 ```
 </step>
 
 <step name="update_state">
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" state pause-phase \
+node ".agent/markos/bin/markos-tools.cjs" state pause-phase \
   --phase "${PHASE_NUMBER}" \
   --reason "${PAUSE_REASON}"
 ```
@@ -132,8 +132,8 @@ STATE.md `status` → `paused`
 Create Linear pause marker:
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear create \
-  --title "[MGSD-PAUSE] Phase {N}: {phase_name} — paused at {active_plan}" \
+node ".agent/markos/bin/markos-tools.cjs" linear create \
+  --title "[MARKOS-PAUSE] Phase {N}: {phase_name} — paused at {active_plan}" \
   --priority medium \
   --label "paused,resume-ready" \
   --body "{pause context summary}"
@@ -143,16 +143,16 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear create \
 <step name="completion">
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► CAMPAIGN PAUSED ✓
+ MARKOS ► CAMPAIGN PAUSED ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Phase:    {N} — {phase_name}
 State:    paused
 Context:  {phase_dir}/CONTINUE-HERE.md
-Linear:   [MGSD-PAUSE] ticket created
+Linear:   [MARKOS-PAUSE] ticket created
 
 To resume:
-/mgsd-execute-phase {phase_number}
+/markos-execute-phase {phase_number}
 ```
 </step>
 

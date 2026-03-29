@@ -1,6 +1,6 @@
 # GSD Framework Audit
 
-**Project:** MarkOS / MGSD repository
+**Project:** MarkOS / MARKOS repository
 **Audited:** 2026-03-28
 **Result:** Core framework scaffold already present
 
@@ -9,7 +9,7 @@
 | Area | Status | Notes |
 |------|--------|-------|
 | `.agent/get-shit-done/` | Present | GSD framework exists |
-| `.agent/marketing-get-shit-done/` | Present | MGSD/MarkOS protocol engine exists |
+| `.agent/markos/` | Present | MARKOS/MarkOS protocol engine exists |
 | `.planning/PROJECT.md` | Present | Project definition exists |
 | `.planning/REQUIREMENTS.md` | Present | Requirements scaffold exists |
 | `.planning/ROADMAP.md` | Present | Roadmap scaffold exists |
@@ -28,4 +28,4 @@
 
 ## Follow-Up Recommendation
 
-The next useful framework work is not more directory creation. It is reducing MarkOS/MGSD naming drift and hardening the shared runtime between local and hosted onboarding modes.
+The next useful framework work is not more directory creation. It is reducing MarkOS/MARKOS naming drift and hardening the shared runtime between local and hosted onboarding modes.

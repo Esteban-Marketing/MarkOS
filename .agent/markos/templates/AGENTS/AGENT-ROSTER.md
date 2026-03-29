@@ -1,5 +1,5 @@
 # AGENT ROSTER — esteban.marketing
-### Automated Intelligence Layer for the MIR + MSP + mGSD System
+### Automated Intelligence Layer for the MIR + MSP + MarkOS System
 ##### Template v1.0 — maintained by esteban.marketing
 
 ---
@@ -95,7 +95,7 @@ OUTPUTS     — What it produces
 HANDOFF     — What {{LEAD_AGENT}} must review/decide
 CONSTRAINTS — What this agent must never do
 DEPENDENCIES— What must be true before this agent runs
-PROMPT_ID   — Reference to prompt template in mGSD PROTOCOL
+PROMPT_ID   — Reference to prompt template in MarkOS PROTOCOL
 ```
 
 ---

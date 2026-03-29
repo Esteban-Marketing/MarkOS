@@ -1,7 +1,7 @@
-# Phase 10 Context: Multi-Tenant Scale & Telemetry
+﻿# Phase 10 Context: Multi-Tenant Scale & Telemetry
 
 ## Objective
-Optimize MGSD to seamlessly run across multiple isolated brands (Multi-Tenant) hosted on **Vercel** and build robust output telemetry using **PostHog** to track AI-vs-human execution metrics and user onboarding.
+Optimize MARKOS to seamlessly run across multiple isolated brands (Multi-Tenant) hosted on **Vercel** and build robust output telemetry using **PostHog** to track AI-vs-human execution metrics and user onboarding.
 
 ## Goals & Requirements (SCL-01, TLM-01)
 1. **Multi-Tenant Vercel Hosting**: Update the onboarding server to support multiple projects running from a single Vercel deployment.
@@ -11,7 +11,7 @@ Optimize MGSD to seamlessly run across multiple isolated brands (Multi-Tenant) h
 3. **Event Tracking Taxonomy**:
    - **Onboarding UI**: Track step completions, business model selection, form abandons.
    - **Agent Usage**: Track AI generations, drafts saved, phases planned/executed, token usage.
-4. **Cross-Client Vector Segregation**: Ensure ChromaDB collections strictly isolate vectors by the new `project_slug` (established in Phase 12).
+4. **Cross-Client Vector Segregation**: Ensure Supabase + Upstash Vector collections strictly isolate vectors by the new `project_slug` (established in Phase 12).
 
 ## Planned PostHog Events
 
@@ -38,3 +38,4 @@ Optimize MGSD to seamlessly run across multiple isolated brands (Multi-Tenant) h
 ### `agent_execution_completed`
 - Trigger: Agent successfully generates content
 - Properties: `agent_name`, `template_name`, `project_slug`, `token_usage`, `generation_time_ms`
+

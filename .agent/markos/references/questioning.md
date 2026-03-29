@@ -1,33 +1,33 @@
 ---
-token_id: MGSD-REF-OPS-04
+token_id: MARKOS-REF-OPS-04
 document_class: REF
 domain: OPS
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000   # MGSD-INDEX.md — master registry
+  - MARKOS-IDX-000   # MARKOS-INDEX.md — master registry
 downstream:
-  - MGSD-SKL-DIS-01 # mgsd-discuss-phase/SKILL.md — loads this during discovery
-  - MGSD-SKL-NEW-01 # mgsd-new-milestone/SKILL.md — new project discovery
-  - MGSD-REF-OPS-08 # user-profiling.md — profile-aware question framing
+  - MARKOS-SKL-DIS-01 # markos-discuss-phase/SKILL.md — loads this during discovery
+  - MARKOS-SKL-NEW-01 # markos-new-milestone/SKILL.md — new project discovery
+  - MARKOS-REF-OPS-08 # user-profiling.md — profile-aware question framing
 mir_gate_required: false
 ---
 
 # Questioning — Marketing Discovery Questions
 
-<!-- TOKEN: MGSD-REF-OPS-04 | CLASS: REF | DOMAIN: OPS -->
+<!-- TOKEN: MARKOS-REF-OPS-04 | CLASS: REF | DOMAIN: OPS -->
 <!-- PURPOSE: Provides discovery questioning techniques and background context checklist for discuss-phase and new-project workflows. Guards against premature phase scoping. -->
 
-Techniques and context checklist for `/mgsd-discuss-phase` and `/mgsd-new-project`.
+Techniques and context checklist for `/markos-discuss-phase` and `/markos-new-project`.
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
-| MGSD-REF-OPS-08 | user-profiling.md | Decision-maker profiles that shape question framing |
-| MGSD-SKL-DIS-01 | skills/mgsd-discuss-phase/SKILL.md | Skill that loads this reference |
-| MGSD-REF-OPS-01 | mir-gates.md | Gates require data gathered through this questioning |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this document |
+| MARKOS-REF-OPS-08 | user-profiling.md | Decision-maker profiles that shape question framing |
+| MARKOS-SKL-DIS-01 | skills/markos-discuss-phase/SKILL.md | Skill that loads this reference |
+| MARKOS-REF-OPS-01 | mir-gates.md | Gates require data gathered through this questioning |
 
 ## Opening Question
 

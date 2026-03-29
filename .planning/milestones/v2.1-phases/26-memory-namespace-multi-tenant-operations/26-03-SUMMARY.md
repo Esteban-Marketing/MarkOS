@@ -1,13 +1,13 @@
----
+﻿---
 phase: 26
 plan: 26-03
 subsystem: vector-health-mode-aware
-tags: [chroma, health, local-cloud]
+tags: [vector, health, local-cloud]
 requires: [26-02]
 provides: [MMO-02]
 affects:
-  - bin/ensure-chroma.cjs
-  - onboarding/backend/chroma-client.cjs
+  - bin/ensure-vector.cjs
+  - onboarding/backend/vector-store-client.cjs
 decisions:
   - Health checks must explicitly communicate local vs cloud failure semantics
 metrics:
@@ -22,13 +22,13 @@ Expanded health and failure reporting for local/cloud vector backends so operato
 
 ## Completed Work
 
-- Standardized health outputs for local and cloud Chroma modes.
+- Standardized health outputs for local and cloud Vector Store modes.
 - Improved failure messaging and operational guidance.
 - Captured expected degraded behavior for unavailable backends.
 
 ## Verification
 
-- node --test test/chroma-client.test.js
+- node --test test/vector-client.test.js
 
 ## Deviations from Plan
 
@@ -39,3 +39,4 @@ None - executed as planned.
 None.
 
 ## Self-Check: PASSED
+

@@ -1,10 +1,10 @@
 /**
- * Commands — Standalone utility commands for MGSD
+ * Commands — Standalone utility commands for MARKOS
  */
 
 const fs = require('fs');
 const path = require('path');
-const { output, error, planningPaths, findPhaseInternal, normalizePhaseName, toPosixPath, execGit, isGitIgnored, loadConfig, safeReadFile, mgsdPaths, checkMirGates } = require('./core.cjs');
+const { output, error, planningPaths, findPhaseInternal, normalizePhaseName, toPosixPath, execGit, isGitIgnored, loadConfig, safeReadFile, markosPaths, checkMirGates } = require('./core.cjs');
 const { sanitizeForPrompt } = require('./security.cjs');
 
 function cmdCommit(cwd, message, files, raw, noVerify) {
@@ -52,7 +52,7 @@ function cmdCommit(cwd, message, files, raw, noVerify) {
 }
 
 function cmdMirAudit(cwd, raw) {
-  const paths = mgsdPaths(cwd);
+  const paths = markosPaths(cwd);
   const mirPath = paths.mir;
 
   if (!fs.existsSync(mirPath)) {

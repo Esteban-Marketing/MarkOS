@@ -1,33 +1,33 @@
 ---
-token_id: MGSD-REF-OPS-07
+token_id: MARKOS-REF-OPS-07
 document_class: REF
 domain: OPS
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
+  - MARKOS-IDX-000    # MARKOS-INDEX.md — master registry
 downstream:
-  - MGSD-REF-OPS-06 # continuation-format.md — continuation blocks reference checkpoint types
-  - MGSD-AGT-EXE-01 # mgsd-executor.md — orchestrator emitting checkpoints
-  - MGSD-REF-CNT-01 # ui-brand.md — checkpoint box format
+  - MARKOS-REF-OPS-06 # continuation-format.md — continuation blocks reference checkpoint types
+  - MARKOS-AGT-EXE-01 # markos-executor.md — orchestrator emitting checkpoints
+  - MARKOS-REF-CNT-01 # ui-brand.md — checkpoint box format
 mir_gate_required: false
 ---
 
 # Checkpoints — Marketing Workflow Checkpoints
 
-<!-- TOKEN: MGSD-REF-OPS-07 | CLASS: REF | DOMAIN: OPS -->
-<!-- PURPOSE: Defines all MGSD checkpoint types, their triggers, presenter agents, and auto-mode behavior. Used by orchestrators to determine when to pause for human input. -->
+<!-- TOKEN: MARKOS-REF-OPS-07 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Defines all MARKOS checkpoint types, their triggers, presenter agents, and auto-mode behavior. Used by orchestrators to determine when to pause for human input. -->
 
-Checkpoint types for MGSD workflows. Orchestrator presents these when human input is required.
+Checkpoint types for MARKOS workflows. Orchestrator presents these when human input is required.
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
-| MGSD-REF-OPS-06 | continuation-format.md | Format for resuming after checkpoints |
-| MGSD-REF-CNT-01 | ui-brand.md | Checkpoint box visual specification |
-| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Primary agent emitting these checkpoints |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this document |
+| MARKOS-REF-OPS-06 | continuation-format.md | Format for resuming after checkpoints |
+| MARKOS-REF-CNT-01 | ui-brand.md | Checkpoint box visual specification |
+| MARKOS-AGT-EXE-01 | agents/markos-executor.md | Primary agent emitting these checkpoints |
 
 ## Checkpoint Types
 

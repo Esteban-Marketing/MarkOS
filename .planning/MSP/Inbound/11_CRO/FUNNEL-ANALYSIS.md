@@ -1,7 +1,7 @@
 # FUNNEL-ANALYSIS.md — Stage-by-Stage Conversion Analysis
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/11_CRO/FUNNEL-ANALYSIS.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/11_CRO/FUNNEL-ANALYSIS.md to customize it safely.
 
 
 ```

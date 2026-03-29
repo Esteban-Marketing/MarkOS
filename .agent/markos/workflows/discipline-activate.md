@@ -2,7 +2,7 @@
 description: Activate or deactivate an MSP discipline with documented rationale
 ---
 
-# /mgsd-discipline-activate
+# /markos-discipline-activate
 
 <purpose>
 Change a discipline's activation status (ACTIVE / INACTIVE / FUTURE) in the MSP and config.json with documented rationale.
@@ -24,7 +24,7 @@ Change a discipline's activation status (ACTIVE / INACTIVE / FUTURE) in the MSP 
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► DISCIPLINE ACTIVATION
+ MARKOS ► DISCIPLINE ACTIVATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 SEO (06): INACTIVE → ACTIVE

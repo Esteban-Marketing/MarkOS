@@ -49,7 +49,7 @@ Gate 2: [FILL — GREEN / RED with gap count]
 
 ## Next Action
 
-[FILL — exact instruction for next session, e.g., "Continue executing plan 01-03, starting at Task 3 (configure UTM parameters). Resume with /mgsd-resume-work"]
+[FILL — exact instruction for next session, e.g., "Continue executing plan 01-03, starting at Task 3 (configure UTM parameters). Resume with /markos-resume-work"]
 
 ## Context for Next Agent
 
@@ -57,4 +57,4 @@ Gate 2: [FILL — GREEN / RED with gap count]
 
 ---
 *Paused: [FILL — timestamp]*
-*Resume with: `/mgsd-resume-work`*
+*Resume with: `/markos-resume-work`*

@@ -1,7 +1,7 @@
 # AFFILIATE-PROGRAM.md — Affiliate Program Structure
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Social/10_PARTNERSHIPS-AFFILIATES/AFFILIATE-PROGRAM.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Social/10_PARTNERSHIPS-AFFILIATES/AFFILIATE-PROGRAM.md to customize it safely.
 
 
 ```

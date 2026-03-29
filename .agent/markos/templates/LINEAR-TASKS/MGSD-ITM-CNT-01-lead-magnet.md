@@ -1,24 +1,24 @@
 ---
-token_id: MGSD-ITM-CNT-01
+token_id: MARKOS-ITM-CNT-01
 document_class: ITM
 domain: CNT
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-TPL-OPS-16
-  - MGSD-REF-NEU-01
-  - MGSD-REF-OPS-01
+  - MARKOS-TPL-OPS-16
+  - MARKOS-REF-NEU-01
+  - MARKOS-REF-OPS-01
 changelog:
   - "1.0.0 — Initial release"
 mir_gate_required: 1
 ---
 
-# MGSD-ITM-CNT-01 — Lead Magnet Design
+# MARKOS-ITM-CNT-01 — Lead Magnet Design
 
-<!-- TOKEN: MGSD-ITM-CNT-01 | CLASS: ITM | DOMAIN: CNT -->
-<!-- PURPOSE: Linear issue template for producing a branded lead magnet asset. Consumed by mgsd-linear-manager when creating [MGSD] Lead Magnet tickets. Gate 1 required before execution. -->
+<!-- TOKEN: MARKOS-ITM-CNT-01 | CLASS: ITM | DOMAIN: CNT -->
+<!-- PURPOSE: Linear issue template for producing a branded lead magnet asset. Consumed by markos-linear-manager when creating [MARKOS] Lead Magnet tickets. Gate 1 required before execution. -->
 
-**Linear Title format:** `[MGSD] Lead Magnet: {magnet_title} — {audience_segment}`
+**Linear Title format:** `[MARKOS] Lead Magnet: {magnet_title} — {audience_segment}`
 **Category:** Content Creation
 **Primary Triggers:** B04 (Authority Signal), B05 (Pain Relief), B07 (Curiosity Gap)
 **Funnel Stage:** Awareness → Consideration
@@ -28,28 +28,28 @@ mir_gate_required: 1
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | §B04, §B05, §B07 trigger definitions |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
-| MGSD-AGT-STR-04 | agents/mgsd-creative-brief.md | Generates NEURO-BRIEF.md |
-| MGSD-AGT-CNT-05 | agents/mgsd-content-brief.md | Generates CONTENT-BRIEF.md |
-| MGSD-AGT-CNT-01 | agents/mgsd-content-creator.md | Executes asset copy |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Neuro audit gate |
+| MARKOS-TPL-OPS-16 | templates/LINEAR-TASKS/_SCHEMA.md | Schema this template conforms to |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | §B04, §B05, §B07 trigger definitions |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 enforcement |
+| MARKOS-AGT-STR-04 | agents/markos-creative-brief.md | Generates NEURO-BRIEF.md |
+| MARKOS-AGT-CNT-05 | agents/markos-content-brief.md | Generates CONTENT-BRIEF.md |
+| MARKOS-AGT-CNT-01 | agents/markos-content-creator.md | Executes asset copy |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Neuro audit gate |
 
 ---
 
-<!-- MGSD Linear Issue Template v1.0 -->
-<!-- token_id: MGSD-ITM-CNT-01 | Content Creation -->
+<!-- MARKOS Linear Issue Template v1.0 -->
+<!-- token_id: MARKOS-ITM-CNT-01 | Content Creation -->
 
 ## Context Source
 
 | Field | Value |
 |-------|-------|
-| Token IDs Required | MGSD-REF-NEU-01 §B04, §B05, §B07; MGSD-REF-OPS-01 |
+| Token IDs Required | MARKOS-REF-NEU-01 §B04, §B05, §B07; MARKOS-REF-OPS-01 |
 | MIR Gate | Gate 1 GREEN |
 | MSP Matrix | `MSP/Inbound/` — relevant discipline section |
-| AGT Assigned | MGSD-AGT-STR-04 → MGSD-AGT-CNT-05 → MGSD-AGT-CNT-01 |
-| SKL Entry Point | MGSD-SKL-OPS-01 (mgsd-plan-phase) |
+| AGT Assigned | MARKOS-AGT-STR-04 → MARKOS-AGT-CNT-05 → MARKOS-AGT-CNT-01 |
+| SKL Entry Point | MARKOS-SKL-OPS-01 (markos-plan-phase) |
 
 ---
 
@@ -88,23 +88,23 @@ mir_gate_required: 1
 
 ## Task Steps
 
-- [ ] **Step 1:** Run `mgsd-tools.cjs mir-audit` — confirm Gate 1 GREEN. Block if RED.
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 1:** Run `markos-tools.cjs mir-audit` — confirm Gate 1 GREEN. Block if RED.
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Gate status signal
-- [ ] **Step 2:** Generate creative brief using `MGSD-AGT-STR-04` — populate `NEURO-BRIEF.md` with B07 headline options (min 3), B05 pain statement, B04 authority element.
-  - Agent: MGSD-AGT-STR-04
+- [ ] **Step 2:** Generate creative brief using `MARKOS-AGT-STR-04` — populate `NEURO-BRIEF.md` with B07 headline options (min 3), B05 pain statement, B04 authority element.
+  - Agent: MARKOS-AGT-STR-04
   - Output: `NEURO-BRIEF.md` committed to `.planning/phases/[N]/`
-- [ ] **Step 3:** Generate content brief using `MGSD-AGT-CNT-05` — define asset format (PDF, interactive, video), section outline, word count range, CTA placement.
-  - Agent: MGSD-AGT-CNT-05
+- [ ] **Step 3:** Generate content brief using `MARKOS-AGT-CNT-05` — define asset format (PDF, interactive, video), section outline, word count range, CTA placement.
+  - Agent: MARKOS-AGT-CNT-05
   - Output: `CONTENT-BRIEF.md`
-- [ ] **Step 4:** Draft asset copy using `MGSD-AGT-CNT-01` — apply VOICE-TONE constraints; structure: Pain (B05) → Amplify → Mechanism → Solution.
-  - Agent: MGSD-AGT-CNT-01
+- [ ] **Step 4:** Draft asset copy using `MARKOS-AGT-CNT-01` — apply VOICE-TONE constraints; structure: Pain (B05) → Amplify → Mechanism → Solution.
+  - Agent: MARKOS-AGT-CNT-01
   - Output: `LEAD-MAGNET-DRAFT.md`
-- [ ] **Step 5:** Run `MGSD-AGT-NEU-01` audit on draft — must return `PASSED` before proceeding.
-  - Agent: MGSD-AGT-NEU-01
+- [ ] **Step 5:** Run `MARKOS-AGT-NEU-01` audit on draft — must return `PASSED` before proceeding.
+  - Agent: MARKOS-AGT-NEU-01
   - Output: Neuro audit report
-- [ ] **Step 6:** Commit artifact to `.planning/phases/[N]/` with message `mgsd(content): lead-magnet {magnet_slug} draft complete`
-  - Agent: MGSD-AGT-OPS-07
+- [ ] **Step 6:** Commit artifact to `.planning/phases/[N]/` with message `markos(content): lead-magnet {magnet_slug} draft complete`
+  - Agent: MARKOS-AGT-OPS-07
   - Output: Git commit
 
 ---
@@ -119,8 +119,8 @@ mir_gate_required: 1
 | 4 — Tracking | N/A — no ad spend on this asset | N/A |
 | 5 — Creative Compliance | No prohibited words; pain-first structure confirmed | VOICE-TONE diff clean |
 | 6 — Budget Alignment | N/A — content production only | N/A |
-| 7 — Linear Sync | Issue status updated to `In Progress` then `Done` | mgsd-linear-manager sync 0 drift |
-| Neuro Audit | B07 headline gap unresolvable from headline alone | `MGSD-AGT-NEU-01` returns `PASSED` |
+| 7 — Linear Sync | Issue status updated to `In Progress` then `Done` | markos-linear-manager sync 0 drift |
+| Neuro Audit | B07 headline gap unresolvable from headline alone | `MARKOS-AGT-NEU-01` returns `PASSED` |
 
 ---
 
@@ -128,9 +128,9 @@ mir_gate_required: 1
 
 | Field | Value |
 |-------|-------|
-| Template ID | MGSD-ITM-CNT-01 |
+| Template ID | MARKOS-ITM-CNT-01 |
 | Task Category | Content Creation |
-| Labels | `[mgsd]`, `[content]`, `[awareness]` |
+| Labels | `[markos]`, `[content]`, `[awareness]` |
 | Priority | High |
 | Estimate | 4–6h |
 | Parent Issue | Lead generation Epic |

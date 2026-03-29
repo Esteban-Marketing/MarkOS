@@ -29,7 +29,7 @@ created: "{DATE}"
 
 ## Decisions
 
-_Decisions captured during /mgsd-discuss-phase {PHASE_NUMBER}_
+_Decisions captured during /markos-discuss-phase {PHASE_NUMBER}_
 
 | # | Decision | Rationale | Impact |
 |---|----------|-----------|--------|

@@ -1,4 +1,4 @@
----
+﻿---
 phase: 23
 plan: 23-03
 subsystem: compatibility-contract
@@ -8,7 +8,7 @@ provides: [IDN-02, IDN-03]
 affects:
   - .planning/phases/23-identity-normalization/23-COMPATIBILITY-CONTRACT.md
   - onboarding/backend/path-constants.cjs
-  - onboarding/backend/chroma-client.cjs
+  - onboarding/backend/vector-store-client.cjs
 decisions:
   - Compatibility behavior is contract-based, not implicit
 metrics:
@@ -40,3 +40,4 @@ None - executed as planned.
 None.
 
 ## Self-Check: PASSED
+

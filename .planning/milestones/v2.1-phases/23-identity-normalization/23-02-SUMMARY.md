@@ -11,7 +11,7 @@ affects:
   - CHANGELOG.md
   - onboarding/onboarding-config.json
 decisions:
-  - Public/operator-facing text is MarkOS-first; MGSD appears only for compatibility and history
+  - Public/operator-facing text is MarkOS-first; MARKOS appears only for compatibility and history
 metrics:
   completed_at: 2026-03-28
   commits:
@@ -25,7 +25,7 @@ Normalized product naming in package/runtime/documentation surfaces to MarkOS-fi
 ## Completed Work
 
 - Updated user-facing and operator-facing references to present MarkOS as canonical identity.
-- Preserved explicit notes where MGSD terms remain intentionally supported for migration safety.
+- Preserved explicit notes where MARKOS terms remain intentionally supported for migration safety.
 - Aligned onboarding and install/update messaging with identity policy.
 
 ## Verification

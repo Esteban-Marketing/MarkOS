@@ -4,12 +4,12 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
  *   Applies updates from the MarkOS package to a project while preserving client
- *   modifications and `.mgsd-local/` compatibility overrides. Idempotent and SHA256-safe.
+ *   modifications and `.markos-local/` compatibility overrides. Idempotent and SHA256-safe.
  *
  * UPDATE FLOW:
- *   1. Local Manifest Check: Reads `.mgsd-install-manifest.json` for current state.
+ *   1. Local Manifest Check: Reads `.markos-install-manifest.json` for current state.
  *   2. File Scan: Compares every file in the package to the installed version.
- *   3. Override Protection: Skips any file that has a corresponding `.mgsd-local/` override.
+ *   3. Override Protection: Skips any file that has a corresponding `.markos-local/` override.
  *   4. Conflict Detection:
  *        - If installed hash === manifest hash: Update is safe (no client edits).
  *        - If installed hash !== manifest hash: Client modified the file.
@@ -19,8 +19,8 @@
  *
  * RELATED FILES:
  *   bin/install.cjs                       (Created the initial manifest)
- *   .mgsd-install-manifest.json          (Source of truth for file hashes)
- *   .mgsd-local/                         (The compatibility override layer that update never touches)
+ *   .markos-install-manifest.json          (Source of truth for file hashes)
+ *   .markos-local/                         (The compatibility override layer that update never touches)
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 'use strict';
@@ -33,7 +33,8 @@ const readline = require('readline');
 // ── Environment Settings ───────────────────────────────────────────────────
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
-const NEW_VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/marketing-get-shit-done/VERSION'), 'utf8').trim();
+const NEW_VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/markos/VERSION'), 'utf8').trim();
+const MIN_NODE_VERSION = '20.16.0';
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
@@ -44,6 +45,35 @@ function banner(text) {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 
+function compareSemver(a, b) {
+  const pa = String(a).split('.').map((part) => Number.parseInt(part, 10) || 0);
+  const pb = String(b).split('.').map((part) => Number.parseInt(part, 10) || 0);
+  const max = Math.max(pa.length, pb.length);
+  for (let i = 0; i < max; i++) {
+    const left = pa[i] || 0;
+    const right = pb[i] || 0;
+    if (left > right) return 1;
+    if (left < right) return -1;
+  }
+  return 0;
+}
+
+function getEffectiveNodeVersion() {
+  return process.env.MARKOS_NODE_VERSION_OVERRIDE || process.versions.node;
+}
+
+function assertSupportedNodeVersion() {
+  const nodeVersion = getEffectiveNodeVersion();
+  if (compareSemver(nodeVersion, MIN_NODE_VERSION) >= 0) {
+    return true;
+  }
+
+  console.error('\n✗ MarkOS requires Node.js >= 20.16.0.');
+  console.error(`  Current version: ${nodeVersion}`);
+  console.error('  Upgrade Node.js and rerun `npx markos update`.\n');
+  return false;
+}
+
 function hashFile(filePath) {
   try {
     return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
@@ -51,15 +81,15 @@ function hashFile(filePath) {
 }
 
 function readManifest() {
-  const manifestPath = path.join(CWD, '.mgsd-install-manifest.json');
+  const manifestPath = path.join(CWD, '.markos-install-manifest.json');
   try {
     return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   } catch { return null; }
 }
 
 function isLocalOverride(relPath) {
-  // Check if the file has a .mgsd-local/ compatibility override
-  const localPath = path.join(CWD, '.mgsd-local', relPath);
+  // Check if the file has a .markos-local/ compatibility override
+  const localPath = path.join(CWD, '.markos-local', relPath);
   return fs.existsSync(localPath);
 }
 
@@ -68,7 +98,7 @@ function getInstalledDir(manifest) {
   const isGlobal = manifest.location === 'global';
   const os = require('os');
   const baseDir = isGlobal ? os.homedir() : CWD;
-  return path.join(baseDir, '.agent', 'marketing-get-shit-done');
+  return path.join(baseDir, '.agent', 'markos');
 }
 
 function simpleDiff(oldContent, newContent) {
@@ -87,11 +117,16 @@ function simpleDiff(oldContent, newContent) {
 }
 
 async function run() {
+  if (!assertSupportedNodeVersion()) {
+    rl.close();
+    process.exit(1);
+  }
+
   banner(`MarkOS Update Engine v${NEW_VERSION}`);
 
   const manifest = readManifest();
   if (!manifest) {
-    console.error('\n✗ No .mgsd-install-manifest.json found. Run `npx markos` to install first.');
+    console.error('\n✗ No .markos-install-manifest.json found. Run `npx markos` to install first.');
     rl.close();
     return;
   }
@@ -113,7 +148,7 @@ async function run() {
     return;
   }
 
-  const pkgAgentDir = path.join(PKG_DIR, '.agent', 'marketing-get-shit-done');
+  const pkgAgentDir = path.join(PKG_DIR, '.agent', 'markos');
 
   // Build file lists
   function walkDir(dir, baseDir = dir, list = []) {
@@ -139,7 +174,7 @@ async function run() {
     const installedPath = path.join(installedDir, relPath);
     const newPath = path.join(pkgAgentDir, relPath);
 
-    // Skip if .mgsd-local/ override exists for this file
+    // Skip if .markos-local/ override exists for this file
     if (isLocalOverride(relPath)) {
       skippedOverride++;
       continue;
@@ -176,7 +211,7 @@ async function run() {
   }
 
   console.log(`  ✓ Applied: ${applied} files updated`);
-  console.log(`  ⊘ Skipped: ${skippedOverride} files (.mgsd-local/ compatibility override active)`);
+  console.log(`  ⊘ Skipped: ${skippedOverride} files (.markos-local/ compatibility override active)`);
 
   if (conflicts.length > 0) {
     console.log(`\n  ⚠ ${conflicts.length} conflict(s) — both you and the update changed these files:\n`);
@@ -209,7 +244,7 @@ async function run() {
     last_updated: new Date().toISOString(),
     previous_version: installedVersion
   };
-  fs.writeFileSync(path.join(CWD, '.mgsd-install-manifest.json'), JSON.stringify(newManifest, null, 2));
+  fs.writeFileSync(path.join(CWD, '.markos-install-manifest.json'), JSON.stringify(newManifest, null, 2));
 
   banner(`MarkOS updated to v${NEW_VERSION} ✓`);
   console.log(`  ${applied} file(s) updated | ${skippedOverride} override(s) preserved\n`);

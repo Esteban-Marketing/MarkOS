@@ -1,7 +1,7 @@
 # CRISIS-PLAYBOOK.md — Crisis Communication Protocol
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Outbound/07_PR-COMMUNICATIONS/CRISIS-PLAYBOOK.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Outbound/07_PR-COMMUNICATIONS/CRISIS-PLAYBOOK.md to customize it safely.
 
 
 ```

@@ -1,7 +1,7 @@
 # VISUAL-GUIDELINES.md — Imagery, Layout & Design Direction
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Core_Strategy/02_BRAND/VISUAL-GUIDELINES.md to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MIR/Core_Strategy/02_BRAND/VISUAL-GUIDELINES.md to customize it safely.
 
 
 ```

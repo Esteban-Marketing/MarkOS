@@ -1,7 +1,7 @@
 # BRAND-VOICE.md — Voice, Tone & Personality
 # Reference Example: **DTC** (Premium Skincare Brand)
 
-<!-- mgsd-token: MIR | model: DTC -->
+<!-- markos-token: MIR | model: DTC -->
 > [!NOTE] DTC voice prioritizes emotional resonance, identity, and sensory language. It sells a feeling as much as a product.
 
 ---

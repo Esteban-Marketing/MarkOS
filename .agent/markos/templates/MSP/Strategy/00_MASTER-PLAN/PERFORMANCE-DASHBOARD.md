@@ -1,7 +1,7 @@
 # PERFORMANCE-DASHBOARD.md — Cross-Discipline KPI Scorecard
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/PERFORMANCE-DASHBOARD.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/00_MASTER-PLAN/PERFORMANCE-DASHBOARD.md to customize it safely.
 
 
 ```

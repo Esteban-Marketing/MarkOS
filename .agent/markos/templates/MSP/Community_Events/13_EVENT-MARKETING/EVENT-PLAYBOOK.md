@@ -1,7 +1,7 @@
 # EVENT-PLAYBOOK.md — Standard Operating Procedures Per Event Type
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Community_Events/13_EVENT-MARKETING/EVENT-PLAYBOOK.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Community_Events/13_EVENT-MARKETING/EVENT-PLAYBOOK.md to customize it safely.
 
 
 ```

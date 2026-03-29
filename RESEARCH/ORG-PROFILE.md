@@ -1,9 +1,9 @@
 ---
-token_id: MGSD-RES-ORG-01
+token_id: MARKOS-RES-ORG-01
 document_class: RESEARCH
 version: "1.0.0"
 status: populated
-populated_by: mgsd-onboarder
+populated_by: markos-onboarder
 populated_at: 2025-07-18
 feeds_into:
   - MIR/Core_Strategy/BRAND-VOICE.md
@@ -14,7 +14,7 @@ feeds_into:
 
 # Org Profile — MarkOS
 
-<!-- mgsd-token: RESEARCH -->
+<!-- markos-token: RESEARCH -->
 
 ---
 
@@ -65,7 +65,7 @@ Source: Gate 1 synthesis + MESSAGING-FRAMEWORK.md. Confidence: Medium (untested)
 ## Genuine Differentiators
 
 **Differentiator 1 — One-command install with zero friction**
-Reality: `npx marketing-get-shit-done install` scaffolds the complete marketing intelligence architecture (MIR + MSP templates, 78+ intelligence files, 80+ strategy files) in seconds. No SaaS onboarding form, no sales call, no trial friction, no account required. Source: Product spec, Gate 1 intake. Confidence: High. Implication: CTAs should lead with the command itself — the command IS the proof of concept. "Run this and see."
+Reality: `npx markos install` scaffolds the complete marketing intelligence architecture (MIR + MSP templates, 78+ intelligence files, 80+ strategy files) in seconds. No SaaS onboarding form, no sales call, no trial friction, no account required. Source: Product spec, Gate 1 intake. Confidence: High. Implication: CTAs should lead with the command itself — the command IS the proof of concept. "Run this and see."
 
 **Differentiator 2 — Structured intelligence layer (MIR/MSP architecture)**
 Reality: The Marketing Intelligence Repository (MIR) and Marketing Strategy Plan (MSP) architecture separates intelligence from execution — a discipline borrowed from software engineering conventions. Every competing tool generates content; MarkOS governs the context that determines what content any agent should generate. Source: System architecture, codebase structure. Confidence: High. Implication: Messaging should focus on the architecture advantage ("your agents will always have brand context") over content output quality.
@@ -113,4 +113,5 @@ Source: Gate 1 goals input, Gate 2 KPI-FRAMEWORK.md. Confidence: High on goals, 
 
 ---
 *Research Quality Gate: All sections include evidence source, confidence level, and strategic implication.*
-*Last populated: 2025-07-18 | Populated by: mgsd-onboarder | Source: Gate 1 + Gate 2 MIR intake*
+*Last populated: 2025-07-18 | Populated by: markos-onboarder | Source: Gate 1 + Gate 2 MIR intake*
+

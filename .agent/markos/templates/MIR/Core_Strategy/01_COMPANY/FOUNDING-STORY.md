@@ -1,13 +1,13 @@
 # FOUNDING-STORY.md — Origin, Motivation & Trajectory
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/01_COMPANY/FOUNDING-STORY.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/01_COMPANY/FOUNDING-STORY.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This is the emotional core of the brand. `mgsd-copy-drafter` MUST utilize the narratives in Section 5 for all social proof and founder-led content. `mgsd-strategist` MUST ensure Section 2 catalysts are reflected in the value proposition. 
+> **AGENT LOGIC**: This is the emotional core of the brand. `markos-copy-drafter` MUST utilize the narratives in Section 5 for all social proof and founder-led content. `markos-strategist` MUST ensure Section 2 catalysts are reflected in the value proposition. 
 
 **Dependencies:** MISSION-VISION-VALUES (`MISSION-VISION-VALUES.md`), BRAND-VOICE (`../02_BRAND/VOICE-TONE.md`)
-**Assigned Agent:** `mgsd-copy-drafter`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-copy-drafter`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : The narrative of how and why this business exists. Used to inform

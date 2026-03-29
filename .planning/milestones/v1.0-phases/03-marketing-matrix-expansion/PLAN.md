@@ -7,7 +7,7 @@
 - Explicit cross-channel logic established mimicking the rigorous engineering workflows in `.agent/get-shit-done`.
 
 ## Context
-While GSD relies heavily on discrete, unambiguous coding phases (e.g. backend, DB, API), traditional marketing templates are often vague. To make MGSD fundamentally superior, we must build a system where a marketing campaign behaves like software engineering. This means mapping `SEO`, `Paid Social`, `Content`, `Lifecycle/Email`, `PR`, and `Affiliates` into strict, modular execution pipelines. The templates will act as "compilers" for business metrics.
+While GSD relies heavily on discrete, unambiguous coding phases (e.g. backend, DB, API), traditional marketing templates are often vague. To make MARKOS fundamentally superior, we must build a system where a marketing campaign behaves like software engineering. This means mapping `SEO`, `Paid Social`, `Content`, `Lifecycle/Email`, `PR`, and `Affiliates` into strict, modular execution pipelines. The templates will act as "compilers" for business metrics.
 
 ## Plan
 
@@ -19,8 +19,8 @@ While GSD relies heavily on discrete, unambiguous coding phases (e.g. backend, D
 - [x] Design the `05_AFFILIATE_INFLUENCER` template to track external ambassador ROI, UTM hooks, and rev-share.
 
 ### 2. File Architecture Deployment
-- [x] Deploy these comprehensive markdown files into `.agent/marketing-get-shit-done/templates/MSP/Campaigns/`.
-- [x] Ensure that every single template utilizes strict `.md` checklist logic so `mgsd-linear-manager` can instantly convert them to tickets without human PMs.
+- [x] Deploy these comprehensive markdown files into `.agent/markos/templates/MSP/Campaigns/`.
+- [x] Ensure that every single template utilizes strict `.md` checklist logic so `markos-linear-manager` can instantly convert them to tickets without human PMs.
 
 ### 3. Verification & Compliance Matrix
 - [x] Validate that the syntax perfectly links between the `MIR` strategy documents and these downstream `MSP` execution documents securely.

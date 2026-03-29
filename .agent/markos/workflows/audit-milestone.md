@@ -7,14 +7,14 @@ Audit milestone completion against original intent and KPI targets before archiv
 ## 1. Load Milestone Context
 
 ```bash
-MILESTONE=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" roadmap list-phases --raw | jq '.current_milestone')
-PHASES=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" roadmap list-phases --raw)
+MILESTONE=$(node ".agent/markos/bin/markos-tools.cjs" roadmap list-phases --raw | jq '.current_milestone')
+PHASES=$(node ".agent/markos/bin/markos-tools.cjs" roadmap list-phases --raw)
 ```
 
 Display:
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► MILESTONE AUDIT — {milestone_name}
+ MARKOS ► MILESTONE AUDIT — {milestone_name}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -49,7 +49,7 @@ Read STRATEGIC-GOALS.md and KPI-FRAMEWORK.md. For each milestone KPI target:
 
 Did this milestone improve MIR coverage?
 ```bash
-MIR_GAPS=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit --raw | jq '.total_fills')
+MIR_GAPS=$(node ".agent/markos/bin/markos-tools.cjs" mir-audit --raw | jq '.total_fills')
 ```
 Compare to milestone start baseline (from STATE.md).
 
@@ -78,7 +78,7 @@ Write `.planning/milestones/{milestone_id}-AUDIT.md`:
 ## 7. Route
 
 If gaps found → list remediation steps, offer to create gap phases.
-If clean → display: `/mgsd-complete-milestone` to proceed.
+If clean → display: `/markos-complete-milestone` to proceed.
 
 </process>
 

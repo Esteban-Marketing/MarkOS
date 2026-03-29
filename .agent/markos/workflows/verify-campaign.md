@@ -2,10 +2,10 @@
 description: Validate campaign outputs against KPI-FRAMEWORK.md targets across all 7 verification dimensions with mandatory human signoff
 ---
 
-# /mgsd-verify-campaign
+# /markos-verify-campaign
 
 <purpose>
-Post-execution campaign verification. Spawns mgsd-verifier to check all 7 dimensions against KPI-FRAMEWORK.md targets, MIR gate status, and neuro_spec compliance. Human must sign off on all verification dimensions — no dimension is auto-approved. Produces VERIFICATION.md and creates Linear review tickets for any human-required checks.
+Post-execution campaign verification. Spawns markos-verifier to check all 7 dimensions against KPI-FRAMEWORK.md targets, MIR gate status, and neuro_spec compliance. Human must sign off on all verification dimensions — no dimension is auto-approved. Produces VERIFICATION.md and creates Linear review tickets for any human-required checks.
 </purpose>
 
 <core_principle>
@@ -16,31 +16,31 @@ Verification is not rubber-stamping. Every metric is checked against a pre-defin
 
 <step name="initialize">
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" init verify-campaign "${PHASE_ARG}" --raw)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" init verify-campaign "${PHASE_ARG}" --raw)
 ```
 
 Parse: `phase_dir`, `phase_number`, `phase_name`, `plan_count`, `summary_count`, `kpi_framework_path`, `campaign_ids[]`.
 
 **If any plan lacks SUMMARY.md:** List missing summaries. Options:
-1. Re-run `/mgsd-execute-phase {N}` to complete missing plans
+1. Re-run `/markos-execute-phase {N}` to complete missing plans
 2. Proceed with partial verification (document gaps)
 </step>
 
 <step name="spawn_verifier">
-Spawn `mgsd-verifier` with full context:
+Spawn `markos-verifier` with full context:
 
 ```
 Task(
-  subagent_type="mgsd-verifier",
+  subagent_type="markos-verifier",
   model="{verifier_model}",
   prompt="
   Verify Phase {phase_number}: {phase_name}
 
   Read all PLAN.md + SUMMARY.md in {phase_dir}.
   Read KPI targets from: {kpi_framework_path}
-  Read verification patterns from: .agent/marketing-get-shit-done/references/verification-patterns.md
-  Read neuromarketing spec from: .agent/marketing-get-shit-done/references/neuromarketing.md
-  Read MIR gate status from: .agent/marketing-get-shit-done/references/mir-gates.md
+  Read verification patterns from: .agent/markos/references/verification-patterns.md
+  Read neuromarketing spec from: .agent/markos/references/neuromarketing.md
+  Read MIR gate status from: .agent/markos/references/mir-gates.md
 
   Run all 7 verification dimensions per verification-patterns.md.
   Mark each dimension: ✅ passed | ⚠️ warning | ❌ failed | 🔍 human_verification_required
@@ -66,7 +66,7 @@ Parse: `overall_status`, dimension results, `human_verification[]` items, `gaps[
 → Proceed to `human_review_loop`.
 
 **If `overall_status: gaps_found`:**
-→ Display gaps, offer `/mgsd-plan-phase {N} --gaps` to create remediation plans.
+→ Display gaps, offer `/markos-plan-phase {N} --gaps` to create remediation plans.
 </step>
 
 <step name="human_review_loop">
@@ -103,7 +103,7 @@ If "fail" or "needs-revision": describe the issue
 Write human responses to `{phase_dir}/HUMAN-UAT.md`:
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" uat record \
+node ".agent/markos/bin/markos-tools.cjs" uat record \
   --phase "${PHASE_NUMBER}" \
   --item "${ITEM_N}" \
   --result "${HUMAN_RESPONSE}" \
@@ -121,7 +121,7 @@ Compute final verification status:
 
 Update VERIFICATION.md with human responses:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" verification finalize \
+node ".agent/markos/bin/markos-tools.cjs" verification finalize \
   --phase "${PHASE_NUMBER}" \
   --status "${FINAL_STATUS}"
 ```
@@ -131,15 +131,15 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" verification finalize \
 Create Linear review tickets for each verification item that required human attention:
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear create \
-  --title "[MGSD] Verification Complete: Phase {N} — {status}" \
+node ".agent/markos/bin/markos-tools.cjs" linear create \
+  --title "[MARKOS] Verification Complete: Phase {N} — {status}" \
   --body "{verification_summary}" \
   --label "verification,campaign"
 ```
 
 Trigger post-execution-sync hook:
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear sync \
+node ".agent/markos/bin/markos-tools.cjs" linear sync \
   --phase "${PHASE_NUMBER}" \
   --direction bidirectional
 ```
@@ -148,7 +148,7 @@ node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" linear sync \
 <step name="completion">
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- MGSD ► CAMPAIGN VERIFICATION — Phase {N}
+ MARKOS ► CAMPAIGN VERIFICATION — Phase {N}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Status: {VERIFIED ✅ | REVISION REQUIRED ⚠️ | FAILED ❌}
@@ -166,18 +166,18 @@ Dimensions:
 Human UAT items: {N} passed / {M} total
 
 {If VERIFIED:}
-/mgsd-progress  → mark phase complete
-/mgsd-execute-phase {N+1}  → next phase
+/markos-progress  → mark phase complete
+/markos-execute-phase {N+1}  → next phase
 
 {If REVISION REQUIRED:}
-/mgsd-plan-phase {N} --gaps  → create revision plans
+/markos-plan-phase {N} --gaps  → create revision plans
 ```
 </step>
 
 </process>
 
 <success_criteria>
-- [ ] mgsd-verifier spawned — VERIFICATION.md created
+- [ ] markos-verifier spawned — VERIFICATION.md created
 - [ ] All 7 dimensions checked
 - [ ] Human reviewed every human_verification_required item
 - [ ] Human responses recorded in HUMAN-UAT.md

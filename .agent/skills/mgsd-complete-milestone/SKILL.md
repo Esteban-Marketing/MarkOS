@@ -1,20 +1,20 @@
 ---
-name: mgsd-complete-milestone
+name: markos-complete-milestone
 description: Archive completed milestone and prepare for next version
 ---
 
-# mgsd-complete-milestone
+# markos-complete-milestone
 
 <context>
 Concludes a milestone officially, finalizing ROADMAP and evaluating results.
 </context>
 
 <execution_context>
-@.agent/marketing-get-shit-done/workflows/complete-milestone.md
+@.agent/markos/workflows/complete-milestone.md
 </execution_context>
 
 <process>
-Execute the `/mgsd-complete-milestone` workflow exactly as documented in the workflow file.
+Execute the `/markos-complete-milestone` workflow exactly as documented in the workflow file.
 </process>
 
 <success_criteria>

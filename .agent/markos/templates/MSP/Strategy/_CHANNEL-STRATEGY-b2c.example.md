@@ -1,7 +1,7 @@
 # _CHANNEL-STRATEGY-b2c.example.md
 # Reference Example: **B2C** (Premium Home Fitness Brand)
 
-<!-- mgsd-token: MSP | model: B2C -->
+<!-- markos-token: MSP | model: B2C -->
 
 ---
 

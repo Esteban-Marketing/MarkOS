@@ -1,0 +1,1 @@
+Phase reference: `.planning/phases/28-runtime-integrity/`.

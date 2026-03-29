@@ -1,7 +1,7 @@
 # ORGANIC-SOCIAL.md — Organic Social Media Strategy
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MIR/Campaigns_Assets/05_CHANNELS/ORGANIC-SOCIAL.md to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MIR/Campaigns_Assets/05_CHANNELS/ORGANIC-SOCIAL.md to customize it safely.
 
 
 ```

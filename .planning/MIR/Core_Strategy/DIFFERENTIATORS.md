@@ -1,10 +1,10 @@
 # DIFFERENTIATORS.md — Competitive Moat & Unfair Advantages
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/DIFFERENTIATORS.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/DIFFERENTIATORS.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: Before filling this file, read `RESEARCH/ORG-PROFILE.md` AND `RESEARCH/COMPETITIVE-INTEL.md`. The `mgsd-analyst` MUST verify that these differentiators are actually defensible.
+> **AGENT LOGIC**: Before filling this file, read `RESEARCH/ORG-PROFILE.md` AND `RESEARCH/COMPETITIVE-INTEL.md`. The `markos-analyst` MUST verify that these differentiators are actually defensible.
 
 ---
 

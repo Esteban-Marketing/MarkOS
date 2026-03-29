@@ -1,7 +1,7 @@
 # _CHANNEL-STRATEGY-agents-aas.example.md
 # Reference Example: **Agents-aaS** (AI Marketing Operations Agent Platform)
 
-<!-- mgsd-token: MSP | model: Agents-aaS -->
+<!-- markos-token: MSP | model: Agents-aaS -->
 
 ---
 

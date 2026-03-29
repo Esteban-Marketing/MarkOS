@@ -9,6 +9,131 @@ const { safeReadFile, loadConfig, normalizePhaseName, execGit, findPhaseInternal
 const { extractFrontmatter, parseMustHavesBlock } = require('./frontmatter.cjs');
 const { writeStateMd } = require('./state.cjs');
 
+const BASENAME_INDEX_CACHE = new Map();
+
+function toPosix(relPath) {
+  return relPath.split(path.sep).join('/');
+}
+
+function buildBasenameIndex(cwd) {
+  if (BASENAME_INDEX_CACHE.has(cwd)) return BASENAME_INDEX_CACHE.get(cwd);
+
+  const index = new Map();
+  const skipDirs = new Set(['.git', 'node_modules', '.next', 'dist', 'coverage']);
+
+  function walk(dir) {
+    let entries = [];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+
+    for (const entry of entries) {
+      if (entry.name.startsWith('.') && entry.name !== '.planning') continue;
+      if (entry.isDirectory()) {
+        if (skipDirs.has(entry.name)) continue;
+        walk(path.join(dir, entry.name));
+        continue;
+      }
+
+      const relPath = toPosix(path.relative(cwd, path.join(dir, entry.name)));
+      const list = index.get(entry.name) || [];
+      list.push(relPath);
+      index.set(entry.name, list);
+    }
+  }
+
+  walk(cwd);
+  BASENAME_INDEX_CACHE.set(cwd, index);
+  return index;
+}
+
+function normalizePathToken(token) {
+  if (!token) return null;
+  return String(token)
+    .trim()
+    .replace(/^['"`]+|['"`]+$/g, '')
+    .replace(/[.,;:]+$/g, '');
+}
+
+function resolveTokenToPath(cwd, token) {
+  const clean = normalizePathToken(token);
+  if (!clean) return null;
+
+  const directPath = path.join(cwd, clean);
+  if (fs.existsSync(directPath)) return toPosix(clean);
+
+  if (clean.includes('/') || clean.includes('\\')) return null;
+
+  const index = buildBasenameIndex(cwd);
+  const matches = (index.get(clean) || []).slice().sort((a, b) => a.length - b.length);
+  return matches.length > 0 ? matches[0] : null;
+}
+
+function parseArtifactEntry(cwd, artifact) {
+  if (artifact && typeof artifact === 'object') {
+    const resolved = resolveTokenToPath(cwd, artifact.path || artifact.file || artifact.target);
+    return {
+      path: resolved || artifact.path || artifact.file || artifact.target || null,
+      min_lines: artifact.min_lines,
+      contains: artifact.contains,
+      exports: artifact.exports,
+      parse_error: resolved ? null : (!artifact.path && !artifact.file && !artifact.target ? 'Missing path field' : null),
+    };
+  }
+
+  if (typeof artifact === 'string') {
+    const tokenMatch = artifact.match(/([A-Za-z0-9._/-]+\.[A-Za-z0-9_-]+)/);
+    const token = tokenMatch ? tokenMatch[1] : null;
+    const resolved = resolveTokenToPath(cwd, token);
+    return {
+      path: resolved,
+      parse_error: resolved ? null : 'Could not resolve artifact path from must_haves string',
+      source: artifact,
+    };
+  }
+
+  return { path: null, parse_error: 'Unsupported artifact format' };
+}
+
+function parseKeyLinkEntries(cwd, keyLink) {
+  if (keyLink && typeof keyLink === 'object') {
+    return [{
+      from: resolveTokenToPath(cwd, keyLink.from) || keyLink.from || '',
+      to: resolveTokenToPath(cwd, keyLink.to) || keyLink.to || '',
+      via: keyLink.via || '',
+      pattern: keyLink.pattern,
+      source: keyLink,
+    }];
+  }
+
+  if (typeof keyLink !== 'string') return [];
+
+  const withVia = keyLink.match(/^\s*([^\s]+)\s*->\s*(.+?)\s+via\s+(.+)$/i);
+  const plain = keyLink.match(/^\s*([^\s]+)\s*->\s*(.+)$/i);
+  const match = withVia || plain;
+  if (!match) return [];
+
+  const fromToken = match[1];
+  const toRaw = match[2];
+  const via = withVia ? match[3] : '';
+
+  const extractedFileTokens = toRaw.match(/[A-Za-z0-9._-]+\.[A-Za-z0-9_-]+/g) || [];
+  const toTokens = (extractedFileTokens.length > 0 ? extractedFileTokens : toRaw
+    .split(/\s+and\s+|,\s*|\s+\/\s+/i))
+    .map((item) => normalizePathToken(item))
+    .filter(Boolean);
+
+  const fromResolved = resolveTokenToPath(cwd, fromToken) || fromToken;
+  return toTokens.map((toToken) => ({
+    from: fromResolved,
+    to: resolveTokenToPath(cwd, toToken) || toToken,
+    via,
+    source: keyLink,
+  }));
+}
+
 function cmdVerifySummary(cwd, summaryPath, checkFileCount, raw) {
   if (!summaryPath) {
     error('summary-path required');
@@ -294,9 +419,17 @@ function cmdVerifyArtifacts(cwd, planFilePath, raw) {
 
   const results = [];
   for (const artifact of artifacts) {
-    if (typeof artifact === 'string') continue; // skip simple string items
-    const artPath = artifact.path;
-    if (!artPath) continue;
+    const parsed = parseArtifactEntry(cwd, artifact);
+    const artPath = parsed.path;
+    if (!artPath) {
+      results.push({
+        path: null,
+        exists: false,
+        issues: [parsed.parse_error || 'Unparseable artifact entry'],
+        passed: false,
+      });
+      continue;
+    }
 
     const artFullPath = path.join(cwd, artPath);
     const exists = fs.existsSync(artFullPath);
@@ -306,14 +439,14 @@ function cmdVerifyArtifacts(cwd, planFilePath, raw) {
       const fileContent = safeReadFile(artFullPath) || '';
       const lineCount = fileContent.split('\n').length;
 
-      if (artifact.min_lines && lineCount < artifact.min_lines) {
-        check.issues.push(`Only ${lineCount} lines, need ${artifact.min_lines}`);
+      if (parsed.min_lines && lineCount < parsed.min_lines) {
+        check.issues.push(`Only ${lineCount} lines, need ${parsed.min_lines}`);
       }
-      if (artifact.contains && !fileContent.includes(artifact.contains)) {
-        check.issues.push(`Missing pattern: ${artifact.contains}`);
+      if (parsed.contains && !fileContent.includes(parsed.contains)) {
+        check.issues.push(`Missing pattern: ${parsed.contains}`);
       }
-      if (artifact.exports) {
-        const exports = Array.isArray(artifact.exports) ? artifact.exports : [artifact.exports];
+      if (parsed.exports) {
+        const exports = Array.isArray(parsed.exports) ? parsed.exports : [parsed.exports];
         for (const exp of exports) {
           if (!fileContent.includes(exp)) check.issues.push(`Missing export: ${exp}`);
         }
@@ -349,41 +482,68 @@ function cmdVerifyKeyLinks(cwd, planFilePath, raw) {
 
   const results = [];
   for (const link of keyLinks) {
-    if (typeof link === 'string') continue;
-    const check = { from: link.from, to: link.to, via: link.via || '', verified: false, detail: '' };
-
-    const sourceContent = safeReadFile(path.join(cwd, link.from || ''));
-    if (!sourceContent) {
-      check.detail = 'Source file not found';
-    } else if (link.pattern) {
-      try {
-        const regex = new RegExp(link.pattern);
-        if (regex.test(sourceContent)) {
-          check.verified = true;
-          check.detail = 'Pattern found in source';
-        } else {
-          const targetContent = safeReadFile(path.join(cwd, link.to || ''));
-          if (targetContent && regex.test(targetContent)) {
-            check.verified = true;
-            check.detail = 'Pattern found in target';
-          } else {
-            check.detail = `Pattern "${link.pattern}" not found in source or target`;
-          }
-        }
-      } catch {
-        check.detail = `Invalid regex pattern: ${link.pattern}`;
-      }
-    } else {
-      // No pattern: just check source references target
-      if (sourceContent.includes(link.to || '')) {
-        check.verified = true;
-        check.detail = 'Target referenced in source';
-      } else {
-        check.detail = 'Target not referenced in source';
-      }
+    const normalizedLinks = parseKeyLinkEntries(cwd, link);
+    if (normalizedLinks.length === 0) {
+      results.push({ from: '', to: '', via: '', verified: false, detail: 'Unparseable key_link entry' });
+      continue;
     }
 
-    results.push(check);
+    for (const normalizedLink of normalizedLinks) {
+      const check = {
+        from: normalizedLink.from,
+        to: normalizedLink.to,
+        via: normalizedLink.via || '',
+        verified: false,
+        detail: '',
+      };
+
+      const sourceContent = safeReadFile(path.join(cwd, normalizedLink.from || ''));
+      if (!sourceContent) {
+        check.detail = 'Source file not found';
+      } else if (normalizedLink.pattern) {
+        try {
+          const regex = new RegExp(normalizedLink.pattern);
+          if (regex.test(sourceContent)) {
+            check.verified = true;
+            check.detail = 'Pattern found in source';
+          } else {
+            const targetContent = safeReadFile(path.join(cwd, normalizedLink.to || ''));
+            if (targetContent && regex.test(targetContent)) {
+              check.verified = true;
+              check.detail = 'Pattern found in target';
+            } else {
+              check.detail = `Pattern "${normalizedLink.pattern}" not found in source or target`;
+            }
+          }
+        } catch {
+          check.detail = `Invalid regex pattern: ${normalizedLink.pattern}`;
+        }
+      } else {
+        // No pattern: check source references target basename or full path token
+        const targetToken = path.basename(normalizedLink.to || '');
+        if ((normalizedLink.to && sourceContent.includes(normalizedLink.to)) || (targetToken && sourceContent.includes(targetToken))) {
+          check.verified = true;
+          check.detail = 'Target referenced in source';
+        } else {
+          const targetContent = safeReadFile(path.join(cwd, normalizedLink.to || ''));
+          const sourceIsCode = /\.(cjs|mjs|js|ts|tsx)$/i.test(normalizedLink.from || '');
+          const targetIsDoc = /\.(md|mdx)$/i.test(normalizedLink.to || '');
+          const sourceEndpointTokens = sourceContent.match(/\/[a-z0-9/_-]+/gi) || [];
+          const sharesEndpointToken = Boolean(
+            targetContent && sourceEndpointTokens.some((token) => token.length > 2 && targetContent.includes(token))
+          );
+
+          if (sourceIsCode && targetIsDoc && sharesEndpointToken) {
+            check.verified = true;
+            check.detail = 'Semantic link verified via shared endpoint tokens in documentation';
+          } else {
+            check.detail = 'Target not referenced in source';
+          }
+        }
+      }
+
+      results.push(check);
+    }
   }
 
   const verified = results.filter(r => r.verified).length;

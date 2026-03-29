@@ -1,13 +1,22 @@
-# Roadmap: Marketing Get Shit Done (MGSD)
+# Roadmap: MarkOS (MARKOS)
 
 ## Milestones
 
 - ✅ **v1.0 Initial Protocol** — Phases 1-7 (shipped 2026-03-23)
-- ✅ **v1.1 MGSD Hardening** — Phases 8-9 (shipped 2026-03-25)
+- ✅ **v1.1 MARKOS Hardening** — Phases 8-9 (shipped 2026-03-25)
 - ✅ **v1.2 Future Integrations (Legacy Execution Track)** — Phases 10-16 (delivered)
 - 📋 **v2.0 MarkOS Rebrand** — Phases 17-22 (deferred; superseded by v2.1 sequencing)
 - ✅ **v2.1 Product Hardening & Identity Convergence** — Phases 23-27 (shipped 2026-03-28)
 - 📋 **v2.2 TBD** — Next milestone (not yet planned)
+
+## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
+
+- 31-01: Tiered endpoint SLO telemetry for `/submit`, `/approve`, `/linear/sync`, `/campaign/result`
+- 31-02: Migration promotion controls (`dry-run -> dual-write -> cloud-primary`) with checkpoint records
+- 31-03: Secret enforcement, centralized redaction, and fixed retention bounds (14/30/90 days)
+- 31-04: Operator-driven compatibility retirement policy with optional evidence references
+
+Compatibility retirement in Phase 31 is a manual operator decision recorded in `.planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json`. Recommended evidence remains listed, but there is no hard minimum evidence threshold before retirement.
 
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
@@ -21,11 +30,11 @@
 2. MSP templates are standardized.
 
 ## Phase 2: Agent Deployment & PM Logic (Extension)
-**Goal:** Unpack and deploy the agentic team under `.agent/marketing-get-shit-done/` following the GSD `agents, hooks, skills, bin, references, templates, workflows and VERSION` architecture. Implement Linear Project Management logic.
+**Goal:** Unpack and deploy the agentic team under `.agent/markos/` following the GSD `agents, hooks, skills, bin, references, templates, workflows and VERSION` architecture. Implement Linear Project Management logic.
 **Requirements Mapped:** AGT-01, AGT-02
 **Status:** ✅ Complete
 **Success Criteria:**
-1. `mgsd` folder structure fully mirrors `gsd` (`agents`, `hooks`, `skills`, `bin`, etc.).
+1. `markos` folder structure fully mirrors `gsd` (`agents`, `hooks`, `skills`, `bin`, etc.).
 2. Linear PM Agents created to check and manage done tasks automatically.
 
 ## Phase 3: Marketing Matrix Expansion
@@ -39,40 +48,40 @@
 ---
 
 ## Phase 4: Skill Alignment & Local Override Architecture
-**Goal:** Align all `mgsd-*` skills to the new exhaustive template structures and establish the `.mgsd-local/` client-override directory so that future patches never touch client customizations.
+**Goal:** Align all `markos-*` skills to the new exhaustive template structures and establish the `.markos-local/` client-override directory so that future patches never touch client customizations.
 **Requirements Mapped:** SKL-01
 **Depends on:** Phase 3
 **Status:** ✅ Complete
 **Success Criteria:**
-1. `mgsd-new-project`, `mgsd-plan-phase`, `mgsd-execute-phase`, and all related skills resolve template paths correctly against the Phase 3 expanded structure.
-2. `.mgsd-local/` override directory convention is defined, documented, and referenced in all relevant agents and hooks — client files placed here survive both GSD and MGSD patch updates.
+1. `markos-new-project`, `markos-plan-phase`, `markos-execute-phase`, and all related skills resolve template paths correctly against the Phase 3 expanded structure.
+2. `.markos-local/` override directory convention is defined, documented, and referenced in all relevant agents and hooks — client files placed here survive both GSD and MARKOS patch updates.
 3. Skills self-document which template directories they read from and which are client-overridable.
-4. `mgsd-new-project` scaffold creates `.mgsd-local/` with an onboarding README on first run.
+4. `markos-new-project` scaffold creates `.markos-local/` with an onboarding README on first run.
 
 **Plans:**
 - [x] 04-01: Audit and align standard skills
-- [x] 04-02: `.mgsd-local` scaffold integration
+- [x] 04-02: `.markos-local` scaffold integration
 - [x] 04-03: Self-documentation and Verification
 
 ---
 
 ## Phase 5: Research Architecture & Tokenization
-**Goal:** Build the structured `RESEARCH/` system — a dedicated top-level directory of post-processed, tokenized market and audience intelligence that feeds MIR, MSP, and all downstream content generation. Attach agentic generation to `mgsd-new-project`.
+**Goal:** Build the structured `RESEARCH/` system — a dedicated top-level directory of post-processed, tokenized market and audience intelligence that feeds MIR, MSP, and all downstream content generation. Attach agentic generation to `markos-new-project`.
 **Requirements Mapped:** RES-01, RES-02
 **Depends on:** Phase 4
 **Status:** ✅ Complete
 **Success Criteria:**
 1. `RESEARCH/` directory scaffolded at project root (peer to `MIR/`, `MSP/`) with 6 canonical research files: `AUDIENCE-RESEARCH.md`, `ORG-PROFILE.md`, `PRODUCT-RESEARCH.md`, `COMPETITIVE-INTEL.md`, `MARKET-TRENDS.md`, `CONTENT-AUDIT.md`.
 2. Each file has a fully specified, tokenized template with frontmatter, agent instructions, and explicit cross-references to MIR/MSP fields it populates.
-3. An agentic researcher role (`mgsd-researcher`) reads raw input and writes processed, insight-dense entries — not raw dumps.
-4. `mgsd-new-project` auto-triggers research generation sequence after scaffold.
+3. An agentic researcher role (`markos-researcher`) reads raw input and writes processed, insight-dense entries — not raw dumps.
+4. `markos-new-project` auto-triggers research generation sequence after scaffold.
 5. MIR and MSP templates carry RESEARCH token references so planner agents pull live context automatically.
 
 **Plans:**
 - [x] 05-01: Research file templates
-- [x] 05-02: mgsd-researcher implementation
+- [x] 05-02: markos-researcher implementation
 - [x] 05-03: MIR and MSP Tokenization
-- [x] 05-04: Hooking down to mgsd-new-project
+- [x] 05-04: Hooking down to markos-new-project
 
 ---
 
@@ -82,9 +91,9 @@
 **Depends on:** Phase 5
 **Status:** ✅ Complete
 **Success Criteria:**
-1. A self-contained web onboarding app (spun up optionally via CLI during `mgsd-new-project`) presents a clean multi-step form covering: Company/Brand, Audience, Product/Service, Competitive landscape, Market context, and Content inventory.
+1. A self-contained web onboarding app (spun up optionally via CLI during `markos-new-project`) presents a clean multi-step form covering: Company/Brand, Audience, Product/Service, Competitive landscape, Market context, and Content inventory.
 2. Submission produces a versioned `onboarding-seed.json` committed to the project.
-3. An orchestrator agent reads `onboarding-seed.json` and drives `mgsd-researcher` to populate all 6 RESEARCH files, then scaffolds MIR and MSP fields with derived values.
+3. An orchestrator agent reads `onboarding-seed.json` and drives `markos-researcher` to populate all 6 RESEARCH files, then scaffolds MIR and MSP fields with derived values.
 4. The UI is white-label ready: logo, colors, and copy are configurable via a simple config file.
 5. Form UX is premium and guided — minimal friction, no marketing jargon exposed to clients.
 
@@ -95,16 +104,16 @@
 ---
 
 ## Phase 7: NPX Patch Engine & Distribution
-**Goal:** Package `marketing-get-shit-done` for NPM. Implement a smart agentic patch engine that installs and updates the MGSD protocol on top of any existing GSD install — without touching client customizations in `.mgsd-local/`.
+**Goal:** Package `markos` for NPM. Implement a smart agentic patch engine that installs and updates the MARKOS protocol on top of any existing GSD install — without touching client customizations in `.markos-local/`.
 **Requirements Mapped:** NPX-01, NPX-02, PATCH-01
 **Depends on:** Phase 6
 **Status:** ✅ Complete
 **Success Criteria:**
-1. `npx marketing-get-shit-done` runs an interactive CLI wizard (mirrors GSD's install UX) — asks install location, GSD co-existence option, project name — then installs the full MGSD protocol.
-2. The CLI correctly detects an existing GSD install and injects MGSD commands into the existing `.agent/` structure non-destructively.
-3. `npx marketing-get-shit-done update` applies a minimal patch: agent reads current protocol version, diffs against latest, and applies only changed files — skipping any path listed under `.mgsd-local/`.
+1. `npx markos` runs an interactive CLI wizard (mirrors GSD's install UX) — asks install location, GSD co-existence option, project name — then installs the full MARKOS protocol.
+2. The CLI correctly detects an existing GSD install and injects MARKOS commands into the existing `.agent/` structure non-destructively.
+3. `npx markos update` applies a minimal patch: agent reads current protocol version, diffs against latest, and applies only changed files — skipping any path listed under `.markos-local/`.
 4. Patch conflicts (same file modified by client AND by update) are surfaced to the user with a diff preview — never auto-overwritten.
-5. The npm package `marketing-get-shit-done` is published to the public registry and installable globally or per-project.
+5. The npm package `markos` is published to the public registry and installable globally or per-project.
 6. A `VERSION` file and changelog entry are generated/updated on every install and update.
 
 **Plans:**
@@ -114,15 +123,15 @@
 </details>
 
 <details>
-<summary>v1.1.0 — MGSD Hardening (Completed 2026-03-25)</summary>
+<summary>v1.1.0 — MARKOS Hardening (Completed 2026-03-25)</summary>
 
 ## Phase 8: Protocol Hardening, Tokenization & Hybrid Team
-**Goal:** Document, tokenize, and categorize the MGSD protocol to harden, close gaps, remove inconsistencies, and improve the performance of the agents running this protocol to completely own and manage the hybrid (human + AI) team and their tasks.
+**Goal:** Document, tokenize, and categorize the MARKOS protocol to harden, close gaps, remove inconsistencies, and improve the performance of the agents running this protocol to completely own and manage the hybrid (human + AI) team and their tasks.
 **Requirements Mapped:** HRD-01, TOK-01, HYB-01
 **Depends on:** Phase 7
 **Status:** ✅ Complete
 **Success Criteria:**
-1. All MGSD templates (MIR, MSP, RESEARCH) use a unified, strict tokenization taxonomy for robust context retrieval.
+1. All MARKOS templates (MIR, MSP, RESEARCH) use a unified, strict tokenization taxonomy for robust context retrieval.
 2. The protocol clearly categorizes tasks by "AI-owned", "Human-owned", and "Hybrid", with clear handoff protocols.
 3. Documentation gaps and inconsistencies between tools and templates are resolved.
 4. Agent prompts and skill instructions are updated to leverage the new tokenized categories to act as managers rather than just executors.
@@ -140,9 +149,9 @@
 **Depends on:** Phase 8
 **Status:** ✅ Complete
 **Success Criteria:**
-1. The new Reaction Squad (`mgsd-data-scientist`, `mgsd-behavioral-scraper`) is fully integrated without conflict.
+1. The new Reaction Squad (`markos-data-scientist`, `markos-behavioral-scraper`) is fully integrated without conflict.
 2. The Red Team Debate & VectorDB Episodic Memory correctly retrieve historical context before execution.
-3. The `mgsd-task-synthesizer` cleanly generates non-hallucinated tasks and maps them to `[API-EXECUTE]`.
+3. The `markos-task-synthesizer` cleanly generates non-hallucinated tasks and maps them to `[API-EXECUTE]`.
 4. The Event-Driven Defcon Layer & Monte Carlo Budgeting appropriately trigger fail-safes without stranding the executor.
 
 **Plans:**
@@ -159,7 +168,7 @@
 ## v1.2.0 — Future Integrations
 
 ## Phase 10: Multi-Tenant Scale & Telemetry
-**Goal:** Optimize MGSD to seamlessly run across 5-10 distinct isolated brands simultaneously. Build robust output telemetry and cross-client vector segregation.
+**Goal:** Optimize MARKOS to seamlessly run across 5-10 distinct isolated brands simultaneously. Build robust output telemetry and cross-client vector segregation.
 **Requirements Mapped:** SCL-01, TLM-01
 **Depends on:** Phase 9
 **Status:** ✅ Complete
@@ -174,7 +183,7 @@
 ---
 
 ## Phase 11: Rich Business-Model Examples (Tier 1)
-**Goal:** Enrich the MGSD protocol so every LLM agent executing a template fill receives a concrete, model-specific reference example alongside client data. business_model captured during onboarding, injected into every prompt.
+**Goal:** Enrich the MARKOS protocol so every LLM agent executing a template fill receives a concrete, model-specific reference example alongside client data. business_model captured during onboarding, injected into every prompt.
 **Requirements Mapped:** EX-01
 **Depends on:** Phase 6 (Onboarding Engine)
 **Status:** ✅ Complete
@@ -195,18 +204,18 @@
 ---
 
 ## Phase 12: Phase 11 Deferred Items Resolution
-**Goal:** Complete the three items deferred from Phase 11: ChromaDB business_model persistence, unit test suite for example-resolver, and Tier 2 paid acquisition examples for all 7 business models.
-**Requirements Mapped:** EX-02, TEST-01, CHROMA-02
+**Goal:** Complete the three items deferred from Phase 11: Supabase + Upstash Vector business_model persistence, unit test suite for example-resolver, and Tier 2 paid acquisition examples for all 7 business models.
+**Requirements Mapped:** EX-02, TEST-01, VECTOR-02
 **Depends on:** Phase 11
 **Status:** ✅ Complete
 **Success Criteria:**
-1. `chroma-client.cjs` stores `business_model` in all section metadata and creates a top-level `mgsd-{slug}-meta` collection.
+1. `vector-store-client.cjs` stores `business_model` in all section metadata and creates a top-level `markos-{slug}-meta` collection.
 2. `test/example-resolver.test.js` passes 8/8 tests covering all slug normalizations, graceful degradation, and injection format.
 3. 7 `_PAID-ACQUISITION-{model}.example.md` Tier 2 example files with full 4-sprint paid campaign structure.
 4. `generatePaidAcquisition()` wired into `msp-filler.cjs` with example injection.
 
 **Plans:**
-- [x] 12-01: chroma-client.cjs business_model persistence
+- [x] 12-01: vector-store-client.cjs business_model persistence
 - [x] 12-02: test/example-resolver.test.js suite (8 tests, all pass)
 - [x] 12-03: Tier 2 PAID-ACQUISITION examples × 7 models
 - [x] 12-04: generatePaidAcquisition() injected into msp-filler.cjs
@@ -245,7 +254,7 @@
 **Goal:** Harden the Phase 13 onboarding engine by addressing critical upgrade risks (template isolation), modularizing backend logic (shared utils), enforcing a granular "Hierarchy of Truth" (Chat > File > Web) in extraction, and optimizing performance through parallel source processing.
 **Status:** ✅ Complete
 **Success Criteria:**
-1. Upgrade Isolation: Onboarding data written to `.mgsd-local/` instead of `.agent/` templates.
+1. Upgrade Isolation: Onboarding data written to `.markos-local/` instead of `.agent/` templates.
 2. Backend Modularity: `utils.cjs` created; `server.cjs` and `handlers.cjs` refactor to use shared JSON/Body logic.
 3. Hierarchy of Truth: `extraction-prompt.js` prioritizes Chat over File and Web sources.
 4. Performance: Source extraction (URL + Files) runs in parallel using `Promise.all`.
@@ -255,7 +264,7 @@
 - [x] 13.1-01: Onboarding Hardening & Optimization
 
 ## Phase 14: Codebase Mastery (v1.2)
-**Goal:** Harden the MGSD onboarding backend, resolve technical debt, and standardize path resolution across all modules.
+**Goal:** Harden the MARKOS onboarding backend, resolve technical debt, and standardize path resolution across all modules.
 **Status:** ✅ Complete
 **Success Criteria:**
 1. Smart Onboarding Engine v2.0 hardened and production-ready.
@@ -282,7 +291,7 @@
 ---
 
 ## Phase 16: Documentation Enrichment
-**Goal:** Optimize the MGSD documentation for both human maintainers and autonomous LLM agents via inline notes, instruction precision, and context hardening.
+**Goal:** Optimize the MARKOS documentation for both human maintainers and autonomous LLM agents via inline notes, instruction precision, and context hardening.
 **Status:** ✅ Complete
 **Success Criteria:**
 1. Codebase enriched with `/** @llm_context ... */` blocks in critical modules.
@@ -300,24 +309,24 @@
 <details>
 <summary>v2.0.0 MarkOS Rebrand (Deferred Track)</summary>
 
-## v2.0.0 — MarkOS Rebrand (MGSD → MarkOS)
+## v2.0.0 — MarkOS Rebrand (MARKOS → MarkOS)
 
-> **Identity Migration:** Complete rebrand from "marketing-get-shit-done" / "MGSD" to **MarkOS** — the Marketing Operating System by esteban.marketing. Every command, agent, directory, config, token ID, and public reference is migrated. Zero legacy terms remain in the codebase.
+> **Identity Migration:** Complete rebrand from "markos" / "MARKOS" to **MarkOS** — the Marketing Operating System by esteban.marketing. Every command, agent, directory, config, token ID, and public reference is migrated. Zero legacy terms remain in the codebase.
 >
 > **Research:** [.planning/research/rebrand/RESEARCH-SUMMARY.md](.planning/research/rebrand/RESEARCH-SUMMARY.md)
 
 ---
 
 ### Phase 17: NPM Identity & CLI Rebrand
-**Goal:** Migrate the npm package identity, CLI bin entries, and install/update scripts from `marketing-get-shit-done`/`mgsd` to `markos`. Publish a deprecation bridge on the old package name.
+**Goal:** Migrate the npm package identity, CLI bin entries, and install/update scripts from `markos`/`markos` to `markos`. Publish a deprecation bridge on the old package name.
 **Requirements Mapped:** RBD-01, RBD-02
 **Depends on:** Phase 16
 **Status:** ⬚ Not Started
 **Success Criteria:**
 1. `package.json` name changed to `markos`, bin entry `markos` → `./bin/install.cjs`.
-2. Legacy bin alias `mgsd` retained for one major version as backward compat.
+2. Legacy bin alias `markos` retained for one major version as backward compat.
 3. `npx markos install` and `npx markos update` work end-to-end.
-4. Old `marketing-get-shit-done` npm package publishes a deprecation notice pointing to `markos`.
+4. Old `markos` npm package publishes a deprecation notice pointing to `markos`.
 5. Keywords, homepage, description, and prepublishOnly script updated.
 6. `VERSION` bumped to `2.0.0`.
 
@@ -325,38 +334,38 @@
 - [ ] 17-01: Verify npm name availability (`npm view markos`) + reserve fallback
 - [ ] 17-02: Update package.json identity (name, bin, keywords, homepage, description, scripts)
 - [ ] 17-03: Update bin/install.cjs and bin/update.cjs display text, banner, and npx commands
-- [ ] 17-04: Publish deprecation bridge on old `marketing-get-shit-done` package
+- [ ] 17-04: Publish deprecation bridge on old `markos` package
 
 ---
 
 ### Phase 18: Directory & File Structure Migration
-**Goal:** Rename all MGSD-branded directories and files to MarkOS equivalents using atomic `git mv` operations. This is the largest single change: 383+ files.
+**Goal:** Rename all MARKOS-branded directories and files to MarkOS equivalents using atomic `git mv` operations. This is the largest single change: 383+ files.
 **Requirements Mapped:** RBD-03, RBD-04
 **Depends on:** Phase 17
 **Status:** ⬚ Not Started
 **Success Criteria:**
-1. `.agent/marketing-get-shit-done/` → `.agent/markos/` (317 files).
-2. All 39 agent files renamed: `mgsd-*.md` → `markos-*.md`.
-3. All 25 skill directories renamed: `mgsd-*/` → `markos-*/`.
-4. 20 Linear task templates renamed: `MGSD-ITM-*.md` → `MARKOS-ITM-*.md`.
-5. 1 workflow file renamed: `mgsd-linear-sync.md` → `markos-linear-sync.md`.
-6. 1 bin file renamed: `mgsd-tools.cjs` → `markos-tools.cjs`.
-7. `MGSD-INDEX.md` → `MARKOS-INDEX.md`.
-8. `.mgsd-project.json` → `.markos-project.json`.
-9. `.mgsd-install-manifest.json` → `.markos-install-manifest.json`.
+1. `.agent/markos/` → `.agent/markos/` (317 files).
+2. All 39 agent files renamed: `markos-*.md` → `markos-*.md`.
+3. All 25 skill directories renamed: `markos-*/` → `markos-*/`.
+4. 20 Linear task templates renamed: `MARKOS-ITM-*.md` → `MARKOS-ITM-*.md`.
+5. 1 workflow file renamed: `markos-linear-sync.md` → `markos-linear-sync.md`.
+6. 1 bin file renamed: `markos-tools.cjs` → `markos-tools.cjs`.
+7. `MARKOS-INDEX.md` → `MARKOS-INDEX.md`.
+8. `.markos-project.json` → `.markos-project.json`.
+9. `.markos-install-manifest.json` → `.markos-install-manifest.json`.
 10. Git history preserved via `git mv`.
 
 **Plans:**
-- [ ] 18-01: Rename `.agent/marketing-get-shit-done/` → `.agent/markos/` (top-level git mv)
-- [ ] 18-02: Rename all 39 agent files (`mgsd-*.md` → `markos-*.md`)
-- [ ] 18-03: Rename all 25 skill directories (`mgsd-*/` → `markos-*/`)
+- [ ] 18-01: Rename `.agent/markos/` → `.agent/markos/` (top-level git mv)
+- [ ] 18-02: Rename all 39 agent files (`markos-*.md` → `markos-*.md`)
+- [ ] 18-03: Rename all 25 skill directories (`markos-*/` → `markos-*/`)
 - [ ] 18-04: Rename ITM templates, workflow file, bin tool, and index
-- [ ] 18-05: Rename root config files (`.mgsd-project.json`, `.mgsd-install-manifest.json`)
+- [ ] 18-05: Rename root config files (`.markos-project.json`, `.markos-install-manifest.json`)
 
 ---
 
 ### Phase 19: Token System & Agent Identity Migration
-**Goal:** Migrate all 100+ internal token IDs from `MGSD-*` prefix to `MARKOS-*` and update the master registry (MARKOS-INDEX.md). Update all agent/skill/hook/workflow frontmatter `name:` fields.
+**Goal:** Migrate all 100+ internal token IDs from `MARKOS-*` prefix to `MARKOS-*` and update the master registry (MARKOS-INDEX.md). Update all agent/skill/hook/workflow frontmatter `name:` fields.
 **Requirements Mapped:** RBD-05, RBD-06
 **Depends on:** Phase 18
 **Status:** ⬚ Not Started
@@ -367,27 +376,27 @@
 4. All 5 hook files have updated token IDs.
 5. All 7 prompt files have updated token IDs.
 6. All cross-references between agents resolve correctly.
-7. Validation: `grep -r "MGSD-" .agent/markos/` returns zero results.
+7. Validation: `grep -r "MARKOS-" .agent/markos/` returns zero results.
 
 **Plans:**
-- [ ] 19-01: Scripted find-replace of all `MGSD-` → `MARKOS-` token prefixes across `.agent/markos/`
-- [ ] 19-02: Update all agent frontmatter `name:` fields (`mgsd-*` → `markos-*`)
+- [ ] 19-01: Scripted find-replace of all `MARKOS-` → `MARKOS-` token prefixes across `.agent/markos/`
+- [ ] 19-02: Update all agent frontmatter `name:` fields (`markos-*` → `markos-*`)
 - [ ] 19-03: Update all skill SKILL.md frontmatter `name:` fields
 - [ ] 19-04: Regenerate MARKOS-INDEX.md master registry
-- [ ] 19-05: Cross-reference validation scan (zero MGSD- tokens remaining)
+- [ ] 19-05: Cross-reference validation scan (zero MARKOS- tokens remaining)
 
 ---
 
 ### Phase 20: Code Path, Config & Data Layer Updates
-**Goal:** Update all hardcoded paths in backend .cjs files, onboarding config, ChromaDB namespace patterns, telemetry identifiers, and localStorage keys to use MarkOS naming.
+**Goal:** Update all hardcoded paths in backend .cjs files, onboarding config, Supabase + Upstash Vector namespace patterns, telemetry identifiers, and localStorage keys to use MarkOS naming.
 **Requirements Mapped:** RBD-07, RBD-08, RBD-09
 **Depends on:** Phase 18
 **Status:** ⬚ Not Started
 **Success Criteria:**
-1. All 15+ backend `.cjs` files updated: path constants, string literals, comments referencing `mgsd`/`marketing-get-shit-done`.
+1. All 15+ backend `.cjs` files updated: path constants, string literals, comments referencing `markos`/`markos`.
 2. `onboarding-config.json` updated: `project_slug`, `mir_output_path`, `msp_output_path`.
-3. `chroma-client.cjs` namespace pattern changed: `mgsd-{slug}` → `markos-{slug}` (6 locations).
-4. `telemetry.cjs` updated: `MARKOS_TELEMETRY` env var (with `MGSD_TELEMETRY` fallback), `markos-backend-telemetry` as `$lib`.
+3. `vector-store-client.cjs` namespace pattern changed: `markos-{slug}` → `markos-{slug}` (6 locations).
+4. `telemetry.cjs` updated: `MARKOS_TELEMETRY` env var (with `MARKOS_TELEMETRY` fallback), `markos-backend-telemetry` as `$lib`.
 5. `onboarding.js` localStorage keys updated with migration from old keys.
 6. `write-mir.cjs` generated content stamps updated: `<!-- markos-generated -->` and `Generated by MarkOS AI`.
 7. `onboarding-seed.schema.json` title updated.
@@ -396,7 +405,7 @@
 **Plans:**
 - [ ] 20-01: Update path-constants.cjs and all backend path references
 - [ ] 20-02: Update onboarding-config.json and handlers.cjs defaults
-- [ ] 20-03: Update chroma-client.cjs namespace pattern (with backward-compat detection)
+- [ ] 20-03: Update vector-store-client.cjs namespace pattern (with backward-compat detection)
 - [ ] 20-04: Update telemetry.cjs (dual env var support)
 - [ ] 20-05: Update onboarding.js localStorage keys (with migration)
 - [ ] 20-06: Update write-mir.cjs generated content stamps
@@ -405,7 +414,7 @@
 ---
 
 ### Phase 21: Documentation, UI & Public-Facing Rebrand
-**Goal:** Update all documentation, architecture diagrams, protocol-lore, onboarding UI, and public-facing content to reflect the MarkOS brand. Zero mentions of "MGSD" or "marketing-get-shit-done" remain outside of historical milestone records.
+**Goal:** Update all documentation, architecture diagrams, protocol-lore, onboarding UI, and public-facing content to reflect the MarkOS brand. Zero mentions of "MARKOS" or "markos" remain outside of historical milestone records.
 **Requirements Mapped:** RBD-10, RBD-11
 **Depends on:** Phase 20
 **Status:** ⬚ Not Started
@@ -416,44 +425,44 @@
 4. All 7 `.protocol-lore/` files updated (QUICKSTART, CONVENTIONS, ARCHITECTURE, WORKFLOWS, CODEBASE-MAP, TEMPLATES, MEMORY).
 5. `onboarding/index.html` title updated to "MarkOS Onboarding".
 6. `.planning/ROADMAP.md` title updated. `.planning/REQUIREMENTS.md` updated.
-7. All 60+ MIR/MSP template override path notes updated (`.mgsd-local/` → `.markos-local/`).
-8. RESEARCH/ files updated where they reference MGSD.
-9. `.mgsd-local/` client content updated where it references MGSD.
-10. Validation: `grep -r "mgsd\|marketing-get-shit-done" --include="*.md" --include="*.json" --include="*.js" --include="*.cjs" --include="*.html" --include="*.css"` returns only historical milestone files.
+7. All 60+ MIR/MSP template override path notes updated (`.markos-local/` → `.markos-local/`).
+8. RESEARCH/ files updated where they reference MARKOS.
+9. `.markos-local/` client content updated where it references MARKOS.
+10. Validation: `grep -r "markos\|markos" --include="*.md" --include="*.json" --include="*.js" --include="*.cjs" --include="*.html" --include="*.css"` returns only historical milestone files.
 
 **Plans:**
 - [ ] 21-01: Update README.md, CHANGELOG.md, VERSION
 - [ ] 21-02: Update ARCH-DIAGRAM.md and TECH-MAP.md
 - [ ] 21-03: Update all .protocol-lore/ files
 - [ ] 21-04: Scripted update of 60+ MIR/MSP template override path notes
-- [ ] 21-05: Update RESEARCH/ files and .mgsd-local/ client content (now .markos-local/)
+- [ ] 21-05: Update RESEARCH/ files and .markos-local/ client content (now .markos-local/)
 - [ ] 21-06: Update onboarding UI (index.html title, CSS if needed)
 - [ ] 21-07: Update .planning/ files (ROADMAP title, REQUIREMENTS)
 
 ---
 
 ### Phase 22: Migration Logic & Backward Compatibility
-**Goal:** Implement migration paths in install.cjs and update.cjs so existing MGSD installs seamlessly upgrade to MarkOS. Handle ChromaDB collection migration, `.mgsd-local/` → `.markos-local/` auto-migration, manifest migration, and .gitignore updates.
+**Goal:** Implement migration paths in install.cjs and update.cjs so existing MARKOS installs seamlessly upgrade to MarkOS. Handle Supabase + Upstash Vector collection migration, `.markos-local/` → `.markos-local/` auto-migration, manifest migration, and .gitignore updates.
 **Requirements Mapped:** RBD-12, RBD-13, RBD-14
 **Depends on:** Phase 20, Phase 21
 **Status:** ⬚ Not Started
 **Success Criteria:**
-1. `bin/install.cjs` detects existing `.agent/marketing-get-shit-done/` and auto-migrates to `.agent/markos/`.
-2. `bin/update.cjs` detects old `.mgsd-install-manifest.json` and migrates to `.markos-install-manifest.json`.
-3. `.mgsd-local/` auto-migrated to `.markos-local/` (move, not copy — no data loss).
-4. `.mgsd-project.json` auto-migrated to `.markos-project.json`.
-5. ChromaDB migration function: detects `mgsd-*` collections, creates `markos-*` equivalents, copies data, deletes old.
+1. `bin/install.cjs` detects existing `.agent/markos/` and auto-migrates to `.agent/markos/`.
+2. `bin/update.cjs` detects old `.markos-install-manifest.json` and migrates to `.markos-install-manifest.json`.
+3. `.markos-local/` auto-migrated to `.markos-local/` (move, not copy — no data loss).
+4. `.markos-project.json` auto-migrated to `.markos-project.json`.
+5. Supabase + Upstash Vector migration function: detects `markos-*` collections, creates `markos-*` equivalents, copies data, deletes old.
 6. `.gitignore` updated to include both old and new patterns during transition.
 7. `onboarding.js` checks both old and new localStorage keys.
-8. PostHog telemetry supports both `MGSD_TELEMETRY` and `MARKOS_TELEMETRY` env vars.
+8. PostHog telemetry supports both `MARKOS_TELEMETRY` and `MARKOS_TELEMETRY` env vars.
 9. End-to-end test: old install → new update → verify everything migrated.
 
 **Plans:**
 - [ ] 22-01: install.cjs migration detection (old → new directory auto-rename)
 - [ ] 22-02: update.cjs manifest migration logic
-- [ ] 22-03: .mgsd-local/ → .markos-local/ auto-migration
-- [ ] 22-04: .mgsd-project.json → .markos-project.json migration
-- [ ] 22-05: ChromaDB collection migration function
+- [ ] 22-03: .markos-local/ → .markos-local/ auto-migration
+- [ ] 22-04: .markos-project.json → .markos-project.json migration
+- [ ] 22-05: Supabase + Upstash Vector collection migration function
 - [ ] 22-06: .gitignore dual-pattern support
 - [ ] 22-07: End-to-end migration test (old install → new update)
 
@@ -466,26 +475,26 @@
 
 > **5 phases (23–27) · 20 plans · Shipped 2026-03-28**
 >
-> Stabilized MarkOS as a local-first marketing OS: aligned identity across package metadata and runtime, hardened shared handler behavior, added fixture-backed extraction/merge tests, formalized Chroma memory namespace rules, and defined the onboarding-to-execution readiness contract.
+> Stabilized MarkOS as a local-first marketing OS: aligned identity across package metadata and runtime, hardened shared handler behavior, added fixture-backed extraction/merge tests, formalized Vector Store memory namespace rules, and defined the onboarding-to-execution readiness contract.
 
 ---
 
 ### Phase 23: Identity Normalization
-**Goal:** Normalize the product identity across package metadata, runtime messages, manifests, local directories, and documentation while preserving backward compatibility for existing MGSD installs.
+**Goal:** Normalize the product identity across package metadata, runtime messages, manifests, local directories, and documentation while preserving backward compatibility for existing MARKOS installs.
 **Requirements Mapped:** IDN-01, IDN-02, IDN-03
 **Depends on:** Phase 16
 **Status:** Complete
 **Artifacts:** `.planning/phases/23-identity-normalization/23-IDENTITY-AUDIT.md`, `.planning/phases/23-identity-normalization/23-COMPATIBILITY-CONTRACT.md`, `.planning/phases/23-identity-normalization/23-VERIFICATION.md`
 **Success Criteria:**
 1. Public product identity is consistently MarkOS across package metadata, installer/update UX, docs, and onboarding copy.
-2. Legacy MGSD paths and identifiers are cataloged and handled through explicit compatibility logic rather than ad hoc references.
-3. MarkOS/MGSD terminology is reduced to intentional compatibility and historical contexts only.
+2. Legacy MARKOS paths and identifiers are cataloged and handled through explicit compatibility logic rather than ad hoc references.
+3. MarkOS/MARKOS terminology is reduced to intentional compatibility and historical contexts only.
 4. A migration map exists for paths, manifests, local state, telemetry keys, and vector namespaces.
 
 **Plans:**
-- [x] 23-01: Audit and classify all remaining MGSD identifiers by compatibility-critical vs cosmetic
+- [x] 23-01: Audit and classify all remaining MARKOS identifiers by compatibility-critical vs cosmetic
 - [x] 23-02: Normalize package/runtime copy and public-facing docs to MarkOS-first language
-- [x] 23-03: Define compatibility contract for paths, manifests, env vars, localStorage keys, and Chroma namespaces
+- [x] 23-03: Define compatibility contract for paths, manifests, env vars, localStorage keys, and Vector Store namespaces
 - [x] 23-04: Add validation checks to prevent accidental reintroduction of mixed identity strings
 
 ---
@@ -536,19 +545,19 @@
 ---
 
 ### Phase 26: Memory, Namespace & Multi-Tenant Operations
-**Goal:** Formalize the product's memory layer around Chroma namespaces, local/cloud operating modes, migration safety, and cross-project isolation.
+**Goal:** Formalize the product's memory layer around Vector Store namespaces, local/cloud operating modes, migration safety, and cross-project isolation.
 **Requirements Mapped:** MMO-01, MMO-02, MMO-03
 **Depends on:** Phase 23, Phase 24
 **Status:** Complete
 **Artifacts:** `.planning/phases/26-memory-namespace-multi-tenant-operations/26-VERIFICATION.md`
 **Success Criteria:**
 1. Namespace rules for project slugs, draft collections, and compatibility reads are explicit and enforced.
-2. Local and cloud Chroma operating modes are documented and exercised through health and migration logic.
+2. Local and cloud Vector Store operating modes are documented and exercised through health and migration logic.
 3. Existing data remains discoverable during identity or namespace transitions.
 4. Cross-project isolation guarantees are clear enough to support multi-tenant usage safely.
 
 **Plans:**
-- [x] 26-01: Document and codify Chroma collection naming and compatibility-read behavior
+- [x] 26-01: Document and codify Vector Store collection naming and compatibility-read behavior
 - [x] 26-02: Add migration-safe namespace handling for legacy and MarkOS-prefixed collections
 - [x] 26-03: Expand health checks and failure reporting for local vs cloud vector backends
 - [x] 26-04: Add multi-project test coverage or simulation around slug isolation
@@ -577,13 +586,74 @@
 
 ---
 
-## v2.2 — TBD (Next Milestone)
+## ? v2.2 � Platform Engineering (Shipped 2026-03-28)
 
-Not yet planned. Run `/gsd-new-milestone` to start milestone planning.
+> **4 phases (28-31) � 13 plans � Shipped 2026-03-28**
+>
+> Focus: critical runtime stability, operational workflow enablement, concrete MarkOSDB migration, and rollout hardening for agency-wide adoption.
+>
+> **Status:** Production Ready � All 13 Requirements Satisfied � 43/43 Tests Pass � 6/6 Integration Flows Complete
 
-Candidate tracks:
-- **Continue v2.0 Rebrand** — Execute deferred Phases 17-22 (npm rename, file migration, token system, code paths, docs, migration logic)
-- **Execution Loop Expansion** — Deeper post-onboarding creator/executor flows, channel-strategy execution, Linear ticket generation
-- **Distribution & Growth** — NPM publish, onboarding UI improvements, public documentation
+---
+
+### Phase 28: Runtime Integrity (P0)
+**Goal:** Eliminate onboarding-blocking runtime failures and private-data protection gaps before external rollout.
+**Requirements Mapped:** P0-01, P0-02, P0-03
+**Depends on:** Phase 27
+**Status:** ? Complete (2026-03-28)
+**Artifacts:** `.planning/phases/28-runtime-integrity/28-CONTEXT.md`, `.planning/phases/28-runtime-integrity/28-REQUIREMENTS.md`, `.planning/phases/28-runtime-integrity/28-RESEARCH.md`, `.planning/phases/28-runtime-integrity/28-VERIFICATION.md`
+**Plans:**
+- [x] 28-01: Approve path resolver hardening
+- [x] 28-02: Node runtime contract alignment (`>=20.16.0`)
+- [x] 28-03: Private-data `.gitignore` protection injection
+
+---
+
+### Phase 29: Operational Enablement (P1)
+**Goal:** Deliver agency-operational workflows and remove onboarding dead-ends.
+**Requirements Mapped:** P1-01, P1-02, P1-03
+**Depends on:** Phase 28
+**Status:** ? Complete (2026-03-28)
+**Artifacts:** `.planning/phases/29-operational-enablement/29-CONTEXT.md`, `.planning/phases/29-operational-enablement/29-REQUIREMENTS.md`, `.planning/phases/29-operational-enablement/29-RESEARCH.md`, `.planning/phases/29-operational-enablement/29-VERIFICATION.md`
+**Plans:**
+- [x] 29-01: Linear API client + `/linear/sync` integration
+- [x] 29-02: Winners catalog write path + `/campaign/result`
+- [x] 29-03: Interview cap (5 questions) + auto-proceed UX
+
+---
+
+### Phase 30: MarkOSDB Migration (P1.5/P2)
+**Goal:** Build concrete migration from local compatibility artifacts into Supabase + Upstash cloud-canonical contracts.
+**Requirements Mapped:** MDB-01, MDB-02, MDB-03
+**Depends on:** Phase 29
+**Status:** ? Complete (2026-03-28)
+**Artifacts:** `.planning/phases/30-markosdb-migration/30-CONTEXT.md`, `.planning/phases/30-markosdb-migration/30-REQUIREMENTS.md`, `.planning/phases/30-markosdb-migration/30-RESEARCH.md`, `.planning/phases/30-markosdb-migration/30-VERIFICATION.md`
+**Plans:**
+- [x] 30-01: MarkOSDB schema and adapter contracts
+- [x] 30-02: Local-to-cloud ingestion pipeline
+- [x] 30-03: Next.js + Supabase auth boundary integration
+
+---
+
+### Phase 31: Rollout Hardening (P2)
+**Goal:** Gate agency-wide rollout with reliability SLOs, migration safety controls, security/compliance guardrails, and explicit compatibility deprecation criteria.
+**Requirements Mapped:** RLH-01, RLH-02, RLH-03, RLH-04
+**Depends on:** Phase 30
+**Status:** Complete (2026-03-28)
+**Artifacts:** .planning/phases/31-rollout-hardening/31-CONTEXT.md, .planning/phases/31-rollout-hardening/31-REQUIREMENTS.md, .planning/phases/31-rollout-hardening/31-RESEARCH.md, .planning/phases/31-rollout-hardening/31-VERIFICATION.md, .planning/phases/31-rollout-hardening/31-UAT.md
+**Plans:** 4 plans
+Plans:
+- [x] 31-01: Tiered endpoint SLO telemetry and docs parity
+- [x] 31-02: Migration promotion controls and rollback checkpoints
+- [x] 31-03: Secret validation, redaction, and retention enforcement
+- [x] 31-04: Operator-driven compatibility retirement policy
+
+**Compatibility Retirement Policy (Operational):**
+1. Compatibility retirement remains a manual operator decision recorded in .planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json.
+2. Protocol tests, hosted auth boundaries, migration determinism, and downstream cloud-readiness remain recommended evidence inputs, but no hard minimum evidence count is required before retirement.
+3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 <!-- EOF -->
+
+
+

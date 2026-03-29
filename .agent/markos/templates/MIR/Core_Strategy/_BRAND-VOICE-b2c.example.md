@@ -1,7 +1,7 @@
 # BRAND-VOICE.md — Voice, Tone & Personality
 # Reference Example: **B2C** (Premium Home Fitness Brand)
 
-<!-- mgsd-token: MIR | model: B2C -->
+<!-- markos-token: MIR | model: B2C -->
 > [!NOTE] B2C voice is emotionally resonant and story-driven. It speaks to identity and aspiration, not process and ROI.
 
 ---

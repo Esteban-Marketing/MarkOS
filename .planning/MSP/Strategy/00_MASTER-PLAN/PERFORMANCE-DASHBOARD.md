@@ -1,23 +1,42 @@
-# PERFORMANCE-DASHBOARD.md — Cross-Discipline KPI Scorecard
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/PERFORMANCE-DASHBOARD.md to customize it safely.
+# MarkOS Performance Dashboard — Cross-Discipline KPI Scorecard
+
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/00_MASTER-PLAN/PERFORMANCE-DASHBOARD.md to customize it safely.
+
+---
+
+## LLM-Optimized Summary
+
+This dashboard provides single-view performance tracking across all active MarkOS disciplines. Updated monthly, it serves as the executive summary of marketing health. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts. Structured for LLM chunking and cross-referencing.
+
+**See also:**
+- [STRATEGIC-GOALS.md](STRATEGIC-GOALS.md)
+- [README.md](../../../../README.md)
 
 
-```
-file_purpose  : Single-view performance tracking across all active disciplines.
-                Updated monthly. The executive summary of marketing health.
-status        : empty
-plan_period   : YYYY
-last_updated  : YYYY-MM-DD
-```
+
+---
+
+**File Purpose:**
+Single-view performance tracking across all active disciplines. Updated monthly. The executive summary of marketing health. Updated for MarkOS v2.2.
+
+**Status:** [FILL]
+**Plan Period:** [FILL]
+**Last Updated:** 2026-03-28
+
+---
 
 > **Source of truth for all numbers: PostHog.** Platform numbers (Meta, Google, etc.) are listed
 > as signal only — never used as the basis for optimization decisions.
 
 ---
 
+
 ## 1. North Star Metric
+
+**Summary:**
+Tracks the primary north star metric for the MarkOS marketing program. Use as the top-level KPI for all contributors.
 
 | Metric | Target | Current Month | Last Month | Trend | Status |
 |--------|--------|--------------|-----------|-------|--------|
@@ -25,7 +44,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 2. Acquisition Scorecard
+
+**Summary:**
+Tracks acquisition metrics across the funnel, including leads, CPL, and conversion rates. Source of truth: PostHog and CRM.
 
 | Metric | Target | MTD | Last Month | YTD | Source |
 |--------|--------|-----|-----------|-----|--------|
@@ -38,7 +61,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 3. Activation Scorecard
+
+**Summary:**
+Tracks activation metrics, including lead-to-call and call-to-close rates. Use for pipeline health monitoring.
 
 | Metric | Target | MTD | Last Month | YTD | Source |
 |--------|--------|-----|-----------|-----|--------|
@@ -48,7 +75,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 4. Revenue Scorecard
+
+**Summary:**
+Tracks revenue, new clients, CAC, and MER. Use for financial performance and ROI analysis.
 
 | Metric | Target | MTD | Last Month | YTD | Source |
 |--------|--------|-----|-----------|-----|--------|
@@ -59,7 +90,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 5. Discipline Scorecards
+
+**Summary:**
+Tracks KPIs for each active discipline (advertising, content, email, social, SEO, etc.). Use for discipline-level accountability.
 
 ### 01 — Advertising
 
@@ -109,7 +144,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 6. Tracking Health
+
+**Summary:**
+Monitors the health of tracking infrastructure (PostHog, CAPI, n8n, CRM sync). Use for data quality assurance.
 
 | Check | Target | Status | Last Verified |
 |-------|--------|--------|--------------|
@@ -122,7 +161,11 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 7. Month-Over-Month Trend
+
+**Summary:**
+Visualizes key metrics over time for trend analysis and forecasting.
 
 | Metric | Jan | Feb | Mar | Apr | May | Jun | Jul | Aug | Sep | Oct | Nov | Dec |
 |--------|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
@@ -132,7 +175,23 @@ last_updated  : YYYY-MM-DD
 
 ---
 
+
 ## 8. Status Key
+
+**Summary:**
+Defines the meaning of status icons for all scorecards. Use for quick interpretation of dashboard status.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 ```
 🟢  At or above target

@@ -1,25 +1,25 @@
 ---
-token_id: MGSD-REF-OPS-01
+token_id: MARKOS-REF-OPS-01
 document_class: reference
 domain: ops
 version: 1.0
 status: active
 upstream: []
 downstream:
-  - token_id: MGSD-AGT-STR-01
-    path: agents/mgsd-strategist.md
+  - token_id: MARKOS-AGT-STR-01
+    path: agents/markos-strategist.md
     relationship: reads_gate_enforcement_rules
-  - token_id: MGSD-AGT-CNT-01
-    path: agents/mgsd-content-creator.md
+  - token_id: MARKOS-AGT-CNT-01
+    path: agents/markos-content-creator.md
     relationship: reads_gate1_requirement
-  - token_id: MGSD-AGT-TRK-01
-    path: agents/mgsd-tracking-spec.md
+  - token_id: MARKOS-AGT-TRK-01
+    path: agents/markos-tracking-spec.md
     relationship: reads_gate2_requirement
-  - token_id: MGSD-AGT-TRK-02
-    path: agents/mgsd-utm-architect.md
+  - token_id: MARKOS-AGT-TRK-02
+    path: agents/markos-utm-architect.md
     relationship: reads_gate2_requirement
-  - token_id: MGSD-SKL-CAM-03
-    path: skills/mgsd-mir-audit/SKILL.md
+  - token_id: MARKOS-SKL-CAM-03
+    path: skills/markos-mir-audit/SKILL.md
     relationship: executes_gate_check
 mir_gate_required: none
 ---
@@ -30,7 +30,7 @@ mir_gate_required: none
 
 **Function:** Defines Gate 1 (Identity) and Gate 2 (Execution) readiness requirements, the check procedure, and which agents are blocked by each gate.
 **Produces:** Gate status signal read by pre-execution hooks and agents before any campaign action.
-**Consumed by:** MGSD-AGT-STR-01, MGSD-AGT-CNT-01, MGSD-AGT-TRK-01, MGSD-AGT-TRK-02, MGSD-SKL-CAM-03
+**Consumed by:** MARKOS-AGT-STR-01, MARKOS-AGT-CNT-01, MARKOS-AGT-TRK-01, MARKOS-AGT-TRK-02, MARKOS-SKL-CAM-03
 
 ## Scope of Authority
 
@@ -76,7 +76,7 @@ Required files with status `complete` or `verified`:
 ## Check Logic
 
 ```bash
-INIT=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" mir-audit)
+INIT=$(node ".agent/markos/bin/markos-tools.cjs" mir-audit)
 ```
 
 Parse JSON `gate1.ready` and `gate2.ready`:
@@ -88,31 +88,31 @@ Parse JSON `gate1.ready` and `gate2.ready`:
 
 | Agent | TOKEN_ID | Gate 1 Required | Gate 2 Required |
 |-------|---------|----------------|----------------|
-| mgsd-strategist | MGSD-AGT-STR-01 | ✓ | — |
-| mgsd-content-creator | MGSD-AGT-CNT-01 | ✓ | — |
-| mgsd-copy-drafter | MGSD-AGT-CNT-02 | ✓ | — |
-| mgsd-social-drafter | MGSD-AGT-CNT-03 | ✓ | — |
-| mgsd-email-sequence | MGSD-AGT-CNT-04 | ✓ | — |
-| mgsd-campaign-architect | MGSD-AGT-STR-03 | ✓ | — |
-| mgsd-creative-brief | MGSD-AGT-STR-04 | ✓ | — |
-| mgsd-planner | MGSD-AGT-STR-02 | ✓ | — |
-| mgsd-tracking-spec | MGSD-AGT-TRK-01 | — | ✓ |
-| mgsd-utm-architect | MGSD-AGT-TRK-02 | — | ✓ |
-| mgsd-campaign-launch | MGSD-SKL-CAM-01 | ✓ | ✓ |
-| mgsd-analyst | MGSD-AGT-ANA-05 | — | ✓ |
-| mgsd-funnel-analyst | MGSD-AGT-ANA-01 | — | ✓ |
-| mgsd-performance-monitor | MGSD-AGT-ANA-02 | — | ✓ |
-| paid_media_creator | MGSD-PRM-PM-01 | ✓ | — |
-| email_lifecycle_strategist | MGSD-PRM-EM-01 | ✓ | — |
-| cro_landing_page_builder | MGSD-PRM-LC-01 | ✓ | ✓ |
-| seo_content_architect | MGSD-PRM-SEO-01 | ✓ | — |
-| social_community_manager | MGSD-PRM-SOC-01 | ✓ | — |
-| brand_enforcer_qa | MGSD-PRM-QA-01 | ✓ | — |
-| telemetry_synthesizer | MGSD-PRM-TRK-01 | — | ✓ |
-| mgsd-auditor | MGSD-AGT-OPS-08 | — | — |
-| mgsd-linear-manager | MGSD-AGT-OPS-07 | — | — |
-| mgsd-context-loader | MGSD-AGT-OPS-01 | — | — |
-| mgsd-librarian | MGSD-AGT-OPS-02 | — | — |
+| markos-strategist | MARKOS-AGT-STR-01 | ✓ | — |
+| markos-content-creator | MARKOS-AGT-CNT-01 | ✓ | — |
+| markos-copy-drafter | MARKOS-AGT-CNT-02 | ✓ | — |
+| markos-social-drafter | MARKOS-AGT-CNT-03 | ✓ | — |
+| markos-email-sequence | MARKOS-AGT-CNT-04 | ✓ | — |
+| markos-campaign-architect | MARKOS-AGT-STR-03 | ✓ | — |
+| markos-creative-brief | MARKOS-AGT-STR-04 | ✓ | — |
+| markos-planner | MARKOS-AGT-STR-02 | ✓ | — |
+| markos-tracking-spec | MARKOS-AGT-TRK-01 | — | ✓ |
+| markos-utm-architect | MARKOS-AGT-TRK-02 | — | ✓ |
+| markos-campaign-launch | MARKOS-SKL-CAM-01 | ✓ | ✓ |
+| markos-analyst | MARKOS-AGT-ANA-05 | — | ✓ |
+| markos-funnel-analyst | MARKOS-AGT-ANA-01 | — | ✓ |
+| markos-performance-monitor | MARKOS-AGT-ANA-02 | — | ✓ |
+| paid_media_creator | MARKOS-PRM-PM-01 | ✓ | — |
+| email_lifecycle_strategist | MARKOS-PRM-EM-01 | ✓ | — |
+| cro_landing_page_builder | MARKOS-PRM-LC-01 | ✓ | ✓ |
+| seo_content_architect | MARKOS-PRM-SEO-01 | ✓ | — |
+| social_community_manager | MARKOS-PRM-SOC-01 | ✓ | — |
+| brand_enforcer_qa | MARKOS-PRM-QA-01 | ✓ | — |
+| telemetry_synthesizer | MARKOS-PRM-TRK-01 | — | ✓ |
+| markos-auditor | MARKOS-AGT-OPS-08 | — | — |
+| markos-linear-manager | MARKOS-AGT-OPS-07 | — | — |
+| markos-context-loader | MARKOS-AGT-OPS-01 | — | — |
+| markos-librarian | MARKOS-AGT-OPS-02 | — | — |
 
 ## Override
 

@@ -1,10 +1,10 @@
 # INFRASTRUCTURE.md — Complete Platform & Tools Registry
 
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Core_Strategy/06_TECH-STACK/INFRASTRUCTURE.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/06_TECH-STACK/INFRASTRUCTURE.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This is the authoritative tool registry. `mgsd-strategist` MUST NOT utilize or propose tools listed in Section 9. Access levels in Section 8 are mandatory operational constraints.
+> **AGENT LOGIC**: This is the authoritative tool registry. `markos-strategist` MUST NOT utilize or propose tools listed in Section 9. Access levels in Section 8 are mandatory operational constraints.
 
 
 ```

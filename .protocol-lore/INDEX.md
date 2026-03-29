@@ -1,6 +1,6 @@
-<mgsd_context>
+<markos_context>
 <purpose>Machine-readable protocol state/architecture mapping.</purpose>
-<rule>Read relevant sub-files before modifying MGSD protocol or handling agent tasks.</rule>
+<rule>Read relevant sub-files before modifying MarkOS protocol or handling agent tasks.</rule>
 <map>
 <file path="QUICKSTART.md">Mandatory AGENT-BOOT entry point (First read).</file>
 <file path="ARCHITECTURE.md">Component interactions, MIR/MSP boundaries.</file>
@@ -15,6 +15,8 @@
 <link path="onboarding/backend/agents/orchestrator.cjs">Draft orchestration runtime.</link>
 <link path="onboarding/backend/agents/llm-adapter.cjs">Provider abstraction and fallback logic.</link>
 <link path="onboarding/backend/server.cjs">HTTP entrypoint and route wiring.</link>
-<link path="onboarding/backend/chroma-client.cjs">Vector memory persistence adapter.</link>
+<link path="onboarding/backend/vector-store-client.cjs">Vector memory persistence adapter.</link>
 </implementation_links>
-</mgsd_context>
+</markos_context>
+
+

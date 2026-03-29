@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const path = require('path');
 const fs = require('fs');
 
-const PROTOCOL_DIR = path.resolve(__dirname, '../.agent/marketing-get-shit-done');
+const PROTOCOL_DIR = path.resolve(__dirname, '../.agent/markos');
 const REPO_ROOT = path.resolve(__dirname, '..');
 
 test('Suite 4: Protocol Integrity Checks', async (t) => {
@@ -16,16 +16,16 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     assert.equal(pkg.bin.markos, './bin/install.cjs', 'Primary CLI should be markos');
     const expectedBinPath = path.resolve(__dirname, '../bin/install.cjs');
     assert.ok(fs.existsSync(expectedBinPath), 'markos bin script must exist at ./bin/install.cjs');
-    assert.equal(pkg.bin.mgsd, './bin/install.cjs', 'Legacy mgsd alias should be retained');
-    assert.equal(pkg.bin['marketing-get-shit-done'], undefined, 'Legacy package-name bin should be removed');
+    assert.equal(pkg.bin.markos, './bin/install.cjs', 'Primary markos CLI should be present');
+    assert.equal(pkg.bin['markos'], undefined, 'Legacy package-name bin should be removed');
     assert.ok(rootVersion.length > 0, 'Root VERSION file must contain a non-empty version string');
   });
   await t.test('4.1 Required Components Exist', () => {
     // Validate structural requirements
     const requiredFiles = [
-      'MGSD-INDEX.md',
-      'agents/mgsd-onboarder.md',
-      'agents/mgsd-researcher.md',
+      'MARKOS-INDEX.md',
+      'agents/markos-onboarder.md',
+      'agents/markos-researcher.md',
       'VERSION'
     ];
 
@@ -122,7 +122,7 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     const telemetry = read('onboarding/backend/agents/telemetry.cjs');
 
     assert.match(readme, /npx markos install/, 'README must use the MarkOS install command');
-    assert.doesNotMatch(readme, /npx marketing-get-shit-done\b/, 'README must not use the legacy package command as the primary install path');
+    assert.doesNotMatch(readme, /npx markos\b/, 'README must not use the legacy package command as the primary install path');
     assert.match(readme, /Compatibility Surfaces/, 'README must document the remaining compatibility-only surfaces');
 
     assert.match(changelog, /Identity Normalization/, 'CHANGELOG must record the Phase 23 identity normalization work');
@@ -133,7 +133,7 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     assert.match(onboardingHtml, /MarkOS Onboarding/, 'Onboarding HTML title must use MarkOS');
     assert.match(onboardingHtml, /MarkOS Intelligence Onboarding/, 'Onboarding heading must use MarkOS');
     assert.match(onboardingJs, /markos-onboarding-draft/, 'Onboarding must use the MarkOS draft storage key');
-    assert.match(onboardingJs, /mgsd-onboarding-draft/, 'Onboarding must retain the legacy draft storage fallback');
+    assert.match(onboardingJs, /markos-onboarding-draft/, 'Onboarding must use the new MarkOS draft storage key');
 
     assert.match(runtimeContext, /MARKOS_TELEMETRY/, 'Runtime config must support the canonical MARKOS_TELEMETRY env var');
     assert.match(telemetry, /markos-backend-telemetry/, 'Telemetry library id must be MarkOS-first');
@@ -161,13 +161,13 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     const cro = read('.agent/prompts/cro_landing_page_builder.md');
     const conventions = read('.protocol-lore/CONVENTIONS.md');
 
-    assert.doesNotMatch(paidMedia, /\.agent\/marketing-get-shit-done\/templates\/MIR/, 'Paid media prompt should not point to template MIR paths');
-    assert.doesNotMatch(emailLifecycle, /\.agent\/marketing-get-shit-done\/templates\/MIR/, 'Email lifecycle prompt should not point to template MIR paths');
-    assert.match(paidMedia, /\.mgsd-local\/MSP\/Paid_Media\/WINNERS\/_CATALOG\.md/, 'Paid media prompt must anchor to Paid_Media winners catalog');
-    assert.match(emailLifecycle, /\.mgsd-local\/MSP\/Lifecycle_Email\/WINNERS\/_CATALOG\.md/, 'Email lifecycle prompt must anchor to Lifecycle_Email winners catalog');
-    assert.match(seo, /\.mgsd-local\/MSP\/Content_SEO\/WINNERS\/_CATALOG\.md/, 'SEO prompt must anchor to Content_SEO winners catalog');
-    assert.match(social, /\.mgsd-local\/MSP\/Social\/WINNERS\/_CATALOG\.md/, 'Social prompt must anchor to Social winners catalog');
-    assert.match(cro, /\.mgsd-local\/MSP\/Landing_Pages\/WINNERS\/_CATALOG\.md/, 'CRO prompt must anchor to Landing_Pages winners catalog');
+    assert.doesNotMatch(paidMedia, /\.agent\/markos\/templates\/MIR/, 'Paid media prompt should not point to template MIR paths');
+    assert.doesNotMatch(emailLifecycle, /\.agent\/markos\/templates\/MIR/, 'Email lifecycle prompt should not point to template MIR paths');
+    assert.match(paidMedia, /\.markos-local\/MSP\/Paid_Media\/WINNERS\/_CATALOG\.md/, 'Paid media prompt must anchor to Paid_Media winners catalog');
+    assert.match(emailLifecycle, /\.markos-local\/MSP\/Lifecycle_Email\/WINNERS\/_CATALOG\.md/, 'Email lifecycle prompt must anchor to Lifecycle_Email winners catalog');
+    assert.match(seo, /\.markos-local\/MSP\/Content_SEO\/WINNERS\/_CATALOG\.md/, 'SEO prompt must anchor to Content_SEO winners catalog');
+    assert.match(social, /\.markos-local\/MSP\/Social\/WINNERS\/_CATALOG\.md/, 'Social prompt must anchor to Social winners catalog');
+    assert.match(cro, /\.markos-local\/MSP\/Landing_Pages\/WINNERS\/_CATALOG\.md/, 'CRO prompt must anchor to Landing_Pages winners catalog');
 
     for (const prompt of [paidMedia, emailLifecycle, seo, social, cro]) {
       assert.match(prompt, /BOOT REQUIREMENTS/i, 'Execution prompts must define boot requirements');
@@ -175,5 +175,39 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     }
 
     assert.match(conventions, /anchor_validation_contract/, 'Conventions must define winner anchor validation behavior');
+  });
+
+  await t.test('4.7 Compatibility retirement ledger exists with required schema', () => {
+    const ledgerPath = path.join(REPO_ROOT, '.planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json');
+    assert.ok(fs.existsSync(ledgerPath), 'Compatibility decision ledger must exist');
+
+    const ledger = JSON.parse(fs.readFileSync(ledgerPath, 'utf8'));
+    assert.equal(typeof ledger.version, 'string');
+    assert.ok(Array.isArray(ledger.decisions), 'Ledger decisions must be an array');
+    assert.ok(ledger.decisions.length > 0, 'Ledger must include a seeded draft decision');
+
+    const sample = ledger.decisions[0];
+    const required = ['surface_id', 'decision', 'owner', 'decided_at', 'rationale', 'rollback_path', 'status', 'evidence_refs'];
+    for (const key of required) {
+      assert.ok(Object.prototype.hasOwnProperty.call(sample, key), `Ledger decision missing key: ${key}`);
+    }
+    assert.ok(Array.isArray(sample.evidence_refs), 'evidence_refs must be an array (can be empty)');
+  });
+
+  await t.test('4.8 Compatibility policy stays manual-discretion across docs', () => {
+    const read = (relPath) => fs.readFileSync(path.join(REPO_ROOT, relPath), 'utf8');
+
+    const readme = read('README.md');
+    const techMap = read('TECH-MAP.md');
+    const project = read('.planning/PROJECT.md');
+    const roadmap = read('.planning/ROADMAP.md');
+    const phaseUat = read('.planning/phases/31-rollout-hardening/31-UAT.md');
+
+    for (const content of [readme, techMap, project, roadmap, phaseUat]) {
+      assert.match(content, /operator decision|operator-driven|manual operator discretion|manual-discretion/i, 'Compatibility policy must explicitly remain operator controlled');
+    }
+
+    assert.doesNotMatch(techMap, /all of the following are true/i, 'TECH-MAP must not require all-gates-must-pass retirement wording');
+    assert.doesNotMatch(phaseUat, /all of the following are true/i, '31-UAT must not drift back to hard-gate retirement wording');
   });
 });

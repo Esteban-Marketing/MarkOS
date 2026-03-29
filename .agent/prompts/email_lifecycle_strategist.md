@@ -8,15 +8,15 @@ Economic Guardrails (CPA/LTV): {{ inject: MIR/Core_Strategy/02_BUSINESS/LEAN-CAN
 Buyer Psychology (JTBD): {{ inject: MIR/Core_Strategy/02_BUSINESS/JTBD-MATRIX.md }}
 
 ## Boot Requirements
-- Approved local MIR state must be available through `.mgsd-local/MIR/` override resolution.
-- Winners anchor must exist at `.mgsd-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md`.
+- Approved local MIR state must be available through `.markos-local/MIR/` override resolution.
+- Winners anchor must exist at `.markos-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md`.
 - If winners anchor is missing, execution is blocked and should not silently fall back to templates.
 
 ## Instructions
 1. Review the Product Catalog: {{ inject: MIR/Products/PRODUCT-CATALOG.md }}
 2. Analyze the Brand Voice: {{ inject: MIR/Core_Strategy/02_BRAND/VOICE-TONE.md }}
 3. Design a 5-step lifecycle sequence targeting the Primary Emotional Driver defined in the JTBD Matrix.
-4. Reference winners for sequence flow: {{ inject: .mgsd-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md }}
+4. Reference winners for sequence flow: {{ inject: .markos-local/MSP/Lifecycle_Email/WINNERS/_CATALOG.md }}
 
 ## FAILURE MODE AWARENESS
 - Sequence without stage logic: emails are drafted but not mapped to onboarding, activation, retention, and reactivation intent.

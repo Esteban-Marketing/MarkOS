@@ -1,6 +1,6 @@
 # CHANGELOG.md — Repository Change History
 
-<!-- mgsd-token: MIR -->
+<!-- markos-token: MIR -->
 
 ```
 file_purpose  : Log all significant changes to this repository over time.

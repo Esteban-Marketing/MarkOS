@@ -1,4 +1,4 @@
-# Feature Landscape
+﻿# Feature Landscape
 
 **Domain:** AI-native marketing operating system
 **Researched:** 2026-03-28
@@ -12,7 +12,7 @@ Features users expect. Missing = product feels incomplete.
 | One-command install and update | Core CLI product promise | Medium | Present via `npx markos` and `npx markos update` |
 | Guided onboarding UI | Users need a usable first-run path | Medium | Present via local app and Vercel-compatible routes |
 | Draft generation with human approval | AI workflow products must keep humans in control of published state | Medium | Present through `/submit`, `/regenerate`, `/approve` |
-| Persistent project state | Protocol products must retain context across sessions | Medium | Present through `.planning`, `.mgsd-local`, `.mgsd-project.json`, and Chroma |
+| Persistent project state | Protocol products must retain context across sessions | Medium | Present through `.planning`, `.markos-local`, `.markos-project.json`, and Vector Store |
 | Testable delivery | Installer/updater products need regression coverage | Medium | Present with 26 passing Node tests |
 | Multi-provider LLM support | Buyers expect key flexibility and fallback options | Medium | Present across Anthropic, OpenAI, Gemini, and Ollama |
 
@@ -21,9 +21,9 @@ Features users expect. Missing = product feels incomplete.
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
 | MIR/MSP protocol separation | Distinguishes factual intelligence from execution plans | High | Strong architectural differentiator already visible in repo structure |
-| Client-owned local override layer | Preserves trust and custom strategy across updates | High | `.mgsd-local` is central to the product's ownership story |
+| Client-owned local override layer | Preserves trust and custom strategy across updates | High | `.markos-local` is central to the product's ownership story |
 | GSD co-existence | Lets dev and marketing operating systems live in one repo | High | Strong for teams using agent workflows across functions |
-| Chroma-backed draft and seed memory | Makes onboarding context reusable beyond a single request | Medium | Valuable once follow-on retrieval flows deepen |
+| Vector Store-backed draft and seed memory | Makes onboarding context reusable beyond a single request | Medium | Valuable once follow-on retrieval flows deepen |
 | Winner-anchored execution model | Grounds future generation in historical performance | High | Promising differentiator, especially for execution phases after onboarding |
 
 ## Anti-Features
@@ -40,7 +40,7 @@ Features users expect. Missing = product feels incomplete.
 ```text
 Install/update engine -> Onboarding UI -> Draft generation -> Human approval -> Local MIR/MSP persistence
 Local MIR/MSP persistence -> Prompt injection and winner anchoring -> Execution workflows
-Project slug + Chroma persistence -> Retrieval/memory features -> Multi-tenant operations
+Project slug + Vector Store persistence -> Retrieval/memory features -> Multi-tenant operations
 ```
 
 ## MVP Recommendation
@@ -62,3 +62,4 @@ Defer: Deep hosted multi-tenant management until naming, runtime, and migration 
 - test/onboarding-server.test.js
 - test/update.test.js
 - test/protocol.test.js
+

@@ -1,7 +1,7 @@
 # _CHANNEL-STRATEGY-saas.example.md
 # Reference Example: **SaaS** (Developer Observability Platform)
 
-<!-- mgsd-token: MSP | model: SaaS -->
+<!-- markos-token: MSP | model: SaaS -->
 
 ---
 

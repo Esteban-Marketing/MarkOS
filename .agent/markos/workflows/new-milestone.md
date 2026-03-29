@@ -2,7 +2,7 @@
 description: Start a new marketing milestone (quarterly planning cycle)
 ---
 
-# /mgsd-new-milestone
+# /markos-new-milestone
 
 <purpose>
 Archive completed milestone and begin a new one. Updates PROJECT.md, creates new ROADMAP section, resets STATE.md.
@@ -18,5 +18,5 @@ Archive completed milestone and begin a new one. Updates PROJECT.md, creates new
 6. Commit
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(milestone): close v{old} — start v{new}"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(milestone): close v{old} — start v{new}"
 ```

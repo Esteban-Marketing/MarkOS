@@ -7,7 +7,7 @@ verified: 2026-03-23
 # Phase 08: Protocol Hardening — Verification Report
 
 ## Goal Verification
-**Phase Goal:** Structure MGSD for agent scaling: tokenized documentation boundaries, verifiable MIR gates, and explicit human-AI workflow separation (via UI tagging) to fully support parallel worker agents.
+**Phase Goal:** Structure MARKOS for agent scaling: tokenized documentation boundaries, verifiable MIR gates, and explicit human-AI workflow separation (via UI tagging) to fully support parallel worker agents.
 **Result:** achieved
 
 ## Dimension Checks

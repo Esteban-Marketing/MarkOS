@@ -41,9 +41,9 @@ Add after base phase section:
 ## 5. Commit and Route
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(roadmap): insert urgent phase ${INSERT_PHASE} — ${PHASE_NAME}"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(roadmap): insert urgent phase ${INSERT_PHASE} — ${PHASE_NAME}"
 ```
 
-Route to: `/mgsd-discuss-phase {INSERT_PHASE}`
+Route to: `/markos-discuss-phase {INSERT_PHASE}`
 
 </process>

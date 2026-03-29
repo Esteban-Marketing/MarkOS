@@ -7,7 +7,7 @@ Remove a future (not-yet-started) marketing phase from the roadmap and renumber 
 ## 1. Validate
 
 ```bash
-PHASE_INFO=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" roadmap get-phase "${PHASE}" --raw)
+PHASE_INFO=$(node ".agent/markos/bin/markos-tools.cjs" roadmap get-phase "${PHASE}" --raw)
 ```
 
 - Confirm phase is marked `[ ] Planned` (not started)
@@ -42,7 +42,7 @@ On "confirm":
 ## 4. Commit
 
 ```bash
-node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" commit "mktg(roadmap): remove Phase ${PHASE} — ${PHASE_NAME}"
+node ".agent/markos/bin/markos-tools.cjs" commit "mktg(roadmap): remove Phase ${PHASE} — ${PHASE_NAME}"
 ```
 
 </process>

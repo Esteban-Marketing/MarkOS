@@ -1,13 +1,13 @@
 # CUSTOMER-JOURNEY.md — Awareness to Retention Map
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Products/04_PRODUCTS/CUSTOMER-JOURNEY.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Products/04_PRODUCTS/CUSTOMER-JOURNEY.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This journey is the blueprint for all automation and content sequencing. `mgsd-executor` MUST verify that any new `n8n/Make` trigger (Section 2) aligns with the defined `Stage Transition` before deployment. `mgsd-content-creator` MUST ensure all messaging maps to the specific psychological state of the customer's current stage.
+> **AGENT LOGIC**: This journey is the blueprint for all automation and content sequencing. `markos-executor` MUST verify that any new `n8n/Make` trigger (Section 2) aligns with the defined `Stage Transition` before deployment. `markos-content-creator` MUST ensure all messaging maps to the specific psychological state of the customer's current stage.
 
 **Dependencies:** MARKET-AUDIENCES (`../../Market_Audiences/03_MARKET/`), CORE-STRATEGY (`../../Core_Strategy/01_STRATEGY/`), KPI-FRAMEWORK (`../../Core_Strategy/09_ANALYTICS/KPI-FRAMEWORK.md`)
-**Assigned Agent:** `mgsd-product-manager`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-product-manager`
+**Linear Project Manager:** `markos-linear-manager`
 
 ```
 file_purpose  : Map the complete path a customer travels from first awareness

@@ -1,7 +1,7 @@
 # ICPs.md — Ideal Customer Profiles (Firmographics)
 # Reference Example: **Agents-aaS** (AI Marketing Operations Agent Platform)
 
-<!-- mgsd-token: MIR | model: Agents-aaS -->
+<!-- markos-token: MIR | model: Agents-aaS -->
 > [!NOTE] Agents-aaS ICP spans both a firmographic profile AND a stakeholder readiness assessment — the buyer must be organizationally ready for autonomous agent deployment.
 
 ---

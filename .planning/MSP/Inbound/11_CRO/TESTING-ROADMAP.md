@@ -1,7 +1,7 @@
 # TESTING-ROADMAP.md — A/B Test Queue & Results
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Inbound/11_CRO/TESTING-ROADMAP.md to customize it safely.
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Inbound/11_CRO/TESTING-ROADMAP.md to customize it safely.
 
 
 ```

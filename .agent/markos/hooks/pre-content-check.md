@@ -1,35 +1,35 @@
 ---
-token_id: MGSD-HKP-OPS-02
+token_id: MARKOS-HKP-OPS-02
 document_class: HOOK
 domain: OPS
 version: "1.0.0"
 status: active
 hook_type: pre-execution
-runs_before: [mgsd-content-creator, mgsd-copy-drafter, mgsd-social-drafter, mgsd-email-sequence]
+runs_before: [markos-content-creator, markos-copy-drafter, markos-social-drafter, markos-email-sequence]
 upstream:
-  - MGSD-REF-OPS-01  # mir-gates.md
-  - MGSD-HKP-OPS-01  # pre-campaign-check (must run first)
+  - MARKOS-REF-OPS-01  # mir-gates.md
+  - MARKOS-HKP-OPS-01  # pre-campaign-check (must run first)
 downstream:
-  - MGSD-AGT-CNT-01  # mgsd-content-creator
-  - MGSD-AGT-CNT-02  # mgsd-copy-drafter
-  - MGSD-AGT-CNT-03  # mgsd-social-drafter
-  - MGSD-AGT-CNT-04  # mgsd-email-sequence
+  - MARKOS-AGT-CNT-01  # markos-content-creator
+  - MARKOS-AGT-CNT-02  # markos-copy-drafter
+  - MARKOS-AGT-CNT-03  # markos-social-drafter
+  - MARKOS-AGT-CNT-04  # markos-email-sequence
 ---
 
 # pre-content-check — Content Gate Enforcement Hook
 
-<!-- TOKEN: MGSD-HKP-OPS-02 | CLASS: HOOK | DOMAIN: OPS -->
+<!-- TOKEN: MARKOS-HKP-OPS-02 | CLASS: HOOK | DOMAIN: OPS -->
 <!-- PURPOSE: Validates that VOICE-TONE.md and MESSAGING-FRAMEWORK.md are non-empty and complete before any copy or creative content task begins. Runs after pre-campaign-check as a narrower content-domain gate. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-HKP-OPS-01 | hooks/pre-campaign-check.md | Parent gate — run this first |
-| MGSD-REF-OPS-01 | references/mir-gates.md | Gate 1 definitions governing content agents |
-| MGSD-REF-NEU-01 | references/neuromarketing.md | Neuro trigger layer validated in Step 4 |
-| MGSD-AGT-CNT-01 | agents/mgsd-content-creator.md | Primary consumer — blocked until this hook passes |
-| MGSD-AGT-NEU-01 | agents/mgsd-neuro-auditor.md | Called in Step 4 to validate neuro_spec presence |
+| MARKOS-HKP-OPS-01 | hooks/pre-campaign-check.md | Parent gate — run this first |
+| MARKOS-REF-OPS-01 | references/mir-gates.md | Gate 1 definitions governing content agents |
+| MARKOS-REF-NEU-01 | references/neuromarketing.md | Neuro trigger layer validated in Step 4 |
+| MARKOS-AGT-CNT-01 | agents/markos-content-creator.md | Primary consumer — blocked until this hook passes |
+| MARKOS-AGT-NEU-01 | agents/markos-neuro-auditor.md | Called in Step 4 to validate neuro_spec presence |
 
 ---
 
@@ -38,7 +38,7 @@ downstream:
 Content agents call this hook before generating any copy, brief, or creative output:
 
 ```bash
-CONTENT_GATE=$(node ".agent/marketing-get-shit-done/bin/mgsd-tools.cjs" content-gate-check --raw)
+CONTENT_GATE=$(node ".agent/markos/bin/markos-tools.cjs" content-gate-check --raw)
 ```
 
 Parse JSON for: `voice_tone.ready`, `messaging.ready`, `audiences.ready`, `neuro_spec.required`, `blocking_fields[]`.
@@ -70,7 +70,7 @@ Agent has entered idle state for all copy tasks.
 REQUIRED HUMAN ACTION:
   1. Open Core_Strategy/02_BRAND/VOICE-TONE.md
   2. Fill all missing fields with verified brand voice data
-  3. Run /mgsd-execute-phase {N} after VOICE-TONE.md is complete
+  3. Run /markos-execute-phase {N} after VOICE-TONE.md is complete
 ```
 
 ---

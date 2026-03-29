@@ -1,27 +1,46 @@
-# MARKETING-PLAN.md — Master Marketing Plan
 
-<!-- mgsd-token: MSP -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .mgsd-local/MSP/Strategy/00_MASTER-PLAN/MARKETING-PLAN.md to customize it safely.
+# MarkOS Master Marketing Plan
+
+<!-- markos-token: MSP -->
+> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MSP/Strategy/00_MASTER-PLAN/MARKETING-PLAN.md to customize it safely.
+
+---
+
+## LLM-Optimized Summary
+
+This is the single governing document for the entire MarkOS marketing program. It defines strategy, priorities, discipline mix, and the logic that ties all activity together. All legacy “MARKOS”/“markos” names have been replaced with “MarkOS” except in historical or compatibility contexts. Structured for LLM chunking and cross-referencing.
+
+**See also:**
+- [STRATEGIC-GOALS.md](STRATEGIC-GOALS.md)
+- [BUDGET-ALLOCATION.md](BUDGET-ALLOCATION.md)
+- [ANNUAL-CALENDAR.md](ANNUAL-CALENDAR.md)
+- [README.md](../../../../README.md)
 
 
-```
-file_purpose  : The single governing document for the entire marketing program.
-                Defines strategy, priorities, discipline mix, and the logic
-                that ties all activity together.
-                All discipline plans derive from this document.
-status        : empty
-plan_period   : [YYYY-01-01] to [YYYY-12-31]
-last_updated  : YYYY-MM-DD
-version       : 1.0
-approved_by   : [Name + Date]
-```
+
+---
+
+**File Purpose:**
+The single governing document for the entire marketing program. All discipline plans derive from this document. Updated for MarkOS v2.2.
+
+**Status:** [FILL]
+**Plan Period:** [FILL]
+**Last Updated:** 2026-03-28
+**Version:** 2.2
+**Approved By:** [FILL]
+
+---
 
 > **AI agents:** This is the highest-level strategic document in the MSP.
 > Read this before any discipline plan. It defines the context for all marketing work.
 
 ---
 
+
 ## 1. Executive Summary
+
+**Summary:**
+One-paragraph description of the MarkOS marketing program, including growth levers, disciplines, and success criteria. Use as a quick orientation for all agents and contributors.
 
 **The one-paragraph description of this marketing program:**
 
@@ -36,7 +55,11 @@ approved_by   : [Name + Date]
 
 ---
 
+
 ## 2. Situation Analysis
+
+**Summary:**
+Describes the current business and marketing context, including stage, constraints, and market opportunity. Aligns with MIR and MarkOS v2.2.
 
 ### Where We Are Now
 
@@ -74,7 +97,11 @@ digital_presence      : "[STRONG | DEVELOPING | MINIMAL | NONE]"
 
 ---
 
+
 ## 3. Strategic Direction
+
+**Summary:**
+Defines the role of marketing, the growth model, and the principles guiding all decisions. Use as a reference for all downstream plans.
 
 ### Marketing Role in the Business
 
@@ -115,7 +142,11 @@ marketing_supports    : "[e.g. Retention, upsell — in coordination with [team/
 
 ---
 
+
 ## 4. Marketing Goals
+
+**Summary:**
+Summarizes annual goals and the north star metric. Full detail in STRATEGIC-GOALS.md.
 
 > Full detail in `STRATEGIC-GOALS.md`. High-level summary here.
 
@@ -135,7 +166,11 @@ marketing_supports    : "[e.g. Retention, upsell — in coordination with [team/
 
 ---
 
+
 ## 5. Audience Strategy
+
+**Summary:**
+Defines the primary and secondary ICPs, sequencing, and insight gaps. Aligns with MIR audience artifacts.
 
 > Full audience definitions in MIR `Market_Audiences/03_MARKET/AUDIENCES.md`.
 
@@ -153,7 +188,11 @@ marketing_supports    : "[e.g. Retention, upsell — in coordination with [team/
 
 ---
 
+
 ## 6. Discipline Mix & Strategy
+
+**Summary:**
+Lists active and inactive disciplines, their roles, and how they interact. Use for discipline-level planning and cross-team alignment.
 
 > Full strategies in each discipline folder. Summaries here.
 
@@ -181,7 +220,11 @@ marketing_supports    : "[e.g. Retention, upsell — in coordination with [team/
 
 ---
 
+
 ## 7. Messaging Strategy
+
+**Summary:**
+Defines the core message, its evolution, and messages to retire. Aligns with MIR messaging framework.
 
 > Full detail in MIR `Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md`. This section is the strategic intent.
 
@@ -196,7 +239,11 @@ marketing_supports    : "[e.g. Retention, upsell — in coordination with [team/
 
 ---
 
+
 ## 8. Channel & Platform Strategy
+
+**Summary:**
+Lists primary, secondary, excluded, and new channels. Use for channel planning and investment decisions.
 
 > Full channel detail in MIR `Campaigns_Assets/05_CHANNELS/` and discipline plans.
 
@@ -214,7 +261,11 @@ marketing_supports    : "[e.g. Retention, upsell — in coordination with [team/
 
 ---
 
+
 ## 9. Technology & Measurement
+
+**Summary:**
+Defines the measurement stack, attribution, and reporting cadence. Aligns with MIR tech stack and MarkOS v2.2 standards.
 
 > Full stack in MIR `Core_Strategy/06_TECH-STACK/`. This section is strategic framing.
 
@@ -231,7 +282,11 @@ decision_trigger_source   : "PostHog — platform data is signal only"
 
 ---
 
+
 ## 10. Budget Overview
+
+**Summary:**
+Summarizes the total budget and allocation by category. Full detail in BUDGET-ALLOCATION.md.
 
 > Full allocation in `BUDGET-ALLOCATION.md`.
 
@@ -246,7 +301,11 @@ experimentation_reserve   : "[% — budget held for new channel tests]"
 
 ---
 
+
 ## 11. Team & Resource Plan
+
+**Summary:**
+Lists all roles, assignments, gaps, and planned hires. Use for resource planning and accountability.
 
 | Role | Person | Disciplines | Hours/Week |
 |------|--------|------------|-----------|
@@ -262,7 +321,11 @@ experimentation_reserve   : "[% — budget held for new channel tests]"
 
 ---
 
+
 ## 12. Risk Register
+
+**Summary:**
+Identifies key risks, their probability, impact, and mitigation strategies. Use for proactive risk management.
 
 | Risk | Probability | Impact | Mitigation |
 |------|------------|--------|-----------|
@@ -273,7 +336,11 @@ experimentation_reserve   : "[% — budget held for new channel tests]"
 
 ---
 
+
 ## 13. Quarterly Roadmap
+
+**Summary:**
+Breaks down the year into quarterly focus areas and milestones. Full calendar in ANNUAL-CALENDAR.md.
 
 > Full calendar in `ANNUAL-CALENDAR.md`.
 
@@ -286,7 +353,23 @@ experimentation_reserve   : "[% — budget held for new channel tests]"
 
 ---
 
+
 ## 14. Plan Approval & Review
+
+**Summary:**
+Documents plan creation, approval, review schedule, and revision triggers. Ensures governance and accountability.
+
+---
+
+## LLM-Optimized Reference & Cross-Links
+
+**For further details and implementation context:**
+- [v2.2-MILESTONE-AUDIT.md](../../../../.planning/v2.2-MILESTONE-AUDIT.md): Full audit of v2.2 milestone, including rollout hardening and MarkOSDB migration.
+- [README.md](../../../../README.md): Quickstart, install, and onboarding instructions.
+- [onboarding/backend/](../../../../onboarding/backend/): All backend agent, skill, and utility modules.
+
+**MarkOS replaces all legacy MARKOS/markos names.**
+If you find any remaining legacy references, treat them as historical or for compatibility only.
 
 ```yaml
 plan_created      : YYYY-MM-DD

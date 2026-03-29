@@ -1,6 +1,6 @@
 # PROJECT.md — Project Identity & Constraints
 
-<!-- mgsd-token: MIR -->
+<!-- markos-token: MIR -->
 
 ```
 file_purpose  : Define the identity of this project instance, its stakeholders,

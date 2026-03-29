@@ -1,31 +1,31 @@
 ---
-token_id: MGSD-REF-OPS-12
+token_id: MARKOS-REF-OPS-12
 document_class: REF
 domain: OPS
 version: "1.0.0"
 status: active
 upstream:
-  - MGSD-IDX-000    # MGSD-INDEX.md — master registry
-  - MGSD-REF-OPS-11 # decimal-phase-calculation.md — X.Y format handled here
+  - MARKOS-IDX-000    # MARKOS-INDEX.md — master registry
+  - MARKOS-REF-OPS-11 # decimal-phase-calculation.md — X.Y format handled here
 downstream:
-  - MGSD-AGT-EXE-01  # mgsd-executor.md — applies parsed phase argument at execution
-  - MGSD-AGT-STR-02  # mgsd-planner.md — planner receives parsed phase target
+  - MARKOS-AGT-EXE-01  # markos-executor.md — applies parsed phase argument at execution
+  - MARKOS-AGT-STR-02  # markos-planner.md — planner receives parsed phase target
 mir_gate_required: false
 ---
 
-# Phase Argument Parsing — MGSD Phase Routing
+# Phase Argument Parsing — MARKOS Phase Routing
 
-<!-- TOKEN: MGSD-REF-OPS-12 | CLASS: REF | DOMAIN: OPS -->
-<!-- PURPOSE: Specifies how MGSD workflow commands accept and parse phase number arguments (integer, decimal X.Y, or omitted). Defines fallback behavior when no phase argument is provided. -->
+<!-- TOKEN: MARKOS-REF-OPS-12 | CLASS: REF | DOMAIN: OPS -->
+<!-- PURPOSE: Specifies how MARKOS workflow commands accept and parse phase number arguments (integer, decimal X.Y, or omitted). Defines fallback behavior when no phase argument is provided. -->
 
 ## See Also
 
 | TOKEN_ID | File | Relationship |
 |----------|------|--------------|
-| MGSD-IDX-000 | MGSD-INDEX.md | Entry point — indexes this document |
-| MGSD-REF-OPS-11 | decimal-phase-calculation.md | Decimal X.Y phase format parsed by this spec |
-| MGSD-AGT-EXE-01 | agents/mgsd-executor.md | Agent consuming the parsed phase target |
-| MGSD-AGT-STR-02 | agents/mgsd-planner.md | Planner consuming the parsed phase target |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this document |
+| MARKOS-REF-OPS-11 | decimal-phase-calculation.md | Decimal X.Y phase format parsed by this spec |
+| MARKOS-AGT-EXE-01 | agents/markos-executor.md | Agent consuming the parsed phase target |
+| MARKOS-AGT-STR-02 | agents/markos-planner.md | Planner consuming the parsed phase target |
 
 How workflows parse phase arguments from user commands.
 
@@ -44,12 +44,12 @@ How workflows parse phase arguments from user commands.
 Phases can be specified with a roadmap override:
 
 ```
-/mgsd-plan-phase 1 mgsd\.planning\ROADMAP.md
+/markos-plan-phase 1 markos\.planning\ROADMAP.md
 ```
 
 Parsing:
 1. First arg → phase number (`1`)
-2. Second arg → roadmap path (`mgsd\.planning\ROADMAP.md`)
+2. Second arg → roadmap path (`markos\.planning\ROADMAP.md`)
 3. If roadmap path provided, read phase info from that file instead of `.planning/ROADMAP.md`
 
 ## Resolution Order

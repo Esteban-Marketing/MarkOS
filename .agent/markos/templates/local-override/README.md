@@ -1,7 +1,7 @@
-# .mgsd-local/ — Your Private Customization Space
+# .markos-local/ — Your Private Customization Space
 
 This directory is **yours**. Everything in here:
-- Survives MGSD updates and patches (never overwritten)
+- Survives MARKOS updates and patches (never overwritten)
 - Survives GSD updates (never overwritten)
 - Overrides the corresponding protocol default when present
 
@@ -9,21 +9,21 @@ This directory is **yours**. Everything in here:
 
 | What | Override Path | Protocol Default |
 |------|--------------|-----------------|
-| MIR Core Strategy files | `.mgsd-local/MIR/Core_Strategy/` | `.agent/marketing-get-shit-done/templates/MIR/Core_Strategy/` |
-| MIR Audience files | `.mgsd-local/MIR/Market_Audiences/` | `.agent/marketing-get-shit-done/templates/MIR/Market_Audiences/` |
-| MIR Product files | `.mgsd-local/MIR/Products/` | `.agent/marketing-get-shit-done/templates/MIR/Products/` |
-| MIR Campaign files | `.mgsd-local/MIR/Campaigns_Assets/` | `.agent/marketing-get-shit-done/templates/MIR/Campaigns_Assets/` |
-| MIR Operations files | `.mgsd-local/MIR/Operations/` | `.agent/marketing-get-shit-done/templates/MIR/Operations/` |
-| MSP discipline templates | `.mgsd-local/MSP/<discipline>/` | `.agent/marketing-get-shit-done/templates/MSP/<discipline>/` |
-| Project config overrides | `.mgsd-local/config/config.json` | `.agent/marketing-get-shit-done/templates/config.json` |
+| MIR Core Strategy files | `.markos-local/MIR/Core_Strategy/` | `.agent/markos/templates/MIR/Core_Strategy/` |
+| MIR Audience files | `.markos-local/MIR/Market_Audiences/` | `.agent/markos/templates/MIR/Market_Audiences/` |
+| MIR Product files | `.markos-local/MIR/Products/` | `.agent/markos/templates/MIR/Products/` |
+| MIR Campaign files | `.markos-local/MIR/Campaigns_Assets/` | `.agent/markos/templates/MIR/Campaigns_Assets/` |
+| MIR Operations files | `.markos-local/MIR/Operations/` | `.agent/markos/templates/MIR/Operations/` |
+| MSP discipline templates | `.markos-local/MSP/<discipline>/` | `.agent/markos/templates/MSP/<discipline>/` |
+| Project config overrides | `.markos-local/config/config.json` | `.agent/markos/templates/config.json` |
 
 ## How Overrides Work
 
-When any MGSD agent loads a template, it checks `.mgsd-local/` first.
+When any MARKOS agent loads a template, it checks `.markos-local/` first.
 If a local override exists → use it.
 If not → fall back to the protocol default.
 
-You'll see this in agent logs: `[override] Using .mgsd-local/MIR/Core_Strategy/BRAND-VOICE.md`
+You'll see this in agent logs: `[override] Using .markos-local/MIR/Core_Strategy/BRAND-VOICE.md`
 
 ## What NOT to Put Here
 
@@ -33,5 +33,5 @@ You'll see this in agent logs: `[override] Using .mgsd-local/MIR/Core_Strategy/B
 
 ## Privacy
 
-`.mgsd-local/` is added to `.gitignore` by default. Your client customizations stay private.
+`.markos-local/` is added to `.gitignore` by default. Your client customizations stay private.
 Remove the gitignore entry if you want to version-control your overrides.

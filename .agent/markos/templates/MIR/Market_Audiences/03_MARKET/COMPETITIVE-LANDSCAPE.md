@@ -1,13 +1,13 @@
 # COMPETITIVE-LANDSCAPE.md — Competitor Profiles & Positioning Gaps
-<!-- mgsd-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.mgsd-local/MIR/Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md` to customize it safely.
+<!-- markos-token: MIR -->
+> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Market_Audiences/03_MARKET/COMPETITIVE-LANDSCAPE.md` to customize it safely.
 
 > [!IMPORTANT]
-> **AGENT LOGIC**: This is the "Psychographic Battlefield". `mgsd-analyst` MUST update Section 2 monthly based on `mgsd-media-buyer` platform insights. `mgsd-copy-drafter` MUST use the "Psychographic Gap" (Section 2) and "Claims to NOT repeat" (Section 4) to inform all unique selling propositions (USPs).
+> **AGENT LOGIC**: This is the "Psychographic Battlefield". `markos-analyst` MUST update Section 2 monthly based on `markos-media-buyer` platform insights. `markos-copy-drafter` MUST use the "Psychographic Gap" (Section 2) and "Claims to NOT repeat" (Section 4) to inform all unique selling propositions (USPs).
 
 **Dependencies:** AUDIENCES (`AUDIENCES.md`), POSITIONING (`POSITIONING.md`), AD-CREATIVE (`../../Campaigns_Assets/08_CAMPAIGNS/`)
-**Assigned Agent:** `mgsd-analyst`
-**Linear Project Manager:** `mgsd-linear-manager`
+**Assigned Agent:** `markos-analyst`
+**Linear Project Manager:** `markos-linear-manager`
 
 ---
 

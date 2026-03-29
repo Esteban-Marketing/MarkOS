@@ -1,4 +1,4 @@
-# MGSD gitignore
+# MarkOS gitignore
 
 # Environment secrets — never commit these
 .env
@@ -15,7 +15,9 @@ Thumbs.db
 # Test artifacts
 tmp/
 
-# MGSD client overrides (private — do not commit)
-.mgsd-local/
+# MarkOS client overrides (private — do not commit)
+.markos-local/
+.markos-local/
 onboarding-seed.json
-.mgsd-install-manifest.json
+.markos-install-manifest.json
+.markos-install-manifest.json

@@ -15,15 +15,15 @@
   "homepage": "https://markos.esteban.marketing",
   "license": "MIT",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.16.0"
   },
   "bin": {
     "markos": "./bin/install.cjs",
-    "mgsd": "./bin/install.cjs"
+    "markos": "./bin/install.cjs"
   },
   "files": [
     "bin/",
-    ".agent/marketing-get-shit-done/",
+    ".agent/markos/",
     "onboarding/",
     "VERSION",
     "README.md",
@@ -38,7 +38,8 @@
     "prepublishOnly": "node -e \"console.log('Publishing markos v' + require('./package.json').version)\""
   },
   "dependencies": {
-    "chromadb": "^3.4.0",
+    "@supabase/supabase-js": "^2.58.0",
+    "@upstash/vector": "^1.2.3",
     "csv-parse": "^6.2.1",
     "dotenv": "^17.3.1",
     "formidable": "^3.5.4",
