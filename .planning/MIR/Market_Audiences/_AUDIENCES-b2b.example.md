@@ -1,4 +1,4 @@
-﻿# AUDIENCES.md â€” Ideal Customer Profiles, Personas & Segments
+﻿# AUDIENCES.md — Ideal Customer Profiles, Personas & Segments
 # Reference Example: **B2B** (HR Technology Company)
 
 <!-- markos-token: MIR | model: B2B -->
@@ -9,23 +9,23 @@
 ## 1. Primary Audience Segments
 
 * **HR Leaders at Mid-Market Enterprises (500â€“5,000 employees):** HR Directors and VPs of People Operations at companies scaling their workforce. They own hiring, onboarding, and compliance. Budget authority is shared with the CFO for tools above $50K/year.
-* **Talent Acquisition Teams:** Recruiters and Talent Acquisition Managers who use the platform daily. They are the product champions â€” their endorsement is required before the economic buyer signs.
+* **Talent Acquisition Teams:** Recruiters and Talent Acquisition Managers who use the platform daily. They are the product champions — their endorsement is required before the economic buyer signs.
 * **IT/Security Gatekeepers:** Enterprise IT security teams who must approve any SaaS tool accessing employee data (GDPR, SOC 2 compliance check required).
 
 ## 2. Advanced Psychographics & Neuromarketing Profile
 
 * **Core Desires/Fears:**
-  * Desire: To be seen as a strategic business partner â€” not just "admin." They want to prove HR's ROI to the C-suite.
+  * Desire: To be seen as a strategic business partner — not just "admin." They want to prove HR's ROI to the C-suite.
   * Fear: Making a buying decision that fails to get adoption. A failed software rollout is career-limiting.
 * **Neuromarketing Triggers:**
-  * *Primary Archetype to Target:* **The Ruler** â€” They want control, order, and predictability in their function.
-  * *Effective Cognitive Biases:* Social Proof (peer HR leaders using the tool), Loss Aversion ("your competitors have modernized â€” you're falling behind"), Authority (analyst reports, certifications).
+  * *Primary Archetype to Target:* **The Ruler** — They want control, order, and predictability in their function.
+  * *Effective Cognitive Biases:* Social Proof (peer HR leaders using the tool), Loss Aversion ("your competitors have modernized — you're falling behind"), Authority (analyst reports, certifications).
 * **Pain Points & Frustrations:**
-  * Hiring velocity doesn't match business growth â€” 60+ day time-to-hire is the norm.
+  * Hiring velocity doesn't match business growth — 60+ day time-to-hire is the norm.
   * Spreadsheet-based onboarding creates compliance risk and terrible new-hire experiences.
   * Reporting to leadership requires hours of manual data assembly; no real-time dashboard exists.
 * **Objections & Friction:**
-  * "We already have an ATS â€” we don't need another tool."
+  * "We already have an ATS — we don't need another tool."
   * "Our IT team won't approve another vendor without a 6-month security review."
   * "We can't get buy-in from the executive team without proving ROI first."
 

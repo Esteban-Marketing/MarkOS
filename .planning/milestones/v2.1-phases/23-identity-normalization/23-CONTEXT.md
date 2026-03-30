@@ -1,4 +1,4 @@
-﻿# Phase 23 Context â€” Identity Normalization
+﻿# Phase 23 Context — Identity Normalization
 
 ## Objective
 
@@ -56,13 +56,13 @@ This phase is the first execution phase of milestone v2.1. It is deliberately na
 
 ## Deliverables
 
-1. `23-CONTEXT.md` â€” this document.
-2. `23-IDENTITY-AUDIT.md` â€” repo-wide audit and classification of remaining MARKOS identifiers.
-3. `23-COMPATIBILITY-CONTRACT.md` â€” canonical versus compatibility-only identity contract for legacy surfaces.
-4. `23-01-PLAN.md` â€” audit and classification of remaining MARKOS identifiers.
-5. `23-02-PLAN.md` â€” normalize package/runtime copy and public-facing docs.
-6. `23-03-PLAN.md` â€” define the compatibility contract across legacy surfaces.
-7. `23-04-PLAN.md` â€” add validation and guardrails for future identity drift.
+1. `23-CONTEXT.md` — this document.
+2. `23-IDENTITY-AUDIT.md` — repo-wide audit and classification of remaining MARKOS identifiers.
+3. `23-COMPATIBILITY-CONTRACT.md` — canonical versus compatibility-only identity contract for legacy surfaces.
+4. `23-01-PLAN.md` — audit and classification of remaining MARKOS identifiers.
+5. `23-02-PLAN.md` — normalize package/runtime copy and public-facing docs.
+6. `23-03-PLAN.md` — define the compatibility contract across legacy surfaces.
+7. `23-04-PLAN.md` — add validation and guardrails for future identity drift.
 
 ## Exit Criteria
 

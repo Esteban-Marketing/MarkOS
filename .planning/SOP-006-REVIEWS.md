@@ -5,7 +5,7 @@ reviewed_at: 2026-03-24T14:05:00.000Z
 plans_reviewed: [walkthrough.md.resolved]
 ---
 
-# Cross-AI Plan Review â€” SOP-006: AI-Enhanced Client Onboarding
+# Cross-AI Plan Review — SOP-006: AI-Enhanced Client Onboarding
 
 ## Gemini Review
 
@@ -28,7 +28,7 @@ The implementation of the AI-enhanced client onboarding successfully achieves th
 - Add an explicit `UUID` prefix to the `project_slug` namespace in Supabase + Upstash Vector to prevent collision.
 
 **Risk Assessment**
-LOW â€” The implementation is mostly backend automation wrapping existing template functionality. The core MarkOS system remains safe, and the manual approval step acts as an excellent safeguard against AI failure.
+LOW — The implementation is mostly backend automation wrapping existing template functionality. The core MarkOS system remains safe, and the manual approval step acts as an excellent safeguard against AI failure.
 
 ---
 
@@ -52,7 +52,7 @@ This is a highly operational expansion of the onboarding system. By linking prom
 - Ensure `write-mir.cjs` parses the template and only overwrites the designated `[FILL]` sections to preserve any preceding manual notes.
 
 **Risk Assessment**
-MEDIUM â€” While structurally sound, the risk of un-sandboxed overwrites during a re-run of the form process could destroy previously edited MIR templates if the user clicks "Publish" twice across sessions.
+MEDIUM — While structurally sound, the risk of un-sandboxed overwrites during a re-run of the form process could destroy previously edited MIR templates if the user clicks "Publish" twice across sessions.
 
 ---
 

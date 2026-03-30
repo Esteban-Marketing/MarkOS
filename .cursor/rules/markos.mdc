@@ -1,3 +1,8 @@
+---
+description: MarkOS repo agent boot and GSD vs MarkOS split
+globs: "**/*"
+---
+
 ## MarkOS agent boot (read first)
 
 1. **`.protocol-lore/QUICKSTART.md`** — mandatory entry: search order, commands, GSD vs MarkOS, boundaries.

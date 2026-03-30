@@ -21,6 +21,8 @@ entry_point: true
 
 This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical domain mapping within `.agent/markos/`. Every Token_ID in the corpus is registered here. When a document references another by Token_ID, resolve the path from the `File` column below.
 
+**Path column:** Paths are relative to **this directory** (`.agent/markos/`) except **SKL** skill manifests (**`../skills/...`** → `.agent/skills/`) and **PRM** execution prompts (**`../prompts/...`** → `.agent/prompts/`). AGT, WFL, TPL, ITM, MIR, and REF entries live under `.agent/markos/` as written.
+
 **TOKEN_ID structure:** `MARKOS-[CLASS]-[DOMAIN]-[SEQ]`
 - CLASS: `AGT` agent · `PRM` prompt · `REF` reference · `SKL` skill · `MIR` MIR template · `MSP` MSP matrix · `WFL` workflow · `TPL` generic template · `IDX` index
 - DOMAIN: `NEU` neuromarketing · `STR` strategy · `EXE` execution · `ANA` analytics · `OPS` operations · `TRK` tracking · `CNT` content · `AUD` audience · `CAM` campaign
@@ -99,13 +101,13 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 | MARKOS-AGT-OPS-07 | `agents/markos-linear-manager.md` | AGT | OPS | Linear.app ticket creation and bidirectional sync |
 | MARKOS-AGT-RES-01 | `agents/markos-researcher.md` | AGT | RES | Market Intelligence Agent — populates RESEARCH/ files from onboarding seed |
 | MARKOS-AGT-ONB-01 | `agents/markos-onboarder.md` | AGT | ONB | Onboarding Orchestrator — reads seed, drives researcher, scaffolds MIR/MSP |
-| MARKOS-PRM-OPS-01 | `prompts/telemetry_synthesizer.md` | PRM | OPS | Layer 0 Data Analyst; converts raw analytics into MIR insights |
-| MARKOS-PRM-STR-01 | `prompts/cro_landing_page_builder.md` | PRM | STR | High-conversion wireframer and copywriter for owned properties |
-| MARKOS-PRM-EXE-01 | `prompts/paid_media_creator.md` | PRM | EXE | Performance media creator (Meta/Google Ad copy) |
-| MARKOS-PRM-CNT-01 | `prompts/email_lifecycle_strategist.md` | PRM | CNT | Retention and LTV-focused email strategist |
-| MARKOS-PRM-CNT-02 | `prompts/seo_content_architect.md` | PRM | CNT | Inbound content creator focused on long-tail dominance |
-| MARKOS-PRM-CNT-03 | `prompts/social_community_manager.md` | PRM | CNT | Organic social engagement and market polarization |
-| MARKOS-PRM-OPS-02 | `prompts/brand_enforcer_qa.md` | PRM | OPS | Ruthless gatekeeper for brand and legal compliance |
+| MARKOS-PRM-OPS-01 | `../prompts/telemetry_synthesizer.md` | PRM | OPS | Layer 0 Data Analyst; converts raw analytics into MIR insights |
+| MARKOS-PRM-STR-01 | `../prompts/cro_landing_page_builder.md` | PRM | STR | High-conversion wireframer and copywriter for owned properties |
+| MARKOS-PRM-EXE-01 | `../prompts/paid_media_creator.md` | PRM | EXE | Performance media creator (Meta/Google Ad copy) |
+| MARKOS-PRM-CNT-01 | `../prompts/email_lifecycle_strategist.md` | PRM | CNT | Retention and LTV-focused email strategist |
+| MARKOS-PRM-CNT-02 | `../prompts/seo_content_architect.md` | PRM | CNT | Inbound content creator focused on long-tail dominance |
+| MARKOS-PRM-CNT-03 | `../prompts/social_community_manager.md` | PRM | CNT | Organic social engagement and market polarization |
+| MARKOS-PRM-OPS-02 | `../prompts/brand_enforcer_qa.md` | PRM | OPS | Ruthless gatekeeper for brand and legal compliance |
 
 ---
 
@@ -113,30 +115,30 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 
 | TOKEN_ID | File Path | Class | Domain | Description |
 |----------|-----------|-------|--------|-------------|
-| MARKOS-SKL-NEU-01 | `skills/markos-neuro-auditor/SKILL.md` | SKL | NEU | Routes to MARKOS-AGT-NEU-01 |
-| MARKOS-SKL-OPS-01 | `skills/markos-plan-phase/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-STR-02 (planner) |
-| MARKOS-SKL-OPS-02 | `skills/markos-execute-phase/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-EXE-01 (executor) |
-| MARKOS-SKL-OPS-03 | `skills/markos-discuss-phase/SKILL.md` | SKL | OPS | Routes to discuss-phase workflow |
-| MARKOS-SKL-OPS-04 | `skills/markos-verify-work/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-EXE-02 (verifier) |
-| MARKOS-SKL-OPS-05 | `skills/markos-progress/SKILL.md` | SKL | OPS | Routes to progress dashboard workflow |
-| MARKOS-SKL-OPS-06 | `skills/markos-health/SKILL.md` | SKL | OPS | Routes to structural health check |
-| MARKOS-SKL-OPS-07 | `skills/markos-autonomous/SKILL.md` | SKL | OPS | Routes to autonomous multi-phase execution orchestrator |
-| MARKOS-SKL-OPS-08 | `skills/markos-new-milestone/SKILL.md` | SKL | OPS | Routes to new milestone initialization |
-| MARKOS-SKL-OPS-09 | `skills/markos-complete-milestone/SKILL.md` | SKL | OPS | Routes to milestone archival workflow |
-| MARKOS-SKL-OPS-10 | `skills/markos-audit-milestone/SKILL.md` | SKL | OPS | Routes to milestone audit against KPIs |
-| MARKOS-SKL-OPS-11 | `skills/markos-insert-phase/SKILL.md` | SKL | OPS | Routes to decimal phase insertion logic |
-| MARKOS-SKL-OPS-12 | `skills/markos-remove-phase/SKILL.md` | SKL | OPS | Routes to phase removal and renumbering |
-| MARKOS-SKL-OPS-13 | `skills/markos-pause-work/SKILL.md` | SKL | OPS | Routes to context handoff creation |
-| MARKOS-SKL-OPS-14 | `skills/markos-resume-work/SKILL.md` | SKL | OPS | Routes to session context restoration |
-| MARKOS-SKL-OPS-15 | `skills/markos-session-report/SKILL.md` | SKL | OPS | Routes to session report generation |
-| MARKOS-SKL-OPS-16 | `skills/markos-stats/SKILL.md` | SKL | OPS | Routes to project statistics dashboard |
-| MARKOS-SKL-OPS-17 | `skills/markos-help/SKILL.md` | SKL | OPS | Routes to MARKOS command reference |
-| MARKOS-SKL-OPS-18 | `skills/markos-discipline-activate/SKILL.md` | SKL | OPS | Routes to MSP discipline toggle |
-| MARKOS-SKL-OPS-19 | `skills/markos-linear-sync/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-OPS-07 (linear-manager) |
-| MARKOS-SKL-CAM-01 | `skills/markos-campaign-launch/SKILL.md` | SKL | CAM | Routes to campaign launch checklist |
-| MARKOS-SKL-CAM-02 | `skills/markos-performance-review/SKILL.md` | SKL | CAM | Routes to campaign performance analysis |
-| MARKOS-SKL-CAM-03 | `skills/markos-mir-audit/SKILL.md` | SKL | CAM | Routes to MIR completeness audit |
-| MARKOS-SKL-ANA-01 | `skills/markos-research-phase/SKILL.md` | SKL | ANA | Routes to standalone market research |
+| MARKOS-SKL-NEU-01 | `../skills/markos-neuro-auditor/SKILL.md` | SKL | NEU | Routes to MARKOS-AGT-NEU-01 |
+| MARKOS-SKL-OPS-01 | `../skills/markos-plan-phase/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-STR-02 (planner) |
+| MARKOS-SKL-OPS-02 | `../skills/markos-execute-phase/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-EXE-01 (executor) |
+| MARKOS-SKL-OPS-03 | `../skills/markos-discuss-phase/SKILL.md` | SKL | OPS | Routes to discuss-phase workflow |
+| MARKOS-SKL-OPS-04 | `../skills/markos-verify-work/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-EXE-02 (verifier) |
+| MARKOS-SKL-OPS-05 | `../skills/markos-progress/SKILL.md` | SKL | OPS | Routes to progress dashboard workflow |
+| MARKOS-SKL-OPS-06 | `../skills/markos-health/SKILL.md` | SKL | OPS | Routes to structural health check |
+| MARKOS-SKL-OPS-07 | `../skills/markos-autonomous/SKILL.md` | SKL | OPS | Routes to autonomous multi-phase execution orchestrator |
+| MARKOS-SKL-OPS-08 | `../skills/markos-new-milestone/SKILL.md` | SKL | OPS | Routes to new milestone initialization |
+| MARKOS-SKL-OPS-09 | `../skills/markos-complete-milestone/SKILL.md` | SKL | OPS | Routes to milestone archival workflow |
+| MARKOS-SKL-OPS-10 | `../skills/markos-audit-milestone/SKILL.md` | SKL | OPS | Routes to milestone audit against KPIs |
+| MARKOS-SKL-OPS-11 | `../skills/markos-insert-phase/SKILL.md` | SKL | OPS | Routes to decimal phase insertion logic |
+| MARKOS-SKL-OPS-12 | `../skills/markos-remove-phase/SKILL.md` | SKL | OPS | Routes to phase removal and renumbering |
+| MARKOS-SKL-OPS-13 | `../skills/markos-pause-work/SKILL.md` | SKL | OPS | Routes to context handoff creation |
+| MARKOS-SKL-OPS-14 | `../skills/markos-resume-work/SKILL.md` | SKL | OPS | Routes to session context restoration |
+| MARKOS-SKL-OPS-15 | `../skills/markos-session-report/SKILL.md` | SKL | OPS | Routes to session report generation |
+| MARKOS-SKL-OPS-16 | `../skills/markos-stats/SKILL.md` | SKL | OPS | Routes to project statistics dashboard |
+| MARKOS-SKL-OPS-17 | `../skills/markos-help/SKILL.md` | SKL | OPS | Routes to MARKOS command reference |
+| MARKOS-SKL-OPS-18 | `../skills/markos-discipline-activate/SKILL.md` | SKL | OPS | Routes to MSP discipline toggle |
+| MARKOS-SKL-OPS-19 | `../skills/markos-linear-sync/SKILL.md` | SKL | OPS | Routes to MARKOS-AGT-OPS-07 (linear-manager) |
+| MARKOS-SKL-CAM-01 | `../skills/markos-campaign-launch/SKILL.md` | SKL | CAM | Routes to campaign launch checklist |
+| MARKOS-SKL-CAM-02 | `../skills/markos-performance-review/SKILL.md` | SKL | CAM | Routes to campaign performance analysis |
+| MARKOS-SKL-CAM-03 | `../skills/markos-mir-audit/SKILL.md` | SKL | CAM | Routes to MIR completeness audit |
+| MARKOS-SKL-ANA-01 | `../skills/markos-research-phase/SKILL.md` | SKL | ANA | Routes to standalone market research |
 
 ---
 

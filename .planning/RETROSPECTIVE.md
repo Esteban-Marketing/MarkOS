@@ -4,11 +4,11 @@
 
 ---
 
-## Milestone: v2.1 â€” Product Hardening & Identity Convergence
+## Milestone: v2.1 — Product Hardening & Identity Convergence
 
 **Shipped:** 2026-03-28
 **Phases:** 5 (23â€“27) | **Plans:** 20 | **Timeline:** 1 day (single-session milestone)
-**Git range:** `markos/init` â†’ `markos/rebrand`
+**Git range:** `markos/init` → `markos/rebrand`
 
 ### What Was Built
 
@@ -20,24 +20,24 @@
 
 ### What Worked
 
-- **Phase sequencing** â€” Hardening phases flowed cleanly (Identity â†’ Runtime â†’ Quality â†’ Memory â†’ Execution). Each phase built on preserved contracts from the prior one with zero rework loops.
-- **Fixture-driven testing strategy** â€” Extraction and merge tests anchored to representative fixtures rather than inline payloads reduced test brittleness significantly.
-- **Compatibility-first identity policy** â€” Treating MARKOS paths as explicit compat surfaces (rather than simply renaming) prevented breakage while still advancing the MarkOS public identity.
-- **SUMMARY.md-based closure pattern** â€” Frontmatter `provides:` fields on phase summaries map cleanly to REQUIREMENTS.md REQ-IDs, enabling traceability without extra process.
-- **Single-session milestone** â€” All 20 execution plans completed in one intensified session, enabled by tight phase dependencies and well-scoped plans.
+- **Phase sequencing** — Hardening phases flowed cleanly (Identity → Runtime → Quality → Memory → Execution). Each phase built on preserved contracts from the prior one with zero rework loops.
+- **Fixture-driven testing strategy** — Extraction and merge tests anchored to representative fixtures rather than inline payloads reduced test brittleness significantly.
+- **Compatibility-first identity policy** — Treating MARKOS paths as explicit compat surfaces (rather than simply renaming) prevented breakage while still advancing the MarkOS public identity.
+- **SUMMARY.md-based closure pattern** — Frontmatter `provides:` fields on phase summaries map cleanly to REQUIREMENTS.md REQ-IDs, enabling traceability without extra process.
+- **Single-session milestone** — All 20 execution plans completed in one intensified session, enabled by tight phase dependencies and well-scoped plans.
 
 ### What Was Inefficient
 
 - **REQUIREMENTS.md not updated during execution**: Phases 26 and 27 delivered all their requirements (MMO-01â€“03, EXE-01, EXE-02, TLM-02) but the REQUIREMENTS.md rows weren't checked off. Caught at milestone close, not at execution time.
-- **Phase summary placeholder backfill**: Phases 23, 24, and 26 SUMMARY.md files were never written during execution â€” they were backfilled at milestone close in a metadata normalization pass. Summary authoring should be a hard execution gate, not a retroactive step.
+- **Phase summary placeholder backfill**: Phases 23, 24, and 26 SUMMARY.md files were never written during execution — they were backfilled at milestone close in a metadata normalization pass. Summary authoring should be a hard execution gate, not a retroactive step.
 - **STATE.md metadata drift**: Duplicate frontmatter blocks and `.protocol-lore/STATE.md` falling 10 phases behind required a separate normalization session before the milestone close could run correctly.
-- **Global `progress bar` dilution**: The `progress bar` command counts all phase directories globally including pre-v2.1 phases that never had summaries. Causes 49% display when the active milestone is at 100%. Confusing signal â€” should filter to current milestone.
+- **Global `progress bar` dilution**: The `progress bar` command counts all phase directories globally including pre-v2.1 phases that never had summaries. Causes 49% display when the active milestone is at 100%. Confusing signal — should filter to current milestone.
 
 ### Patterns Established
 
-- **Execution readiness â‰  onboarding completion** â€” These are now separate, checklist-gated contract states in the codebase and documentation.
-- **Residual behavior should be documented, not silenced** â€” Phase 25 explicitly cataloged known fallback behaviors (hosted write limitations, fuzzy-header appends, provider-outage degradation) rather than trying to remove them.
-- **Compatibility surfaces are first-class artifacts** â€” The Phase 23 compatibility contract (IDENTITY-AUDIT.md + COMPATIBILITY-CONTRACT.md) is now the canonical migration planning input for when v2.0 rebrand phases resume.
+- **Execution readiness â‰  onboarding completion** — These are now separate, checklist-gated contract states in the codebase and documentation.
+- **Residual behavior should be documented, not silenced** — Phase 25 explicitly cataloged known fallback behaviors (hosted write limitations, fuzzy-header appends, provider-outage degradation) rather than trying to remove them.
+- **Compatibility surfaces are first-class artifacts** — The Phase 23 compatibility contract (IDENTITY-AUDIT.md + COMPATIBILITY-CONTRACT.md) is now the canonical migration planning input for when v2.0 rebrand phases resume.
 
 ### Key Lessons
 
@@ -74,7 +74,7 @@
 
 ### Top Lessons (Verified Across Milestones)
 
-1. **Gating hooks matter** â€” Fail-fast at unchecked plan gates (established v1.1) prevented execution on incomplete phase plans throughout v2.1.
-2. **Write summaries during execution** â€” Missing summaries break tooling and create retroactive cleanup burden (learned v2.1, should be enforced in all future milestones).
-3. **Compatibility-first reduces rework** â€” When identity or structure changes are staged through explicit compat surfaces rather than hard cuts, downstream breakage is avoided.
+1. **Gating hooks matter** — Fail-fast at unchecked plan gates (established v1.1) prevented execution on incomplete phase plans throughout v2.1.
+2. **Write summaries during execution** — Missing summaries break tooling and create retroactive cleanup burden (learned v2.1, should be enforced in all future milestones).
+3. **Compatibility-first reduces rework** — When identity or structure changes are staged through explicit compat surfaces rather than hard cuts, downstream breakage is avoided.
 

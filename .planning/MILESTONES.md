@@ -1,10 +1,10 @@
 ﻿# Milestones
 
-## v2.1 â€” Product Hardening & Identity Convergence (Shipped: 2026-03-28)
+## v2.1 — Product Hardening & Identity Convergence (Shipped: 2026-03-28)
 
 **Phases completed:** 5 phases (23â€“27), 20 plans
-**Timeline:** 2026-03-27 â†’ 2026-03-28 (single-session milestone)
-**Git range:** `markos/init` â†’ `markos/rebrand`
+**Timeline:** 2026-03-27 → 2026-03-28 (single-session milestone)
+**Git range:** `markos/init` → `markos/rebrand`
 
 **Key accomplishments:**
 

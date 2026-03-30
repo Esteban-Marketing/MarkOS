@@ -1,4 +1,4 @@
-﻿# Phase 16 Context â€” Documentation Enrichment
+﻿# Phase 16 Context — Documentation Enrichment
 
 ## Objective
 

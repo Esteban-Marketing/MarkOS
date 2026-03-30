@@ -1,4 +1,4 @@
-﻿# Phase 25 Context â€” Onboarding Quality & Merge Safety
+﻿# Phase 25 Context — Onboarding Quality & Merge Safety
 
 ## Objective
 
@@ -57,11 +57,11 @@ Phase 25 depends on Phase 24 intentionally. Runtime parity has to be defined fir
 
 ## Deliverables
 
-1. `25-CONTEXT.md` â€” this document.
-2. `25-01-PLAN.md` â€” add extraction and scoring fixtures for representative onboarding inputs.
-3. `25-02-PLAN.md` â€” add approval and merge safety tests for template variance and fallback paths.
-4. `25-03-PLAN.md` â€” tighten regenerate and approve error reporting plus user-facing statuses.
-5. `25-04-PLAN.md` â€” burn down warning noise and document intentional fallback behavior.
+1. `25-CONTEXT.md` — this document.
+2. `25-01-PLAN.md` — add extraction and scoring fixtures for representative onboarding inputs.
+3. `25-02-PLAN.md` — add approval and merge safety tests for template variance and fallback paths.
+4. `25-03-PLAN.md` — tighten regenerate and approve error reporting plus user-facing statuses.
+5. `25-04-PLAN.md` — burn down warning noise and document intentional fallback behavior.
 
 ## Exit Criteria
 

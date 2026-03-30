@@ -53,5 +53,3 @@
     <step>AI: `markos-data-scientist` -> post-execution audit; halts iteration and pivots ROADMAP.md if CAC targets fail.</step>
 </lifecycle>
 </markos_team>
-
-</markos_team>

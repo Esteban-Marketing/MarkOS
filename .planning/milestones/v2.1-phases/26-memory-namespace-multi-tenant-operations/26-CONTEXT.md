@@ -1,4 +1,4 @@
-﻿# Phase 26 Context â€” Memory, Namespace & Multi-Tenant Operations
+﻿# Phase 26 Context — Memory, Namespace & Multi-Tenant Operations
 
 ## Objective
 
@@ -57,11 +57,11 @@ Phase 26 follows the earlier hardening sequence on purpose. Phase 23 established
 
 ## Deliverables
 
-1. `26-CONTEXT.md` â€” this document.
-2. `26-01-PLAN.md` â€” document and codify namespace rules plus compatibility-read behavior.
-3. `26-02-PLAN.md` â€” add migration-safe handling for legacy and MarkOS-prefixed namespaces.
-4. `26-03-PLAN.md` â€” expand health checks and failure reporting for local versus cloud vector backends.
-5. `26-04-PLAN.md` â€” add multi-project isolation coverage or simulation around slug boundaries.
+1. `26-CONTEXT.md` — this document.
+2. `26-01-PLAN.md` — document and codify namespace rules plus compatibility-read behavior.
+3. `26-02-PLAN.md` — add migration-safe handling for legacy and MarkOS-prefixed namespaces.
+4. `26-03-PLAN.md` — expand health checks and failure reporting for local versus cloud vector backends.
+5. `26-04-PLAN.md` — add multi-project isolation coverage or simulation around slug boundaries.
 
 ## Exit Criteria
 

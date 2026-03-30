@@ -1,4 +1,4 @@
-﻿# Research: Directory & File Rename Scope â€” MARKOS â†’ MarkOS
+﻿# Research: Directory & File Rename Scope — MARKOS → MarkOS
 
 **Domain:** Filesystem rebrand audit
 **Researched:** 2026-03-27
@@ -23,7 +23,7 @@
 | `.markos-local/MIR/` | `.markos-local/MIR/` | MIR overrides | Varies per install |
 | `.markos-local/MSP/` | `.markos-local/MSP/` | MSP overrides | Varies per install |
 
-### 1C. `.agent/markos/` â†’ `.agent/markos/`
+### 1C. `.agent/markos/` → `.agent/markos/`
 
 **This is the largest single rename: 317 files.**
 
@@ -34,7 +34,7 @@
 | `.agent/markos/MARKOS-INDEX.md` | `.agent/markos/MARKOS-INDEX.md` | Master token registry |
 | `.agent/markos/VERSION` | `.agent/markos/VERSION` | Version tracking |
 
-#### Agents (39 files) â€” `.agent/markos/agents/` â†’ `.agent/markos/agents/`
+#### Agents (39 files) — `.agent/markos/agents/` → `.agent/markos/agents/`
 
 | Current Filename | Proposed Filename |
 |---|---|
@@ -78,7 +78,7 @@
 | `markos-content-creator.md` | `markos-content-creator.md` |
 | `markos-cro-hypothesis.md` | `markos-cro-hypothesis.md` |
 
-#### CLI Tools â€” `.agent/markos/bin/` â†’ `.agent/markos/bin/`
+#### CLI Tools — `.agent/markos/bin/` → `.agent/markos/bin/`
 
 | Current | Proposed |
 |---|---|
@@ -96,7 +96,7 @@
 | `bin/lib/roadmap.cjs` | `bin/lib/roadmap.cjs` (no rename) |
 | `bin/lib/milestone.cjs` | `bin/lib/milestone.cjs` (no rename) |
 
-#### Hooks â€” `.agent/markos/hooks/` â†’ `.agent/markos/hooks/`
+#### Hooks — `.agent/markos/hooks/` → `.agent/markos/hooks/`
 
 | Current | Proposed | Notes |
 |---|---|---|
@@ -106,14 +106,14 @@
 | `hooks/pre-push` | `hooks/pre-push` | No rename |
 | `hooks/pre-content-check.md` | `hooks/pre-content-check.md` | No rename |
 
-#### Workflows â€” `.agent/markos/workflows/` â†’ `.agent/markos/workflows/`
+#### Workflows — `.agent/markos/workflows/` → `.agent/markos/workflows/`
 
 | Current | Proposed |
 |---|---|
 | `workflows/markos-linear-sync.md` | `workflows/markos-linear-sync.md` |
 | All other workflows (24 files) | Same filenames (no `markos` prefix) |
 
-#### Templates â€” `.agent/markos/templates/` â†’ `.agent/markos/templates/`
+#### Templates — `.agent/markos/templates/` → `.agent/markos/templates/`
 
 ##### LINEAR-TASKS (20 files with `MARKOS-ITM-` prefix)
 
@@ -140,22 +140,22 @@
 | `MARKOS-ITM-OPS-01-campaign-launch.md` | `MARKOS-ITM-OPS-01-campaign-launch.md` |
 | `MARKOS-ITM-TRK-01-utm-tracking.md` | `MARKOS-ITM-TRK-01-utm-tracking.md` |
 
-##### Other templates (no filename rename needed â€” generic names)
+##### Other templates (no filename rename needed — generic names)
 
-- `templates/MIR/` â€” ~20 category subdirs with generic filenames
-- `templates/MSP/` â€” ~50+ files with generic filenames
-- `templates/RESEARCH/` â€” 7 files with generic filenames  
-- `templates/local-override/` â€” 5 files with generic names
-- `templates/AGENTS/` â€” 2 files (generic)
-- `templates/*.md` â€” 7 standalone templates (generic)
+- `templates/MIR/` — ~20 category subdirs with generic filenames
+- `templates/MSP/` — ~50+ files with generic filenames
+- `templates/RESEARCH/` — 7 files with generic filenames  
+- `templates/local-override/` — 5 files with generic names
+- `templates/AGENTS/` — 2 files (generic)
+- `templates/*.md` — 7 standalone templates (generic)
 
-#### References â€” `.agent/markos/references/` â†’ `.agent/markos/references/`
+#### References — `.agent/markos/references/` → `.agent/markos/references/`
 
-All 12 reference files have generic names â€” no filename renames needed (content-only changes).
+All 12 reference files have generic names — no filename renames needed (content-only changes).
 
 ---
 
-### 1D. `.agent/get-shit-done/` â€” The GSD Core (NO RENAME)
+### 1D. `.agent/get-shit-done/` — The GSD Core (NO RENAME)
 
 This is the upstream **Get Shit Done** framework, not MARKOS-specific. It does NOT need renaming. Structure:
 
@@ -168,44 +168,44 @@ This is the upstream **Get Shit Done** framework, not MARKOS-specific. It does N
 
 ---
 
-### 1E. `.protocol-lore/` â€” No Filename Renames
+### 1E. `.protocol-lore/` — No Filename Renames
 
-All 11 files have generic names (`QUICKSTART.md`, `INDEX.md`, etc.). **Content** references `.markos-local/`, `.markos-project.json`, `markos-{slug}`, etc. heavily â€” but no filename changes needed.
+All 11 files have generic names (`QUICKSTART.md`, `INDEX.md`, etc.). **Content** references `.markos-local/`, `.markos-project.json`, `markos-{slug}`, etc. heavily — but no filename changes needed.
 
 Files needing content updates:
-- `QUICKSTART.md` â€” 8+ references
-- `MEMORY.md` â€” 5+ references
-- `CONVENTIONS.md` â€” 5+ references
-- `ARCHITECTURE.md` â€” 5+ references
-- `WORKFLOWS.md` â€” 2+ references
-- `CODEBASE-MAP.md` â€” 4+ references
-- `TEMPLATES.md` â€” 2+ references
+- `QUICKSTART.md` — 8+ references
+- `MEMORY.md` — 5+ references
+- `CONVENTIONS.md` — 5+ references
+- `ARCHITECTURE.md` — 5+ references
+- `WORKFLOWS.md` — 2+ references
+- `CODEBASE-MAP.md` — 4+ references
+- `TEMPLATES.md` — 2+ references
 
-### 1F. `.planning/` â€” No Filename Renames
+### 1F. `.planning/` — No Filename Renames
 
 All planning files have generic names. Content references `.markos-local/` extensively (100+ MIR/MSP override path notes). No filename changes needed.
 
-### 1G. `bin/` â€” Root-Level Executables (No Filename Renames)
+### 1G. `bin/` — Root-Level Executables (No Filename Renames)
 
 | File | Has MARKOS content refs? | Details |
 |---|---|---|
-| `bin/install.cjs` | **YES â€” 12+ references** | Hardcodes `markos`, `.markos-install-manifest.json`, `MARKOS-INDEX.md` |
-| `bin/update.cjs` | **YES â€” 8+ references** | Hardcodes `markos`, `.markos-install-manifest.json` |
-| `bin/ensure-vector.cjs` | **YES â€” 2+ references** | Reads `.markos-project.json` |
+| `bin/install.cjs` | **YES — 12+ references** | Hardcodes `markos`, `.markos-install-manifest.json`, `MARKOS-INDEX.md` |
+| `bin/update.cjs` | **YES — 8+ references** | Hardcodes `markos`, `.markos-install-manifest.json` |
+| `bin/ensure-vector.cjs` | **YES — 2+ references** | Reads `.markos-project.json` |
 
-### 1H. `onboarding/` â€” No Filename Renames
+### 1H. `onboarding/` — No Filename Renames
 
 | File | Has MARKOS content refs? | Details |
 |---|---|---|
 | `onboarding/onboarding-config.json` | **YES** | `"project_slug": "markos-client"`, `"mir_output_path": ".markos-local/MIR"`, `"msp_output_path": ".markos-local/MSP"` |
 | `onboarding/backend/path-constants.cjs` | **YES** | Hardcodes `.agent/markos/templates` |
-| `onboarding/backend/vector-store-client.cjs` | **YES â€” 8+ references** | `markos-${slug}` collection naming pattern |
+| `onboarding/backend/vector-store-client.cjs` | **YES — 8+ references** | `markos-${slug}` collection naming pattern |
 | `onboarding/backend/server.cjs` | **YES** | References `.markos-project.json` |
 | `onboarding/backend/handlers.cjs` | **YES** | References `.markos-project.json` |
 | `onboarding/backend/agents/orchestrator.cjs` | **YES** | References `markos-neuro-auditor.md` path |
 | `onboarding/backend/agents/example-resolver.cjs` | **YES** | References `.agent/markos/templates/` |
 
-### 1I. `test/` â€” No Filename Renames but Content Updates
+### 1I. `test/` — No Filename Renames but Content Updates
 
 | File | References |
 |---|---|
@@ -215,19 +215,19 @@ All planning files have generic names. Content references `.markos-local/` exten
 | `test/write-mir.test.js` | `markos-mir-test-` temp prefix |
 | `test/example-resolver.test.js` | `markos-resolver-test-` temp prefix |
 
-### 1J. Root Documentation Files â€” Content Updates Only
+### 1J. Root Documentation Files — Content Updates Only
 
 | File | Impact |
 |---|---|
-| `package.json` | **CRITICAL** â€” name: `markos`, bin entries, description, keywords, files array, homepage, prepublishOnly script |
+| `package.json` | **CRITICAL** — name: `markos`, bin entries, description, keywords, files array, homepage, prepublishOnly script |
 | `.gitignore` | References `.markos-local/`, `.markos-install-manifest.json` |
 | `README.md` | 15+ references to `.markos-project.json`, `npx markos` |
 | `TECH-MAP.md` | 50+ references (paths, commands, architecture descriptions) |
 | `ARCH-DIAGRAM.md` | 15+ references |
-| `CHANGELOG.md` | Historical â€” may keep old names with annotation |
+| `CHANGELOG.md` | Historical — may keep old names with annotation |
 | `CLAUDE.md` | No direct references (just points to QUICKSTART.md) |
 
-### 1K. `.markos-local/` Files â€” Content Updates
+### 1K. `.markos-local/` Files — Content Updates
 
 These are gitignored client files. Existing installs have them. Content references:
 
@@ -237,7 +237,7 @@ These are gitignored client files. Existing installs have them. Content referenc
 | `.markos-local/MSP/Strategy/00_MASTER-PLAN/MARKETING-PLAN.md` | `.markos-local/MIR/` paths |
 | `.markos-local/MSP/Campaigns/*.md` (3 files) | `npx markos` commands, `.markos-local/` references |
 
-### 1L. `RESEARCH/` Files â€” Content Updates
+### 1L. `RESEARCH/` Files — Content Updates
 
 | File | References |
 |---|---|
@@ -273,7 +273,7 @@ These are gitignored client files. Existing installs have them. Content referenc
 | `bin.markos` | `./bin/install.cjs` | Remove (or keep as alias) |
 | `bin.markos` | (doesn't exist) | `./bin/install.cjs` |
 | `files[]` | `.agent/markos/` | `.agent/markos/` |
-| `description` | "The MarkOS (MARKOS) protocol..." | "MarkOS â€” the Marketing Operating System..." |
+| `description` | "The MarkOS (MARKOS) protocol..." | "MarkOS — the Marketing Operating System..." |
 | `keywords` | `["markos", ...]` | `["markos", ...]` |
 | `homepage` | `markos` | TBD |
 

@@ -34,8 +34,8 @@
 <resolution_protocol>
   1. Detect `<!-- OVERRIDABLE: .markos-local/... -->`
   2. Check `.markos-local/<path>`
-  3. If exists, override protocol baseline.
-  4. If none, fallback to baseline.
+  3. If present, use the local override (log [override] when required by workflow).
+  4. Else use the versioned baseline under `.agent/markos/templates/` (MIR/MSP/ITM as applicable).
 </resolution_protocol>
 </markos_templates>
 

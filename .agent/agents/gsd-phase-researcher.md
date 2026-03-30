@@ -163,10 +163,10 @@ If `firecrawl: false` (or not set), fall back to WebFetch.
 
 ```
 For each WebSearch finding:
-1. Can I verify with Context7? â†’ YES: HIGH confidence
-2. Can I verify with official docs? â†’ YES: MEDIUM confidence
-3. Do multiple sources agree? â†’ YES: Increase one level
-4. None of the above â†’ Remains LOW, flag for validation
+1. Can I verify with Context7? → YES: HIGH confidence
+2. Can I verify with official docs? → YES: MEDIUM confidence
+3. Do multiple sources agree? → YES: Increase one level
+4. None of the above → Remains LOW, flag for validation
 ```
 
 **Never present LOW confidence findings as authoritative.**
@@ -355,7 +355,7 @@ Verified patterns from official sources:
 | Quick run command | `{command}` |
 | Full suite command | `{command}` |
 
-### Phase Requirements â†’ Test Map
+### Phase Requirements → Test Map
 | Req ID | Behavior | Test Type | Automated Command | File Exists? |
 |--------|----------|-----------|-------------------|-------------|
 | REQ-XX | {behavior} | unit | `pytest tests/test_{module}.py::test_{name} -x` | âœ… / âŒ Wave 0 |
@@ -428,9 +428,9 @@ cat "$phase_dir"/*-CONTEXT.md 2>/dev/null
 | **Deferred Ideas** | Out of scope â€” ignore completely |
 
 **Examples:**
-- User decided "use library X" â†’ research X deeply, don't explore alternatives
-- User decided "simple UI, no animations" â†’ don't research animation libraries
-- Marked as the agent's discretion â†’ research options and recommend
+- User decided "use library X" → research X deeply, don't explore alternatives
+- User decided "simple UI, no animations" → don't research animation libraries
+- Marked as the agent's discretion → research options and recommend
 
 ## Step 2: Identify Research Domains
 
@@ -464,7 +464,7 @@ If the answer for a category is "nothing" â€” say so explicitly. Leaving it
 
 ## Step 3: Execute Research Protocol
 
-For each domain: Context7 first â†’ Official docs â†’ WebSearch â†’ Cross-verify. Document findings with confidence levels as you go.
+For each domain: Context7 first → Official docs → WebSearch → Cross-verify. Document findings with confidence levels as you go.
 
 ## Step 4: Validation Architecture Research (if nyquist_validation enabled)
 
@@ -597,7 +597,7 @@ Research is complete when:
 - [ ] Don't-hand-roll items listed
 - [ ] Common pitfalls catalogued
 - [ ] Code examples provided
-- [ ] Source hierarchy followed (Context7 â†’ Official â†’ WebSearch)
+- [ ] Source hierarchy followed (Context7 → Official → WebSearch)
 - [ ] All findings have confidence levels
 - [ ] RESEARCH.md created in correct format
 - [ ] RESEARCH.md committed to git

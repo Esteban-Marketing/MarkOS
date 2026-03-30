@@ -16,11 +16,12 @@ function getCanonicalCollectionPrefix() {
 }
 
 function getCollectionReadPrefixes() {
-  return Array.from(new Set([
-    getCanonicalCollectionPrefix(),
-    LEGACY_NAMESPACE_PREFIX,
-    FUTURE_NAMESPACE_PREFIX,
-  ]));
+  const canonical = getCanonicalCollectionPrefix();
+  const prefixes = [canonical, LEGACY_NAMESPACE_PREFIX];
+  if (FUTURE_NAMESPACE_PREFIX && FUTURE_NAMESPACE_PREFIX !== LEGACY_NAMESPACE_PREFIX) {
+    prefixes.push(FUTURE_NAMESPACE_PREFIX);
+  }
+  return prefixes;
 }
 
 function buildCollectionName(prefix, slug, suffix) {

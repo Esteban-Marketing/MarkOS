@@ -35,11 +35,12 @@ Most AI marketing tools give you outputs. MarkOS gives you a system.
 Node.js `>=20.16.0` is required. If your runtime is older, upgrade Node first and then rerun the installer.
 
 In ~60 seconds you get:
-- `.agent/markos/` — the protocol engine (MarkOS v3+)
-- `.planning/MIR/` — 78-file Marketing Intelligence Repository (brand, audience, competitive)
-- `.planning/MSP/` — 80-file Marketing Strategy Plan (channels, campaigns, budgets)
-- `.protocol-lore/` — AI agent navigation knowledge base
-- A web onboarding form to fill your brand intelligence
+- `.agent/markos/` — versioned protocol engine (templates, agents, `MARKOS-INDEX.md`)
+- `onboarding/` — web onboarding app (copied on first install when missing)
+- `.markos-install-manifest.json` — idempotent install marker for `npx markos update`
+- Optional: launch the onboarding form to drive drafts into `.markos-local/` after approval
+
+This repository also ships **`.protocol-lore/`** (agent boot and navigation); it is not part of the published npm `files` list, but it is authoritative when working from source.
 
 ```bash
 # Update when new protocol versions ship:
@@ -73,7 +74,7 @@ ITM  (Issue Task Templates)
 ## Agents
 
 
-These are the current protocol agent IDs. Their `markos-*` names are now canonical, with legacy `markos-*` aliases retained for compatibility only.
+These are representative protocol agent IDs. Names use the `markos-*` prefix; compatibility-only aliases may exist in older artifacts.
 
 | Agent | What It Does |
 |-------|-------------|
@@ -126,9 +127,9 @@ onboarding/
 If you are an AI agent, read these files in order before doing anything else:
 
 1. `.protocol-lore/QUICKSTART.md` — boot entry point, search map, key commands
-2. `.protocol-lore/CODEBASE-MAP.md` — full filesystem map with file annotations
-3. `.planning/STATE.md` — current milestone and active phase
-4. `.agent/markos/MARKOS-INDEX.md` — full token registry on the MarkOS protocol path
+2. `.protocol-lore/INDEX.md` — condensed lore map (then `CODEBASE-MAP.md` for deep navigation)
+3. `.planning/STATE.md` — **canonical** GSD milestone, phase, and next actions
+4. `.agent/markos/MARKOS-INDEX.md` — full token registry for the MarkOS protocol corpus
 
 ---
 
@@ -151,7 +152,8 @@ UPSTASH_VECTOR_REST_TOKEN=your-upstash-token
 ## Running Tests
 
 ```bash
-node --test test/
+npm test
+# equivalent: node --test test/**/*.test.js
 ```
 
 Tests use Node's built-in test runner. Zero external test framework dependencies.
@@ -181,11 +183,10 @@ See `.agent/markos/MARKOS-INDEX.md` for full documentation on the current protoc
 
 MarkOS is the canonical product name. The following legacy identifiers remain intentionally supported for compatibility only (not user-facing):
 
-- `.agent/markos/` and `MARKOS-INDEX.md` (legacy protocol path)
-- `.markos-local/`, `.markos-project.json`, and `.markos-install-manifest.json` (legacy override and manifest files)
-- `markos-*` vector namespace prefixes and protocol agent IDs
-- The legacy `markos` CLI alias
-- `MARKOS_TELEMETRY` as a fallback to `MARKOS_TELEMETRY`
+- `.agent/markos/` and `MARKOS-INDEX.md` filenames (filesystem compatibility)
+- `.markos-local/`, `.markos-project.json`, and `.markos-install-manifest.json`
+- `markos-*` vector namespace prefixes and historical agent id spellings where still referenced
+- Environment and telemetry keys documented in `onboarding/backend/runtime-context.cjs` and Phase 23 compatibility artifacts
 
 Public instructions, install commands, onboarding copy, and primary documentation should use MarkOS-first language.
 
@@ -224,7 +225,7 @@ Runtime telemetry emits `rollout_endpoint_observed` for these endpoints with sta
 
 - Hosted wrappers for config/status/migration require scoped Supabase bearer auth and fail fast when `MARKOS_SUPABASE_AUD` is unset.
 - Hosted approve/write behavior intentionally refuses local persistence (`LOCAL_PERSISTENCE_UNAVAILABLE`) to avoid ambiguous disk writes.
-- Local compatibility artifacts under `.markos-local/` and `.markos-local/` remain excluded from git commits.
+- Local compatibility artifacts under `.markos-local/` remain excluded from git commits.
 - Migration operations remain replay-safe and deterministic under dry-run/idempotent checks.
 - Secret, token, and auth-like payload keys are redacted as `[REDACTED]` before telemetry and error-path logging.
 - Retention policy is fixed and code-backed: `server_logs_days=14`, `rollout_reports_days=30`, `migration_checkpoint_days=90`.

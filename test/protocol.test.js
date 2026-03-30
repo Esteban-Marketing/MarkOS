@@ -17,7 +17,7 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     const expectedBinPath = path.resolve(__dirname, '../bin/install.cjs');
     assert.ok(fs.existsSync(expectedBinPath), 'markos bin script must exist at ./bin/install.cjs');
     assert.equal(pkg.bin.markos, './bin/install.cjs', 'Primary markos CLI should be present');
-    assert.equal(pkg.bin['markos'], undefined, 'Legacy package-name bin should be removed');
+    assert.deepEqual(Object.keys(pkg.bin), ['markos'], 'package.json bin must only expose the primary markos CLI');
     assert.ok(rootVersion.length > 0, 'Root VERSION file must contain a non-empty version string');
   });
   await t.test('4.1 Required Components Exist', () => {
@@ -122,7 +122,7 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     const telemetry = read('onboarding/backend/agents/telemetry.cjs');
 
     assert.match(readme, /npx markos install/, 'README must use the MarkOS install command');
-    assert.doesNotMatch(readme, /npx markos\b/, 'README must not use the legacy package command as the primary install path');
+    assert.doesNotMatch(readme, /npx markos\b(?!\s+install|\s+update)/, 'README must not use the legacy package command as the primary install path');
     assert.match(readme, /Compatibility Surfaces/, 'README must document the remaining compatibility-only surfaces');
 
     assert.match(changelog, /Identity Normalization/, 'CHANGELOG must record the Phase 23 identity normalization work');

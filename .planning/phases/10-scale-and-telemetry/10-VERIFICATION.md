@@ -1,6 +1,6 @@
-﻿# Phase 10 â€” VERIFICATION.md
+﻿# Phase 10 — VERIFICATION.md
 
-**Phase:** 10 â€” Multi-Tenant Scale & Telemetry
+**Phase:** 10 — Multi-Tenant Scale & Telemetry
 **Status:** âœ… COMPLETE
 
 ---

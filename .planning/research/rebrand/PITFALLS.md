@@ -1,4 +1,4 @@
-﻿# Domain Pitfalls â€” MarkOS Rebrand
+﻿# Domain Pitfalls — MarkOS Rebrand
 
 **Domain:** NPM package, distribution, public-facing rebrand  
 **Researched:** 2026-03-27
@@ -12,14 +12,14 @@ Mistakes that cause data loss, broken installs, or user churn.
 **Why it happens:** Popular short names get squatted early  
 **Consequences:** Must use less desirable scoped name or negotiate transfer  
 **Prevention:** Check `npm view markos` BEFORE committing to the name in any docs/code  
-**Detection:** Run `npm view markos` â€” 404 = available, metadata = taken  
+**Detection:** Run `npm view markos` — 404 = available, metadata = taken  
 
 ### Pitfall 2: Orphaning Existing User Installs
 **What goes wrong:** Users who ran `npx markos install` can no longer update  
-**Why it happens:** update.cjs looks for `.markos-install-manifest.json` and `.agent/markos/` â€” if new installer doesn't check these old paths, it thinks it's a fresh install  
+**Why it happens:** update.cjs looks for `.markos-install-manifest.json` and `.agent/markos/` — if new installer doesn't check these old paths, it thinks it's a fresh install  
 **Consequences:** Users lose update history, get duplicate installs, conflict detection breaks  
-**Prevention:** update.cjs and install.cjs MUST check both old and new paths. Auto-migrate old â†’ new on first run.  
-**Detection:** Test: run old installer, then run new updater â€” verify it finds and migrates the old install  
+**Prevention:** update.cjs and install.cjs MUST check both old and new paths. Auto-migrate old → new on first run.  
+**Detection:** Test: run old installer, then run new updater — verify it finds and migrates the old install  
 
 ### Pitfall 3: Supabase + Upstash Vector Vector Data Orphaning
 **What goes wrong:** Existing Supabase + Upstash Vector collections keyed as `markos-{slug}-{section}` become invisible when code starts looking for `markos-{slug}-{section}`  
@@ -29,23 +29,23 @@ Mistakes that cause data loss, broken installs, or user churn.
 **Detection:** After migration, run `/status` endpoint and verify Supabase + Upstash Vector health + draft retrieval still works  
 
 ### Pitfall 4: Token ID System Contamination
-**What goes wrong:** Mass find-replace changes internal token IDs (MARKOS-AGT-STR-01 â†’ MARKOS-AGT-STR-01) causing all cross-references in 317 agent files to break  
+**What goes wrong:** Mass find-replace changes internal token IDs (MARKOS-AGT-STR-01 → MARKOS-AGT-STR-01) causing all cross-references in 317 agent files to break  
 **Why it happens:** Token IDs reference each other via `MARKOS-*` prefixes throughout the agent ecosystem. The MARKOS-INDEX.md is the master registry.  
 **Consequences:** Every agent that references another by token ID gets broken references  
-**Prevention:** Token ID migration must be a standalone phase with registry regeneration â€” NOT part of the distribution rebrand  
-**Detection:** Run `grep -r "MARKOS-" .agent/ | wc -l` before and after â€” count must be 0 after migration, with equivalent MARKOS- references in place  
+**Prevention:** Token ID migration must be a standalone phase with registry regeneration — NOT part of the distribution rebrand  
+**Detection:** Run `grep -r "MARKOS-" .agent/ | wc -l` before and after — count must be 0 after migration, with equivalent MARKOS- references in place  
 
 ### Pitfall 5: Breaking PostHog Analytics Continuity
 **What goes wrong:** Changing `$lib: 'markos-backend-telemetry'` and `MARKOS_TELEMETRY` env var simultaneously breaks dashboard filters and user docs  
 **Why it happens:** PostHog dashboards filter by `$lib` property; users reference `MARKOS_TELEMETRY=false` in env files  
 **Consequences:** Historical analytics become invisible in dashboards; users' telemetry opt-out stops working  
 **Prevention:** Support both `MARKOS_TELEMETRY` and `MARKOS_TELEMETRY` for one version. Use PostHog's property merging for `$lib`.  
-**Detection:** Check PostHog dashboard after deployment â€” verify events still appear  
+**Detection:** Check PostHog dashboard after deployment — verify events still appear  
 
 ## Moderate Pitfalls
 
 ### Pitfall 6: .gitignore Desynchronization
-**What goes wrong:** After renaming `.markos-local/` â†’ `.markos-local/`, the old `.gitignore` still only ignores `.markos-local/`  
+**What goes wrong:** After renaming `.markos-local/` → `.markos-local/`, the old `.gitignore` still only ignores `.markos-local/`  
 **Prevention:** Update `.gitignore` to include both old and new patterns during transition, then remove old after one version  
 
 ### Pitfall 7: Hardcoded Paths in write-mir.cjs
@@ -64,7 +64,7 @@ Mistakes that cause data loss, broken installs, or user churn.
 ## Minor Pitfalls
 
 ### Pitfall 10: Comment-Only References
-**What goes wrong:** JSDoc comments in 15+ backend files reference "MARKOS" â€” purely informational, but looks unprofessional  
+**What goes wrong:** JSDoc comments in 15+ backend files reference "MARKOS" — purely informational, but looks unprofessional  
 **Prevention:** Include in documentation pass (Phase 4)  
 
 ### Pitfall 11: README Badge URL
@@ -72,8 +72,8 @@ Mistakes that cause data loss, broken installs, or user churn.
 **Prevention:** Update badge URL to new package name  
 
 ### Pitfall 12: CHANGELOG Title
-**What goes wrong:** `# Changelog â€” markos` header doesn't match new product name  
-**Prevention:** Rename to `# Changelog â€” MarkOS` and add a rebrand entry  
+**What goes wrong:** `# Changelog — markos` header doesn't match new product name  
+**Prevention:** Rename to `# Changelog — MarkOS` and add a rebrand entry  
 
 ## Phase-Specific Warnings
 

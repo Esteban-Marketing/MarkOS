@@ -1,4 +1,4 @@
-﻿
+
 # MarkOS Architecture Diagram & Data Flow Specification
 
 **Last Updated:** March 28, 2026  
@@ -27,8 +27,7 @@ MarkOS is a modular, agentic marketing operating system designed for robust onbo
 
 ## System Architecture Overview
 
-
-```
+High-level data flow: browser → `onboarding/backend/server.cjs` → orchestrator → LLM adapters → `vector-store-client.cjs` (Supabase + Upstash Vector) → approved writes via `write-mir.cjs` into `.markos-local/`. GSD engineering state lives under `.planning/` and is separate from MarkOS protocol templates under `.agent/markos/`.
 
 ---
 

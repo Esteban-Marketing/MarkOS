@@ -18,7 +18,6 @@
     "node": ">=20.16.0"
   },
   "bin": {
-    "markos": "./bin/install.cjs",
     "markos": "./bin/install.cjs"
   },
   "files": [

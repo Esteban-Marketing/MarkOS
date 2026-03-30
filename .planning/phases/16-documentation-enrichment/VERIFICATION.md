@@ -1,8 +1,8 @@
-﻿# Phase 16 Verification â€” Documentation Enrichment
+﻿# Phase 16 Verification — Documentation Enrichment
 
 ## Automated Checks
 
-### T16-C01 â€” Backend Context Block Coverage
+### T16-C01 — Backend Context Block Coverage
 
 Action:
 
@@ -14,7 +14,7 @@ Pass Criteria:
 - At least 3 matches in `orchestrator.cjs`.
 - At least 3 matches in `llm-adapter.cjs`.
 
-### T16-P01 â€” Prompt Section Completeness
+### T16-P01 — Prompt Section Completeness
 
 Action:
 
@@ -26,7 +26,7 @@ Pass Criteria:
 - Each of the 7 prompt files has both section headers.
 - No file has duplicate section headers.
 
-### T16-L01 â€” Lore Link Presence
+### T16-L01 — Lore Link Presence
 
 Action:
 
@@ -38,7 +38,7 @@ Pass Criteria:
 - Both files contain implementation references.
 - All referenced files exist.
 
-### T16-G01 â€” Gold-Standard Catalog Exists
+### T16-G01 — Gold-Standard Catalog Exists
 
 Action:
 
@@ -53,7 +53,7 @@ Pass Criteria:
 
 ## Manual Checks
 
-### T16-A01 â€” Context Retrieval Audit
+### T16-A01 — Context Retrieval Audit
 
 Task:
 - Ask an agent: "Explain llm-adapter failure boundaries and provider priority using project docs."
@@ -62,7 +62,7 @@ Pass Criteria:
 - Response references adapter context blocks.
 - Priority order and fatal boundaries are correctly described.
 
-### T16-B01 â€” Prompt Grounding Audit
+### T16-B01 — Prompt Grounding Audit
 
 Task:
 - Trigger one specialized prompt role and compare output structure against `GOLD-STANDARD.md`.

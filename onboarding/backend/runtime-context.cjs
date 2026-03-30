@@ -12,7 +12,6 @@ const {
 } = require('./path-constants.cjs');
 
 const MARKOS_LOCAL_ROOT = path.join(PROJECT_ROOT, '.markos-local');
-const MARKOS_LOCAL_ROOT = path.join(PROJECT_ROOT, '.markos-local');
 
 const MARKOSDB_ACCESS_MATRIX = Object.freeze({
   config_read: { auth_required_in_hosted_mode: true, local_fallback_allowed: true },
@@ -58,7 +57,7 @@ function isPathWithinBase(targetPath, basePath) {
 }
 
 function ensureMirOutputPathWithinLocalRoots(mirOutputPath) {
-  const allowedRoots = [MARKOS_LOCAL_ROOT, MARKOS_LOCAL_ROOT];
+  const allowedRoots = [MARKOS_LOCAL_ROOT];
   const inAllowedRoot = allowedRoots.some((root) => isPathWithinBase(mirOutputPath, root));
 
   if (!inAllowedRoot) {

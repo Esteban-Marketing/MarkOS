@@ -1,4 +1,4 @@
-﻿# Phase 24 Context â€” Runtime Hardening
+﻿# Phase 24 Context — Runtime Hardening
 
 ## Objective
 
@@ -57,11 +57,11 @@ This phase follows Phase 23 deliberately. Phase 23 defines which identifiers and
 
 ## Deliverables
 
-1. `24-CONTEXT.md` â€” this document.
-2. `24-01-PLAN.md` â€” audit local-only and hosted-only runtime branches.
-3. `24-02-PLAN.md` â€” centralize config precedence and environment detection.
-4. `24-03-PLAN.md` â€” add parity coverage for local-server and API-wrapper execution.
-5. `24-04-PLAN.md` â€” document deployment and persistence constraints for approve/write flows.
+1. `24-CONTEXT.md` — this document.
+2. `24-01-PLAN.md` — audit local-only and hosted-only runtime branches.
+3. `24-02-PLAN.md` — centralize config precedence and environment detection.
+4. `24-03-PLAN.md` — add parity coverage for local-server and API-wrapper execution.
+5. `24-04-PLAN.md` — document deployment and persistence constraints for approve/write flows.
 
 ## Exit Criteria
 

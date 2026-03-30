@@ -1,7 +1,7 @@
-﻿# MarkOS Technical Architecture Map
+# MarkOS Technical Architecture Map
 
-**Last Updated:** March 27, 2026  
-**Version:** 1.1.0  
+**Last Updated:** March 29, 2026  
+**Version:** 2.0.0 (see repo `package.json` / `VERSION`)  
 **Status:** Production-Ready  
 
 ---
@@ -15,8 +15,8 @@ The MarkOS protocol is a complete **agentic marketing execution system** that in
 - **MSP** (Marketing Strategy Plan): Tactical blueprints for all marketing channels
 - **ITM** (Issue Task Templates): Pre-built Linear.app tickets for common marketing jobs
 - **Agent Ecosystem**: 25+ specialized AI agents for strategy, execution, and verification
-- **Onboarding Engine**: Web-based form â†’ AI draft generation â†’ Supabase \+ Upstash Vector persistence
-- **Vector Memory**: Per-project Supabase \+ Upstash Vector collections for episodic learning and RAG
+- **Onboarding Engine**: Web-based form → AI draft generation → Supabase + Upstash Vector persistence
+- **Vector Memory**: Per-project Supabase + Upstash Vector collections for episodic learning and RAG
 
 ---
 
@@ -24,20 +24,20 @@ The MarkOS protocol is a complete **agentic marketing execution system** that in
 
 ### Layer 1: Entry Points & Installation
 
-**CLI Binaries** â€” First-run installation and updates
+**CLI Binaries** — First-run installation and updates
 
 | Component | Location | Purpose | Key Exports |
 |-----------|----------|---------|-------------|
-| **install.cjs** | `bin/install.cjs` | First-run interactive installer. Prompts user, detects GSD coexistence, copies templates, delegates Supabase \+ Upstash Vector boot. | `run()` â†’ calls `update.cjs` or boots protocol |
+| **install.cjs** | `bin/install.cjs` | First-run interactive installer. Prompts user, detects GSD coexistence, copies `.agent/markos/` into place, delegates `ensure-vector.cjs` for provider checks. | `run()` → may invoke `update.cjs` or complete install |
 | **update.cjs** | `bin/update.cjs` | SHA256-idempotent updater. Preserves user patches in `.markos-local/`. Overrides base templates only. | Patches manifest, verifies integrity |
-| **ensure-vector.cjs** | `bin/ensure-vector.cjs` | Auto-healing Supabase \+ Upstash Vector daemon. Pings localhost:8000, revives process if dead, or delegates to cloud. | `ensureVector()` â†’ Promise<boolean> |
+| **ensure-vector.cjs** | `bin/ensure-vector.cjs` | Validates Supabase + Upstash Vector env configuration at boot; exports `ensureVectorStores()` (no local daemon spawn). | Returns a provider readiness report |
 
 **Installation Flow:**
 ```
 1. npm install -g markos
 2. npx markos install
 3. bin/install.cjs detects GSD, prompts scope (project/global)
-4. Copies .agent/markos/templates/ â†’ target
+4. Copies .agent/markos/templates/ → target
 5. Calls bin/ensure-vector.cjs to boot local DB
 6. Writes .markos-install-manifest.json (idempotent marker)
 ```
@@ -46,9 +46,9 @@ The MarkOS protocol is a complete **agentic marketing execution system** that in
 
 ### Layer 2: Onboarding Engine (Smart Onboarding v2.0)
 
-**Purpose:** Convert unstructured company data (URLs, PDFs, docs) â†’ AI-approved MIR/MSP drafts
+**Purpose:** Convert unstructured company data (URLs, PDFs, docs) → AI-approved MIR/MSP drafts
 
-**HTTP Server** â€” `onboarding/backend/server.cjs`
+**HTTP Server** — `onboarding/backend/server.cjs`
 
 Serves the web form UI and orchestrates AI draft generation.
 
@@ -56,7 +56,7 @@ Serves the web form UI and orchestrates AI draft generation.
 |----------|--------|---------|---------|
 | `/` | GET | Static file serve | Serves `index.html` + onboarding UI |
 | `/config` | GET | `handleConfig()` | Returns environment config, port, vector_endpoint |
-| `/status` | GET | `handleStatus()` | Returns Supabase \+ Upstash Vector health + MIR completion gates |
+| `/status` | GET | `handleStatus()` | Returns Supabase + Upstash Vector health + MIR completion gates |
 | `/submit` | POST | `handleSubmit()` | **Core entry:** Accepts seed JSON, triggers orchestrator, stores drafts to Vector Store |
 | `/regenerate` | POST | `handleRegenerate()` | Re-runs a single agent for a specific section (e.g., "brand_voice") |
 | `/approve` | POST | `handleApprove()` | JIT-clones templates, writes approved drafts to `.markos-local/`, stamps STATE.md |
@@ -77,7 +77,7 @@ Serves the web form UI and orchestrates AI draft generation.
 6. Auto-open browser if config.auto_open_browser = true
 ```
 
-**Configuration** â€” `onboarding-config.json`
+**Configuration** — `onboarding-config.json`
 
 ```json
 {
@@ -95,13 +95,13 @@ Serves the web form UI and orchestrates AI draft generation.
 
 ### Layer 3: AI Orchestration & Draft Generation
 
-**Orchestrator** â€” `onboarding/backend/agents/orchestrator.cjs`
+**Orchestrator** — `onboarding/backend/agents/orchestrator.cjs`
 
 Coordinates parallel execution of all LLM-based draft generators and persists results.
 
 **Execution Flow:**
 ```
-1. Store raw seed in Supabase \+ Upstash Vector (RAG retrieval source)
+1. Store raw seed in Supabase + Upstash Vector (RAG retrieval source)
 2. Run MIR generators (batched to avoid 429 rate limits):
    - generateCompanyProfile()
    - generateMissionVisionValues()
@@ -113,7 +113,7 @@ Coordinates parallel execution of all LLM-based draft generators and persists re
    - generatePaidAcquisition()
 4. Optional: Run neuro-auditor validation (if skill file exists)
 5. Collect all drafts into { section_key: text } map
-6. Store each draft in Supabase \+ Upstash Vector under markos-{slug} collection
+6. Store each draft in Supabase + Upstash Vector under markos-{slug} collection
 7. Return: { drafts, vectorStoreResults, errors }
 ```
 
@@ -121,7 +121,7 @@ Coordinates parallel execution of all LLM-based draft generators and persists re
 ```javascript
 // onboarding/backend/agents/orchestrator.cjs
 orchestrate(seed, slug) 
-  â†’ Promise<{
+  → Promise<{
       drafts: {
         company_profile: string,
         mission_values: string,
@@ -145,22 +145,22 @@ orchestrate(seed, slug)
 
 ### Layer 4: LLM Adapters & Multi-Model Support
 
-**LLM Adapter** â€” `onboarding/backend/agents/llm-adapter.cjs`
+**LLM Adapter** — `onboarding/backend/agents/llm-adapter.cjs`
 
 Unified interface for OpenAI, Anthropic, Gemini, and Ollama.
 
 **Provider Priority (auto-detected):**
-1. `options.provider` â€” explicit override per call
-2. `ANTHROPIC_API_KEY` â†’ Claude 3.5 Haiku (default model: `claude-3-5-haiku-20241022`)
-3. `OPENAI_API_KEY` â†’ GPT-4o-mini (uses OpenAI SDK)
-4. `GEMINI_API_KEY` â†’ Gemini 2.5 Flash (native fetch)
-5. `OLLAMA_ENDPOINT` â†’ Local Ollama (fallback)
+1. `options.provider` — explicit override per call
+2. `ANTHROPIC_API_KEY` → Claude 3.5 Haiku (default model: `claude-3-5-haiku-20241022`)
+3. `OPENAI_API_KEY` → GPT-4o-mini (uses OpenAI SDK)
+4. `GEMINI_API_KEY` → Gemini 2.5 Flash (native fetch)
+5. `OLLAMA_ENDPOINT` → Local Ollama (fallback)
 
 **Interface:**
 ```javascript
 // onboarding/backend/agents/llm-adapter.cjs
 call(systemPrompt, userPrompt, options = {})
-  â†’ Promise<{
+  → Promise<{
       ok: boolean,
       text: string,
       provider: 'openai' | 'anthropic' | 'gemini' | 'ollama',
@@ -193,7 +193,7 @@ If all LLM calls fail, returns deterministic fallback template with known struct
 
 ### Layer 5: Draft Generators (MIR & MSP)
 
-#### MIR Filler â€” `onboarding/backend/agents/mir-filler.cjs`
+#### MIR Filler — `onboarding/backend/agents/mir-filler.cjs`
 
 Generates Marketing Intelligence Repository drafts from seed data.
 
@@ -216,11 +216,11 @@ RULES:
 2. Write in third-person about the company (e.g., "The company...").
 3. Output clean, professional markdown. No fluff, no buzzwords.
 4. Keep sections concise. Dense, accurate, actionable.
-5. If data missing: write "[REQUIRES HUMAN INPUT â€” describe]".
-6. Never output JSON â€” output markdown content only.
+5. If data missing: write "[REQUIRES HUMAN INPUT — describe]".
+6. Never output JSON — output markdown content only.
 ```
 
-**Input Schema** â€” `onboarding/onboarding-seed.schema.json`
+**Input Schema** — `onboarding/onboarding-seed.schema.json`
 
 ```json
 {
@@ -260,7 +260,7 @@ RULES:
 }
 ```
 
-#### MSP Filler â€” `onboarding/backend/agents/msp-filler.cjs`
+#### MSP Filler — `onboarding/backend/agents/msp-filler.cjs`
 
 Generates Marketing Strategy Plan drafts (tactical execution blueprints).
 
@@ -269,10 +269,10 @@ Generates Marketing Strategy Plan drafts (tactical execution blueprints).
 | Function | Output File | Purpose |
 |----------|-------------|---------|
 | `generateBrandVoice()` | `Core_Strategy/02_BRAND/VOICE-TONE.md` | Brand voice dimensions, do/don't language, tone calibration by context |
-| `generateChannelStrategy()` | `MSP/Strategy/00_MASTER-PLAN/CHANNEL-STRATEGY.md` | Channel priority ranking, audience behavior â†’ channel fit, budget allocation |
+| `generateChannelStrategy()` | `MSP/Strategy/00_MASTER-PLAN/CHANNEL-STRATEGY.md` | Channel priority ranking, audience behavior → channel fit, budget allocation |
 | `generatePaidAcquisition()` | `MSP/Campaigns/01_PAID_ACQUISITION.md` | Paid media channels (social, search, display), targeting strategies, CPA targets |
 
-**Input** â€” Same seed + resolveExample() pattern:
+**Input** — Same seed + resolveExample() pattern:
 - Reads `.agent/.../templates/MSP/Strategy/_CHANNEL-STRATEGY-{business_model}.example.md`
 - Uses as context anchor for LLM generation
 - Ensures output matches known-good structure
@@ -281,9 +281,9 @@ Generates Marketing Strategy Plan drafts (tactical execution blueprints).
 
 ### Layer 6: Vector Memory & RAG
 
-**Supabase \+ Upstash Vector Client** â€” `onboarding/backend/vector-store-client.cjs`
+**Supabase + Upstash Vector Client** — `onboarding/backend/vector-store-client.cjs`
 
-HTTP wrapper for Supabase \+ Upstash Vector vector storage.
+HTTP wrapper for Supabase + Upstash Vector vector storage.
 
 **Collection Naming:**
 ```
@@ -296,9 +296,9 @@ Collection isolation ensures multi-tenant safety.
 **Interface:**
 ```javascript
 configure(host)                        // Set vector host endpoint at boot
-healthCheck()                          // â†’ { ok: true/false, error?: string }
+healthCheck()                          // → { ok: true/false, error?: string }
 storeDraft(slug, section, text, meta)  // Store draft with metadata
-getDrafts(slug)                        // â†’ { section: text, ... }
+getDrafts(slug)                        // → { section: text, ... }
 upsertSeed(slug, seed)                 // Store raw seed JSON by section
 upsertProjectMeta(slug, meta)          // Store project metadata
 ```
@@ -313,7 +313,7 @@ upsertProjectMeta(slug, meta)          // Store project metadata
 
 **Cloud Override:**
 ```env
-UPSTASH_VECTOR_REST_URL=https://...        # e.g., Hosted Supabase \+ Upstash Vector
+UPSTASH_VECTOR_REST_URL=https://...        # e.g., Hosted Supabase + Upstash Vector
 UPSTASH_VECTOR_REST_TOKEN=sk-...           # Auth token if required
 ```
 
@@ -323,15 +323,15 @@ If UPSTASH_VECTOR_REST_URL is set, local daemon is skipped entirely.
 
 ### Layer 7: Persistence & State Management
 
-**Write-MIR** â€” `onboarding/backend/write-mir.cjs`
+**Write-MIR** — `onboarding/backend/write-mir.cjs`
 
-Converts approved AI drafts â†’ persistent MIR files in `.markos-local/`.
+Converts approved AI drafts → persistent MIR files in `.markos-local/`.
 
 **Workflow:**
 1. **JIT-Clone**: If `.markos-local/MIR/` missing, copies entire `.agent/.../templates/MIR/` structure
 2. **Fuzzy Merge**: Uses header-matching regex to inject draft content into existing templates
 3. **Fallback Append**: If no standard headers found, appends raw text with disclaimer
-4. **STATE.md Stamping**: Scans STATE.md and updates rows from `(empty)` â†’ `(complete)`
+4. **STATE.md Stamping**: Scans STATE.md and updates rows from `(empty)` → `(complete)`
 
 **Section-to-File Mapping:**
 ```javascript
@@ -355,14 +355,14 @@ Converts approved AI drafts â†’ persistent MIR files in `.markos-local/`.
 **Interface:**
 ```javascript
 applyDrafts(slug, drafts, mirPath) 
-  â†’ Promise<{ written: string[], errors: string[] }>
+  → Promise<{ written: string[], errors: string[] }>
 ```
 
 ---
 
 ### Layer 8: Project Configuration & State
 
-**Project Manifest** â€” `.markos-project.json`
+**Project Manifest** — `.markos-project.json`
 
 Written **once** on first `POST /submit`. Never regenerated.
 
@@ -375,7 +375,7 @@ Written **once** on first `POST /submit`. Never regenerated.
 }
 ```
 
-**Override Layer** â€” `.markos-local/`
+**Override Layer** — `.markos-local/`
 
 Client-specific data. Gitignored. NEVER committed.
 
@@ -405,9 +405,9 @@ Client-specific data. Gitignored. NEVER committed.
 
 ### Layer 9: Supporting Services
 
-#### File Parsers â€” `onboarding/backend/parsers/`
+#### File Parsers — `onboarding/backend/parsers/`
 
-Converts non-text formats â†’ structured data for seed ingestion.
+Converts non-text formats → structured data for seed ingestion.
 
 | Parser | Location | Input | Output |
 |--------|----------|-------|--------|
@@ -423,14 +423,14 @@ if (file.originalFilename.endsWith('.pdf')) {
 }
 ```
 
-#### Scrapers â€” `onboarding/backend/scrapers/`
+#### Scrapers — `onboarding/backend/scrapers/`
 
 Extracts structured company data from live sources.
 
-**Tavily Scraper** â€” `tavily-scraper.cjs`
+**Tavily Scraper** — `tavily-scraper.cjs`
 
 ```javascript
-scrape(url) â†’ Promise<{
+scrape(url) → Promise<{
   title: string,
   description: string,
   company_overview: string,
@@ -444,7 +444,7 @@ scrape(url) â†’ Promise<{
 
 Uses Tavily API (LLM-powered web search) to extract structured company info.
 
-#### Confidence Scorer â€” `onboarding/backend/confidences/confidence-scorer.cjs`
+#### Confidence Scorer — `onboarding/backend/confidences/confidence-scorer.cjs`
 
 Rates quality of extracted/provided data.
 
@@ -456,18 +456,18 @@ Rates quality of extracted/provided data.
 **Usage:**
 ```
 POST /api/extract-and-score
-â†’ Rates each extracted field â†’ Triggers gap-fill interview
+→ Rates each extracted field → Triggers gap-fill interview
 ```
 
-#### Enrichers â€” `onboarding/backend/enrichers/`
+#### Enrichers — `onboarding/backend/enrichers/`
 
 Fills gaps in extracted data through secondary sources.
 
-**Competitor Enricher** â€” `competitor-enricher.cjs`
+**Competitor Enricher** — `competitor-enricher.cjs`
 
 ```javascript
 discoverCompetitors(company_name, industry) 
-  â†’ Promise<{
+  → Promise<{
       direct_competitors: {
         name: string,
         market_position: string,
@@ -480,7 +480,7 @@ discoverCompetitors(company_name, industry)
 
 ---
 
-#### Telemetry â€” `onboarding/backend/agents/telemetry.cjs`
+#### Telemetry — `onboarding/backend/agents/telemetry.cjs`
 
 Captures usage metrics via PostHog.
 
@@ -501,14 +501,14 @@ POSTHOG_HOST=https://...          # PostHog instance URL
 
 ### Layer 10: Example Resolution & Context Injection
 
-**Example Resolver** â€” `onboarding/backend/agents/example-resolver.cjs`
+**Example Resolver** — `onboarding/backend/agents/example-resolver.cjs`
 
 Injects example context into LLM prompts for better outputs.
 
 **Pattern:**
 ```javascript
 resolveExample(templateName, businessModel, templateSubdir, basePath)
-  â†’ string (markdown block from examples)
+  → string (markdown block from examples)
 ```
 
 **Template Logic:**
@@ -542,7 +542,7 @@ const prompt = `[...] ${exampleBlock} Write:[...]`;
 
 ### Layer 11: Path Resolution & Central Authority
 
-**Path Constants** â€” `onboarding/backend/path-constants.cjs`
+**Path Constants** — `onboarding/backend/path-constants.cjs`
 
 Centralized path resolution to prevent "dot-hell" bugs.
 
@@ -563,21 +563,21 @@ SCHEMA_PATH              // ONBOARDING_DIR/onboarding-seed.schema.json
 
 ### Layer 12: Utilities & Helpers
 
-**Utils** â€” `onboarding/backend/utils.cjs`
+**Utils** — `onboarding/backend/utils.cjs`
 
 ```javascript
 readBody(req)              // Parse JSON from HTTP request body
 json(res, statusCode, data) // Send JSON response with CORS headers
 ```
 
-**Handlers** â€” `onboarding/backend/handlers.cjs`
+**Handlers** — `onboarding/backend/handlers.cjs`
 
 Route handlers for all HTTP endpoints.
 
 **Key Handlers:**
 - `handleConfig()`: Returns config + environment status
 - `handleStatus()`: Returns DB health + MIR gate status
-- `handleSubmit()`: Main entry â€” triggers orchestrator
+- `handleSubmit()`: Main entry — triggers orchestrator
 - `handleRegenerate()`: Re-runs single agent
 - `handleApprove()`: Triggers write-mir.cjs
 - `handleExtractSources()`: Scraper integration
@@ -614,7 +614,7 @@ All agents must read protocol-lore files in priority order before any task execu
 
 ### MIR (Marketing Intelligence Repository)
 
-**Structure:** Dual-engine strategy â€” Lean Canvas (Physics) + JTBD (Psychology)
+**Structure:** Dual-engine strategy — Lean Canvas (Physics) + JTBD (Psychology)
 
 **Gate 1 (Core Identity):**
 - `01_COMPANY/PROFILE.md`
@@ -629,7 +629,7 @@ All agents must read protocol-lore files in priority order before any task execu
 
 **File Organization:**
 ```
-.markos-local/MIR/                    (client data â€” gitignored)
+.markos-local/MIR/                    (client data — gitignored)
 â”œâ”€â”€ Core_Strategy/
 â”‚   â”œâ”€â”€ 01_COMPANY/
 â”‚   â”‚   â”œâ”€â”€ PROFILE.md
@@ -717,7 +717,7 @@ During `markos-linear-sync`, ITM tokens map onto Linear issues. Updated via webh
 
 | Agent | Location | Input | Output | Role |
 |-------|----------|-------|--------|------|
-| **markos-planner** | `.agent/.../agents/markos-planner.md` | MIR+MSP | `.planning/PLAN.md` (waved tasks) | Converts strategy â†’ tasks |
+| **markos-planner** | `.agent/.../agents/markos-planner.md` | MIR+MSP | `.planning/PLAN.md` (waved tasks) | Converts strategy → tasks |
 | **markos-task-synthesizer** | `.agent/.../agents/markos-task-synthesizer.md` | MSP + COMPETITIVE-LANDSCAPE | Mutated task list | Injects competitor-exploiting work |
 | **markos-plan-checker** | `.agent/.../agents/markos-plan-checker.md` | PLAN.md | Audit report | Pre-execution validation gate |
 | **markos-executor** | `.agent/.../agents/markos-executor.md` | PLAN.md | Executed tasks + git commits | Runs tasks atomically |
@@ -749,7 +749,7 @@ During `markos-linear-sync`, ITM tokens map onto Linear issues. Updated via webh
 
 ### Full Agent Roster
 
-**Complete List** â€” 25+ agents in `.agent/markos/agents/`:
+**Complete List** — 25+ agents in `.agent/markos/agents/`:
 
 - markos-onboarder, markos-strategist, markos-campaign-architect
 - markos-planner, markos-plan-checker, markos-executor, markos-task-synthesizer
@@ -810,7 +810,7 @@ GET /status
 
 Response: 200 application/json
 {
-  "Supabase \+ Upstash Vector": {
+  "Supabase + Upstash Vector": {
     "ok": true,
     "message": "Connected"
   },
@@ -824,7 +824,7 @@ Response: 200 application/json
 
 #### POST /submit
 
-**Purpose:** Main entry â€” accept seed, trigger orchestrator, store drafts
+**Purpose:** Main entry — accept seed, trigger orchestrator, store drafts
 
 ```http
 POST /submit
@@ -931,7 +931,7 @@ Response: 200 application/json
 ```
 
 **Side Effects:**
-1. JIT-clones `.agent/.../templates/MIR/` â†’ `.markos-local/MIR/` (if needed)
+1. JIT-clones `.agent/.../templates/MIR/` → `.markos-local/MIR/` (if needed)
 2. Fuzzy-merges approved drafts into target files
 3. Stamps STATE.md: rows marked `(complete)`
 4. Writes disclaimer timestamp
@@ -1048,7 +1048,7 @@ Content-Type: multipart/form-data
 
 Form Data:
   url: "https://example.com"         (optional)
-  files: [File, File, ...]            (optional â€” PDF, DOCX, CSV, TXT)
+  files: [File, File, ...]            (optional — PDF, DOCX, CSV, TXT)
 
 Response: 200 application/json
 {
@@ -1098,7 +1098,7 @@ Response: 200 application/json
 
 #### POST /api/generate-question
 
-**Purpose:** AI gap-fill interview â€” ask follow-up for missing data
+**Purpose:** AI gap-fill interview — ask follow-up for missing data
 
 ```http
 POST /api/generate-question
@@ -1199,7 +1199,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 GEMINI_API_KEY=AI...
 OLLAMA_ENDPOINT=http://localhost:11434  # Local fallback
 
-# Supabase \+ Upstash Vector
+# Supabase + Upstash Vector
 UPSTASH_VECTOR_REST_URL=https://...            # Optional
 UPSTASH_VECTOR_REST_TOKEN=sk-...               # Optional
 
@@ -1215,7 +1215,7 @@ PROJECT_URL=https://mycompany.com
 
 ### Configuration Files
 
-**onboarding-config.json** â€” Server-level settings
+**onboarding-config.json** — Server-level settings
 
 ```json
 {
@@ -1228,7 +1228,7 @@ PROJECT_URL=https://mycompany.com
 }
 ```
 
-**.markos-project.json** â€” Generated once, persistent
+**.markos-project.json** — Generated once, persistent
 
 ```json
 {
@@ -1246,10 +1246,10 @@ PROJECT_URL=https://mycompany.com
 
 ```
 1. Human runs: node onboarding/backend/server.cjs
-2. bin/ensure-vector.cjs heartbeat â†’ Supabase \+ Upstash Vector ready
-3. Server boots on port 4242 â†’ Auto-opens http://localhost:4242
+2. bin/ensure-vector.cjs heartbeat → Supabase + Upstash Vector ready
+3. Server boots on port 4242 → Auto-opens http://localhost:4242
 4. Frontend loads: index.html + onboarding.js
-5. User submits form â†’ POST /submit
+5. User submits form → POST /submit
 
    6a. Extract sources (Omni-Input Gate):
        - Scrape URL via Tavily API
@@ -1257,7 +1257,7 @@ PROJECT_URL=https://mycompany.com
        - Score confidence (R/Y/G)
        - Gap-fill interview for low-confidence fields
 
-   6b. Store raw seed in Supabase \+ Upstash Vector (Project slug autogenerated or provided)
+   6b. Store raw seed in Supabase + Upstash Vector (Project slug autogenerated or provided)
    
    6c. Run orchestrator in parallel:
        - MIR generators (company, mission, audience, competitive)
@@ -1265,14 +1265,14 @@ PROJECT_URL=https://mycompany.com
        - Batch delays to avoid LLM rate limits (429s)
        - Retry logic: 3 attempts with exponential backoff
    
-  6d. Store drafts in Supabase \+ Upstash Vector: markos-{slug} collection
+  6d. Store drafts in Supabase + Upstash Vector: markos-{slug} collection
    
    6e. Return drafts to frontend for review
 
 7. UI displays drafts with regenerate options
-8. User approves â†’ POST /approve
+8. User approves → POST /approve
 
-  9a. JIT-clone: .agent/.../templates/MIR/ â†’ .markos-local/MIR/
+  9a. JIT-clone: .agent/.../templates/MIR/ → .markos-local/MIR/
    9b. Fuzzy-merge approved drafts into MIR files
    9c. Stamp STATE.md: mark rows as (complete)
   9d. Write .markos-install-manifest.json
@@ -1280,18 +1280,18 @@ PROJECT_URL=https://mycompany.com
 10. Project ready for execution phase
 ```
 
-### Supabase \+ Upstash Vector Boot Sequence
+### Supabase + Upstash Vector Boot Sequence
 
 ```
 1. bin/ensure-vector.cjs called
 2. Check UPSTASH_VECTOR_REST_URL in .env
-   â†’ If set: use cloud, return True
+   → If set: use cloud, return True
 3. Ping localhost:8000/api/v1/heartbeat (500ms timeout)
-   â†’ If alive: return True
+   → If alive: return True
 4. If dead:
-   â†’ Spawn: python -m Supabase \+ Upstash Vector.cli.cli run (detached, unref'd)
-   â†’ Wait 2s for daemon readiness
-   â†’ Ping again â†’ return True
+   → Spawn: python -m Supabase + Upstash Vector.cli.cli run (detached, unref'd)
+   → Wait 2s for daemon readiness
+   → Ping again → return True
 5. Resolve promise
 ```
 
@@ -1301,25 +1301,25 @@ PROJECT_URL=https://mycompany.com
 For each generator (company_profile, mission_values, etc.):
 
   Attempt 1:
-    â†’ Call llm-adapter
-    â†’ Success? Return result
-    â†’ Failure? Check if retryable (not auth error)
-    â†’ If retryable: wait 1.5s â†’ Attempt 2
-    â†’ If not retryable: return { ok: false, text: "[DRAFT UNAVAILABLE]" }
+    → Call llm-adapter
+    → Success? Return result
+    → Failure? Check if retryable (not auth error)
+    → If retryable: wait 1.5s → Attempt 2
+    → If not retryable: return { ok: false, text: "[DRAFT UNAVAILABLE]" }
 
   Attempt 2:
-    â†’ Call llm-adapter
-    â†’ Wait 3s on failure
-    â†’ Attempt 3
+    → Call llm-adapter
+    → Wait 3s on failure
+    → Attempt 3
 
   Attempt 3:
-    â†’ Call llm-adapter
-    â†’ If failure: return fallback response
+    → Call llm-adapter
+    → If failure: return fallback response
 
 Fallback Response:
   {
     ok: false,
-    text: "[DRAFT UNAVAILABLE â€” {error_message}]",
+    text: "[DRAFT UNAVAILABLE — {error_message}]",
     isFallback: true
   }
 
@@ -1335,7 +1335,7 @@ Telemetry captured at start + end (or on failure).
 â”œâ”€â”€ bin/
 â”‚   â”œâ”€â”€ install.cjs              â† First-run installer
 â”‚   â”œâ”€â”€ update.cjs               â† Idempotent updater
-â”‚   â””â”€â”€ ensure-vector.cjs        â† Supabase \+ Upstash Vector daemon auto-healer
+â”‚   â””â”€â”€ ensure-vector.cjs        â† Supabase + Upstash Vector daemon auto-healer
 â”œâ”€â”€ onboarding/
 â”‚   â”œâ”€â”€ index.html               â† UI entry point
 â”‚   â”œâ”€â”€ onboarding.js            â† UI logic (form handling, polling)
@@ -1483,7 +1483,7 @@ Telemetry captured at start + end (or on failure).
 â”œâ”€â”€ .env                            â† Environment variables (gitignored)
 â”œâ”€â”€ .env.example                    â† Example environment
 â”œâ”€â”€ .markos-logs/
-â”‚   â””â”€â”€ vector-daemon.log           â† Supabase \+ Upstash Vector daemon output
+â”‚   â””â”€â”€ vector-daemon.log           â† Supabase + Upstash Vector daemon output
 â”œâ”€â”€ test/
 â”‚   â”œâ”€â”€ install.test.js
 â”‚   â”œâ”€â”€ update.test.js
@@ -1504,7 +1504,7 @@ Telemetry captured at start + end (or on failure).
 
 ### Resilience Mechanisms
 
-**Supabase \+ Upstash Vector Auto-Healing:**
+**Supabase + Upstash Vector Auto-Healing:**
 - Every agent calls `bin/ensure-vector.cjs` before vector ops
 - Daemon auto-revives if dead (2s readiness check)
 - Cloud override: if UPSTASH_VECTOR_REST_URL set, skips local entirely
@@ -1522,7 +1522,7 @@ Telemetry captured at start + end (or on failure).
 - Transient failures (429 rate limits) retry
 
 **Data Safety:**
-- .markos-local/ is gitignored â€” client data never committed
+- .markos-local/ is gitignored — client data never committed
 - Base templates are read-only in `.agent/templates/`
 - JIT-cloning prevents data loss during upgrades
 - Fuzzy-merge header-matching prevents overwrites
@@ -1531,7 +1531,7 @@ Telemetry captured at start + end (or on failure).
 
 | Scenario | Handler | Response |
 |----------|---------|----------|
-| Supabase \+ Upstash Vector dead | `ensure-vector.cjs` | Spawn daemon + 2s wait |
+| Supabase + Upstash Vector dead | `ensure-vector.cjs` | Spawn daemon + 2s wait |
 | LLM API key missing | `llm-adapter.cjs` | Throw "API_KEY is not set" |
 | No LLM providers available | `fallback response` | `"[DRAFT UNAVAILABLE]"` + isFallback flag |
 | Template file missing | `write-mir.cjs` | Create dir + write file |
@@ -1597,7 +1597,7 @@ Telemetry captured at start + end (or on failure).
 | Onboarding server | `test/onboarding-server.test.js` | HTTP endpoints, seed validation |
 | Protocol integrity | `test/protocol.test.js` | .protocol-lore/ file validation |
 | Write-mir | `test/write-mir.test.js` | Template cloning, fuzzy-merge |
-| Example resolver | `test/example-resolver.test.js` | Business model â†’ example mapping |
+| Example resolver | `test/example-resolver.test.js` | Business model → example mapping |
 
 **Run Tests:**
 ```bash
@@ -1613,8 +1613,8 @@ node --test test/onboarding-server.test.js
 
 | Constraint | Impact | Workaround |
 |-----------|--------|-----------|
-| Supabase \+ Upstash Vector local daemon disk space | Vector DB size â†’ local storage limits | Use UPSTASH_VECTOR_REST_URL for unlimited scale |
-| LLM token limits (per request) | Long MIR context â†’ truncation | Increase max_tokens in config |
+| Supabase + Upstash Vector local daemon disk space | Vector DB size → local storage limits | Use UPSTASH_VECTOR_REST_URL for unlimited scale |
+| LLM token limits (per request) | Long MIR context → truncation | Increase max_tokens in config |
 | Concurrent /submit requests | Single orchestrator instance | Deploy server.cjs with load balancer |
 | File upload size | formidable 100MB default | Configure in server.cjs |
 
@@ -1637,7 +1637,7 @@ This TECH-MAP documents every major system in MarkOS:
 - **API Surface**: 11 HTTP endpoints with full contracts
 - **Agent Ecosystem**: 25+ specialized agents for strategy, execution, content, intelligence, verification
 - **Data Models**: MIR (intelligence), MSP (strategy), ITM (tasks)
-- **Execution Sequences**: Onboarding flow, Supabase \+ Upstash Vector boot, retry strategies
+- **Execution Sequences**: Onboarding flow, Supabase + Upstash Vector boot, retry strategies
 - **Directory Structure**: Complete file organization with purposes
 - **Error Handling**: Resilience, fallback, retry patterns
 

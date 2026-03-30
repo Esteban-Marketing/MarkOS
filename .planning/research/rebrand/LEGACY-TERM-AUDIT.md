@@ -1,8 +1,8 @@
-﻿# Legacy Term Audit â€” MARKOS â†’ MarkOS Rebrand
+﻿# Legacy Term Audit — MARKOS → MarkOS Rebrand
 
 **Audited:** 2026-03-27  
 **Method:** Exhaustive grep across entire codebase (all file types)  
-**Note:** Several searches hit the result cap (200â€“500). Actual counts are **minimums** â€” true totals are higher.
+**Note:** Several searches hit the result cap (200â€“500). Actual counts are **minimums** — true totals are higher.
 
 ---
 
@@ -10,20 +10,20 @@
 
 | Term Pattern | Min. Occurrences | Unique Files | Severity |
 |---|---|---|---|
-| `markos` (any case) | 1,000+ | 120+ | CRITICAL â€” pervasive |
-| `markos` | 200+ | 70+ | CRITICAL â€” package name, paths |
-| `MarkOS` (spaces) | 16 | 13 | MODERATE â€” display text only |
-| `get-shit-done` (without marketing-) | 200+ | 60+ | CRITICAL â€” includes path references |
-| `.markos-local` | 200+ | 80+ | CRITICAL â€” filesystem convention |
-| `.markos-project.json` | 25 | 18 | HIGH â€” config file name |
-| `.markos-install-manifest.json` | 40 | 20 | HIGH â€” install infrastructure |
-| `MARKOS_TELEMETRY` | 11 | 8 | MODERATE â€” env var |
-| `markos_privacy_accepted` | 3 | 3 | LOW â€” localStorage key |
-| `markos-backend-telemetry` | 2 | 2 | LOW â€” PostHog `$lib` value |
-| `markos-{project_slug}` (Supabase + Upstash Vector) | 13 | 10 | HIGH â€” data namespace |
-| `MARKOS-INDEX.md` | 100+ | 40+ | CRITICAL â€” master registry filename |
-| `markos-*` agent/skill names | 200+ | 80+ | CRITICAL â€” all agent identifiers |
-| `MARKOS-` token prefixes | 500+ | 100+ | CRITICAL â€” all token IDs |
+| `markos` (any case) | 1,000+ | 120+ | CRITICAL — pervasive |
+| `markos` | 200+ | 70+ | CRITICAL — package name, paths |
+| `MarkOS` (spaces) | 16 | 13 | MODERATE — display text only |
+| `get-shit-done` (without marketing-) | 200+ | 60+ | CRITICAL — includes path references |
+| `.markos-local` | 200+ | 80+ | CRITICAL — filesystem convention |
+| `.markos-project.json` | 25 | 18 | HIGH — config file name |
+| `.markos-install-manifest.json` | 40 | 20 | HIGH — install infrastructure |
+| `MARKOS_TELEMETRY` | 11 | 8 | MODERATE — env var |
+| `markos_privacy_accepted` | 3 | 3 | LOW — localStorage key |
+| `markos-backend-telemetry` | 2 | 2 | LOW — PostHog `$lib` value |
+| `markos-{project_slug}` (Supabase + Upstash Vector) | 13 | 10 | HIGH — data namespace |
+| `MARKOS-INDEX.md` | 100+ | 40+ | CRITICAL — master registry filename |
+| `markos-*` agent/skill names | 200+ | 80+ | CRITICAL — all agent identifiers |
+| `MARKOS-` token prefixes | 500+ | 100+ | CRITICAL — all token IDs |
 
 **Estimated total legacy references: 2,500â€“3,000+**
 
@@ -31,7 +31,7 @@
 
 ## 1. `markos` (hyphenated, package name)
 
-### Code Files (HIGHEST PRIORITY â€” functional)
+### Code Files (HIGHEST PRIORITY — functional)
 
 | File | Occurrences | Context |
 |---|---|---|
@@ -55,7 +55,7 @@
 | `.claude/settings.json` | 1 | Path reference |
 | `onboarding/onboarding-config.json` | 1 | Comment/path |
 
-### .agent/ Directory (agent protocol files â€” **317+ files**)
+### .agent/ Directory (agent protocol files — **317+ files**)
 
 The entire `.agent/markos/` directory is the legacy name. Every file within it exists under this path. Key internal references:
 
@@ -138,7 +138,7 @@ This is the **single largest concentration**. Every phase (01â€“07) referen
 | `bin/update.cjs` | 5+ | `isLocalOverride()`, skip logic |
 | `.gitignore` | 1 | Exclusion rule |
 
-### Template Override Comments (MIR â€” 30+ files)
+### Template Override Comments (MIR — 30+ files)
 
 Every MIR template contains:
 ```
@@ -147,17 +147,17 @@ Every MIR template contains:
 
 Files: All MIR/ templates across `Core_Strategy/`, `Market_Audiences/`, `Products/`, `Operations/`, `Campaigns_Assets/`
 
-### Template Override Comments (MSP â€” 30+ files)
+### Template Override Comments (MSP — 30+ files)
 
 Every MSP template contains similar `OVERRIDE PATH` notes:
 
 Files: All MSP/ templates across `Strategy/`, `Inbound/`, `Outbound/`, `Social/`, `Community_Events/`, `Campaigns/`, `Lifecycle_Email/`
 
-### .markos-local/ directory itself (client data â€” 12+ populated files)
+### .markos-local/ directory itself (client data — 12+ populated files)
 
 Every file inside `.markos-local/` contains an OVERRIDE comment referencing the path:
 ```html
-<!-- OVERRIDE: .markos-local layer â€” this file overrides .planning/MIR/... -->
+<!-- OVERRIDE: .markos-local layer — this file overrides .planning/MIR/... -->
 ```
 
 ### Documentation & planning
@@ -265,7 +265,7 @@ Every file inside `.markos-local/` contains an OVERRIDE comment referencing the 
 | `.protocol-lore/CODEBASE-MAP.md` | UI privacy banner logic |
 | `.planning/research/SUMMARY.md` | Research reference |
 
-**Note:** Also likely present in `onboarding/index.html` or frontend JS (not captured in grep â€” check HTML files).
+**Note:** Also likely present in `onboarding/index.html` or frontend JS (not captured in grep — check HTML files).
 
 ---
 
@@ -275,7 +275,7 @@ Every file inside `.markos-local/` contains an OVERRIDE comment referencing the 
 
 | File | Context |
 |---|---|
-| `onboarding/backend/agents/telemetry.cjs` | `$lib: 'markos-backend-telemetry'` â€” **hardcoded string** |
+| `onboarding/backend/agents/telemetry.cjs` | `$lib: 'markos-backend-telemetry'` — **hardcoded string** |
 | `.planning/research/rebrand/SUMMARY.md` | Self-referential research note |
 
 ---
@@ -310,7 +310,7 @@ Every file inside `.markos-local/` contains an OVERRIDE comment referencing the 
 
 ### The file itself
 
-- `/.agent/markos/MARKOS-INDEX.md` â€” the actual master registry. Must be renamed.
+- `/.agent/markos/MARKOS-INDEX.md` — the actual master registry. Must be renamed.
 
 ### Code / Tests
 
@@ -324,11 +324,11 @@ Every file inside `.markos-local/` contains an OVERRIDE comment referencing the 
 
 Every `.agent/markos/agents/markos-*.md` file contains:
 ```yaml
-- MARKOS-IDX-000    # MARKOS-INDEX.md â€” master registry
+- MARKOS-IDX-000    # MARKOS-INDEX.md — master registry
 ```
 And a cross-reference table entry:
 ```
-| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point â€” indexes this agent |
+| MARKOS-IDX-000 | MARKOS-INDEX.md | Entry point — indexes this agent |
 ```
 
 **Files:** `markos-auditor.md`, `markos-researcher.md`, `markos-analyst.md`, `markos-onboarder.md`
@@ -363,7 +363,7 @@ Pervasive across TECH-MAP.md, README.md, `.protocol-lore/CODEBASE-MAP.md`, all m
 
 ### Location density
 
-These appear in every `.agent/markos/` file's YAML frontmatter (`token_id:`, `dependencies:`), cross-reference tables, and document headers. With 39 agents, 25 skills, 27 workflows, 9 references, 5 hooks, plus the INDEX and templates â€” this is 100+ files with 3â€“5 tokens each = **500+ minimum**.
+These appear in every `.agent/markos/` file's YAML frontmatter (`token_id:`, `dependencies:`), cross-reference tables, and document headers. With 39 agents, 25 skills, 27 workflows, 9 references, 5 hooks, plus the INDEX and templates — this is 100+ files with 3â€“5 tokens each = **500+ minimum**.
 
 ---
 
@@ -434,7 +434,7 @@ These appear in every `.agent/markos/` file's YAML frontmatter (`token_id:`, `de
 
 | File | Context |
 |---|---|
-| `TECH-MAP.md` L1356 | `get-shit-done/` â€” GSD protocol (separate repo) |
+| `TECH-MAP.md` L1356 | `get-shit-done/` — GSD protocol (separate repo) |
 | `.planning/MIR/README.md` | "submit changes via PR to the get-shit-done repo" |
 | `.planning/MIR/SETUP.md` | `git clone .../get-shit-done.git` |
 | `.planning/MSP/SETUP.md` | `git clone .../get-shit-done.git` |
@@ -445,79 +445,79 @@ These appear in every `.agent/markos/` file's YAML frontmatter (`token_id:`, `de
 | Phase 07 CONTEXT | `.agent/get-shit-done/VERSION` detection |
 | Phase 03 PLAN.md | "workflows in `.agent/get-shit-done`" |
 
-**Note:** Some of these reference the **parent GSD protocol** (a separate repo/product), not MARKOS. These should be evaluated individually â€” some may intentionally remain as `get-shit-done` if they refer to the parent project.
+**Note:** Some of these reference the **parent GSD protocol** (a separate repo/product), not MARKOS. These should be evaluated individually — some may intentionally remain as `get-shit-done` if they refer to the parent project.
 
 ---
 
 ## Priority Classification for Rebrand
 
-### P0 â€” BREAKING (must change atomically)
+### P0 — BREAKING (must change atomically)
 - `package.json` name: `markos`
 - `package.json` bin: `markos`, `markos`
 - `npx markos` commands everywhere
 - `.agent/markos/` directory name
-- `bin/install.cjs` â€” hardcoded paths and banner
-- `bin/update.cjs` â€” hardcoded paths and error messages
+- `bin/install.cjs` — hardcoded paths and banner
+- `bin/update.cjs` — hardcoded paths and error messages
 
-### P1 â€” FUNCTIONAL (breaks update/install if not migrated)
-- `.markos-local/` â€” directory convention (code + templates)
-- `.markos-project.json` â€” project config filename
-- `.markos-install-manifest.json` â€” install tracking filename  
-- `markos-{project_slug}` â€” Supabase + Upstash Vector collection prefix
-- `MARKOS_TELEMETRY` â€” env var
-- `markos_privacy_accepted` â€” localStorage key
-- `markos-backend-telemetry` â€” PostHog lib identifier
-- `MARKOS-INDEX.md` â€” master registry filename
+### P1 — FUNCTIONAL (breaks update/install if not migrated)
+- `.markos-local/` — directory convention (code + templates)
+- `.markos-project.json` — project config filename
+- `.markos-install-manifest.json` — install tracking filename  
+- `markos-{project_slug}` — Supabase + Upstash Vector collection prefix
+- `MARKOS_TELEMETRY` — env var
+- `markos_privacy_accepted` — localStorage key
+- `markos-backend-telemetry` — PostHog lib identifier
+- `MARKOS-INDEX.md` — master registry filename
 
-### P2 â€” PROTOCOL (agent system works but shows old branding)
+### P2 — PROTOCOL (agent system works but shows old branding)
 - All `MARKOS-` token ID prefixes (500+)
 - All `markos-*` agent names (25+ agents)
 - All `markos-*` skill names (9+ skills)
-- `markos-tools.cjs` â€” tool binary name
+- `markos-tools.cjs` — tool binary name
 - Agent LOGIC references in MIR/MSP templates
 
-### P3 â€” DOCUMENTATION (no functional impact)
+### P3 — DOCUMENTATION (no functional impact)
 - TECH-MAP.md, ARCH-DIAGRAM.md, README.md
 - All `.planning/milestones/` historical docs
 - RESEARCH/ files
 - `.protocol-lore/` boot context
 - `.markos-local/` populated content referencing old name
 
-### P4 â€” HISTORICAL (consider keeping as-is)
-- `.planning/milestones/v1.0-phases/` â€” completed phase docs (historical record)
+### P4 — HISTORICAL (consider keeping as-is)
+- `.planning/milestones/v1.0-phases/` — completed phase docs (historical record)
 - Some GSD parent protocol references that should remain
 
 ---
 
 ## Files Requiring No Changes (out of scope)
 
-- `node_modules/` â€” regenerated on install
-- `.git/` â€” git internal
-- Binary/image files â€” none found with legacy terms
-- `.planning/research/rebrand/` â€” these audit files themselves
+- `node_modules/` — regenerated on install
+- `.git/` — git internal
+- Binary/image files — none found with legacy terms
+- `.planning/research/rebrand/` — these audit files themselves
 
 ---
 
 ## Automated Rename Feasibility
 
 ### Safe for find-and-replace:
-- `MARKOS-` â†’ `MARKOS-` (token prefixes â€” very consistent pattern)
-- `.markos-local` â†’ `.markos-local` (directory convention)
-- `.markos-project.json` â†’ `.markos-project.json`
-- `.markos-install-manifest.json` â†’ `.markos-install-manifest.json`
-- `MARKOS_TELEMETRY` â†’ `MARKOS_TELEMETRY`
-- `markos_privacy_accepted` â†’ `markos_privacy_accepted`
-- `markos-backend-telemetry` â†’ `markos-backend-telemetry`
+- `MARKOS-` → `MARKOS-` (token prefixes — very consistent pattern)
+- `.markos-local` → `.markos-local` (directory convention)
+- `.markos-project.json` → `.markos-project.json`
+- `.markos-install-manifest.json` → `.markos-install-manifest.json`
+- `MARKOS_TELEMETRY` → `MARKOS_TELEMETRY`
+- `markos_privacy_accepted` → `markos_privacy_accepted`
+- `markos-backend-telemetry` → `markos-backend-telemetry`
 
 ### Requires manual review:
-- `markos` â†’ varies (some `markos`, some `@markos/cli`, some display text)
-- `markos-*` agent names â†’ `markos-*` (need to verify no collisions)
-- `get-shit-done` â†’ many are parent GSD refs, not MARKOS
-- `MARKOS-INDEX.md` â†’ `MARKOS-INDEX.md` (filename + all references)
-- `MARKOS` in prose â†’ context-dependent (some acronym, some product name)
+- `markos` → varies (some `markos`, some `@markos/cli`, some display text)
+- `markos-*` agent names → `markos-*` (need to verify no collisions)
+- `get-shit-done` → many are parent GSD refs, not MARKOS
+- `MARKOS-INDEX.md` → `MARKOS-INDEX.md` (filename + all references)
+- `MARKOS` in prose → context-dependent (some acronym, some product name)
 
 ### Requires migration code:
-- `markos-{project_slug}` â†’ `markos-{project_slug}` (Supabase + Upstash Vector data migration)
-- `.agent/markos/` â†’ `.agent/markos/` (directory rename + install/update logic)
+- `markos-{project_slug}` → `markos-{project_slug}` (Supabase + Upstash Vector data migration)
+- `.agent/markos/` → `.agent/markos/` (directory rename + install/update logic)
 - `package.json` name change (npm deprecation package needed)
 

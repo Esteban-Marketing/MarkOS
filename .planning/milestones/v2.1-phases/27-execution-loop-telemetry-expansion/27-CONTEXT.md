@@ -1,4 +1,4 @@
-﻿# Phase 27 Context â€” Execution Loop & Telemetry Expansion
+﻿# Phase 27 Context — Execution Loop & Telemetry Expansion
 
 ## Objective
 
@@ -57,11 +57,11 @@ Phase 27 is the capstone of the v2.1 hardening sequence. Earlier phases clarifie
 
 ## Deliverables
 
-1. `27-CONTEXT.md` â€” this document.
-2. `27-01-PLAN.md` â€” define the minimum post-onboarding execution loop and required inputs.
-3. `27-02-PLAN.md` â€” validate winners-catalog boot requirements across creator and executor flows.
-4. `27-03-PLAN.md` â€” add telemetry around approval, execution readiness, and major failure points.
-5. `27-04-PLAN.md` â€” produce a handoff spec tying onboarding outputs to execution workflows.
+1. `27-CONTEXT.md` — this document.
+2. `27-01-PLAN.md` — define the minimum post-onboarding execution loop and required inputs.
+3. `27-02-PLAN.md` — validate winners-catalog boot requirements across creator and executor flows.
+4. `27-03-PLAN.md` — add telemetry around approval, execution readiness, and major failure points.
+5. `27-04-PLAN.md` — produce a handoff spec tying onboarding outputs to execution workflows.
 
 ## Exit Criteria
 

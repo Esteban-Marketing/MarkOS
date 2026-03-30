@@ -1,4 +1,4 @@
-﻿# Rebrand Mapping â€” Complete Item-by-Item Audit
+﻿# Rebrand Mapping — Complete Item-by-Item Audit
 
 **Project:** MarkOS Rebrand  
 **Researched:** 2026-03-27  
@@ -10,8 +10,8 @@
 
 | Field | Current Value | Proposed Value | Risk |
 |-------|--------------|----------------|------|
-| `name` | `"markos"` | `"markos"` | ðŸ”´ **BREAKING** â€” all npx/npm commands change |
-| `description` | `"The MarkOS (MARKOS) protocol â€” agentic marketing execution alongside GSD"` | `"MarkOS â€” the Marketing Operating System. Protocol-grade marketing infrastructure for AI-ready teams."` | ðŸŸ¢ Cosmetic |
+| `name` | `"markos"` | `"markos"` | ðŸ”´ **BREAKING** — all npx/npm commands change |
+| `description` | `"The MarkOS (MARKOS) protocol — agentic marketing execution alongside GSD"` | `"MarkOS — the Marketing Operating System. Protocol-grade marketing infrastructure for AI-ready teams."` | ðŸŸ¢ Cosmetic |
 | `bin.markos` | `"./bin/install.cjs"` | Remove (replaced by `markos`) | ðŸ”´ **BREAKING** |
 | `bin.markos` | `"./bin/install.cjs"` | Keep as alias during transition | ðŸŸ¡ Migration aid |
 | `bin.markos` | Does not exist | `"./bin/install.cjs"` | ðŸŸ¢ New addition |
@@ -43,10 +43,10 @@
 
 | Reference | Current | Proposed | Risk |
 |-----------|---------|----------|------|
-| Title | `# Changelog â€” markos` | `# Changelog â€” MarkOS` | ðŸŸ¢ Cosmetic |
+| Title | `# Changelog — markos` | `# Changelog — MarkOS` | ðŸŸ¢ Cosmetic |
 | v1.0.0 entry | `Full MARKOS protocol: MIR, MSP, RESEARCH architecture` | `Full MarkOS protocol: MIR, MSP, RESEARCH architecture` | ðŸŸ¢ Cosmetic |
-| v1.0.0 entry | `Interactive install wizard with GSD co-existence detection` | No MARKOS ref â€” OK as-is | ðŸŸ¢ None |
-| New entry | â€” | Add `## v2.0.0 â€” Rebrand: MARKOS â†’ MarkOS` entry | ðŸŸ¢ Cosmetic |
+| v1.0.0 entry | `Interactive install wizard with GSD co-existence detection` | No MARKOS ref — OK as-is | ðŸŸ¢ None |
+| New entry | — | Add `## v2.0.0 — Rebrand: MARKOS → MarkOS` entry | ðŸŸ¢ Cosmetic |
 
 ---
 
@@ -56,7 +56,7 @@
 |---------|----------|------|
 | `1.0.0` | Bump to `2.0.0` (semver major for breaking npm rename) | ðŸŸ¡ Versioning decision |
 
-Note: `.agent/markos/VERSION` also contains `1.1.0` â€” this needs to match or be reconciled.
+Note: `.agent/markos/VERSION` also contains `1.1.0` — this needs to match or be reconciled.
 
 ---
 
@@ -66,7 +66,7 @@ Note: `.agent/markos/VERSION` also contains `1.1.0` â€” this needs to match
 |---------|----------|------|
 | No MARKOS references | No changes needed | ðŸŸ¢ None |
 
-The vercel.json only contains route rewrites â€” all path-agnostic.
+The vercel.json only contains route rewrites — all path-agnostic.
 
 ---
 
@@ -98,8 +98,8 @@ All API files are thin wrappers delegating to `handlers.cjs`. The MARKOS referen
 
 | Reference | Current | Proposed | Risk |
 |-----------|---------|----------|------|
-| `<title>` | `Client Intelligence Onboarding` | No MARKOS ref â€” consider `MarkOS Onboarding` | ðŸŸ¢ Optional |
-| PostHog snippet | Generic â€” no MARKOS refs | No changes needed | ðŸŸ¢ None |
+| `<title>` | `Client Intelligence Onboarding` | No MARKOS ref — consider `MarkOS Onboarding` | ðŸŸ¢ Optional |
+| PostHog snippet | Generic — no MARKOS refs | No changes needed | ðŸŸ¢ None |
 | Form content | No MARKOS refs in HTML | No changes needed | ðŸŸ¢ None |
 
 ---
@@ -109,7 +109,7 @@ All API files are thin wrappers delegating to `handlers.cjs`. The MARKOS referen
 | Reference | Current | Proposed | Risk |
 |-----------|---------|----------|------|
 | CSS classes | All generic (`.onboarding-wrapper`, `.step-section`, etc.) | No changes needed | ðŸŸ¢ None |
-| No MARKOS-prefixed classes | â€” | â€” | ðŸŸ¢ None |
+| No MARKOS-prefixed classes | — | — | ðŸŸ¢ None |
 
 ---
 
@@ -117,9 +117,9 @@ All API files are thin wrappers delegating to `handlers.cjs`. The MARKOS referen
 
 | Reference | Current | Proposed | Risk |
 |-----------|---------|----------|------|
-| Comment header | `// onboarding.js â€” MARKOS Client Onboarding v2.0` | `// onboarding.js â€” MarkOS Client Onboarding v2.0` | ðŸŸ¢ Cosmetic |
+| Comment header | `// onboarding.js — MARKOS Client Onboarding v2.0` | `// onboarding.js — MarkOS Client Onboarding v2.0` | ðŸŸ¢ Cosmetic |
 | `STORAGE_KEY` | `'markos-onboarding-draft'` | `'markos-onboarding-draft'` (with migration from old key) | ðŸŸ¡ Risk of losing in-progress drafts |
-| `localStorage.getItem('markos_privacy_dismissed')` | Privacy notice key | `'markos_privacy_dismissed'` (with old-key migration) | ðŸŸ¡ Minor â€” privacy banner re-shows once |
+| `localStorage.getItem('markos_privacy_dismissed')` | Privacy notice key | `'markos_privacy_dismissed'` (with old-key migration) | ðŸŸ¡ Minor — privacy banner re-shows once |
 
 ---
 
@@ -129,7 +129,7 @@ All API files are thin wrappers delegating to `handlers.cjs`. The MARKOS referen
 |-----------|---------|----------|------|
 | `title` | `"MARKOS Onboarding Seed v2.1"` | `"MarkOS Onboarding Seed v3.0"` | ðŸŸ¢ Cosmetic (JSON Schema metadata only) |
 
-Note: `onboarding-seed.json` is gitignored and generated per-user â€” no changes needed.
+Note: `onboarding-seed.json` is gitignored and generated per-user — no changes needed.
 
 ---
 
@@ -148,7 +148,7 @@ Note: `onboarding-seed.json` is gitignored and generated per-user â€” no ch
 
 | Reference | Current | Proposed | Risk |
 |-----------|---------|----------|------|
-| Both files | `"read .protocol-lore/QUICKSTART.md for high-efficiency agent-boot and protocol-lore/INDEX.md"` | No MARKOS ref in content â€” but QUICKSTART.md it points to has many | ðŸŸ¢ Indirect only |
+| Both files | `"read .protocol-lore/QUICKSTART.md for high-efficiency agent-boot and protocol-lore/INDEX.md"` | No MARKOS ref in content — but QUICKSTART.md it points to has many | ðŸŸ¢ Indirect only |
 
 The files themselves don't need changes. The `.protocol-lore/QUICKSTART.md` they reference does (covered separately).
 
@@ -178,16 +178,16 @@ The files themselves don't need changes. The `.protocol-lore/QUICKSTART.md` they
 
 | Reference | Current | Proposed | Risk |
 |-----------|---------|----------|------|
-| JSDoc header | `"install.cjs â€” MARKOS Interactive Installer"` | `"install.cjs â€” MarkOS Interactive Installer"` | ðŸŸ¢ Cosmetic |
+| JSDoc header | `"install.cjs — MARKOS Interactive Installer"` | `"install.cjs — MarkOS Interactive Installer"` | ðŸŸ¢ Cosmetic |
 | `VERSION` path | `'.agent/markos/VERSION'` | `'.agent/markos/VERSION'` (+fallback to old) | ðŸŸ¡ Must match dir rename |
-| Banner text | `"MARKOS Installer v${VERSION} â€” MarkOS"` | `"MarkOS Installer v${VERSION} â€” Marketing Operating System"` | ðŸŸ¢ Cosmetic |
+| Banner text | `"MARKOS Installer v${VERSION} — MarkOS"` | `"MarkOS Installer v${VERSION} — Marketing Operating System"` | ðŸŸ¢ Cosmetic |
 | `detectExistingMARKOS()` | Checks `.agent/markos/VERSION` | Check both old and new `.agent/markos/VERSION` | ðŸŸ¡ Migration |
 | Template source | `path.join(PKG_DIR, '.agent', 'markos')` | `path.join(PKG_DIR, '.agent', 'markos')` | ðŸŸ¡ Must match dir |
 | Template dest | `path.join(agentDir, 'markos')` | `path.join(agentDir, 'markos')` | ðŸŸ¡ Must match dir |
 | Manifest path | `'.markos-install-manifest.json'` | `'.markos-install-manifest.json'` (+fallback) | ðŸŸ¡ Migration |
 | Console messages | Multiple `"MARKOS"` and `"âœ“ MARKOS protocol files installed"` | Update all | ðŸŸ¢ Cosmetic |
 | npx command (handle update) | `"npx markos update"` | `"npx markos update"` | ðŸŸ¡ User-facing |
-| AI MD append logic | Checks for `GEMINI.md`, `CLAUDE.md`, `AGENTS.md` | No MARKOS ref in logic itself â€” OK | ðŸŸ¢ None |
+| AI MD append logic | Checks for `GEMINI.md`, `CLAUDE.md`, `AGENTS.md` | No MARKOS ref in logic itself — OK | ðŸŸ¢ None |
 
 ---
 
@@ -195,7 +195,7 @@ The files themselves don't need changes. The `.protocol-lore/QUICKSTART.md` they
 
 | Reference | Current | Proposed | Risk |
 |-----------|---------|----------|------|
-| JSDoc header | `"update.cjs â€” MARKOS Safe Update & Patch Engine"` | `"update.cjs â€” MarkOS Safe Update & Patch Engine"` | ðŸŸ¢ Cosmetic |
+| JSDoc header | `"update.cjs — MARKOS Safe Update & Patch Engine"` | `"update.cjs — MarkOS Safe Update & Patch Engine"` | ðŸŸ¢ Cosmetic |
 | `NEW_VERSION` path | `'.agent/markos/VERSION'` | `'.agent/markos/VERSION'` | ðŸŸ¡ Must match dir |
 | Banner text | `"MARKOS Update Engine v${NEW_VERSION}"` | `"MarkOS Update Engine v${NEW_VERSION}"` | ðŸŸ¢ Cosmetic |
 | Manifest read | `'.markos-install-manifest.json'` | Check both old and new | ðŸŸ¡ Migration |
@@ -212,7 +212,7 @@ The files themselves don't need changes. The `.protocol-lore/QUICKSTART.md` they
 |-----------|----------|---------|----------|------|
 | Env var | `telemetry.cjs:8` | `MARKOS_TELEMETRY` | Support both `MARKOS_TELEMETRY` and `MARKOS_TELEMETRY` | ðŸŸ¡ User docs reference old |
 | `$lib` property | `telemetry.cjs:32` | `'markos-backend-telemetry'` | `'markos-backend-telemetry'` | ðŸŸ¡ Breaks PostHog dashboard filters |
-| Client-side PostHog | `index.html` | Generic snippet â€” no MARKOS | No changes needed | ðŸŸ¢ None |
+| Client-side PostHog | `index.html` | Generic snippet — no MARKOS | No changes needed | ðŸŸ¢ None |
 
 ---
 
@@ -220,9 +220,9 @@ The files themselves don't need changes. The `.protocol-lore/QUICKSTART.md` they
 
 | Symbol | Meaning | Action Required |
 |--------|---------|----------------|
-| ðŸ”´ | **Breaking change** â€” existing users' workflows break | Migration logic + deprecation bridge required |
-| ðŸŸ¡ | **Moderate** â€” functional impact, requires migration/coordination | Update with backward compatibility |
-| ðŸŸ¢ | **Cosmetic** â€” no functional impact | Simple find-replace in rebrand pass |
+| ðŸ”´ | **Breaking change** — existing users' workflows break | Migration logic + deprecation bridge required |
+| ðŸŸ¡ | **Moderate** — functional impact, requires migration/coordination | Update with backward compatibility |
+| ðŸŸ¢ | **Cosmetic** — no functional impact | Simple find-replace in rebrand pass |
 
 ## Summary Statistics
 
@@ -234,7 +234,7 @@ The files themselves don't need changes. The `.protocol-lore/QUICKSTART.md` they
 
 ---
 
-## Migration Matrix: Old â†’ New Path Mapping
+## Migration Matrix: Old → New Path Mapping
 
 | Old Path/Name | New Path/Name | Where Referenced |
 |---------------|---------------|-----------------|

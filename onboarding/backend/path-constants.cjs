@@ -27,12 +27,9 @@ const MIR_TEMPLATES = path.join(TEMPLATES_DIR, 'MIR');
 const MSP_TEMPLATES = path.join(TEMPLATES_DIR, 'MSP');
 
 // State surfaces (MarkOS-first with legacy fallback)
-const LEGACY_LOCAL_DIR = fs.existsSync(path.join(PROJECT_ROOT, '.markos-local'))
-  ? path.join(PROJECT_ROOT, '.markos-local')
-  : path.join(PROJECT_ROOT, '.markos-local');
+const LEGACY_LOCAL_DIR = path.join(PROJECT_ROOT, '.markos-local');
 const MARKOS_LOCAL_DIR = path.join(PROJECT_ROOT, '.markos-local');
-const MARKOS_LOCAL_DIR = path.join(PROJECT_ROOT, '.markos-local');
-const COMPATIBILITY_LOCAL_DIRS = [MARKOS_LOCAL_DIR, MARKOS_LOCAL_DIR];
+const COMPATIBILITY_LOCAL_DIRS = Array.from(new Set([MARKOS_LOCAL_DIR, LEGACY_LOCAL_DIR]));
 const PROJECT_CONFIG_PATH = fs.existsSync(path.join(PROJECT_ROOT, '.markos-project.json'))
   ? path.join(PROJECT_ROOT, '.markos-project.json')
   : path.join(PROJECT_ROOT, '.markos-project.json');
@@ -53,7 +50,6 @@ module.exports = {
   MIR_TEMPLATES,
   MSP_TEMPLATES,
   LEGACY_LOCAL_DIR,
-  MARKOS_LOCAL_DIR,
   MARKOS_LOCAL_DIR,
   COMPATIBILITY_LOCAL_DIRS,
   PROJECT_CONFIG_PATH,

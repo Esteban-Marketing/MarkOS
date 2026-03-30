@@ -1,5 +1,5 @@
 ﻿<purpose>
-Create executable phase plans (PLAN.md files) for a marketing roadmap phase. Default flow: MIR gate check â†’ Research (if needed) â†’ Plan â†’ Verify â†’ Done. Orchestrates markos-market-researcher, markos-planner, and markos-plan-checker agents with a revision loop (max 3 iterations).
+Create executable phase plans (PLAN.md files) for a marketing roadmap phase. Default flow: MIR gate check → Research (if needed) → Plan → Verify → Done. Orchestrates markos-market-researcher, markos-planner, and markos-plan-checker agents with a revision loop (max 3 iterations).
 </purpose>
 
 <required_reading>
@@ -114,7 +114,7 @@ Present to user:
 Gate 1 (Identity) is RED â€” {N} files need content.
 Planning without business identity data produces generic plans.
 
-â†’ 1) Fill MIR gaps first (/markos-mir-audit for list)
+→ 1) Fill MIR gaps first (/markos-mir-audit for list)
   2) Continue anyway (plans will use available data only)
 ```
 
@@ -133,8 +133,8 @@ If exists: `Using phase context from: ${context_path}`
 **If CONTEXT.md missing:**
 
 Ask user:
-- "Continue without context" â†’ Plan using research + requirements only
-- "Run discuss-phase first" â†’ Display: `Run /markos-discuss-phase {X} then re-run /markos-plan-phase {X}` â€” EXIT
+- "Continue without context" → Plan using research + requirements only
+- "Run discuss-phase first" → Display: `Run /markos-discuss-phase {X} then re-run /markos-plan-phase {X}` â€” EXIT
 
 ## 5. Handle Research
 
@@ -211,8 +211,8 @@ Structure:
 ```
 
 Handle return:
-- `## RESEARCH COMPLETE` â†’ Continue to step 6
-- `## RESEARCH BLOCKED` â†’ Display blocker, offer: Provide context / Skip research / Abort
+- `## RESEARCH COMPLETE` → Continue to step 6
+- `## RESEARCH BLOCKED` → Display blocker, offer: Provide context / Skip research / Abort
 
 ## 5.5. Create Validation Strategy
 
@@ -468,7 +468,7 @@ Return ## PLANNING COMPLETE with what changed.
 )
 ```
 
-After planner returns â†’ spawn checker again, increment iteration_count.
+After planner returns → spawn checker again, increment iteration_count.
 
 **If iteration_count >= 3:** Display remaining issues, offer: 1) Force proceed, 2) Provide guidance and retry, 3) Abandon.
 
@@ -493,8 +493,8 @@ Forced 2-Round Execution:
 **Resolution:** The Architect must concede and dynamically rewrite the `PLAN.md` strings to satisfy the Auditor's attack vector.
 
 Handle return:
-- `## DEBATE CONCLUDED: COMPROMISE REACHED` â†’ PLAN.md updated with unbreakable copy. Continue to step 11.
-- `## DEBATE DEADLOCKED` â†’ Architect and Auditor cannot agree. Display transcript to user and send back to `markos-planner` for a massive rewrite. (Counts toward iteration limit).
+- `## DEBATE CONCLUDED: COMPROMISE REACHED` → PLAN.md updated with unbreakable copy. Continue to step 11.
+- `## DEBATE DEADLOCKED` → Architect and Auditor cannot agree. Display transcript to user and send back to `markos-planner` for a massive rewrite. (Counts toward iteration limit).
 
 ## 11. Requirements Coverage Gate
 
@@ -556,7 +556,7 @@ MIR Gate 1: {âœ“ GREEN | âœ— RED}
 
 /markos-execute-phase {X}
 
-<sub>/clear first â†’ fresh context window</sub>
+<sub>/clear first → fresh context window</sub>
 
 â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 

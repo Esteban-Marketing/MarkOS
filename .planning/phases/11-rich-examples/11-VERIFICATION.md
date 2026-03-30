@@ -1,6 +1,6 @@
-﻿# Phase 11 â€” VERIFICATION.md
+﻿# Phase 11 — VERIFICATION.md
 
-**Phase:** 11 â€” Rich Business-Model Examples  
+**Phase:** 11 — Rich Business-Model Examples  
 **Status:** âœ… VERIFIED  
 **Verified:** 2026-03-25  
 **Verifier:** Execution agent + automated file checks
@@ -77,8 +77,8 @@
 
 ## Deferred (Logged for Phase 12+)
 
-- `vector-store-client.cjs` â€” `business_model` not yet persisted to Supabase + Upstash Vector metadata
-- CLI-based onboarding â€” `business_model` not added to non-web flow
+- `vector-store-client.cjs` — `business_model` not yet persisted to Supabase + Upstash Vector metadata
+- CLI-based onboarding — `business_model` not added to non-web flow
 - Tier 2 remaining templates (`PAID-ACQUISITION`, `MESSAGING-HIERARCHY`, etc.)
-- `test/example-resolver.test.js` â€” unit test suite not yet implemented
+- `test/example-resolver.test.js` — unit test suite not yet implemented
 

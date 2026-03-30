@@ -1,4 +1,4 @@
-﻿# AUDIENCES.md â€” Ideal Customer Profiles, Personas & Segments
+﻿# AUDIENCES.md — Ideal Customer Profiles, Personas & Segments
 
 <!-- markos-token: MIR -->
 > [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Market_Audiences/AUDIENCES.md` to customize it safely.
@@ -22,7 +22,7 @@
 ## 3. Lexicon & Behavioral Patterns
 *How do they speak, and where do they go?*
 * **Language/Vocabulary:** [Specific jargon, slang, or tonal preferences used natively by the audience]
-* **Channel Consumption:** [Where they natively consume information â€” e.g., LinkedIn, TikTok, Industry Forums]
+* **Channel Consumption:** [Where they natively consume information — e.g., LinkedIn, TikTok, Industry Forums]
 * **Buying Triggers:** [At what exact moment do they realize they need a solution?]
 
 ## 4. Regulation & Compliance Restraints

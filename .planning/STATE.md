@@ -1,4 +1,4 @@
-﻿---
+---
 gsd_state_version: 1.0
 milestone: v2.2
 milestone_name: Platform Engineering
@@ -17,7 +17,7 @@ progress:
 Current Position
 ----------------
 
-Phase: 28 â€” Runtime Integrity (planned)
+Phase: 28 — Runtime Integrity (planned)
 Active Phase: 28-runtime-integrity
 Next Phase: 29-operational-enablement
 
@@ -36,20 +36,20 @@ MIR Gate 2: GREEN
 Scaffold Status
 ---------------
 
-- [x] .planning/MIR â€” 78 files cloned from templates/MIR
-- [x] .planning/MSP â€” 80 files cloned from templates/MSP
--- [x] .markos-local/MIR â€” Gate 1 + Gate 2 client files populated
--- [x] .markos-local/MSP â€” discipline directories + WINNERS catalogs
-- [x] RESEARCH/ â€” 6 intelligence files scaffolded
-- [x] .gitignore â€” .markos-local/, onboarding-seed.json, .markos-install-manifest.json excluded
-- [x] .planning/config.json â€” all 10 disciplines activated
-- [x] Gate 1 intake â€” PROFILE, VOICE-TONE, MESSAGING-FRAMEWORK, LEAN-CANVAS, JTBD-MATRIX
-- [x] Gate 2 intake â€” TRACKING, AUTOMATION, KPI-FRAMEWORK
+- [x] .planning/MIR — 78 files cloned from templates/MIR
+- [x] .planning/MSP — 80 files cloned from templates/MSP
+- [x] .markos-local/MIR — Gate 1 + Gate 2 client files populated
+- [x] .markos-local/MSP — discipline directories + WINNERS catalogs
+- [x] RESEARCH/ — 6 intelligence files scaffolded
+- [x] .gitignore — .markos-local/, onboarding-seed.json, .markos-install-manifest.json excluded
+- [x] .planning/config.json — all 10 disciplines activated
+- [x] Gate 1 intake — PROFILE, VOICE-TONE, MESSAGING-FRAMEWORK, LEAN-CANVAS, JTBD-MATRIX
+- [x] Gate 2 intake — TRACKING, AUTOMATION, KPI-FRAMEWORK
 
 Client: MarkOS
 --------------
 Product: Marketing Operating System (npx one-command install)
-Model: SaaS â€” freemium + per seat + usage-based
+Model: SaaS — freemium + per seat + usage-based
 Stage: Pre-revenue | Geography: Global (English)
 90-day goals: 200 NPX installs, 10 paid pilots
 Budget: $0 (organic only)

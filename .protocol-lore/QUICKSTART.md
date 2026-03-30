@@ -1,71 +1,92 @@
-﻿# MarkOS Agent Quickstart (AGENT-BOOT)
+# MarkOS Agent Quickstart (AGENT-BOOT)
 
 > [!IMPORTANT]
-> This is the mandatory first-read for all MarkOS sessions. If your context is low or you are in a NEW session, read this file immediately.
+> Mandatory first-read for all MarkOS sessions. If context is low or this is a **new** session, read this file immediately.
 
-## 1. Context Recursive Search Map
-If you are lost or memory is sparse, follow this search priority:
-1. `.protocol-lore/QUICKSTART.md` (This file - Entry point)
-2. `.protocol-lore/INDEX.md` (Architecture map)
-3. `.planning/STATE.md` (Current mission progress)
-4. `.agent/markos/MARKOS-INDEX.md` (Full token registry)
+## 1. Context search priority
 
-## 2. High-Frequency Commands
+If you are lost or memory is sparse, follow this order:
+
+1. **This file** — [`.protocol-lore/QUICKSTART.md`](QUICKSTART.md) (entry point)
+2. [`.protocol-lore/INDEX.md`](INDEX.md) — architecture and lore map
+3. **[`.planning/STATE.md`](../.planning/STATE.md)** — **canonical** mission progress, milestone, phase, and next actions (GSD)
+4. [`.agent/markos/MARKOS-INDEX.md`](../.agent/markos/MARKOS-INDEX.md) — full token registry for the MarkOS protocol
+
+Do not treat [`.protocol-lore/STATE.md`](STATE.md) as live state; it routes to `.planning/STATE.md`.
+
+## 2. Methodology split
+
+| Layer | Role |
+|-------|------|
+| **GSD** | Engineering workflow under `.agent/get-shit-done/` — Cursor skills `gsd-*`, phases, `.planning/`. |
+| **MarkOS** | Marketing OS protocol under `.agent/markos/` — skills in `.agent/skills/markos-*`, MIR/MSP/ITM. |
+| **Local overrides** | `.markos-local/` only (gitignored). No `.mgsd-local`. |
+
+## 3. High-frequency commands (MarkOS skills)
+
+These map to `.agent/skills/markos-*/SKILL.md` and workflows under `.agent/markos/workflows/`.
+
 | Command | Purpose | When to use |
 |---------|---------|-------------|
-| `markos-progress` | Show dashboard & next action | Start of every turn |
-| `markos-plan-phase` | Create a new PLAN.md | When STATE.md shows a new phase |
-| `markos-execute-phase` | Run all tasks in current phase | After plan is approved |
-| `markos-verify-work` | Run post-execution audit | After execution finishes |
-| `markos-health` | Check for broken files/links | Periodically |
+| `markos-progress` | Dashboard and next action | Start of a work turn |
+| `markos-plan-phase` | Create or refine `PLAN.md` | When `.planning/STATE.md` shows a new phase |
+| `markos-execute-phase` | Run planned tasks | After plan approval |
+| `markos-verify-work` | Post-execution audit | After execution |
+| `markos-health` | Structural health / broken links | Periodically |
 
-## 3. Boundary Definitions
-- **MIR** (Marketing Intelligence): Ground truth. Brand, Audience, Product facts.
-- **MSP** (Marketing Strategy): Tactical blueprints (SEO, Ads, Email).
-- **ITM** (Task Templates): Pre-baked Linear tickets for common jobs.
+## 4. Boundary definitions
 
-## 4. Human-AI Handoff (DEFCON)
-- AI completely owns the execution unless a task is tagged `[HUMAN]`.
-- If an automated step fails, check `.protocol-lore/DEFCON.md` for escalation rules.
-- Always commit with atomic messages before asking for human help.
+- **MIR** — Marketing Intelligence Repository: ground truth (brand, audience, product).
+- **MSP** — Marketing Strategy Plan: channel and campaign blueprints.
+- **ITM** — Issue Task Templates: Linear-oriented task specs under `.agent/markos/templates/LINEAR-TASKS/` (`MARKOS-ITM-*`).
 
-## 5. Override Logic
-Always check for overrides in `.markos-local/` before using protocol defaults. 
-`[override]` logs are mandatory when a local file is detected.
+## 5. Human-AI handoff (DEFCON)
 
-## 6. Codebase File Map (Key Files)
+- AI owns execution unless a task is tagged `[HUMAN]`.
+- On failure, see [`.protocol-lore/DEFCON.md`](DEFCON.md).
+- Prefer atomic commits before escalating to a human.
+
+## 6. Overrides
+
+Resolve `.markos-local/` before `.agent/markos/templates/`. Log `[override]` when a local file wins.
+
+## 7. Key files
+
 | File | Purpose |
 |------|---------|
-| `bin/install.cjs` | First-run installer. Writes `.markos-install-manifest.json`. |
-| `bin/update.cjs` | SHA256 idempotent updater. Preserves user-patched files. |
-| `bin/ensure-vector.cjs` | Auto-healing Supabase \+ Upstash Vector daemon. Call before any vector op. |
-| `onboarding/backend/server.cjs` | HTTP server. Ports: GET /, /config, /status; POST /submit, /approve, /regenerate. |
-| `onboarding/backend/agents/orchestrator.cjs` | Runs all LLM draft generators â†’ stores in Vector Store. |
-| `onboarding/backend/agents/mir-filler.cjs` | Generates MIR (Brand/Audience/Competitive) drafts. |
-| `onboarding/backend/agents/msp-filler.cjs` | Generates MSP (Brand Voice / Channel Strategy) drafts. |
-| `onboarding/backend/agents/llm-adapter.cjs` | Unified OpenAI/Anthropic/Gemini call wrapper. |
-| `onboarding/backend/write-mir.cjs` | JIT clones templates â†’ fuzzy-merges drafts â†’ updates STATE.md. |
-| `onboarding/backend/vector-store-client.cjs` | Supabase \+ Upstash Vector HTTP client. Namespace: `markos-{project_slug}`. |
-| `.markos-project.json` | Persistent project slug (Supabase \+ Upstash Vector namespace). Written once on first submit. |
-| `.markos-local/MIR/` | Client MIR override layer. NEVER commits to git. |
-| `.protocol-lore/CODEBASE-MAP.md` | Full XML directory tree for deep LLM navigation. |
+| `bin/install.cjs` | First-run installer; writes `.markos-install-manifest.json` |
+| `bin/update.cjs` | Idempotent updater (SHA256-aware) |
+| `bin/ensure-vector.cjs` | Vector providers bootstrap |
+| `onboarding/backend/server.cjs` | HTTP server: GET `/`, `/config`, `/status`; POST `/submit`, `/approve`, `/regenerate`, etc. |
+| `onboarding/backend/agents/orchestrator.cjs` | LLM draft orchestration; vector persistence |
+| `onboarding/backend/agents/mir-filler.cjs` | MIR drafts |
+| `onboarding/backend/agents/msp-filler.cjs` | MSP drafts |
+| `onboarding/backend/agents/llm-adapter.cjs` | OpenAI / Anthropic / Gemini wrapper |
+| `onboarding/backend/write-mir.cjs` | JIT template clone, fuzzy merge, planning state updates |
+| `onboarding/backend/vector-store-client.cjs` | Supabase + Upstash Vector client |
+| `.markos-project.json` | Project slug and namespace root |
+| `.markos-local/MIR/` | Client MIR (not committed) |
+| `.protocol-lore/CODEBASE-MAP.md` | Directory tree for navigation |
 
-## 7. New-Session Cheat Sheet
-```
-# Start the onboarding server:
+## 8. Cheat sheet
+
+```bash
+# Onboarding UI (local)
 node onboarding/backend/server.cjs
+# Then open http://localhost:4242 (or the port in onboarding-config.json)
 
-# Run all tests:
-node --test test/
+# Tests (matches package.json "test" script)
+npm test
+# or: node --test test/**/*.test.js
 
-# Check Supabase \+ Upstash Vector health:
+# Vector health
 node bin/ensure-vector.cjs
 
-# Find client project slug:
-cat .markos-project.json
+# Project slug
+type .markos-project.json   # Windows
+# cat .markos-project.json   # Unix
 
-# Find client MIR overrides:
-ls .markos-local/MIR/
+# Client MIR overrides (if present)
+dir .markos-local\MIR        # Windows
+# ls .markos-local/MIR       # Unix
 ```
-
-
