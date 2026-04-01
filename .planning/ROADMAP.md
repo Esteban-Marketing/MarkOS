@@ -12,6 +12,7 @@
 - ✅ **v2.4 Beta Client Onboarding** — Phases 34, 36, 37 shipped (2026-04-01) → **ARCHIVED** (`.planning/milestones/v2.4-ROADMAP.md`)
 - ✅ **v2.5 Enhancement & Optimization Process** — Phase 35 completed (2026-04-01) → **ARCHIVED**
 - 🟢 **v2.6 Post-Deployment Operations & Beta Activation** — Active milestone; Phase 38 shipped (2026-04-01)
+- 📋 **v3.0 MarkOS Literacy System** — Phases 39-44 (planned; roadmap at `.planning/milestones/v3.0-LITERACY-SYSTEM-ROADMAP.md`)
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -105,6 +106,21 @@ Phase 35 completed the installer/readiness hardening needed to make `npx markos`
 - 38-02: Publish visual baselines through Chromatic with PR-oriented CI wiring
 - 38-03: Enforce accessibility and UI security checks as merge-blocking gates
 - 38-04: Harden workflow governance with required coverage and clearer CI failure messaging
+
+## Phase 39: Pain-Points-First Content Corpus
+
+**Goal:** Author and ingest the foundational marketing literacy corpus organized by pain-point taxonomy, covering all five MSP disciplines with business-model-aware metadata so the two-layer retrieval system has real content to serve.
+**Requirements Mapped:** LIT-01 (corpus coverage), LIT-02 (pain-point taxonomy), LIT-03 (business-model annotations)
+**Depends on:** Phase 32 literacy infrastructure (vector store client, ingestion CLI, chunker, Supabase table)
+**Status:** 📋 Planned
+**Milestone:** v3.0 MarkOS Literacy System
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 39-01-PLAN.md — Wave 1 infrastructure: test scaffolding, taxonomy.json, Supabase migration, ingest-literacy.cjs + vector-store-client.cjs pain_point_tags extension
+- [ ] 39-02-PLAN.md — Wave 2 corpus authoring: 15 production-complete documents across Paid_Media, Content_SEO, Lifecycle_Email, Social, Landing_Pages
+- [ ] 39-03-PLAN.md — Wave 3 ingestion + verification: apply migration, live ingest all 15 docs, round-trip retrieval verification
 
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
