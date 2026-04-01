@@ -130,11 +130,11 @@ Plans:
 **Status:** 📋 Planned
 **Milestone:** v3.0 MarkOS Literacy System
 
-**Tasks:**
-- 40-01: Build `onboarding/backend/agents/discipline-router.cjs` — `rankDisciplines(seed) → string[]`
-- 40-02: Extend `buildLiteracyFilter()` to support `pain_point_tags CONTAINS ANY` filter condition; export it
-- 40-03: Refactor `orchestrator.cjs` — replace hardcoded single-discipline fetch with discipline-router + parallel fetch + merge + budget trim
-- 40-04: Add telemetry event `literacy_retrieval_observed` and tests
+**Plans:** 2 plans
+
+Plans:
+- [ ] 40-01-PLAN.md — Wave 1 router/filter contract: Wave 0 tests, deterministic discipline-router, optional taxonomy fallback, exported OR-style pain_point_tags filter
+- [ ] 40-02-PLAN.md — Wave 2 orchestrator runtime: top-3 dual-query retrieval, doc_id-first dedupe, fixed chunk cap, literacy_retrieval_observed telemetry, focused integration tests
 
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
