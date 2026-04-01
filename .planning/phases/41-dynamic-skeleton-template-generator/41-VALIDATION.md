@@ -39,10 +39,12 @@ created: 2026-04-01
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
 | 41-01-01 | 01 | 0 | LIT-07 | unit (stub) | `node --test test/skeleton-generator.test.js` | ❌ W0 | ⬜ pending |
+| 41-01-02 | 01 | 0 | LIT-07 | integrity check | `node --test test/skeleton-generator.test.js` | ❌ W0 | ⬜ pending |
 | 41-02-01 | 02 | 1 | LIT-07 | unit | `node --test test/skeleton-generator.test.js` | ✅ | ⬜ pending |
 | 41-02-02 | 02 | 1 | LIT-07 | unit | `node --test test/skeleton-generator.test.js` | ✅ | ⬜ pending |
 | 41-02-03 | 02 | 1 | LIT-08 | integration | `node --test test/skeleton-generator.test.js` | ✅ | ⬜ pending |
 | 41-03-01 | 03 | 2 | LIT-07 | e2e | `node --test test/**/*.test.js` | ✅ | ⬜ pending |
+| 41-03-02 | 03 | 2 | LIT-07 | e2e (registry) | `node --test test/**/*.test.js` | ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
