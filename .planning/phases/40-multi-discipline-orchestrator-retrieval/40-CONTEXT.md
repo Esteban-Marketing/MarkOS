@@ -35,7 +35,7 @@ Replace the hardcoded single-discipline literacy fetch (`getLiteracyContext('Pai
 - `discipline-router.cjs` exports `rankDisciplines(seed)` returning a string array of discipline names sorted by relevance score (channels primary + pain-points booster).
 - `orchestrator.cjs` issues `Promise.all()` across top-3 disciplines, each with dual-query merge (filtered + unfiltered per D-40-02).
 - Merged context is capped at 6 chunks by score before being assigned to `drafts.standards_context`.
-- When `active_channels` is empty AND `pain_points` is empty, the router falls back to `['Paid_Media']` (preserves current behavior).
+- When `active_channels` is empty AND `pain_points` is empty, the router falls back to `['Paid_Media', 'Content_SEO', 'Lifecycle_Email']` so the orchestrator still performs the fixed top-3 retrieval contract.
 - Telemetry event `literacy_retrieval_observed` fires with correct field values.
 - All existing tests pass; at least 4 new tests added for this phase.
 
