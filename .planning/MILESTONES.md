@@ -1,5 +1,19 @@
 # Milestones
 
+## v2.4 Beta Client Onboarding (Shipped: 2026-04-01)
+
+**Phases completed:** 5 phases, 11 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Intake automation now enforces canonical submit validation with automatic Linear handoff metadata for onboarding operations (Phase 34).
+- Beta program operations now run on a defined lifecycle model, weekly cadence, and KPI scorecard contracts (Phase 36).
+- Build-in-public evidence loop is now integrated into weekly closeout outputs to support PLG signaling (Phase 36).
+- MarkOS application control-plane scaffold shipped with route surfaces for company, MIR/MSP, ICPs, segments, campaigns, and theme settings (Phase 37).
+- Governance foundations shipped for the app layer: contracts/snapshots, white-label token pipeline, RBAC policy helpers, telemetry contracts, and Supabase RLS baseline (Phase 37).
+
+---
+
 ## v2.1 — Product Hardening & Identity Convergence (Shipped: 2026-03-28)
 
 **Phases completed:** 5 phases (23â€“27), 20 plans
@@ -20,6 +34,7 @@
 10. Actionable telemetry checkpoints deployed at approval, readiness, and major failure boundaries (Phase 27).
 
 **Known Gaps (proceeding with yolo mode):**
+
 - MMO-01, MMO-02, MMO-03 (Phase 26 REQUIREMENTS.md rows not checked off)
 - EXE-01, EXE-02, TLM-02 (Phase 27 REQUIREMENTS.md rows not checked off)
 - These were delivered (plans + summaries complete) but REQUIREMENTS.md was not updated during execution.
@@ -39,6 +54,7 @@
 6. Marketing Literacy Base: vector-store literacy primitives, ingestion CLI (`ingest-literacy`), admin CLI (`literacy-admin`), and runtime orchestrator integration (Phase 32).
 
 **Known Gaps (proceeding with yolo mode):**
+
 - MIR Gate 1 and Gate 2 still RED at milestone close — gate intake files populated post-milestone via direct write (EST-55 bypass).
 
 ## v2.3 — Codebase Documentation Intelligence (Shipped: 2026-03-31)
