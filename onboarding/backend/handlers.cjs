@@ -58,6 +58,95 @@ const DISCIPLINE_ALIASES = Object.freeze({
 
 // (utils.cjs handles readBody and json)
 
+/**
+ * Phase 34: Client Intake SOP Automation
+ * 8 validation rules for autopilot intake flow (form → validation → Linear → MIR seed)
+ */
+const INTAKE_VALIDATION_RULES = Object.freeze({
+  R001: {
+    rule: 'company.name must be non-empty string (max 100 chars)',
+    check: (seed) => {
+      const name = seed?.company?.name;
+      return typeof name === 'string' && name.length > 0 && name.length <= 100;
+    }
+  },
+  R002: {
+    rule: 'company.stage must be one of: pre-launch, 0-1M MRR, 1-10M MRR, +10M MRR',
+    check: (seed) => {
+      const stage = seed?.company?.stage;
+      const valid = ['pre-launch', '0-1M MRR', '1-10M MRR', '+10M MRR'];
+      return valid.includes(stage);
+    }
+  },
+  R003: {
+    rule: 'product.name must be non-empty string (max 100 chars)',
+    check: (seed) => {
+      const name = seed?.product?.name;
+      return typeof name === 'string' && name.length > 0 && name.length <= 100;
+    }
+  },
+  R004: {
+    rule: 'audience.pain_points must be array of min 2 items',
+    check: (seed) => {
+      const pains = seed?.audience?.pain_points;
+      return Array.isArray(pains) && pains.length >= 2;
+    }
+  },
+  R005: {
+    rule: 'market.competitors must be array of min 2 objects with name + positioning',
+    check: (seed) => {
+      const comps = seed?.market?.competitors;
+      if (!Array.isArray(comps) || comps.length < 2) return false;
+      return comps.every(c => c?.name && c?.positioning);
+    }
+  },
+  R006: {
+    rule: 'market.market_trends must be array of min 1 item',
+    check: (seed) => {
+      const trends = seed?.market?.market_trends;
+      return Array.isArray(trends) && trends.length >= 1;
+    }
+  },
+  R007: {
+    rule: 'content.content_maturity must be one of: none, basic, moderate, mature',
+    check: (seed) => {
+      const maturity = seed?.content?.content_maturity;
+      const valid = ['none', 'basic', 'moderate', 'mature'];
+      return valid.includes(maturity);
+    }
+  },
+  R008: {
+    rule: 'slug (if provided) must be alphanumeric + hyphens only',
+    check: (seed) => {
+      const slug = seed?.project_slug;
+      if (!slug) return true; // optional
+      return /^[a-z0-9-]+$/.test(slug);
+    }
+  }
+});
+
+/**
+ * Validate intake seed against all 8 rules
+ * Returns: { valid: bool, failedRules: [rule_ids], errors: {rule_id: rule_description}}
+ */
+function validateIntake(seed) {
+  const failedRules = [];
+  const errors = {};
+  
+  Object.entries(INTAKE_VALIDATION_RULES).forEach(([ruleId, ruleObj]) => {
+    if (!ruleObj.check(seed)) {
+      failedRules.push(ruleId);
+      errors[ruleId] = ruleObj.rule;
+    }
+  });
+  
+  return {
+    valid: failedRules.length === 0,
+    failedRules,
+    errors
+  };
+}
+
 const EXECUTION_READINESS_CONTRACT = Object.freeze({
   requiredDraftSections: [
     'company_profile',
@@ -878,6 +967,26 @@ async function handleSubmit(req, res) {
     const body = await readBody(req);
     const seed = body.seed || body; // Support payload {"seed": {...}, "project_slug": "..."}
 
+    // Phase 34: Validate intake (8 business rules)
+    const validation = validateIntake(seed);
+    if (!validation.valid) {
+      emitRolloutEndpointTelemetry({
+        endpoint,
+        startedAt,
+        outcomeState: 'failure',
+        statusCode: 400,
+        runtimeMode: runtime.mode,
+        projectSlug: slug,
+      });
+      return json(res, 400, {
+        success: false,
+        error: 'INTAKE_VALIDATION_FAILED',
+        message: 'Form submission failed validation',
+        failed_rules: validation.failedRules,
+        validation_errors: validation.errors,
+      });
+    }
+
     // Determine slug
     const crypto = require('crypto');
     let querySlug = null;
@@ -1619,6 +1728,8 @@ module.exports = {
   handleGenerateQuestion,
   handleParseAnswer,
   handleSparkSuggestion,
+    INTAKE_VALIDATION_RULES,
+    validateIntake,
   handleCompetitorDiscovery,
   handleCorsPreflight,
   handleLiteracyHealth,
