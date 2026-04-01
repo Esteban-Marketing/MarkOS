@@ -122,6 +122,20 @@ Plans:
 - [ ] 39-02-PLAN.md — Wave 2 corpus authoring: 15 production-complete documents across Paid_Media, Content_SEO, Lifecycle_Email, Social, Landing_Pages
 - [ ] 39-03-PLAN.md — Wave 3 ingestion + verification: apply migration, live ingest all 15 docs, round-trip retrieval verification
 
+## Phase 40: Multi-Discipline Orchestrator Retrieval
+
+**Goal:** Replace the hardcoded single-discipline literacy fetch with a dynamic multi-discipline retrieval pipeline that selects disciplines based on the client's seed data and ranks results by pain-point relevance.
+**Requirements Mapped:** LIT-04 (multi-discipline routing), LIT-05 (pain-point boosted retrieval), LIT-06 (context budget enforcement)
+**Depends on:** Phase 39 (content corpus must exist to validate retrieval)
+**Status:** 📋 Planned
+**Milestone:** v3.0 MarkOS Literacy System
+
+**Tasks:**
+- 40-01: Build `onboarding/backend/agents/discipline-router.cjs` — `rankDisciplines(seed) → string[]`
+- 40-02: Extend `buildLiteracyFilter()` to support `pain_point_tags CONTAINS ANY` filter condition; export it
+- 40-03: Refactor `orchestrator.cjs` — replace hardcoded single-discipline fetch with discipline-router + parallel fetch + merge + budget trim
+- 40-04: Add telemetry event `literacy_retrieval_observed` and tests
+
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
 
