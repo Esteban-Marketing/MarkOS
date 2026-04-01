@@ -44,7 +44,7 @@ created: 2026-04-01
 | 41-02-02 | 02 | 1 | LIT-07 | unit | `node --test test/skeleton-generator.test.js` | ✅ | ⬜ pending |
 | 41-02-03 | 02 | 1 | LIT-08 | integration | `node --test test/skeleton-generator.test.js` | ✅ | ⬜ pending |
 | 41-03-01 | 03 | 2 | LIT-07 | e2e | `node --test test/**/*.test.js` | ✅ | ⬜ pending |
-| 41-03-02 | 03 | 2 | LIT-07 | e2e (registry) | `node --test test/**/*.test.js` | ✅ | ⬜ pending |
+| 41-04-01 | 04 | 2 | LIT-07 | e2e (registry) | `node --test test/**/*.test.js` | ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
