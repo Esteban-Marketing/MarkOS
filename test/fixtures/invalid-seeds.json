@@ -1,0 +1,268 @@
+{
+  "invalid_r001": [
+    {
+      "company": {
+        "name": "",
+        "description": "Empty company name",
+        "stage": "pre-launch",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "name": "Product",
+        "description": "Valid product",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Pain 1", "Pain 2"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"},
+          {"name": "Comp2", "positioning": "Pos2"}
+        ],
+        "market_trends": ["Trend 1"]
+      },
+      "content": {
+        "content_maturity": "basic"
+      }
+    },
+    {
+      "company": {
+        "description": "Missing company name field",
+        "stage": "pre-launch",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "name": "Product",
+        "description": "Valid product",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Pain 1", "Pain 2"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"},
+          {"name": "Comp2", "positioning": "Pos2"}
+        ],
+        "market_trends": ["Trend 1"]
+      },
+      "content": {
+        "content_maturity": "basic"
+      }
+    }
+  ],
+  "invalid_r002": [
+    {
+      "company": {
+        "name": "Invalid Stage Company",
+        "description": "Invalid stage value",
+        "stage": "Series A",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "name": "Product",
+        "description": "Valid product",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Pain 1", "Pain 2"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"},
+          {"name": "Comp2", "positioning": "Pos2"}
+        ],
+        "market_trends": ["Trend 1"]
+      },
+      "content": {
+        "content_maturity": "basic"
+      }
+    }
+  ],
+  "invalid_r003": [
+    {
+      "company": {
+        "name": "Valid Company",
+        "description": "Product name missing",
+        "stage": "pre-launch",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "description": "No name field",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Pain 1", "Pain 2"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"},
+          {"name": "Comp2", "positioning": "Pos2"}
+        ],
+        "market_trends": ["Trend 1"]
+      },
+      "content": {
+        "content_maturity": "basic"
+      }
+    }
+  ],
+  "invalid_r004": [
+    {
+      "company": {
+        "name": "Valid Company",
+        "description": "Only 1 pain point",
+        "stage": "pre-launch",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "name": "Product",
+        "description": "Valid product",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Only one pain point"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"},
+          {"name": "Comp2", "positioning": "Pos2"}
+        ],
+        "market_trends": ["Trend 1"]
+      },
+      "content": {
+        "content_maturity": "basic"
+      }
+    }
+  ],
+  "invalid_r005": [
+    {
+      "company": {
+        "name": "Valid Company",
+        "description": "Only 1 competitor",
+        "stage": "pre-launch",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "name": "Product",
+        "description": "Valid product",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Pain 1", "Pain 2"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"}
+        ],
+        "market_trends": ["Trend 1"]
+      },
+      "content": {
+        "content_maturity": "basic"
+      }
+    }
+  ],
+  "invalid_r006": [
+    {
+      "company": {
+        "name": "Valid Company",
+        "description": "No market trends",
+        "stage": "0-1M MRR",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "name": "Product",
+        "description": "Valid product",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Pain 1", "Pain 2"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"},
+          {"name": "Comp2", "positioning": "Pos2"}
+        ],
+        "market_trends": []
+      },
+      "content": {
+        "content_maturity": "basic"
+      }
+    }
+  ],
+  "invalid_r007": [
+    {
+      "company": {
+        "name": "Valid Company",
+        "description": "Invalid content maturity",
+        "stage": "pre-launch",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "name": "Product",
+        "description": "Valid product",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Pain 1", "Pain 2"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"},
+          {"name": "Comp2", "positioning": "Pos2"}
+        ],
+        "market_trends": ["Trend 1"]
+      },
+      "content": {
+        "content_maturity": "advanced"
+      }
+    }
+  ],
+  "invalid_r008": [
+    {
+      "company": {
+        "name": "Valid Company",
+        "description": "Invalid slug with spaces",
+        "stage": "pre-launch",
+        "business_model": "SaaS"
+      },
+      "product": {
+        "name": "Product",
+        "description": "Valid product",
+        "primary_channel": "B2B"
+      },
+      "audience": {
+        "segment_name": "Segment",
+        "pain_points": ["Pain 1", "Pain 2"],
+        "buying_process": "Process"
+      },
+      "market": {
+        "competitors": [
+          {"name": "Comp1", "positioning": "Pos1"},
+          {"name": "Comp2", "positioning": "Pos2"}
+        ],
+        "market_trends": ["Trend 1"]
+      },
+      "content": {
+        "content_maturity": "basic"
+      },
+      "slug": "invalid slug with spaces"
+    }
+  ]
+}

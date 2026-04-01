@@ -1,0 +1,213 @@
+[
+  {
+    "company": {
+      "name": "Acme Startup Labs",
+      "description": "Early-stage AI tools for marketing teams",
+      "website_url": "https://acme-startup.example.com",
+      "stage": "pre-launch",
+      "business_model": "SaaS"
+    },
+    "product": {
+      "name": "Acme AI Platform",
+      "description": "Autonomous content generation for B2B SaaS",
+      "primary_channel": "B2B"
+    },
+    "audience": {
+      "segment_name": "Marketing Directors at Mid-Market SaaS",
+      "pain_points": [
+        "Can't measure content ROI accurately",
+        "Too many disconnected marketing tools"
+      ],
+      "buying_process": "Committee-based, 3-month sales cycle"
+    },
+    "market": {
+      "total_addressable_market": "$5B",
+      "competitors": [
+        {
+          "name": "HubSpot",
+          "positioning": "All-in-one CRM with content tools"
+        },
+        {
+          "name": "Marketo",
+          "positioning": "Enterprise B2B marketing automation"
+        }
+      ],
+      "market_trends": [
+        "AI adoption in marketing automation growing 45% YoY",
+        "Consolidation of marketing stacks (fewer tools, more integration)"
+      ]
+    },
+    "content": {
+      "existing_assets": ["5 blog posts", "2 case studies"],
+      "content_maturity": "basic"
+    }
+  },
+  {
+    "company": {
+      "name": "ServiceCo Agency",
+      "description": "Full-stack digital marketing agency",
+      "website_url": "https://serviceco.example.com",
+      "stage": "0-1M MRR",
+      "business_model": "Services"
+    },
+    "product": {
+      "name": "ServiceCo Premium Package",
+      "description": "White-label digital marketing services for enterprise",
+      "primary_channel": "B2B"
+    },
+    "audience": {
+      "segment_name": "CMOs at Fortune 500 Companies",
+      "pain_points": [
+        "Agency consistency and quality control",
+        "Limited strategic guidance beyond execution"
+      ],
+      "buying_process": "RFP-based, 6-month procurement"
+    },
+    "market": {
+      "total_addressable_market": "$12B",
+      "competitors": [
+        {
+          "name": "Deloitte Digital",
+          "positioning": "Consultative digital transformation"
+        },
+        {
+          "name": "Accenture Interactive",
+          "positioning": "Global enterprise digital agency"
+        }
+      ],
+      "market_trends": [
+        "Enterprise seeking in-house AI capabilities",
+        "Shift from tactical to strategic agency partnerships"
+      ]
+    },
+    "content": {
+      "existing_assets": ["20 case studies", "quarterly whitepapers"],
+      "content_maturity": "mature"
+    }
+  },
+  {
+    "company": {
+      "name": "ProductCo Scale",
+      "description": "Productized SaaS scaling across SMBs",
+      "website_url": "https://productco.example.com",
+      "stage": "1-10M MRR",
+      "business_model": "Productized"
+    },
+    "product": {
+      "name": "ProductCo Core",
+      "description": "Modular marketing platform for e-commerce",
+      "primary_channel": "B2C"
+    },
+    "audience": {
+      "segment_name": "E-commerce Store Owners (50K–1M revenue)",
+      "pain_points": [
+        "Poor customer retention from repeat visits",
+        "Limited marketing budget vs. enterprise competitors"
+      ],
+      "buying_process": "Self-serve with trial option"
+    },
+    "market": {
+      "total_addressable_market": "$8B",
+      "competitors": [
+        {
+          "name": "Shopify Email",
+          "positioning": "Free email marketing within Shopify ecosystem"
+        },
+        {
+          "name": "Klaviyo",
+          "positioning": "Advanced email and SMS marketing"
+        }
+      ],
+      "market_trends": [
+        "D2C brands investing in first-party data",
+        "AI-driven personalization becoming table stakes"
+      ]
+    },
+    "content": {
+      "existing_assets": ["email templates", "feature documentation"],
+      "content_maturity": "moderate"
+    }
+  },
+  {
+    "company": {
+      "name": "EnterpriseVentures Inc",
+      "description": "Enterprise software with global footprint",
+      "website_url": "https://venture-ent.example.com",
+      "stage": "+10M MRR",
+      "business_model": "Marketplace"
+    },
+    "product": {
+      "name": "EnterpriseVentures Platform",
+      "description": "Multi-tenant marketplace for enterprise buyers",
+      "primary_channel": "B2B2C"
+    },
+    "audience": {
+      "segment_name": "Enterprise Procurement Teams",
+      "pain_points": [
+        "Vendor consolidation complexity",
+        "Risk management across third-party integrations"
+      ],
+      "buying_process": "Legal + security review, 9-month cycle"
+    },
+    "market": {
+      "total_addressable_market": "$50B",
+      "competitors": [
+        {
+          "name": "Salesforce Commerce Cloud",
+          "positioning": "Enterprise B2B2C platform"
+        },
+        {
+          "name": "SAP Commerce",
+          "positioning": "Legacy enterprise marketplace"
+        }
+      ],
+      "market_trends": [
+        "Shift to modular procurement tech",
+        "Increased focus on ESG compliance in supply chains"
+      ]
+    },
+    "content": {
+      "existing_assets": ["50+ whitepapers", "3 published books", "weekly webinars"],
+      "content_maturity": "mature"
+    }
+  },
+  {
+    "company": {
+      "name": "MinimalStart",
+      "description": "Minimal but valid company profile",
+      "stage": "pre-launch",
+      "business_model": "SaaS"
+    },
+    "product": {
+      "name": "Product",
+      "description": "Minimal product",
+      "primary_channel": "B2B"
+    },
+    "audience": {
+      "segment_name": "Any",
+      "pain_points": [
+        "Pain 1",
+        "Pain 2"
+      ],
+      "buying_process": "Standard"
+    },
+    "market": {
+      "competitors": [
+        {
+          "name": "Competitor A",
+          "positioning": "Positioning A"
+        },
+        {
+          "name": "Competitor B",
+          "positioning": "Positioning B"
+        }
+      ],
+      "market_trends": [
+        "Trend 1"
+      ]
+    },
+    "content": {
+      "content_maturity": "none"
+    }
+  }
+]
