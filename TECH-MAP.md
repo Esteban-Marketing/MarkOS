@@ -38,18 +38,18 @@ This document is a technical summary. Canonical topology and ownership inventori
 
 | Component | Location | Purpose | Key Exports |
 |-----------|----------|---------|-------------|
-| **install.cjs** | `bin/install.cjs` | First-run interactive installer. Prompts user, detects GSD coexistence, copies `.agent/markos/` into place, delegates `ensure-vector.cjs` for provider checks. | `run()` → may invoke `update.cjs` or complete install |
-| **update.cjs** | `bin/update.cjs` | SHA256-idempotent updater. Preserves user patches in `.markos-local/`. Overrides base templates only. | Patches manifest, verifies integrity |
+| **install.cjs** | `bin/install.cjs` | Default-first installer for `npx markos`. Infers safe local defaults, detects GSD coexistence, writes managed artifacts, classifies readiness as `ready` / `degraded` / `blocked`, and auto-hands off to onboarding only when the current mode allows it. | `run()` → may invoke `update.cjs`, write install state, or launch onboarding |
+| **update.cjs** | `bin/update.cjs` | SHA256-idempotent updater. Preserves user patches in `.markos-local/`, shares preflight/runtime classification with install, and stays deterministic in non-interactive mode. | Patches manifest, verifies integrity |
 | **ensure-vector.cjs** | `bin/ensure-vector.cjs` | Validates Supabase + Upstash Vector env configuration at boot; exports `ensureVectorStores()` (no local daemon spawn). | Returns a provider readiness report |
 
 **Installation Flow:**
 ```
 1. npm install -g markos
-2. npx markos install
-3. bin/install.cjs detects GSD, prompts scope (project/global)
-4. Copies .agent/markos/templates/ → target
-5. Calls bin/ensure-vector.cjs to boot local DB
-6. Writes .markos-install-manifest.json (idempotent marker)
+2. npx markos
+3. bin/install.cjs infers project-local install + project name by default
+4. Copies .agent/markos/ → target and writes .markos-install-manifest.json + .markos-project.json
+5. Calls bin/ensure-vector.cjs to classify vector readiness
+6. Prints readiness summary and launches onboarding only when the current mode allows it
 ```
 
 ---

@@ -1,4 +1,4 @@
-﻿# Milestones
+# Milestones
 
 ## v2.1 — Product Hardening & Identity Convergence (Shipped: 2026-03-28)
 
@@ -54,3 +54,15 @@
 4. Documentation freshness rules and verification checks defined for route additions, file moves, and topology changes (Phase 33).
 5. Protocol-facing and human-facing docs updated to deep-link to canonical map rather than maintain independent drift-prone copies (Phase 33).
 
+## v2.5 — Enhancement & Optimization Process (Shipped: 2026-04-01)
+
+**Phases completed:** 1 phase (35), 1 plan
+**Timeline:** 2026-04-01 (single-session milestone)
+
+**Key accomplishments:**
+
+1. Installer and updater runtime behavior consolidated through a shared CLI runtime contract to reduce drift risk.
+2. Bare `npx markos` established as the real primary install command, with safe defaults applied before prompting.
+3. Install completion now emits explicit `ready` / `degraded` / `blocked` states with actionable next-step guidance.
+4. Non-interactive and CI/headless runs now resolve conflicts deterministically without prompt hangs.
+5. Documentation and protocol tests now enforce one-command contract parity, with full suite green at milestone close (99/99).

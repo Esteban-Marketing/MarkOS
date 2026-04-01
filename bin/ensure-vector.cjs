@@ -29,6 +29,10 @@ async function ensureVectorStores() {
   if (!report.providers.supabase.configured || !report.providers.upstash_vector.configured) {
     report.status = 'providers_degraded';
     report.message = 'One or more vector providers are not configured. Set SUPABASE_* and UPSTASH_VECTOR_* variables.';
+    report.actionable_next_step = 'Add SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, UPSTASH_VECTOR_REST_URL, and UPSTASH_VECTOR_REST_TOKEN to .env for full vector-backed readiness.';
+  } else {
+    report.message = 'All vector providers are configured.';
+    report.actionable_next_step = null;
   }
 
   return report;

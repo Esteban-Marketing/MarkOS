@@ -9,6 +9,9 @@
 - ✅ **v2.1 Product Hardening & Identity Convergence** — Phases 23-27 (shipped 2026-03-28)
 - ✅ **v2.2 Platform Engineering** — Phases 28-32 shipped (2026-03-31)
 - ✅ **v2.3 Codebase Documentation Intelligence** — Phase 33 completed (2026-03-31) → **ARCHIVED**
+- 🟢 **v2.4 Beta Client Onboarding** — Active resumed track after Phase 34 intake foundation
+- ✅ **v2.5 Enhancement & Optimization Process** — Phase 35 completed (2026-04-01) → **ARCHIVED**
+- 📋 **v2.6 Post-Deployment Operations & Beta Activation** — Deferred candidate (revisit after v2.4 beta-ops execution)
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -51,19 +54,95 @@ Phase 33 completed the documentation follow-on for making the repository navigab
 
 ---
 
-## v2.4 Planned: Beta Client Onboarding (Next Milestone — Pending Roadmap)
+## v2.4 Beta Client Onboarding
 
 **Goal:** Activate first 10 beta agency clients and establish operational rhythm.
 **Requirements to map:** BETA-01 (10 clients onboarded), PLG-01 (build-in-public LinkedIn)
 **Depends on:** v2.3 completion (canonical docs + MIR gates GREEN)
-**Status:** Roadmap pending — awaiting stakeholder input on v2.4 scope and sequencing
+**Status:** Active milestone; Phase 34 and Phase 36 delivered, Phase 37 research underway for the MarkOS UI control plane and campaign activation surfaces
+
+## Phase 34: Client Intake SOP Automation
+
+**Goal:** Automate intake validation, Linear ticket creation, and orchestrator kickoff from the onboarding submission path.
+**Requirements Mapped:** BETA-01, OPS-INTAKE-01
+**Depends on:** v2.3 completion and existing Phase 29 Linear sync primitives
+**Status:** ✅ Complete (2026-03-31)
+**Artifacts:** `.planning/phases/34-client-intake-sop-automation/34-RESEARCH.md`, `.planning/phases/34-client-intake-sop-automation/34-PLAN.md`, `.planning/phases/34-client-intake-sop-automation/34-SUMMARY.md`
+
+- 34-01: Canonical intake validation rules and strict submit contract
+- 34-02: Automatic intake-linked Linear ticket creation with graceful degradation
+- 34-03: Enriched submit response contract for validation, session, and draft metadata
+- 34-04: SOP, runbook, and intake operations documentation
+
+## Phase 36: Beta Program Operations
+
+**Goal:** Operationalize pilot lifecycle management and weekly execution cadence so Phase 34 intake automation reliably converts into active beta clients.
+**Requirements Mapped:** BETA-01, PLG-01
+**Depends on:** Phase 34 completion (intake automation) and v2.5 archived runtime baseline
+**Status:** ✅ Complete (2026-04-01)
+**Artifacts:** `.planning/phases/36-beta-program-operations/36-PLAN.md`, `.planning/phases/36-beta-program-operations/36-RUNBOOK.md`, `.planning/phases/36-beta-program-operations/36-METRICS.md`, `.planning/phases/36-beta-program-operations/36-CADENCE.md`, `.planning/phases/36-beta-program-operations/36-SUMMARY.md`
+
+- 36-01: Define lifecycle states, owners, and SLAs from accepted intake to active pilot
+- 36-02: Establish weekly operating cadence (pipeline review, blocker clinic, KPI closeout)
+- 36-03: Stand up KPI scorecard with activation and risk thresholds
+- 36-04: Bind operations outputs to weekly build-in-public evidence packets
+
+Phase 36 completed the beta operations baseline and converted deferred post-intake work into an executable weekly system.
+
+## Phase 37: MarkOS UI Control Plane + White-Label System
+
+**Goal:** Build the production-ready MarkOS application layer for existing Next.js + Tailwind + Supabase environments, including full UI surfaces for MIR/MSP management, white-label design system linkage, and campaign-activation workspaces.
+**Requirements Mapped:** BETA-01, PLG-01, DX-UI-01, DX-UI-02, OPS-GOV-01, AI-REPO-01
+**Depends on:** Phase 34 intake contracts, Phase 36 operating cadence, and existing hosted/runtime compatibility boundaries
+**Status:** ✅ Complete (2026-04-01)
+**Artifacts:** `.planning/phases/37-markos-ui-control-plane/37-RESEARCH.md`, `.planning/phases/37-markos-ui-control-plane/37-PLAN.md`, `.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md`
+
+- 37-01: Define information architecture and role-based access for company profile, MIR/MSP, ICPs, segments, and campaign records
+- 37-02: Define white-label-ready design token and theming system with design-system linkage
+- 37-03: Define safe edit/publish workflows that reduce friction, operational errors, and data leakage risk
+- 37-04: Define dual-consumption repository model (human-facing UX + AI-readable canonical contract surfaces)
 
 Planned work (subject to refinement):
 - Client intake SOP (automated intake form → Linear tracking)
-- Beta program operations (weekly standups, rollout cohorts)
-- Campaign activation (first paid-media + SEO pilots)
+- Beta program operations (weekly standups, rollout cohorts) ✓ delivered in Phase 36
+- Campaign activation (first paid-media + SEO pilots) integrated as a first-class workspace in Phase 37
 - Build-in-Public content (weekly LinkedIn drops from Esteban)
 - Litmus test: 10 clients in pilot by 2026-04-30 (90-day goal)
+
+Phase 34 completed the intake automation foundation. Active next work returns to beta-program operations rather than additional installer/runtime expansion.
+
+---
+
+## v2.5: Enhancement & Optimization Process
+
+**Goal:** Make MarkOS deployable as a genuinely smart one-command system so a typical local operator can run `npx markos` and reach a working onboarding environment with near-zero manual setup.
+**Requirements to map:** DX-01 (single-command deployment), DX-02 (prompt-minimized install), OPS-READY-01 (readiness validation), CI-01 (headless compatibility)
+**Depends on:** v2.4 Phase 34 completion and current install/update/onboarding runtime surfaces
+**Status:** ✅ Archived after Phase 35 completion (2026-04-01). Report: `.planning/milestones/v2.5-REPORT.md`
+
+## Phase 35: Smart One-Command Deployment
+
+**Goal:** Evolve the installer from prompt-first setup to hybrid auto-configuration with deterministic readiness checks and reliable onboarding launch.
+**Requirements Mapped:** DX-01, DX-02, OPS-READY-01, CI-01
+**Depends on:** Existing `bin/install.cjs`, `bin/update.cjs`, `bin/ensure-vector.cjs`, and onboarding backend health surfaces
+**Status:** ✅ Complete (2026-04-01)
+**Artifacts:** `.planning/phases/35-smart-one-command-deployment/35-RESEARCH.md`, `.planning/phases/35-smart-one-command-deployment/35-PLAN.md`, `.planning/phases/35-smart-one-command-deployment/35-SUMMARY.md`
+
+- 35-01: Define installer contract for interactive, non-interactive, and update handoff modes
+- 35-02: Auto-detect and hydrate runtime defaults before prompting for missing values
+- 35-03: Add readiness checks and actionable failure summaries for Node, env, vector, and onboarding boot
+- 35-04: Verify idempotent reruns, docs parity, and CI/headless behavior
+
+Phase 35 completed the installer/readiness hardening needed to make `npx markos` the real default deployment path. Milestone v2.5 is now formally closed.
+
+---
+
+## v2.6 Planned: Post-Deployment Operations & Beta Activation
+
+**Goal:** Convert one-command deployment reliability into measurable beta onboarding outcomes and an operator feedback loop for continued optimization.
+**Requirements to map:** BETA-01 (10 active pilot clients), OPS-LOOP-01 (intake-to-activation operating cadence), DX-OBS-01 (deployment diagnostics from real operator runs)
+**Depends on:** v2.5 archived baseline and existing intake/runtime surfaces from Phases 34-35
+**Status:** Deferred while v2.4 campaign activation and pilot growth execution is prioritized
 
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>

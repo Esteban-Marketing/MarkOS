@@ -1,8 +1,8 @@
 # MarkOS (MarkOS Protocol)
 
-## Current Milestone: v2.3 — Codebase Documentation Intelligence (completed 2026-03-31)
+## Current Milestone: v2.4 — Beta Client Onboarding (execution resumed after Phase 34)
 
-**Status:** v2.1 shipped 2026-03-28. v2.2 shipped 2026-03-31 (Phases 28–32). v2.3 shipped 2026-03-31 (Phase 33). All requirements through DOC-05 are validated and delivered.
+**Status:** v2.1 shipped 2026-03-28. v2.2 shipped 2026-03-31 (Phases 28–32). v2.3 shipped 2026-03-31 (Phase 33). v2.4 Phase 34 shipped 2026-03-31 as the intake automation foundation and is now the active resumed milestone for beta operations. v2.5 Phase 35 shipped 2026-04-01 with the default-first installer and readiness contract; milestone archived.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -15,7 +15,7 @@ Standardization and automation of marketing ideation, planning, and execution vi
 ## Context
 This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. Following the successful deployment of the core framework, onboarding engine, strategic enrichment layer, and documentation hardening, the next milestone is focused on product stabilization rather than net-new scaffolding. The system already operates as a local-first marketing OS with optional hosted entrypoints; the remaining work is to reduce identity drift, harden runtime behavior, improve onboarding reliability, and strengthen the path from approved strategy state into repeatable execution.
 
-The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. The next planning horizon is MIR Gate completion, beta client onboarding, and paid-media activation once MRR targets are established.
+The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. Phase 34 delivered the intake automation backbone for beta onboarding. Phase 35 delivered installer/readiness optimization and is archived under v2.5. Phase 36 has now completed the v2.4 beta-operations baseline with lifecycle ownership, weekly cadence, KPI scorecard, and PLG evidence-loop contracts. The next execution target is campaign activation (Phase 37).
 
 ## Residual Onboarding Warning Behavior
 
@@ -90,6 +90,13 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 - ✔ Documentation freshness rules and verification checks for route additions, file moves, topology changes — v2.3 (Phase 33)
 - ✔ Protocol-facing and human-facing docs updated to deep-link to canonical map — v2.3 (Phase 33)
 
+### Validated & Delivered (v2.5)
+- ✔ DX-01: Bare `npx markos` now acts as the primary one-command install path — v2.5 (Phase 35)
+- ✔ DX-02: Installer now applies safe defaults first and only falls back to prompts when needed — v2.5 (Phase 35)
+- ✔ DX-03: Installer-owned artifacts now converge cleanly on rerun and existing installs auto-handoff to update deterministically — v2.5 (Phase 35)
+- ✔ OPS-READY-01: Install now ends with explicit `ready` / `degraded` / `blocked` readiness states and actionable next steps — v2.5 (Phase 35)
+- ✔ CI-01: Install/update now behave deterministically in non-interactive environments and do not hang on prompts — v2.5 (Phase 35)
+
 ### Validated & Delivered (v1.0 & v1.1)
 - âœ“ Defined the core `markos` workflow integrating MIR-TEMPLATE and MSP-TEMPLATE — v1.0
 - âœ“ Implemented canonical `RESEARCH/` architectures and `markos-researcher` engine — v1.0
@@ -138,4 +145,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-03-31 after v2.3 completion (Phase 33). All requirements through DOC-05 validated and delivered.
+Last updated: 2026-04-01 after Phase 36 completion in v2.4.

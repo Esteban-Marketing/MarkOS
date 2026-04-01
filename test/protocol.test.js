@@ -121,8 +121,8 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     const runtimeContext = read('onboarding/backend/runtime-context.cjs');
     const telemetry = read('onboarding/backend/agents/telemetry.cjs');
 
-    assert.match(readme, /npx markos install/, 'README must use the MarkOS install command');
-    assert.doesNotMatch(readme, /npx markos\b(?!\s+install|\s+update)/, 'README must not use the legacy package command as the primary install path');
+    assert.match(readme, /```bash\s*npx markos\s*```/m, 'README must use bare `npx markos` as the primary install path');
+    assert.match(readme, /npx markos update/, 'README must document the update command');
     assert.match(readme, /Compatibility Surfaces/, 'README must document the remaining compatibility-only surfaces');
 
     assert.match(changelog, /Identity Normalization/, 'CHANGELOG must record the Phase 23 identity normalization work');

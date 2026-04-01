@@ -26,16 +26,31 @@
  */
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
-const { execSync, exec } = require('child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const readline = require('node:readline');
+const {
+  assertSupportedNodeVersion,
+  banner,
+  buildFileHashes,
+  copyRecursive,
+  detectExistingMarkOS,
+  detectGSD,
+  hasAnyAiKey,
+  inferProjectName,
+  isCIEnvironment,
+  isInteractiveSession,
+  loadProjectEnv,
+  parseCliArgs,
+  printInstallUsage,
+  resolveScopeTarget,
+  slugify,
+} = require('./cli-runtime.cjs');
 
 // ── Environment Settings ───────────────────────────────────────────────────
 const PKG_DIR = path.resolve(__dirname, '..');
 const VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/markos/VERSION'), 'utf8').trim();
-const CWD = process.cwd(); // Target project directory
-const MIN_NODE_VERSION = '20.16.0';
+const CWD = process.cwd();
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
@@ -43,44 +58,6 @@ const rl = readline.createInterface({ input: process.stdin, output: process.stdo
  * Prompts the user with a question and returns the answer as a Promise.
  */
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
-
-/**
- * Displays a styled banner in the console.
- */
-function banner(text) {
-  console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(` ${text}`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-}
-
-function compareSemver(a, b) {
-  const pa = String(a).split('.').map((part) => Number.parseInt(part, 10) || 0);
-  const pb = String(b).split('.').map((part) => Number.parseInt(part, 10) || 0);
-  const max = Math.max(pa.length, pb.length);
-  for (let i = 0; i < max; i++) {
-    const left = pa[i] || 0;
-    const right = pb[i] || 0;
-    if (left > right) return 1;
-    if (left < right) return -1;
-  }
-  return 0;
-}
-
-function getEffectiveNodeVersion() {
-  return process.env.MARKOS_NODE_VERSION_OVERRIDE || process.versions.node;
-}
-
-function assertSupportedNodeVersion() {
-  const nodeVersion = getEffectiveNodeVersion();
-  if (compareSemver(nodeVersion, MIN_NODE_VERSION) >= 0) {
-    return true;
-  }
-
-  console.error('\n✗ MarkOS requires Node.js >= 20.16.0.');
-  console.error(`  Current version: ${nodeVersion}`);
-  console.error('  Upgrade Node.js and rerun `npx markos` (or `npx markos update`).\n');
-  return false;
-}
 
 function applyGitignoreProtections(projectDir) {
   const gitignorePath = path.join(projectDir, '.gitignore');
@@ -111,14 +88,19 @@ function applyGitignoreProtections(projectDir) {
   let changed = false;
 
   if (existing.includes(blockStart) && existing.includes(blockEnd)) {
-    const blockPattern = new RegExp(`${blockStart}[\\s\\S]*?${blockEnd}`);
+    const blockPattern = new RegExp(String.raw`${blockStart}[\s\S]*?${blockEnd}`);
     const replacement = managedBlock;
     next = existing.replace(blockPattern, replacement);
     changed = next !== existing;
   } else {
     const hasAllEntries = protectedEntries.every((entry) => existing.includes(entry));
     if (!hasAllEntries) {
-      const separator = existing.length > 0 && !existing.endsWith('\n') ? '\n\n' : (existing.length > 0 ? '\n' : '');
+      let separator = '';
+      if (existing.length > 0 && !existing.endsWith('\n')) {
+        separator = '\n\n';
+      } else if (existing.length > 0) {
+        separator = '\n';
+      }
       next = `${existing}${separator}${managedBlock}\n`;
       changed = true;
     }
@@ -134,233 +116,280 @@ function applyGitignoreProtections(projectDir) {
   };
 }
 
-// ── Detection Logic ────────────────────────────────────────────────────────
-/** @returns {boolean} true if GSD protocol is already active in this project */
-function detectGSD(targetDir) {
-  return fs.existsSync(path.join(targetDir, '.agent', 'get-shit-done', 'VERSION'));
+function ensureProjectConfig(projectDir, projectName) {
+  const projectConfigPath = path.join(projectDir, '.markos-project.json');
+  const defaultSlug = slugify(projectName);
+
+  if (fs.existsSync(projectConfigPath)) {
+    try {
+      const existing = JSON.parse(fs.readFileSync(projectConfigPath, 'utf8'));
+      if (existing && typeof existing.project_slug === 'string' && existing.project_slug.trim()) {
+        return { path: projectConfigPath, projectSlug: existing.project_slug.trim(), changed: false };
+      }
+    } catch {}
+  }
+
+  fs.writeFileSync(projectConfigPath, JSON.stringify({ project_slug: defaultSlug }, null, 2));
+  return { path: projectConfigPath, projectSlug: defaultSlug, changed: true };
 }
 
-/** @returns {boolean} true if the legacy MARKOS-compatible protocol path is already active in this project */
-function detectExistingMarkOS(targetDir) {
-  return fs.existsSync(path.join(targetDir, '.agent', 'markos', 'VERSION'));
-}
-
-function copyRecursive(src, dest) {
-  if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-  for (const item of fs.readdirSync(src)) {
-    const srcPath = path.join(src, item);
-    const destPath = path.join(dest, item);
-    if (fs.statSync(srcPath).isDirectory()) {
-      copyRecursive(srcPath, destPath);
-    } else {
-      fs.copyFileSync(srcPath, destPath);
+function appendAiDocSection(projectDir) {
+  for (const aiMd of ['GEMINI.md', 'CLAUDE.md', 'AGENTS.md']) {
+    const aiMdPath = path.join(projectDir, aiMd);
+    if (!fs.existsSync(aiMdPath)) {
+      continue;
     }
+
+    const existing = fs.readFileSync(aiMdPath, 'utf8');
+    if (existing.includes('MarkOS')) {
+      continue;
+    }
+
+    fs.appendFileSync(aiMdPath, `\n\n## MarkOS — Marketing Operating System\n\nMarkOS protocol installed at \`.agent/markos/\`.\nSee \`.agent/markos/MARKOS-INDEX.md\` for full documentation.\n`);
+    console.log(`✓ MarkOS section appended to ${aiMd}`);
   }
 }
 
-async function run() {
-  if (!assertSupportedNodeVersion()) {
-    rl.close();
-    process.exit(1);
-  }
-
-  // Handle: npx markos update → defer to update.cjs
-  if (process.argv[2] === 'update') {
-    require('./update.cjs');
-    return;
-  }
-
-  banner(`MarkOS Installer v${VERSION} — Marketing Operating System`);
-
-  // Detect GSD
-  const hasGSD = detectGSD(CWD);
-  const hasMarkOS = detectExistingMarkOS(CWD);
-
-  if (hasMarkOS) {
-    console.log(`\n📦 MarkOS is already installed in this project.`);
-    const choice = await ask('Run update instead? (y/n): ');
-    if (choice.trim().toLowerCase() === 'y') {
-      require('./update.cjs');
-      rl.close();
-      return;
-    }
-    rl.close();
-    return;
-  }
-
-  if (hasGSD) {
-    console.log('\n✓ Existing GSD install detected — MarkOS will be added alongside it.');
-  } else {
-    console.log('\nℹ No GSD install found — MarkOS will be installed standalone.');
-  }
-
-  // Step 1: Install location
-  console.log('\n[1/5] Install location');
-  console.log('  1) This project only (.agent/ in current directory)');
-  console.log('  2) Global (~/.agent/)');
-  const locChoice = await ask('Choice (1 or 2): ');
-  const isGlobal = locChoice.trim() === '2';
-  const os = require('os');
-  const targetDir = isGlobal ? os.homedir() : CWD;
-  const agentDir = path.join(targetDir, '.agent');
-
-  // Step 2: Project name
-  console.log('\n[2/5] Project marketing context');
-  const projectName = await ask('Project/client name for this MarkOS install: ');
-
-  // Step 3: Launch onboarding?
-  console.log('\n[3/5] Client intelligence onboarding');
-  console.log('  Launch the MarkOS onboarding flow to generate RESEARCH/, MIR/, MSP/ automatically?');
-  const launchOnboarding = await ask('Launch onboarding form after install? (y/n): ');
-
-  // Step 4: Confirm
-  console.log('\n[4/5] Summary');
-  console.log(`  Install to: ${agentDir}`);
-  console.log(`  Project: ${projectName}`);
-  console.log(`  GSD co-existence: ${hasGSD ? 'Yes (non-destructive)' : 'N/A'}`);
-  console.log(`  Onboarding: ${launchOnboarding.trim().toLowerCase() === 'y' ? 'Yes' : 'Skip'}`);
-  const confirm = await ask('\nProceed? (y/n): ');
-
-  if (confirm.trim().toLowerCase() !== 'y') {
-    console.log('\nInstallation cancelled.');
-    rl.close();
-    return;
-  }
-
-  // Step 5: Install
-  banner('Installing MarkOS...');
-
-  const markosSrc = path.join(PKG_DIR, '.agent', 'markos');
+function installProtocolFiles({ pkgDir, cwd, agentDir, hasGSD }) {
+  const markosSrc = path.join(pkgDir, '.agent', 'markos');
   const markosDest = path.join(agentDir, 'markos');
   copyRecursive(markosSrc, markosDest);
   console.log('✓ MarkOS protocol files installed (.agent/markos path)');
 
-  // Copy onboarding
-  const onboardingSrc = path.join(PKG_DIR, 'onboarding');
-  const onboardingDest = path.join(CWD, 'onboarding');
+  const onboardingSrc = path.join(pkgDir, 'onboarding');
+  const onboardingDest = path.join(cwd, 'onboarding');
   if (!fs.existsSync(onboardingDest)) {
     copyRecursive(onboardingSrc, onboardingDest);
     console.log('✓ Onboarding app installed');
   }
 
-  // Write VERSION
   fs.writeFileSync(path.join(markosDest, 'VERSION'), VERSION);
 
-  // Write install manifest
-  const manifestPath = path.join(CWD, '.markos-install-manifest.json');
-  
-  // Build file hash manifest for accurate conflict detection during updates
-  function buildFileHashes(dir, baseDir = dir, hashes = {}) {
-    for (const item of fs.readdirSync(dir)) {
-      const full = path.join(dir, item);
-      const rel = path.relative(baseDir, full);
-      if (fs.statSync(full).isDirectory()) {
-        buildFileHashes(full, baseDir, hashes);
-      } else {
-        hashes[rel] = require('crypto').createHash('sha256').update(fs.readFileSync(full)).digest('hex');
-      }
-    }
-    return hashes;
+  if (hasGSD) {
+    console.log('✓ MarkOS skills co-exist with GSD (no conflicts)');
   }
 
+  return { markosDest };
+}
+
+function writeInstallManifest({ cwd, markosDest, isGlobal, projectName, projectSlug }) {
+  const manifestPath = path.join(cwd, '.markos-install-manifest.json');
   const manifest = {
     version: VERSION,
     installed: new Date().toISOString(),
     location: isGlobal ? 'global' : 'project',
     project_name: projectName,
+    project_slug: projectSlug,
     file_hashes: buildFileHashes(markosDest)
   };
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
   console.log('✓ Install manifest written (.markos-install-manifest.json)');
+}
+
+async function handleExistingInstall({ isInteractive, autoUpdate }) {
+  console.log(`\n📦 MarkOS is already installed in this project.`);
+  if (!isInteractive || autoUpdate) {
+    console.log('  Existing install detected; switching to `npx markos update` automatically.');
+    return true;
+  }
+
+  const choice = await ask('Run update instead? (Y/n): ');
+  return choice.trim() === '' || choice.trim().toLowerCase() === 'y';
+}
+
+function printInstallSummary({ markosDest, projectName, projectSlug, readiness }) {
+  banner(`MarkOS v${VERSION} installed ✓`);
+  console.log(`\n  Protocol:   ${markosDest}`);
+  console.log(`  Project:    ${projectName}`);
+  console.log(`  Slug:       ${projectSlug}`);
+  console.log('  Update:     npx markos update');
+  console.log(`  Readiness:  ${readiness.readiness}`);
+  console.log('  Docs:       .agent/markos/MARKOS-INDEX.md');
+  if (readiness.warnings.length > 0) {
+    for (const warning of readiness.warnings) {
+      console.log(`  Warning:    ${warning}`);
+    }
+  }
+  if (readiness.nextStep) {
+    console.log(`  Next step:  ${readiness.nextStep}`);
+  }
+  console.log('');
+}
+
+function buildInstallContext(cli) {
+  const isInteractive = isInteractiveSession();
+  const isCI = isCIEnvironment();
+  const scope = cli.scope || 'project';
+
+  return {
+    cli,
+    isInteractive,
+    isCI,
+    hasGSD: detectGSD(CWD),
+    hasMarkOS: detectExistingMarkOS(CWD),
+    projectName: cli.projectName || inferProjectName(CWD),
+    projectNameSource: cli.projectName ? 'flag override' : 'cwd inference',
+    scope,
+    isGlobal: scope === 'global',
+    launchOnboarding: !cli.noOnboarding && isInteractive && !isCI,
+    targetDir: resolveScopeTarget(CWD, scope),
+  };
+}
+
+async function performFreshInstall(context) {
+  const agentDir = path.join(context.targetDir, '.agent');
+  const { markosDest } = installProtocolFiles({ pkgDir: PKG_DIR, cwd: CWD, agentDir, hasGSD: context.hasGSD });
+
+  const projectConfig = ensureProjectConfig(CWD, context.projectName);
+  if (projectConfig.changed) {
+    console.log('✓ Project slug initialized (.markos-project.json)');
+  }
+
+  writeInstallManifest({
+    cwd: CWD,
+    markosDest,
+    isGlobal: context.isGlobal,
+    projectName: context.projectName,
+    projectSlug: projectConfig.projectSlug,
+  });
 
   const gitignoreResult = applyGitignoreProtections(CWD);
   if (gitignoreResult.changed) {
     console.log('✓ .gitignore updated with private local artifact protections');
   }
 
-  // Non-destructive GSD append (if GSD detected)
-  if (hasGSD) {
-    const markosSkillsDir = path.join(agentDir, 'markos', 'skills');
-    // Skills already in correct place — just confirm
-    console.log('✓ MarkOS skills co-exist with GSD (no conflicts)');
-  }
+  appendAiDocSection(CWD);
 
-  // Append to GEMINI.md / CLAUDE.md if present (never overwrite)
-  // TODO(MARKOS-LEGACY-PATH-MIGRATION): Keep legacy protocol path references
-  // until directory/index migration to `.agent/markos` and `MARKOS-INDEX.md` is completed.
-  for (const aiMd of ['GEMINI.md', 'CLAUDE.md', 'AGENTS.md']) {
-    const aiMdPath = path.join(CWD, aiMd);
-    if (fs.existsSync(aiMdPath)) {
-      const existing = fs.readFileSync(aiMdPath, 'utf8');
-      if (!existing.includes('MarkOS')) {
-        fs.appendFileSync(aiMdPath, `\n\n## MarkOS — Marketing Operating System\n\nMarkOS protocol installed at \`.agent/markos/\`.\nSee \`.agent/markos/MARKOS-INDEX.md\` for full documentation.\n`);
-        console.log(`✓ MarkOS section appended to ${aiMd}`);
-      }
-    }
-  }
+  const { ensureVectorStores } = require('./ensure-vector.cjs');
+  const vectorReport = await ensureVectorStores();
+  const onboardingServerPath = path.join(CWD, 'onboarding', 'backend', 'server.cjs');
+  const readiness = summarizeReadiness({
+    hasAiKeys: hasAnyAiKey(CWD),
+    vectorReport,
+    launchOnboarding: context.launchOnboarding,
+    onboardingServerPath,
+  });
 
-  banner(`MarkOS v${VERSION} installed ✓`);
-  console.log(`\n  Protocol: ${markosDest}`);
-  console.log(`  Update:   npx markos update`);
-  // Keep this docs path aligned with current runtime filesystem layout.
-  console.log(`  Docs:     .agent/markos/MARKOS-INDEX.md\n`);
+  return {
+    markosDest,
+    onboardingServerPath,
+    projectConfig,
+    readiness,
+  };
+}
 
-  if (launchOnboarding.trim().toLowerCase() === 'y') {
-    // ── 1. Interactive .env Setup ───────────────────────────────────────────
-    const envPath = path.join(CWD, '.env');
-    let hasKeys = false;
-    if (fs.existsSync(envPath)) {
-      const envContent = fs.readFileSync(envPath, 'utf8');
-      if (envContent.includes('OPENAI_API_KEY') || 
-          envContent.includes('ANTHROPIC_API_KEY') || 
-          envContent.includes('GEMINI_API_KEY')) {
-        hasKeys = true;
-      }
-    }
+function completeInstall(context, installResult) {
+  printInstallSummary({
+    markosDest: installResult.markosDest,
+    projectName: context.projectName,
+    projectSlug: installResult.projectConfig.projectSlug,
+    readiness: installResult.readiness,
+  });
 
-    if (!hasKeys) {
-      console.log('\n[!] No AI Keys detected in .env');
-      console.log('To power the MarkOS AI agents, you need at least one API key.');
-      console.log('  1) OpenAI');
-      console.log('  2) Anthropic');
-      console.log('  3) Google Gemini');
-      console.log('  4) Skip for now (will fail to generate AI drafts)');
-      
-      const providerChoice = await ask('Select provider (1-4): ');
-      
-      let keyFormat = '';
-      if (providerChoice.trim() === '1') {
-        const key = await ask('Paste OPENAI_API_KEY (sk-...): ');
-        if (key) keyFormat = `\nOPENAI_API_KEY=${key.trim()}\nOPENAI_MODEL=gpt-4o-mini\n`;
-      } else if (providerChoice.trim() === '2') {
-        const key = await ask('Paste ANTHROPIC_API_KEY (sk-ant-...): ');
-        if (key) keyFormat = `\nANTHROPIC_API_KEY=${key.trim()}\nANTHROPIC_MODEL=claude-3-5-haiku-20241022\n`;
-      } else if (providerChoice.trim() === '3') {
-        const key = await ask('Paste GEMINI_API_KEY (AIza...): ');
-        if (key) keyFormat = `\nGEMINI_API_KEY=${key.trim()}\nGEMINI_MODEL=gemini-2.5-flash\n`;
-      }
-
-      if (keyFormat) {
-        fs.appendFileSync(envPath, keyFormat);
-        console.log('✓ API Key saved to .env securely.');
-      }
-    }
-
-    // ── 2. Vector Memory Daemon ─────────────────────────────────────────────
-    const { ensureVectorStores } = require('./ensure-vector.cjs');
-    await ensureVectorStores();
-
-    // ── 3. Server Handoff ───────────────────────────────────────────────────
-    console.log('\n🚀 Starting MarkOS Orchestrator Sequence...\n');
+  if (context.launchOnboarding && installResult.readiness.readiness !== 'blocked') {
+    console.log('🚀 Starting MarkOS onboarding...\n');
     rl.close();
-    
-    // Redirect to V2 Server
-    require(path.join(CWD, 'onboarding', 'backend', 'server.cjs'));
+    require(installResult.onboardingServerPath);
+    return;
+  }
 
+  console.log('Run `node onboarding/backend/server.cjs` to fully launch the system later.\n');
+  rl.close();
+}
+
+function summarizeReadiness({ hasAiKeys, vectorReport, launchOnboarding, onboardingServerPath }) {
+  const warnings = [];
+  let readiness = 'ready';
+
+  if (!hasAiKeys) {
+    readiness = 'degraded';
+    warnings.push('No AI provider key detected in environment or .env; onboarding can start, but AI draft generation will stay degraded until a key is added.');
+  }
+
+  if (vectorReport.status !== 'providers_ready') {
+    readiness = 'degraded';
+    warnings.push(vectorReport.message);
+  }
+
+  if (launchOnboarding && !fs.existsSync(onboardingServerPath)) {
+    readiness = 'blocked';
+    warnings.push('Onboarding server entrypoint is missing after install, so automatic handoff cannot continue.');
+  }
+
+  const nextSteps = [];
+  if (!hasAiKeys) {
+    nextSteps.push('Add one of OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY to .env for full AI drafting.');
+  }
+  if (vectorReport.actionable_next_step) {
+    nextSteps.push(vectorReport.actionable_next_step);
+  }
+  if (launchOnboarding && !fs.existsSync(onboardingServerPath)) {
+    nextSteps.push('Re-run `npx markos` to restore the onboarding app, or start `node onboarding/backend/server.cjs` once the file exists.');
+  }
+
+  return {
+    readiness,
+    warnings,
+    nextStep: nextSteps[0] || null,
+  };
+}
+
+async function run() {
+  const cli = parseCliArgs();
+
+  if (cli.help) {
+    printInstallUsage();
+    rl.close();
+    return;
+  }
+
+  if (!assertSupportedNodeVersion(cli.command === 'update' ? 'npx markos update' : 'npx markos')) {
+    rl.close();
+    process.exit(1);
+  }
+
+  if (cli.command === 'update') {
+    rl.close();
+    require('./update.cjs');
+    return;
+  }
+
+  loadProjectEnv(CWD);
+
+  banner(`MarkOS Installer v${VERSION} — Marketing Operating System`);
+
+  const context = buildInstallContext(cli);
+
+  if (context.hasMarkOS) {
+    const shouldUpdate = await handleExistingInstall({ isInteractive: context.isInteractive, autoUpdate: cli.yes });
+    if (shouldUpdate) {
+      rl.close();
+      require('./update.cjs');
+      return;
+    }
+
+    rl.close();
+    return;
+  }
+
+  if (context.hasGSD) {
+    console.log('\n✓ Existing GSD install detected — MarkOS will be added alongside it.');
   } else {
-    console.log('Run `node onboarding/backend/server.cjs` to fully launch the system later.\n');
-    rl.close();
+    console.log('\nℹ No GSD install found — MarkOS will be installed standalone.');
   }
+
+  console.log('\n✓ Smart defaults applied');
+  console.log(`  Install to: ${path.join(context.targetDir, '.agent')}`);
+  console.log(`  Project: ${context.projectName}`);
+  console.log(`  Project name source: ${context.projectNameSource}`);
+  console.log(`  Mode: ${context.isInteractive ? 'interactive' : 'non-interactive'}`);
+  console.log(`  GSD co-existence: ${context.hasGSD ? 'Yes (non-destructive)' : 'N/A'}`);
+  console.log(`  Onboarding auto-launch: ${context.launchOnboarding ? 'Yes' : 'No'}`);
+
+  banner('Installing MarkOS...');
+
+  const installResult = await performFreshInstall(context);
+  completeInstall(context, installResult);
 }
 
 run().catch(e => { console.error(e); rl.close(); process.exit(1); });

@@ -687,24 +687,24 @@ test('INT-R001: validateIntakeSeed accepts valid company.name', () => {
 ## Open Questions
 
 1. **Multi-language intake forms?**
-   - What we know: Current form is English-only; clients may be non-English-speaking
-   - What's unclear: Should Phase 34 include form localization, or Phase 35+?
-   - Recommendation: Phase 34 English-only; localization deferred to Phase 35
+  What we know: Current form is English-only; clients may be non-English-speaking.
+  What's unclear: Should Phase 34 include form localization, or a later beta-ops / UX phase?
+  Recommendation: Phase 34 stays English-only; localization is deferred beyond v2.5 installer work.
 
-2. **Client login / auth for form submissions?**
-   - What we know: Current form is unauthenticated; anyone can submit
-   - What's unclear: Should Phase 34 require Linear API key or email auth before intake?
-   - Recommendation: Phase 34 stays unauthenticated (simpler beta flow); Phase 35 adds SSO/auth if scaling to 100+ clients
+1. **Client login / auth for form submissions?**
+  What we know: Current form is unauthenticated; anyone can submit.
+  What's unclear: Should Phase 34 require Linear API key or email auth before intake?
+  Recommendation: Phase 34 stays unauthenticated for beta simplicity; future beta-scale work can add SSO/auth if scaling to 100+ clients.
 
-3. **Partial intake flows (multi-step completion)?**
-   - What we know: Current form expects full seed in one submission
-   - What's unclear: Should clients be able to save drafts mid-form and resume later?
-   - Recommendation: Phase 34 one-shot submission; Phase 35 adds draft save/resume if needed
+1. **Partial intake flows (multi-step completion)?**
+  What we know: Current form expects full seed in one submission.
+  What's unclear: Should clients be able to save drafts mid-form and resume later?
+  Recommendation: Phase 34 remains one-shot submission; draft save/resume stays a future UX enhancement if beta usage demands it.
 
-4. **Intake SOP visibility in Linear — custom field or epic link?**
-   - What we know: Intake tickets created in Linear; MIR drafts in vector memory
-   - What's unclear: How should the onboarding team link Linear tickets to MIR artifacts?
-   - Recommendation: Phase 34 response includes MIR session URL; team manually links in Linear ticket description. Phase 35 adds automated epic linking if desired.
+1. **Intake SOP visibility in Linear — custom field or epic link?**
+  What we know: Intake tickets are created in Linear while MIR drafts live in vector memory.
+  What's unclear: How should the onboarding team link Linear tickets to MIR artifacts?
+  Recommendation: Phase 34 returns the MIR session URL and the team links it manually in Linear for now. Automated epic linking is deferred to a later operations phase if needed.
 
 ---
 

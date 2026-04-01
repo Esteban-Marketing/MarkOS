@@ -10,7 +10,7 @@ You've tried prompting your way to a marketing strategy. It doesn't work without
 **MarkOS is the missing operating system** — protocol-grade marketing infrastructure for AI-ready teams, installed in one command.
 
 ```bash
-npx markos install
+npx markos
 ```
 
 ---
@@ -34,17 +34,40 @@ Most AI marketing tools give you outputs. MarkOS gives you a system.
 
 Node.js `>=20.16.0` is required. If your runtime is older, upgrade Node first and then rerun the installer.
 
+Primary install path:
+
+```bash
+npx markos
+```
+
+Useful overrides:
+
+```bash
+# Skip auto-launching onboarding after install
+npx markos --no-onboarding
+
+# Accept defaults non-interactively
+npx markos --yes --project-name "Acme Client"
+```
+
 In ~60 seconds you get:
 - `.agent/markos/` — versioned protocol engine (templates, agents, `MARKOS-INDEX.md`)
 - `onboarding/` — web onboarding app (copied on first install when missing)
 - `.markos-install-manifest.json` — idempotent install marker for `npx markos update`
 - Optional: launch the onboarding form to drive drafts into `.markos-local/` after approval
 
+Installer completion states:
+- `ready` — local onboarding handoff is available with full baseline dependencies.
+- `degraded` — install succeeded, but one or more optional runtime dependencies (for example AI keys or vector providers) still need configuration.
+- `blocked` — install finished copying files, but automatic onboarding handoff cannot proceed until a required local runtime issue is fixed.
+
 This repository also ships **`.protocol-lore/`** (agent boot and navigation); it is not part of the published npm `files` list, but it is authoritative when working from source.
 
 ```bash
 # Update when new protocol versions ship:
 npx markos update
+
+# `npx markos install` remains a compatibility alias for the primary install flow.
 
 # Run the onboarding form to fill your brand intelligence:
 node onboarding/backend/server.cjs
@@ -72,7 +95,6 @@ ITM  (Issue Task Templates)
 ---
 
 ## Agents
-
 
 These are representative protocol agent IDs. Names use the `markos-*` prefix; compatibility-only aliases may exist in older artifacts.
 

@@ -1,41 +1,38 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.3
-milestone_name: Codebase Documentation Intelligence
-status: Milestone Complete & Archived
-last_updated: "2026-03-31T23:59:59.999Z"
-archived_at: "2026-03-31T23:59:59.999Z"
+milestone: v2.4
+milestone_name: Beta Client Onboarding
+status: Active Milestone
+last_updated: "2026-04-01T23:59:59.999Z"
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 3
+  completed_plans: 3
 ---
 
 Current Position
 ----------------
 
-Milestone: v2.3 (archived 2026-03-31 23:59:59 UTC)
-Phase: 33 — Codebase Documentation Mapping (COMPLETED & VERIFIED)
-Status: All deliverables shipped. All gates GREEN. All concerns closed.
-Next Phase: OPERATIONAL — Beta client onboarding + PLG campaign (v2.4 planning pending)
+Milestone: v2.4 — Beta Client Onboarding
+Phase: 37 — MarkOS UI Control Plane + White-Label System (COMPLETED)
+Status: Phase 37 execution completed with app scaffold, contracts, theming linkage, RBAC/telemetry, and Supabase RLS baseline.
+Next Phase: Define and plan next milestone follow-on scope.
 
 Tooling Snapshot
 ----------------
 
-- Active milestone (v2.3) progress: 4/4 plans complete (100%).
-- Global disk snapshot (all non-archived phase dirs): 30/58 summaries/plans complete.
+- Active milestone (v2.4) progress: Phase 34 and Phase 36 complete; campaign activation is next.
+- Global disk snapshot (all non-archived phase dirs): Phase 34 complete; Phase 35 complete and verified.
 - Deferred roadmap track: v2.0 rebrand phases (17-22) remain intentionally unexecuted.
 
-Milestone v2.3 Artifacts
------------------------
+Milestone v2.4 Focus
+--------------------
 
-✅ Canonical Codebase Map: `.planning/codebase/` (5 docs + coverage matrix)
-✅ Route Inventory: 18 local + 8 hosted (fully documented)
-✅ Entrypoint Inventory: 5 CLI + 2 tools + 2 runtime (fully documented)
-✅ Folder/File Ownership: all maintained surfaces documented
-✅ Protocol-Summary Parity: README, TECH-MAP, protocol-lore aligned
-✅ Verification: 64/64 tests passing; all concerns closed
+🎯 Resume beta program operations after intake automation foundation
+🎯 Convert intake submissions into active pilot client rhythms
+🎯 Execute campaign activation and build-in-public operating cadence
+🎯 Keep installer/runtime gains from v2.5 as baseline, not active milestone scope
 
 MIR Gate Status
 ---------------
@@ -91,3 +88,14 @@ Roadmap Evolution
 - 2026-03-29: Phase 30 completed with MarkOSDB migration contracts, dry-run/replay coverage, hosted auth boundaries, and compatibility reads verified.
 - 2026-03-31: Phase 32 completed with literacy storage contracts, ingestion/admin tooling, runtime wiring, and literacy operations docs.
 - 2026-03-31: Phase 33 completed with canonical `.planning/codebase/` docs, route and entrypoint inventories, and protocol-summary parity checks.
+- 2026-03-31: Phase 34 completed with intake validation contracts, automatic Linear ticket creation, orchestrator handoff metadata, and intake operations docs.
+- 2026-04-01: v2.5 initialized in roadmap/project state for installer optimization and one-command deployment hardening.
+- 2026-04-01: Phase 35 research completed and `.planning/phases/35-smart-one-command-deployment/35-PLAN.md` created for execution.
+- 2026-04-01: Phase 35 completed with a shared CLI runtime contract, default-first install flow, readiness classification, docs parity updates, and 99/99 tests passing.
+- 2026-04-01: v2.5 formally archived with milestone report `.planning/milestones/v2.5-REPORT.md`; state advanced to v2.6 planning.
+- 2026-04-01: Prioritization updated to return to deferred beta-operations work after Phase 34; active milestone reset to v2.4.
+- 2026-04-01: Phase 36 beta-operations execution plan created at `.planning/phases/36-beta-program-operations/36-PLAN.md`.
+- 2026-04-01: Phase 36 completed with runbook, KPI scorecard, weekly cadence contracts, and PLG evidence-loop integration.
+- 2026-04-01: Phase 37 research completed at `.planning/phases/37-markos-ui-control-plane/37-RESEARCH.md`, defining the Next.js/Tailwind/Supabase control-plane, white-label design-system linkage, and AI-consumable documentation twin architecture.
+- 2026-04-01: Phase 37 execution plan created at `.planning/phases/37-markos-ui-control-plane/37-PLAN.md`.
+- 2026-04-01: Phase 37 completed with MarkOS app route scaffold, domain contracts, theme token pipeline, RBAC/telemetry contracts, Supabase migration baseline, and `.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md`.

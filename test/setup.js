@@ -1,7 +1,8 @@
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const { spawn } = require('child_process');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { spawn } = require('node:child_process');
 
 const ONBOARDING_EXTRACTION_FIXTURES = Object.freeze({
   urlOnly: {
@@ -95,7 +96,11 @@ function createTestEnvironment() {
     cleanup: () => {
       try {
         fs.rmSync(tmpDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
-      } catch(e) {}
+      } catch (error) {
+        if (error && !['ENOENT', 'EBUSY', 'EPERM'].includes(error.code)) {
+          throw error;
+        }
+      }
     },
     seedGSD: () => {
       const gsdDir = path.join(tmpDir, '.agent', 'get-shit-done');
@@ -108,7 +113,6 @@ function createTestEnvironment() {
       fs.writeFileSync(path.join(markosDir, 'VERSION'), '0.9.0');
     },
     seedInstallForUpdate: () => {
-      const crypto = require('crypto');
       const markosDir = path.join(tmpDir, '.agent', 'markos');
       fs.mkdirSync(path.join(markosDir, 'agents'), { recursive: true });
       
@@ -172,12 +176,15 @@ function createTestEnvironment() {
 
 function runCLI(scriptPath, cwd, inputs = [], options = {}) {
   return new Promise((resolve, reject) => {
+    const envOverrides = options.env ? { ...options.env } : undefined;
+
     // Execute the Node script in the specific tmp directory
-    const child = spawn(process.execPath, [scriptPath], {
+    const child = spawn(process.execPath, [scriptPath, ...(options.args || [])], {
       cwd,
       env: {
         ...process.env,
-        ...(options.env || {}),
+        ...(inputs.length > 0 ? { MARKOS_FORCE_INTERACTIVE: '1' } : undefined),
+        ...envOverrides,
       },
     });
     
@@ -191,6 +198,7 @@ function runCLI(scriptPath, cwd, inputs = [], options = {}) {
       if (
         txt.includes('Choice') || 
         txt.includes('(y/n)') || 
+        txt.includes('(Y/n)') ||
         txt.includes('Project/client name') ||
         txt.includes('Proceed') ||
         txt.includes('[K]eep mine')

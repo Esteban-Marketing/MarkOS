@@ -1773,9 +1773,13 @@ After completing all tasks, create `.planning/phases/34-client-intake-sop-automa
 
 ## Next Phase (v2.4 Roadmap)
 
-- Phase 35: Beta Program Operations (weekly standups, rollout cohorts)
-- Phase 36: Campaign Activation (first paid-media pilots)
-- Phase 37: Build-in-Public (LinkedIn content)
+- Phase 36: Beta Program Operations (weekly standups, rollout cohorts)
+- Phase 37: Campaign Activation (first paid-media pilots)
+- Phase 38: Build-in-Public (LinkedIn content)
+
+## Next Active Research Track
+
+- Phase 35: Smart One-Command Deployment (v2.5)
 
 ## Known Limitations / Future Work
 
@@ -1927,7 +1931,7 @@ Task 0 (fixtures) → Task 1,2,4 (validation + Linear + handler) → Task 3 (orc
    
 5. Then transition:
    └─ `/gsd-transition 34` → Phase complete record
-   └─ Plan Phase 35: Beta Program Operations
+  └─ Research and plan Phase 35: Smart One-Command Deployment
 ```
 
 ---

@@ -1,7 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const path = require('path');
-const fs = require('fs');
+const path = require('node:path');
+const fs = require('node:fs');
 const { createTestEnvironment, runCLI, readManifest } = require('./setup.js');
 
 const UPDATE_SCRIPT = path.resolve(__dirname, '../bin/update.cjs');
@@ -46,7 +46,9 @@ test('Suite 2: Agentic Patch Engine', async (t) => {
       fs.writeFileSync(rogueEditFile, 'Rogue Manual Edit');
 
       // 3-way conflict resolution: choose 'k' to keep mine.
-      const { code, output } = await runCLI(UPDATE_SCRIPT, env.dir, ['k']);
+      const { code, output } = await runCLI(UPDATE_SCRIPT, env.dir, ['k'], {
+        env: { MARKOS_FORCE_INTERACTIVE: '1' },
+      });
       
       assert.equal(code, 0, 'Exit code should be 0');
       assert.match(output, /conflict\(s\) — both you and the update changed these files/, 'Should detect conflict');
@@ -54,6 +56,24 @@ test('Suite 2: Agentic Patch Engine', async (t) => {
 
       const content = fs.readFileSync(rogueEditFile, 'utf8');
       assert.equal(content, 'Rogue Manual Edit', 'Rogue edit should be kept because user pressed k');
+    } finally {
+      env.cleanup();
+    }
+  });
+
+  await t.test('2.2.1 Non-interactive conflicts keep local changes without hanging', async () => {
+    const env = createTestEnvironment();
+    try {
+      env.seedInstallForUpdate();
+
+      const rogueEditFile = path.join(env.dir, '.agent', 'markos', 'agents', 'markos-researcher.md');
+      fs.writeFileSync(rogueEditFile, 'Rogue Manual Edit');
+
+      const { code, output } = await runCLI(UPDATE_SCRIPT, env.dir, []);
+
+      assert.equal(code, 0, 'Non-interactive conflict handling should exit cleanly');
+      assert.match(output, /Non-interactive mode: keeping your version/);
+      assert.equal(fs.readFileSync(rogueEditFile, 'utf8'), 'Rogue Manual Edit');
     } finally {
       env.cleanup();
     }
@@ -76,6 +96,7 @@ test('Suite 2: Agentic Patch Engine', async (t) => {
       assert.ok(manifest, 'Manifest must still exist');
       assert.notEqual(manifest.version, '0.9.0', 'Manifest version must be upgraded');
       assert.equal(manifest.previous_version, '0.9.0', 'Manifest must record that we came from 0.9.0');
+      assert.ok(manifest.file_hashes?.VERSION, 'Manifest file hashes should be refreshed after update');
       
       const versionFile = fs.readFileSync(path.join(markosDest, 'VERSION'), 'utf8').trim();
       assert.notEqual(versionFile, '0.9.0', 'Protocol VERSION file must match upgraded state');
