@@ -11,7 +11,7 @@
 - ✅ **v2.3 Codebase Documentation Intelligence** — Phase 33 completed (2026-03-31) → **ARCHIVED**
 - ✅ **v2.4 Beta Client Onboarding** — Phases 34, 36, 37 shipped (2026-04-01) → **ARCHIVED** (`.planning/milestones/v2.4-ROADMAP.md`)
 - ✅ **v2.5 Enhancement & Optimization Process** — Phase 35 completed (2026-04-01) → **ARCHIVED**
-- 📋 **v2.6 Post-Deployment Operations & Beta Activation** — Deferred candidate (revisit after v2.4 beta-ops execution)
+- 🟢 **v2.6 Post-Deployment Operations & Beta Activation** — Active milestone; Phase 38 shipped (2026-04-01)
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -91,7 +91,20 @@ Phase 35 completed the installer/readiness hardening needed to make `npx markos`
 **Goal:** Convert one-command deployment reliability into measurable beta onboarding outcomes and an operator feedback loop for continued optimization.
 **Requirements to map:** BETA-01 (10 active pilot clients), OPS-LOOP-01 (intake-to-activation operating cadence), DX-OBS-01 (deployment diagnostics from real operator runs)
 **Depends on:** v2.5 archived baseline and existing intake/runtime surfaces from Phases 34-35
-**Status:** Deferred while v2.4 campaign activation and pilot growth execution is prioritized
+**Status:** Active milestone. Phase 38 established the UI assurance baseline; next follow-on scope remains to be planned.
+
+## Phase 38: UI Coverage and Security Assurance
+
+**Goal:** Establish complete and scalable UI quality coverage for the MarkOS app using Storybook and Chromatic, with security controls and verification gates that make every UI change testable, reviewable, and auditable before merge.
+**Requirements Mapped:** BETA-01, PLG-01
+**Depends on:** Phase 37 control-plane foundations and the v2.5 archived deployment baseline
+**Status:** ✅ Complete (2026-04-01)
+**Artifacts:** `.planning/phases/38-ui-coverage-security-assurance/38-PLAN.md`, `.planning/phases/38-ui-coverage-security-assurance/38-SUMMARY.md`, `.planning/phases/38-ui-coverage-security-assurance/38-VERIFICATION.md`
+
+- 38-01: Bootstrap deterministic Storybook infrastructure for route and foundation coverage
+- 38-02: Publish visual baselines through Chromatic with PR-oriented CI wiring
+- 38-03: Enforce accessibility and UI security checks as merge-blocking gates
+- 38-04: Harden workflow governance with required coverage and clearer CI failure messaging
 
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>

@@ -1,0 +1,118 @@
+12:35:32.492 Chromatic CLI v16.0.0
+             https://www.chromatic.com/docs/cli 
+ 
+12:35:32.527 Authenticating with Chromatic 
+12:35:32.528     → Connecting to https://index.chromatic.com
+12:35:32.935 Authenticated with Chromatic
+                 → Using project token '****************a54c'
+12:35:32.936 Retrieving git information
+12:35:32.938 execGitCommand: git --version
+12:35:32.990 execGitCommand result: 'git version 2.53.0.windows.2'
+12:35:32.991 execGitCommand: git --no-pager log -n 1 --format="%H ## %ct ## %ae ## %an"
+12:35:33.041 execGitCommand result: '3fbdd359597e754fff6cc93aeed1c991f3cd4db7 ## 1775056707 ## eor2007.s@gmail.com ## estebanooortz'
+12:35:33.042 execGitCommand: git branch --show-current
+12:35:33.093 execGitCommand result: 'main'
+12:35:33.210 execGitCommand: git --no-pager log -n 1 --skip=1 --format="%H"
+12:35:33.262 execGitCommand result: 'e28f461c5b6bb305a15f2661163491172ad3b5a2'
+12:35:33.264 git info: {"commit":{"commit":"3fbdd359597e754fff6cc93aeed1c991f3cd4db7","committedAt":1775056707000,"committerEmail":"eor2007.s@gmail.com","committerName":"estebanooortz"},"branch":"main","fromCI":false}
+12:35:33.264 execGitCommand: git config user.email
+12:35:33.415 execGitCommand result: 'eor2007.s@gmail.com'
+12:35:33.416 execGitCommand: (git diff --name-only --no-relative --diff-filter=d --cached;git diff --name-only --no-relative --diff-filter=d;git ls-files --others --exclude-standard) | git hash-object --stdin-paths | git hash-object --stdin
+12:35:33.482 execGitCommand result: 'fatal: ambiguous argument 'diff': unknown revision or path not in the working tree.
+             Use '--' to separate paths from revisions, like this:
+             'git <command> [<revision>...] -- [<file>...]'
+             e69de29bb2d1d6434b8b29ae775ad8c2e48c5391'
+12:35:33.484 execGitCommand: git rev-parse --show-toplevel
+12:35:33.534 execGitCommand result: 'C:/Users/User PC/Documents/GitHub/MarkOS'
+12:35:33.535 execGitCommandOneLine: git log --reverse --format=%cd --date=iso
+12:35:33.601 execGitCommandOneLine: git log --follow --reverse --format=%cd --date=iso -- .storybook
+12:35:33.696 execGitCommandCountLines: git shortlog -sn --all --since="6 months ago"
+12:35:33.771 execGitCommandCountLines: git ls-files -- "*page*.js" "*page*.jsx" "*page*.ts" "*page*.tsx" "*Page*.js" "*Page*.jsx" "*Page*.ts" "*Page*.tsx" "*screen*.js" "*screen*.jsx" "*screen*.ts" "*screen*.tsx" "*Screen*.js" "*Screen*.jsx" "*Screen*.ts" "*Screen*.tsx"
+12:35:33.834 execGitCommand: git config --get remote.origin.url
+12:35:33.885 execGitCommand result: 'https://github.com/estebanooortz/MarkOS.git'
+12:35:34.169 App firstBuild: %o, lastBuild: %o {"committedAt":1775056707000} {"commit":"3fbdd359597e754fff6cc93aeed1c991f3cd4db7","committedAt":1775056707000}
+12:35:34.171 execGitCommand: git cat-file -e "3fbdd359597e754fff6cc93aeed1c991f3cd4db7^{commit}"
+12:35:34.238 execGitCommand result: ''
+12:35:34.239 Adding last branch build commit 3fbdd359597e754fff6cc93aeed1c991f3cd4db7 to commits with builds
+12:35:34.240 step: checking 20 up to 1775056707
+12:35:34.241 step: commitsWithBuilds: 3fbdd359597e754fff6cc93aeed1c991f3cd4db7
+12:35:34.241 step: commitsWithoutBuilds:
+12:35:34.242 execGitCommand: git rev-list HEAD       --since 1775056707       -n 20 --not 3fbdd359597e754fff6cc93aeed1c991f3cd4db7
+12:35:34.303 execGitCommand result: ''
+12:35:34.304 step: candidateCommits: , visitedCommitsWithoutBuilds:
+12:35:34.305 step: no candidateCommits; we are done
+12:35:34.608 Final commitsWithBuilds: 3fbdd359597e754fff6cc93aeed1c991f3cd4db7
+12:35:34.609 execGitCommand: git rev-list 3fbdd359597e754fff6cc93aeed1c991f3cd4db7 --not "3fbdd359597e754fff6cc93aeed1c991f3cd4db7^@"
+12:35:34.671 execGitCommand result: '3fbdd359597e754fff6cc93aeed1c991f3cd4db7'
+12:35:34.671 Found parentCommits: 3fbdd359597e754fff6cc93aeed1c991f3cd4db7
+12:35:34.960 Retrieved git information
+                 → Commit '3fbdd35' on branch 'main'; found 1 parent build
+12:35:34.962 Collecting Storybook metadata
+12:35:34.964 {"storybookV6error":{"code":"MODULE_NOT_FOUND","requireStack":["C:\\Users\\User PC\\Documents\\GitHub\\MarkOS\\node_modules\\chromatic\\dist\\chunk-TKGT252T.js","C:\\Users\\User PC\\Documents\\GitHub\\MarkOS\\node_modules\\chromatic\\dist\\bin.js"]}}
+12:35:35.003 {"configDirectory":".storybook","mainConfig":{"code":"import type { StorybookConfig } from \"@storybook/react-vite\";\r\n\r\nconst config: StorybookConfig = {\r\n  framework: {\r\n    name: \"@storybook/react-vite\",\r\n    options: {},\r\n  },\r\n\r\n  stories: [\r\n    \"../app/**/*.stories.tsx\",\r\n    \"../lib/markos/**/*.stories.tsx\",\r\n    \"../onboarding/**/*.stories.tsx\",\r\n  ],\r\n\r\n  addons: [\r\n    \"@storybook/addon-links\",\r\n    \"@storybook/addon-essentials\",\r\n    \"@storybook/addon-interactions\",\r\n    \"@storybook/addon-a11y\",\r\n    \"@chromatic-com/storybook\",\r\n  ],\r\n\r\n  docs: {\r\n    autodocs: \"tag\",\r\n    defaultName: \"Documentation\",\r\n  },\r\n\r\n  typescript: {\r\n    reactDocgen: \"react-docgen-typescript\",\r\n    reactDocgenTypescriptOptions: {\r\n      shouldExtractLiteralValuesAsTypes: true,\r\n      propFilter: (prop) => {\r\n        if (\r\n          prop.parent?.fileName.includes(\"node_modules/@types\") ||\r\n          prop.parent?.fileName.includes(\"@types/react\")\r\n        ) {\r\n          return false;\r\n        }\r\n        return true;\r\n      },\r\n    },\r\n  },\r\n\r\n  webpackFinal: async (config) => {\r\n    return config;\r\n  },\r\n\r\n  core: {\r\n    disableTelemetry: true,\r\n  },\r\n\r\n  staticDirs: [\"../public\"],\r\n};\r\n\r\nexport default config;\r\n"}}
+12:35:35.009 No viewlayer package listed in dependencies. Checking transitive dependencies.
+12:35:35.017 [{"status":"fulfilled","value":{}},{"status":"fulfilled","value":{"version":"8.6.18"}},{"status":"fulfilled","value":{"builder":{"name":"@storybook/react-vite","packageVersion":"8.6.18"}}}]
+12:35:35.019 Collected Storybook metadata
+                 → Storybook 8.6.18; using the @storybook/react-vite builder (8.6.18); no supported addons found
+12:35:35.019 Initializing build
+12:35:35.021 Got environment:
+             {}
+12:35:35.696 Initialized build
+                 → Build 6 initialized
+12:35:35.719 Building your Storybook
+12:35:35.720     → Running command: npm run build-storybook -- --output-dir=C:\Users\USERPC~1\AppData\Local\Temp\chromatic--28364-muYAxVh4n3M5
+12:35:35.721     → [*                   ]
+12:35:35.722 Running build command: npm run build-storybook -- --output-dir=C:\Users\USERPC~1\AppData\Local\Temp\chromatic--28364-muYAxVh4n3M5
+12:35:35.723 Runtime metadata: {
+               "nodePlatform": "win32",
+               "nodeVersion": "22.13.0",
+               "packageManager": "npm",
+               "packageManagerVersion": "10.9.2"
+             }
+12:35:45.724     → [ *                  ]
+12:35:52.257 Storybook built in 17 seconds
+                 → View build log at C:\Users\User PC\Documents\GitHub\MarkOS\build-storybook.log
+12:35:52.258 Prepare your built Storybook
+12:35:52.258     → Validating Storybook files
+12:35:52.268 Prepare your built Storybook
+12:35:52.268     → Calculating file hashes
+12:35:52.282 Calculated file hashes in 13ms
+12:35:52.283 Preparation complete
+                 → Storybook files validated and prepared for upload
+12:35:52.284 Publishing your built Storybook
+12:35:52.284     → Starting publish
+12:35:52.286 Running uploadBuild batch 1 / 1
+12:35:52.626 Uploading project.json (1.13 kB) to https://chromatic-builds.s3.us-west-2.amazonaws.com/
+12:35:52.634     → [====================] 100%
+12:35:53.297 Uploaded project.json (1.13 kB)
+12:35:53.299 Publishing your built Storybook
+12:35:53.299     → Finalizing upload
+12:35:53.300 Waiting for 'files-copied.3400133816.txt' sentinel file to appear at https://chromatic-builds.s3.us-west-2.amazonaws.com/69cd4fc62a670c2f6906a52c-dyredhdhst/.chromatic/files-copied.3400133816.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAJVVEQEOBEEPXSNNQ%2F20260401%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260401T173554Z&X-Amz-Expires=1800&X-Amz-Signature=d11f5cd73b540bf9056a8022d26baa364f62fa03db44ea609a62e88e829084ba&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+12:35:53.779 Sentinel file 'files-copied.3400133816.txt' OK.
+12:35:53.782 Publish complete in 1 second
+                 → Uploaded 1 file (1.13 kB), skipped 71 files
+12:35:53.783 Verifying your Storybook
+12:35:53.783     → This may take a few minutes
+12:35:53.784     → [*                   ]
+12:35:57.915 √ Storybook published
+             We found 10 components with 68 stories.
+             i View your Storybook at https://69cd4fc62a670c2f6906a52c-dyredhdhst.chromatic.com/
+12:35:57.916 Started build 6
+                 → Continue setup at https://www.chromatic.com/setup?appId=69cd4fc62a670c2f6906a52c
+12:35:57.917 Running 68 tests
+12:35:57.917     → This may take a few minutes
+12:35:58.267 notify service handshake successful at wss://notify.chromatic.com/build/69cd576910a0dcf6d2e1dbee
+12:36:02.080     → [=                   ] 2/68
+12:36:12.147     → [=======             ] 23/68
+12:36:23.173     → [=============       ] 44/68
+12:36:34.124     → [==================  ] 62/68
+12:36:45.175     → [====================] 69/68
+12:36:45.176 notify service: build complete
+12:36:45.264 notify service connection closed with code 1000: Build complete
+12:36:45.530 √ Build passed. Welcome to Chromatic!
+             We found 10 components with 68 stories and took 68 snapshots.
+             i Please continue setup at https://www.chromatic.com/setup?appId=69cd4fc62a670c2f6906a52c
+12:36:45.532 Build 6 passed!
+                 → Tested 68 stories across 10 components; captured 68 snapshots in 48 seconds
+12:36:45.533 Tasks completed
+12:36:45.537 i Wrote Chromatic diagnostics report to chromatic-diagnostics.json

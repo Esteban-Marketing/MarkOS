@@ -1,0 +1,88 @@
+# MarkOS Code Ownership and Governance
+# 
+# This file defines code owners responsible for governance-critical routes
+# and components. Owners are required to approve visual and security changes
+# before merge to protected branches.
+#
+# Reference: Phase 38 "UI Coverage and Security Assurance"
+
+# ============================================================================
+# MarkOS Application Routes (UI Control Plane)
+# ============================================================================
+
+# Company profile - business entity configuration
+app/(markos)/company/ @estebanooortz
+
+# Market Intelligence & Reporting - competitive landscape
+app/(markos)/mir/ @estebanooortz
+
+# Marketing Strategy & Planning - strategic direction
+app/(markos)/msp/ @estebanooortz
+
+# Ideal Customer Profiles - audience definition
+app/(markos)/icps/ @estebanooortz
+
+# Segments - audience cohort management
+app/(markos)/segments/ @estebanooortz
+
+# Campaigns - execution and orchestration
+app/(markos)/campaigns/ @estebanooortz
+
+# Settings/Theme - white-label and branding
+app/(markos)/settings/ @estebanooortz
+
+# Layout/Navigation - workspace shell
+app/(markos)/layout.tsx @estebanooortz
+
+# ============================================================================
+# Governance & Security-Critical Components
+# ============================================================================
+
+# RBAC Policies - role and permission definitions
+lib/markos/rbac/ @estebanooortz
+
+# Telemetry - observability and data contracts
+lib/markos/telemetry/ @estebanooortz
+
+# Theme & Design Tokens - visual consistency
+lib/markos/theme/ @estebanooortz
+
+# UI Contracts - schema and snapshot validation
+lib/markos/contracts/ @estebanooortz
+
+# ============================================================================
+# CI/CD & Testing Infrastructure
+# ============================================================================
+
+# UI Quality Gates - Storybook, Chromatic, accessibility, security
+.github/workflows/ui-quality.yml @estebanooortz
+.storybook/ @estebanooortz
+
+# Accessibility Tests
+test/ui-a11y/ @estebanooortz
+
+# UI Security Tests
+test/ui-security/ @estebanooortz
+
+# ============================================================================
+# Package Configuration
+# ============================================================================
+
+# Dependencies affecting UI tooling
+package.json @estebanooortz
+package-lock.json @estebanooortz
+
+# ============================================================================
+# Approval Policy
+# ============================================================================
+#
+# Routes and components listed above require explicit approval from code owners
+# before merge when changes affect:
+#
+# 1. Visual appearance (Chromatic diff approval required)
+# 2. Role-based access control (RBAC policy review required)
+# 3. Telemetry or data emission (security review required)
+# 4. Accessibility compliance (a11y validation required)
+#
+# Default: 1 approval required (code owner)
+# Override: Can be relaxed for maintenance-only changes via automation

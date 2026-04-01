@@ -1,0 +1,263 @@
+name: UI Quality Gate (Phase 38)
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "lib/markos/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".storybook/**"
+      - ".github/workflows/ui-quality.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "app/**"
+      - "lib/markos/**"
+
+jobs:
+  # ============================================================================
+  # Storybook Build & Chromatic Visual Regression
+  # ============================================================================
+  storybook-build:
+    name: Storybook Build & Chromatic
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook
+        run: npm run build-storybook
+
+      - name: Validate Chromatic token
+        shell: bash
+        run: |
+          if [ -z "${CHROMATIC_PROJECT_TOKEN}" ]; then
+            echo "::error title=Missing CHROMATIC_PROJECT_TOKEN::Set repository secret CHROMATIC_PROJECT_TOKEN in Settings > Secrets and variables > Actions to enable Chromatic publishing."
+            exit 1
+          fi
+          echo "Chromatic token is configured."
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+      - name: Publish to Chromatic (CLI)
+        run: npm run chromatic
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+
+  # ============================================================================
+  # Accessibility Testing
+  # ============================================================================
+  accessibility-tests:
+    name: Accessibility Tests (WCAG 2.1 AA)
+    runs-on: ubuntu-latest
+    needs: storybook-build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Storybook (for test runner)
+        run: npm run build-storybook
+
+      - name: Run accessibility tests
+        run: npm run test:ui-a11y
+        continue-on-error: false
+
+      - name: Upload accessibility report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: accessibility-report
+          path: test/ui-a11y
+          retention-days: 30
+
+  # ============================================================================
+  # UI Security Tests
+  # ============================================================================
+  security-tests:
+    name: UI Security Tests
+    runs-on: ubuntu-latest
+    needs: storybook-build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security tests
+        run: npm run test:ui-security
+        continue-on-error: false
+
+      - name: Upload security report
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-report
+          path: test/ui-security
+          retention-days: 30
+
+  # ============================================================================
+  # Coverage Validation
+  # ============================================================================
+  coverage-validation:
+    name: Coverage Matrix Validation
+    runs-on: ubuntu-latest
+    needs: storybook-build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate story coverage matrix
+        run: |
+          STORIES_FOUND=$(find . -name "*.stories.tsx" | wc -l)
+          echo "Stories found: $STORIES_FOUND"
+          
+          if [ $STORIES_FOUND -lt 10 ]; then
+            echo "Error: Insufficient story coverage (found $STORIES_FOUND, expected >= 10)"
+            exit 1
+          fi
+          
+          # Validate that each critical route has stories
+          ROUTES=("company" "mir" "msp" "icps" "segments" "campaigns" "settings/theme")
+          for route in "${ROUTES[@]}"; do
+            if ! find . -path "*/$route/*.stories.tsx" | grep -q .; then
+              echo "Error: No stories found for route: $route"
+              exit 1
+            fi
+          done
+          
+          echo "✓ All required routes have story coverage"
+        shell: bash
+
+  # ============================================================================
+  # Gate Summary
+  # ============================================================================
+  ui-quality-gate:
+    name: UI Quality Gate (All Checks)
+    runs-on: ubuntu-latest
+    needs: [storybook-build, accessibility-tests, security-tests, coverage-validation]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Determine gate status
+        run: |
+          if [ "${{ needs.storybook-build.result }}" != "success" ]; then
+            echo "❌ Storybook build failed"
+            exit 1
+          fi
+          
+          if [ "${{ needs.accessibility-tests.result }}" != "success" ]; then
+            echo "❌ Accessibility tests failed"
+            exit 1
+          fi
+          
+          if [ "${{ needs.security-tests.result }}" != "success" ]; then
+            echo "❌ UI security tests failed"
+            exit 1
+          fi
+          
+          if [ "${{ needs.coverage-validation.result }}" != "success" ]; then
+            echo "❌ Coverage validation failed"
+            exit 1
+          fi
+          
+          echo "✅ All UI quality gates passed"
+          echo ""
+          echo "Gate Report:"
+          echo "- Storybook Build: ✓ success"
+          echo "- Chromatic Visual Regression: ✓ pending review"
+          echo "- Accessibility (WCAG 2.1 AA): ✓ pass"
+          echo "- UI Security: ✓ pass"
+          echo "- Coverage Matrix: ✓ validated"
+          echo ""
+          echo "Status: READY FOR MERGE (subject to Chromatic approval)"
+
+      - name: Fail if gate checks failed
+        if: failure()
+        run: |
+          echo "UI Quality Gate Failed"
+          echo ""
+          echo "Requirements:"
+          echo "- ✓ Storybook must build successfully"
+          echo "- ✓ Zero critical/serious accessibility violations"
+          echo "- ✓ Zero critical UI security violations"
+          echo "- ✓ Complete route coverage matrix"
+          echo "- ✓ Chromatic visual baseline approved"
+          exit 1
+
+  # ============================================================================
+  # Comment on PR
+  # ============================================================================
+  comment-on-pr:
+    name: Post Quality Gate Result to PR
+    runs-on: ubuntu-latest
+    needs: ui-quality-gate
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Post gate result
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const gateStatus = '${{ needs.ui-quality-gate.result }}' === 'success' ? '✅' : '❌';
+            const comment = `
+            ## UI Quality Gate (Phase 38) ${gateStatus}
+            
+            **Gate Checks:**
+            - ${gateStatus} Storybook Build & Chromatic
+            - ${gateStatus} Accessibility Tests (WCAG 2.1 AA)
+            - ${gateStatus} UI Security Tests
+            - ${gateStatus} Coverage Validation
+            
+            **Requirements for Merge:**
+            1. ✓ All automated gates passing
+            2. ⏳ Chromatic visual baseline approved (manual review)
+            3. ⏳ Code owner approval for routes under governance
+            
+            [View Gate Results](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

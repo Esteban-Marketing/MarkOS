@@ -34,6 +34,12 @@
     "test:patch": "node --test test/update.test.js",
     "test:onboarding": "node --test test/onboarding-server.test.js",
     "test:protocol": "node --test test/protocol.test.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "chromatic": "chromatic --only-changed --exit-zero-on-changes",
+    "test:ui-a11y": "node --test test/ui-a11y/**/*.test.js",
+    "test:ui-security": "node --test test/ui-security/**/*.test.js",
+    "test:ui-all": "npm run build-storybook && npm run test:ui-a11y && npm run test:ui-security",
     "prepublishOnly": "node -e \"console.log('Publishing markos v' + require('./package.json').version)\""
   },
   "dependencies": {
@@ -43,8 +49,27 @@
     "dotenv": "^17.3.1",
     "formidable": "^3.5.4",
     "mammoth": "^1.12.0",
+    "next": "^15.2.0",
     "openai": "^6.32.0",
     "pdf-parse": "^2.4.5",
-    "posthog-node": "^5.21.2"
+    "posthog-node": "^5.21.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@chromatic-com/storybook": "^1.2.21",
+    "@storybook/addon-a11y": "^8.6.18",
+    "@storybook/addon-essentials": "^8.6.18",
+    "@storybook/addon-interactions": "^8.6.18",
+    "@storybook/addon-links": "^8.6.18",
+    "@storybook/react-vite": "^8.6.18",
+    "@types/node": "^20.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "axe-core": "^4.10.0",
+    "axe-playwright": "^1.2.3",
+    "chromatic": "^16.0.0",
+    "storybook": "^8.6.18",
+    "typescript": "^5.4.0"
   }
 }

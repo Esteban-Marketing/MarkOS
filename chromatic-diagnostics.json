@@ -1,0 +1,1833 @@
+{
+  "activity": {},
+  "announcedBuild": {
+    "id": "69cd576910a0dcf6d2e1dbee",
+    "number": 6,
+    "browsers": [
+      "chrome"
+    ],
+    "status": "PUBLISHED",
+    "autoAcceptChanges": false,
+    "features": {
+      "uiTests": true,
+      "uiReview": true,
+      "isReactNativeApp": null
+    },
+    "app": {
+      "id": "69cd4fc62a670c2f6906a52c",
+      "turboSnapAvailability": "UNAVAILABLE"
+    },
+    "storybookUrl": "https://69cd4fc62a670c2f6906a52c-dyredhdhst.chromatic.com/"
+  },
+  "build": {
+    "id": "69cd576910a0dcf6d2e1dbee",
+    "number": 6,
+    "browsers": [
+      {
+        "browser": "chrome"
+      }
+    ],
+    "status": "PASSED",
+    "autoAcceptChanges": false,
+    "features": {
+      "uiTests": true,
+      "uiReview": true,
+      "isReactNativeApp": null
+    },
+    "app": {
+      "manageUrl": "https://www.chromatic.com/manage?appId=69cd4fc62a670c2f6906a52c",
+      "setupUrl": "https://www.chromatic.com/setup?appId=69cd4fc62a670c2f6906a52c",
+      "account": {
+        "exceededThreshold": false,
+        "paymentRequired": false,
+        "billingUrl": "https://www.chromatic.com/billing?accountId=69cd4f8a1872a6edcfef66c5"
+      },
+      "repository": null
+    },
+    "storybookUrl": "https://69cd4fc62a670c2f6906a52c-dyredhdhst.chromatic.com/",
+    "specCount": 68,
+    "componentCount": 10,
+    "testCount": 68,
+    "changeCount": 0,
+    "errorCount": 0,
+    "actualTestCount": 68,
+    "actualCaptureCount": 68,
+    "inheritedCaptureCount": 0,
+    "interactionTestFailuresCount": 0,
+    "webUrl": "https://www.chromatic.com/build?appId=69cd4fc62a670c2f6906a52c&number=6",
+    "turboSnapEnabled": null,
+    "wasLimited": false,
+    "tests": [
+      {
+        "spec": {
+          "name": "Success",
+          "component": {
+            "name": "Routes/Campaigns",
+            "displayName": "Campaigns"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Loading",
+          "component": {
+            "name": "Routes/Campaigns",
+            "displayName": "Campaigns"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Empty",
+          "component": {
+            "name": "Routes/Campaigns",
+            "displayName": "Campaigns"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Error",
+          "component": {
+            "name": "Routes/Campaigns",
+            "displayName": "Campaigns"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Unauthorized",
+          "component": {
+            "name": "Routes/Campaigns",
+            "displayName": "Campaigns"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Forbidden",
+          "component": {
+            "name": "Routes/Campaigns",
+            "displayName": "Campaigns"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Success",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Loading",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Empty",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Error",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Unauthorized",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Forbidden",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Owner Access",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Operator Access",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Strategist Access",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Viewer Access",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Default Theme",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "White Label Theme",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Mobile Viewport",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Tablet Viewport",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Desktop Viewport",
+          "component": {
+            "name": "Routes/Company Profile",
+            "displayName": "Company Profile"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Success",
+          "component": {
+            "name": "Routes/Ideal Customer Profiles",
+            "displayName": "Ideal Customer Profiles"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Loading",
+          "component": {
+            "name": "Routes/Ideal Customer Profiles",
+            "displayName": "Ideal Customer Profiles"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Empty",
+          "component": {
+            "name": "Routes/Ideal Customer Profiles",
+            "displayName": "Ideal Customer Profiles"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Error",
+          "component": {
+            "name": "Routes/Ideal Customer Profiles",
+            "displayName": "Ideal Customer Profiles"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Unauthorized",
+          "component": {
+            "name": "Routes/Ideal Customer Profiles",
+            "displayName": "Ideal Customer Profiles"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Forbidden",
+          "component": {
+            "name": "Routes/Ideal Customer Profiles",
+            "displayName": "Ideal Customer Profiles"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Success",
+          "component": {
+            "name": "Routes/Market Intelligence & Reporting",
+            "displayName": "Market Intelligence & Reporting"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Loading",
+          "component": {
+            "name": "Routes/Market Intelligence & Reporting",
+            "displayName": "Market Intelligence & Reporting"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Empty",
+          "component": {
+            "name": "Routes/Market Intelligence & Reporting",
+            "displayName": "Market Intelligence & Reporting"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Error",
+          "component": {
+            "name": "Routes/Market Intelligence & Reporting",
+            "displayName": "Market Intelligence & Reporting"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Unauthorized",
+          "component": {
+            "name": "Routes/Market Intelligence & Reporting",
+            "displayName": "Market Intelligence & Reporting"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Forbidden",
+          "component": {
+            "name": "Routes/Market Intelligence & Reporting",
+            "displayName": "Market Intelligence & Reporting"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Owner Access",
+          "component": {
+            "name": "Routes/Market Intelligence & Reporting",
+            "displayName": "Market Intelligence & Reporting"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Viewer Access",
+          "component": {
+            "name": "Routes/Market Intelligence & Reporting",
+            "displayName": "Market Intelligence & Reporting"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Success",
+          "component": {
+            "name": "Routes/Marketing Strategy & Planning",
+            "displayName": "Marketing Strategy & Planning"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Loading",
+          "component": {
+            "name": "Routes/Marketing Strategy & Planning",
+            "displayName": "Marketing Strategy & Planning"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Empty",
+          "component": {
+            "name": "Routes/Marketing Strategy & Planning",
+            "displayName": "Marketing Strategy & Planning"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Error",
+          "component": {
+            "name": "Routes/Marketing Strategy & Planning",
+            "displayName": "Marketing Strategy & Planning"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Unauthorized",
+          "component": {
+            "name": "Routes/Marketing Strategy & Planning",
+            "displayName": "Marketing Strategy & Planning"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Forbidden",
+          "component": {
+            "name": "Routes/Marketing Strategy & Planning",
+            "displayName": "Marketing Strategy & Planning"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Operator Access",
+          "component": {
+            "name": "Routes/Marketing Strategy & Planning",
+            "displayName": "Marketing Strategy & Planning"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Strategist Access",
+          "component": {
+            "name": "Routes/Marketing Strategy & Planning",
+            "displayName": "Marketing Strategy & Planning"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Success",
+          "component": {
+            "name": "Routes/Segments",
+            "displayName": "Segments"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Loading",
+          "component": {
+            "name": "Routes/Segments",
+            "displayName": "Segments"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Empty",
+          "component": {
+            "name": "Routes/Segments",
+            "displayName": "Segments"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Error",
+          "component": {
+            "name": "Routes/Segments",
+            "displayName": "Segments"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Unauthorized",
+          "component": {
+            "name": "Routes/Segments",
+            "displayName": "Segments"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Forbidden",
+          "component": {
+            "name": "Routes/Segments",
+            "displayName": "Segments"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Owner Access",
+          "component": {
+            "name": "Routes/Settings - Theme",
+            "displayName": "Settings - Theme"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Operator Access",
+          "component": {
+            "name": "Routes/Settings - Theme",
+            "displayName": "Settings - Theme"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Loading",
+          "component": {
+            "name": "Routes/Settings - Theme",
+            "displayName": "Settings - Theme"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Empty",
+          "component": {
+            "name": "Routes/Settings - Theme",
+            "displayName": "Settings - Theme"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Error",
+          "component": {
+            "name": "Routes/Settings - Theme",
+            "displayName": "Settings - Theme"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Unauthorized",
+          "component": {
+            "name": "Routes/Settings - Theme",
+            "displayName": "Settings - Theme"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Viewer Forbidden",
+          "component": {
+            "name": "Routes/Settings - Theme",
+            "displayName": "Settings - Theme"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Full Matrix",
+          "component": {
+            "name": "Foundation/RBAC Policies",
+            "displayName": "RBAC Policies"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Owner Perspective",
+          "component": {
+            "name": "Foundation/RBAC Policies",
+            "displayName": "RBAC Policies"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Operator Perspective",
+          "component": {
+            "name": "Foundation/RBAC Policies",
+            "displayName": "RBAC Policies"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Strategist Perspective",
+          "component": {
+            "name": "Foundation/RBAC Policies",
+            "displayName": "RBAC Policies"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Viewer Perspective",
+          "component": {
+            "name": "Foundation/RBAC Policies",
+            "displayName": "RBAC Policies"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Agent Perspective",
+          "component": {
+            "name": "Foundation/RBAC Policies",
+            "displayName": "RBAC Policies"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Safe Payloads",
+          "component": {
+            "name": "Foundation/Telemetry Events",
+            "displayName": "Telemetry Events"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "With Warnings",
+          "component": {
+            "name": "Foundation/Telemetry Events",
+            "displayName": "Telemetry Events"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "With Violations",
+          "component": {
+            "name": "Foundation/Telemetry Events",
+            "displayName": "Telemetry Events"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "Default Theme",
+          "component": {
+            "name": "Foundation/Design Tokens",
+            "displayName": "Design Tokens"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "White Label Theme",
+          "component": {
+            "name": "Foundation/Design Tokens",
+            "displayName": "Design Tokens"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      },
+      {
+        "spec": {
+          "name": "All Tokens",
+          "component": {
+            "name": "Foundation/Design Tokens",
+            "displayName": "Design Tokens"
+          }
+        },
+        "parameters": {
+          "viewport": 1200,
+          "viewportIsDefault": true
+        },
+        "mode": {
+          "name": "1200px"
+        }
+      }
+    ],
+    "inProgressCount": 0,
+    "completedAt": 1775065007141
+  },
+  "buildCommand": "npm run build-storybook -- --output-dir=C:\\Users\\USERPC~1\\AppData\\Local\\Temp\\chromatic--28364-muYAxVh4n3M5",
+  "buildLogFile": "C:\\Users\\User PC\\Documents\\GitHub\\MarkOS\\build-storybook.log",
+  "configuration": {},
+  "environment": {},
+  "exitCode": 0,
+  "exitCodeKey": "OK",
+  "fileInfo": {
+    "lengths": [
+      {
+        "pathname": "assets\\axe-CpEqoGoD.js",
+        "contentLength": 582566,
+        "knownAs": "assets/axe-CpEqoGoD.js"
+      },
+      {
+        "pathname": "assets\\campaigns.stories-Dm9fzqsc.js",
+        "contentLength": 3446,
+        "knownAs": "assets/campaigns.stories-Dm9fzqsc.js"
+      },
+      {
+        "pathname": "assets\\chunk-XP5HYGXS-BHXC9YeQ.js",
+        "contentLength": 710,
+        "knownAs": "assets/chunk-XP5HYGXS-BHXC9YeQ.js"
+      },
+      {
+        "pathname": "assets\\Color-YHDXOIA2-BmNGceow.js",
+        "contentLength": 29322,
+        "knownAs": "assets/Color-YHDXOIA2-BmNGceow.js"
+      },
+      {
+        "pathname": "assets\\company.stories-B_Tzo8ji.js",
+        "contentLength": 14827,
+        "knownAs": "assets/company.stories-B_Tzo8ji.js"
+      },
+      {
+        "pathname": "assets\\DocsRenderer-CFRXHY34-CUNKgRDD.js",
+        "contentLength": 888201,
+        "knownAs": "assets/DocsRenderer-CFRXHY34-CUNKgRDD.js"
+      },
+      {
+        "pathname": "assets\\entry-preview-BDC6NJML.js",
+        "contentLength": 29824,
+        "knownAs": "assets/entry-preview-BDC6NJML.js"
+      },
+      {
+        "pathname": "assets\\entry-preview-docs-BPwSLUTx.js",
+        "contentLength": 247117,
+        "knownAs": "assets/entry-preview-docs-BPwSLUTx.js"
+      },
+      {
+        "pathname": "assets\\events.stories-B6jc3L71.js",
+        "contentLength": 4268,
+        "knownAs": "assets/events.stories-B6jc3L71.js"
+      },
+      {
+        "pathname": "assets\\icps.stories-CR0qcJUi.js",
+        "contentLength": 3411,
+        "knownAs": "assets/icps.stories-CR0qcJUi.js"
+      },
+      {
+        "pathname": "assets\\iframe-CaHttyGv.js",
+        "contentLength": 213825,
+        "knownAs": "assets/iframe-CaHttyGv.js"
+      },
+      {
+        "pathname": "assets\\index-B7KaPhCS.js",
+        "contentLength": 461,
+        "knownAs": "assets/index-B7KaPhCS.js"
+      },
+      {
+        "pathname": "assets\\index-Cc8lMuyS.js",
+        "contentLength": 662361,
+        "knownAs": "assets/index-Cc8lMuyS.js"
+      },
+      {
+        "pathname": "assets\\index-DgH-xKnr.js",
+        "contentLength": 57151,
+        "knownAs": "assets/index-DgH-xKnr.js"
+      },
+      {
+        "pathname": "assets\\index-DrFu-skq.js",
+        "contentLength": 767,
+        "knownAs": "assets/index-DrFu-skq.js"
+      },
+      {
+        "pathname": "assets\\index-ZH-6pyQh.js",
+        "contentLength": 8314,
+        "knownAs": "assets/index-ZH-6pyQh.js"
+      },
+      {
+        "pathname": "assets\\matchers-7Z3WT2CE-OIiPHzXs.js",
+        "contentLength": 29813,
+        "knownAs": "assets/matchers-7Z3WT2CE-OIiPHzXs.js"
+      },
+      {
+        "pathname": "assets\\mir.stories-umDJX32V.js",
+        "contentLength": 4274,
+        "knownAs": "assets/mir.stories-umDJX32V.js"
+      },
+      {
+        "pathname": "assets\\msp.stories-CJ-LLa6u.js",
+        "contentLength": 4245,
+        "knownAs": "assets/msp.stories-CJ-LLa6u.js"
+      },
+      {
+        "pathname": "assets\\policies-BTgkHR3H.js",
+        "contentLength": 541,
+        "knownAs": "assets/policies-BTgkHR3H.js"
+      },
+      {
+        "pathname": "assets\\policies.stories-BWd9aJGC.js",
+        "contentLength": 4553,
+        "knownAs": "assets/policies.stories-BWd9aJGC.js"
+      },
+      {
+        "pathname": "assets\\preview-aBnXt6K4.js",
+        "contentLength": 872,
+        "knownAs": "assets/preview-aBnXt6K4.js"
+      },
+      {
+        "pathname": "assets\\preview-B8lJiyuQ.js",
+        "contentLength": 5064,
+        "knownAs": "assets/preview-B8lJiyuQ.js"
+      },
+      {
+        "pathname": "assets\\preview-BBWR9nbA.js",
+        "contentLength": 8117,
+        "knownAs": "assets/preview-BBWR9nbA.js"
+      },
+      {
+        "pathname": "assets\\preview-BfM6kMEr.js",
+        "contentLength": 163,
+        "knownAs": "assets/preview-BfM6kMEr.js"
+      },
+      {
+        "pathname": "assets\\preview-BWzBA1C2.js",
+        "contentLength": 7623,
+        "knownAs": "assets/preview-BWzBA1C2.js"
+      },
+      {
+        "pathname": "assets\\preview-CvbIS5ZJ.js",
+        "contentLength": 184,
+        "knownAs": "assets/preview-CvbIS5ZJ.js"
+      },
+      {
+        "pathname": "assets\\preview-CYUkQnal.js",
+        "contentLength": 2806,
+        "knownAs": "assets/preview-CYUkQnal.js"
+      },
+      {
+        "pathname": "assets\\preview-DD_OYowb.js",
+        "contentLength": 3507,
+        "knownAs": "assets/preview-DD_OYowb.js"
+      },
+      {
+        "pathname": "assets\\preview-DGUiP6tS.js",
+        "contentLength": 711,
+        "knownAs": "assets/preview-DGUiP6tS.js"
+      },
+      {
+        "pathname": "assets\\preview-DHQbi4pV.js",
+        "contentLength": 608,
+        "knownAs": "assets/preview-DHQbi4pV.js"
+      },
+      {
+        "pathname": "assets\\preview-_6KhLKFT.js",
+        "contentLength": 2214,
+        "knownAs": "assets/preview-_6KhLKFT.js"
+      },
+      {
+        "pathname": "assets\\react-18-Dn1_WqAU.js",
+        "contentLength": 185732,
+        "knownAs": "assets/react-18-Dn1_WqAU.js"
+      },
+      {
+        "pathname": "assets\\segments.stories-BOFhCmWB.js",
+        "contentLength": 3332,
+        "knownAs": "assets/segments.stories-BOFhCmWB.js"
+      },
+      {
+        "pathname": "assets\\test-utils-C6pf27qr.js",
+        "contentLength": 1159,
+        "knownAs": "assets/test-utils-C6pf27qr.js"
+      },
+      {
+        "pathname": "assets\\theme.stories-C_Hp9rhk.js",
+        "contentLength": 4327,
+        "knownAs": "assets/theme.stories-C_Hp9rhk.js"
+      },
+      {
+        "pathname": "assets\\tokens-BLc9fnXK.js",
+        "contentLength": 844,
+        "knownAs": "assets/tokens-BLc9fnXK.js"
+      },
+      {
+        "pathname": "assets\\tokens.stories-BEreabFv.js",
+        "contentLength": 2487,
+        "knownAs": "assets/tokens.stories-BEreabFv.js"
+      },
+      {
+        "pathname": "assets\\_commonjsHelpers-CqkleIqs.js",
+        "contentLength": 116,
+        "knownAs": "assets/_commonjsHelpers-CqkleIqs.js"
+      },
+      {
+        "pathname": "favicon.svg",
+        "contentLength": 1251,
+        "knownAs": "favicon.svg"
+      },
+      {
+        "pathname": "iframe.html",
+        "contentLength": 18025,
+        "knownAs": "iframe.html"
+      },
+      {
+        "pathname": "index.html",
+        "contentLength": 5093,
+        "knownAs": "index.html"
+      },
+      {
+        "pathname": "index.json",
+        "contentLength": 16228,
+        "knownAs": "index.json"
+      },
+      {
+        "pathname": "nunito-sans-bold-italic.woff2",
+        "contentLength": 49460,
+        "knownAs": "nunito-sans-bold-italic.woff2"
+      },
+      {
+        "pathname": "nunito-sans-bold.woff2",
+        "contentLength": 47144,
+        "knownAs": "nunito-sans-bold.woff2"
+      },
+      {
+        "pathname": "nunito-sans-italic.woff2",
+        "contentLength": 49620,
+        "knownAs": "nunito-sans-italic.woff2"
+      },
+      {
+        "pathname": "nunito-sans-regular.woff2",
+        "contentLength": 47072,
+        "knownAs": "nunito-sans-regular.woff2"
+      },
+      {
+        "pathname": "project.json",
+        "contentLength": 1133,
+        "knownAs": "project.json"
+      },
+      {
+        "pathname": "sb-addons\\a11y-11\\manager-bundle.js",
+        "contentLength": 192259,
+        "knownAs": "sb-addons/a11y-11/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\chromatic-com-storybook-12\\manager-bundle.js",
+        "contentLength": 564043,
+        "knownAs": "sb-addons/chromatic-com-storybook-12/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\chromatic-com-storybook-12\\manager-bundle.js.LEGAL.txt",
+        "contentLength": 1993,
+        "knownAs": "sb-addons/chromatic-com-storybook-12/manager-bundle.js.LEGAL.txt"
+      },
+      {
+        "pathname": "sb-addons\\essentials-actions-3\\manager-bundle.js",
+        "contentLength": 41418,
+        "knownAs": "sb-addons/essentials-actions-3/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-backgrounds-5\\manager-bundle.js",
+        "contentLength": 15165,
+        "knownAs": "sb-addons/essentials-backgrounds-5/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-controls-2\\manager-bundle.js",
+        "contentLength": 424276,
+        "knownAs": "sb-addons/essentials-controls-2/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-docs-4\\manager-bundle.js",
+        "contentLength": 379244,
+        "knownAs": "sb-addons/essentials-docs-4/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-measure-8\\manager-bundle.js",
+        "contentLength": 6668,
+        "knownAs": "sb-addons/essentials-measure-8/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-outline-9\\manager-bundle.js",
+        "contentLength": 6710,
+        "knownAs": "sb-addons/essentials-outline-9/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-toolbars-7\\manager-bundle.js",
+        "contentLength": 5389,
+        "knownAs": "sb-addons/essentials-toolbars-7/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\essentials-viewport-6\\manager-bundle.js",
+        "contentLength": 16871,
+        "knownAs": "sb-addons/essentials-viewport-6/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\interactions-10\\manager-bundle.js",
+        "contentLength": 289739,
+        "knownAs": "sb-addons/interactions-10/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\links-1\\manager-bundle.js",
+        "contentLength": 988,
+        "knownAs": "sb-addons/links-1/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\storybook-13\\manager-bundle.js",
+        "contentLength": 1716,
+        "knownAs": "sb-addons/storybook-13/manager-bundle.js"
+      },
+      {
+        "pathname": "sb-addons\\storybook-core-core-server-presets-0\\common-manager-bundle.js",
+        "contentLength": 1229,
+        "knownAs": "sb-addons/storybook-core-core-server-presets-0/common-manager-bundle.js"
+      },
+      {
+        "pathname": "sb-common-assets\\favicon.svg",
+        "contentLength": 1251,
+        "knownAs": "sb-common-assets/favicon.svg"
+      },
+      {
+        "pathname": "sb-common-assets\\nunito-sans-bold-italic.woff2",
+        "contentLength": 49460,
+        "knownAs": "sb-common-assets/nunito-sans-bold-italic.woff2"
+      },
+      {
+        "pathname": "sb-common-assets\\nunito-sans-bold.woff2",
+        "contentLength": 47144,
+        "knownAs": "sb-common-assets/nunito-sans-bold.woff2"
+      },
+      {
+        "pathname": "sb-common-assets\\nunito-sans-italic.woff2",
+        "contentLength": 49620,
+        "knownAs": "sb-common-assets/nunito-sans-italic.woff2"
+      },
+      {
+        "pathname": "sb-common-assets\\nunito-sans-regular.woff2",
+        "contentLength": 47072,
+        "knownAs": "sb-common-assets/nunito-sans-regular.woff2"
+      },
+      {
+        "pathname": "sb-manager\\globals-module-info.js",
+        "contentLength": 23448,
+        "knownAs": "sb-manager/globals-module-info.js"
+      },
+      {
+        "pathname": "sb-manager\\globals-runtime.js",
+        "contentLength": 1462205,
+        "knownAs": "sb-manager/globals-runtime.js"
+      },
+      {
+        "pathname": "sb-manager\\globals.js",
+        "contentLength": 2428,
+        "knownAs": "sb-manager/globals.js"
+      },
+      {
+        "pathname": "sb-manager\\runtime.js",
+        "contentLength": 413040,
+        "knownAs": "sb-manager/runtime.js"
+      }
+    ],
+    "paths": [
+      "assets/axe-CpEqoGoD.js",
+      "assets/campaigns.stories-Dm9fzqsc.js",
+      "assets/chunk-XP5HYGXS-BHXC9YeQ.js",
+      "assets/Color-YHDXOIA2-BmNGceow.js",
+      "assets/company.stories-B_Tzo8ji.js",
+      "assets/DocsRenderer-CFRXHY34-CUNKgRDD.js",
+      "assets/entry-preview-BDC6NJML.js",
+      "assets/entry-preview-docs-BPwSLUTx.js",
+      "assets/events.stories-B6jc3L71.js",
+      "assets/icps.stories-CR0qcJUi.js",
+      "assets/iframe-CaHttyGv.js",
+      "assets/index-B7KaPhCS.js",
+      "assets/index-Cc8lMuyS.js",
+      "assets/index-DgH-xKnr.js",
+      "assets/index-DrFu-skq.js",
+      "assets/index-ZH-6pyQh.js",
+      "assets/matchers-7Z3WT2CE-OIiPHzXs.js",
+      "assets/mir.stories-umDJX32V.js",
+      "assets/msp.stories-CJ-LLa6u.js",
+      "assets/policies-BTgkHR3H.js",
+      "assets/policies.stories-BWd9aJGC.js",
+      "assets/preview-aBnXt6K4.js",
+      "assets/preview-B8lJiyuQ.js",
+      "assets/preview-BBWR9nbA.js",
+      "assets/preview-BfM6kMEr.js",
+      "assets/preview-BWzBA1C2.js",
+      "assets/preview-CvbIS5ZJ.js",
+      "assets/preview-CYUkQnal.js",
+      "assets/preview-DD_OYowb.js",
+      "assets/preview-DGUiP6tS.js",
+      "assets/preview-DHQbi4pV.js",
+      "assets/preview-_6KhLKFT.js",
+      "assets/react-18-Dn1_WqAU.js",
+      "assets/segments.stories-BOFhCmWB.js",
+      "assets/test-utils-C6pf27qr.js",
+      "assets/theme.stories-C_Hp9rhk.js",
+      "assets/tokens-BLc9fnXK.js",
+      "assets/tokens.stories-BEreabFv.js",
+      "assets/_commonjsHelpers-CqkleIqs.js",
+      "favicon.svg",
+      "iframe.html",
+      "index.html",
+      "index.json",
+      "nunito-sans-bold-italic.woff2",
+      "nunito-sans-bold.woff2",
+      "nunito-sans-italic.woff2",
+      "nunito-sans-regular.woff2",
+      "project.json",
+      "sb-addons/a11y-11/manager-bundle.js",
+      "sb-addons/chromatic-com-storybook-12/manager-bundle.js",
+      "sb-addons/chromatic-com-storybook-12/manager-bundle.js.LEGAL.txt",
+      "sb-addons/essentials-actions-3/manager-bundle.js",
+      "sb-addons/essentials-backgrounds-5/manager-bundle.js",
+      "sb-addons/essentials-controls-2/manager-bundle.js",
+      "sb-addons/essentials-docs-4/manager-bundle.js",
+      "sb-addons/essentials-measure-8/manager-bundle.js",
+      "sb-addons/essentials-outline-9/manager-bundle.js",
+      "sb-addons/essentials-toolbars-7/manager-bundle.js",
+      "sb-addons/essentials-viewport-6/manager-bundle.js",
+      "sb-addons/interactions-10/manager-bundle.js",
+      "sb-addons/links-1/manager-bundle.js",
+      "sb-addons/storybook-13/manager-bundle.js",
+      "sb-addons/storybook-core-core-server-presets-0/common-manager-bundle.js",
+      "sb-common-assets/favicon.svg",
+      "sb-common-assets/nunito-sans-bold-italic.woff2",
+      "sb-common-assets/nunito-sans-bold.woff2",
+      "sb-common-assets/nunito-sans-italic.woff2",
+      "sb-common-assets/nunito-sans-regular.woff2",
+      "sb-manager/globals-module-info.js",
+      "sb-manager/globals-runtime.js",
+      "sb-manager/globals.js",
+      "sb-manager/runtime.js"
+    ],
+    "statsPath": "",
+    "total": 7298265,
+    "hashes": {
+      "assets/axe-CpEqoGoD.js": "ea0cc3c772dd7350",
+      "assets/campaigns.stories-Dm9fzqsc.js": "fc6cae5173c7e804",
+      "assets/chunk-XP5HYGXS-BHXC9YeQ.js": "1a14e3b9ac999570",
+      "assets/Color-YHDXOIA2-BmNGceow.js": "7dc1f933ff75b5b3",
+      "assets/company.stories-B_Tzo8ji.js": "1a36c9b584d91052",
+      "assets/DocsRenderer-CFRXHY34-CUNKgRDD.js": "feb614ccd4654cbb",
+      "assets/entry-preview-BDC6NJML.js": "5713c2593e8a2a05",
+      "assets/entry-preview-docs-BPwSLUTx.js": "5bf5d1d3f0d3cd96",
+      "assets/events.stories-B6jc3L71.js": "1d52b4087f589fd7",
+      "assets/icps.stories-CR0qcJUi.js": "d6b2230eddf4f683",
+      "assets/iframe-CaHttyGv.js": "2639898ae4c8b015",
+      "assets/index-B7KaPhCS.js": "997c41c6e0914cbd",
+      "assets/index-Cc8lMuyS.js": "8e02132b19d4efee",
+      "assets/index-DgH-xKnr.js": "844b8a3a1bcc8077",
+      "assets/index-DrFu-skq.js": "894f6b01402f1ee1",
+      "assets/index-ZH-6pyQh.js": "bbee27555af44127",
+      "assets/matchers-7Z3WT2CE-OIiPHzXs.js": "164cf4eeb3a37788",
+      "assets/mir.stories-umDJX32V.js": "aa58839df085dd54",
+      "assets/msp.stories-CJ-LLa6u.js": "5d4969e51be3c666",
+      "assets/policies-BTgkHR3H.js": "38dbb1e7dca386d4",
+      "assets/policies.stories-BWd9aJGC.js": "b147aa93a0574cf2",
+      "assets/preview-aBnXt6K4.js": "5190c157b3658fbd",
+      "assets/preview-B8lJiyuQ.js": "2afc69637deabd49",
+      "assets/preview-BBWR9nbA.js": "d20389d560f62749",
+      "assets/preview-BfM6kMEr.js": "065bf924540eedb7",
+      "assets/preview-BWzBA1C2.js": "067312486ad98caf",
+      "assets/preview-CvbIS5ZJ.js": "154bca787b590aeb",
+      "assets/preview-CYUkQnal.js": "e1592457d56df69b",
+      "assets/preview-DD_OYowb.js": "58bbf742cc2b222c",
+      "assets/preview-DGUiP6tS.js": "5dd583d5eeac4996",
+      "assets/preview-DHQbi4pV.js": "337ab01612be278b",
+      "assets/preview-_6KhLKFT.js": "6ddbe67550efe2f5",
+      "assets/react-18-Dn1_WqAU.js": "ad7655a8d776da30",
+      "assets/segments.stories-BOFhCmWB.js": "33a72e9cc2fe0963",
+      "assets/test-utils-C6pf27qr.js": "297aa6d7c76357d7",
+      "assets/theme.stories-C_Hp9rhk.js": "d261933b659319f6",
+      "assets/tokens-BLc9fnXK.js": "44c924610f4ec337",
+      "assets/tokens.stories-BEreabFv.js": "f475625134271eaa",
+      "assets/_commonjsHelpers-CqkleIqs.js": "f8ab9298096dff76",
+      "favicon.svg": "293aff65db45e6c4",
+      "iframe.html": "2c2400b6dde41346",
+      "index.html": "1d2c5896de88726e",
+      "index.json": "792bc2f2c0665b74",
+      "nunito-sans-bold-italic.woff2": "d64464b3594b3fb9",
+      "nunito-sans-bold.woff2": "0bd5b61b7fb7f7d5",
+      "nunito-sans-italic.woff2": "b7807d9de055e9a0",
+      "nunito-sans-regular.woff2": "6687b7be04c2debe",
+      "project.json": "f2498560dfbb1bd9",
+      "sb-addons/a11y-11/manager-bundle.js": "93a3ba085c586ce6",
+      "sb-addons/chromatic-com-storybook-12/manager-bundle.js": "edbdcc31eff0ccbf",
+      "sb-addons/chromatic-com-storybook-12/manager-bundle.js.LEGAL.txt": "3320ee05b13a30cc",
+      "sb-addons/essentials-actions-3/manager-bundle.js": "b98385e5f52a3e52",
+      "sb-addons/essentials-backgrounds-5/manager-bundle.js": "e5a1f77aa444dde2",
+      "sb-addons/essentials-controls-2/manager-bundle.js": "f67a84984da02626",
+      "sb-addons/essentials-docs-4/manager-bundle.js": "9c10b8528aa2a448",
+      "sb-addons/essentials-measure-8/manager-bundle.js": "75c0aa297a0b4e17",
+      "sb-addons/essentials-outline-9/manager-bundle.js": "09253d311d933ac3",
+      "sb-addons/essentials-toolbars-7/manager-bundle.js": "ee727a11546946d8",
+      "sb-addons/essentials-viewport-6/manager-bundle.js": "422116414640c08d",
+      "sb-addons/interactions-10/manager-bundle.js": "4fa799a6b54f3c2b",
+      "sb-addons/links-1/manager-bundle.js": "7006308465ddc585",
+      "sb-addons/storybook-13/manager-bundle.js": "466fadf1c9c7a887",
+      "sb-addons/storybook-core-core-server-presets-0/common-manager-bundle.js": "255904ad849ac088",
+      "sb-common-assets/favicon.svg": "293aff65db45e6c4",
+      "sb-common-assets/nunito-sans-bold-italic.woff2": "d64464b3594b3fb9",
+      "sb-common-assets/nunito-sans-bold.woff2": "0bd5b61b7fb7f7d5",
+      "sb-common-assets/nunito-sans-italic.woff2": "b7807d9de055e9a0",
+      "sb-common-assets/nunito-sans-regular.woff2": "6687b7be04c2debe",
+      "sb-manager/globals-module-info.js": "e8c0a7123d838271",
+      "sb-manager/globals-runtime.js": "e56d72c605742524",
+      "sb-manager/globals.js": "dbb1adbc9aebc9d2",
+      "sb-manager/runtime.js": "ab889320d3ec775e"
+    }
+  },
+  "flags": {
+    "debug": true,
+    "outputDir": [],
+    "storybookBuildDir": [],
+    "externals": [],
+    "onlyStoryFiles": [],
+    "onlyStoryNames": [],
+    "untraced": [],
+    "fileHashing": true,
+    "interactive": true
+  },
+  "git": {
+    "version": "2.53.0.windows.2",
+    "gitUserEmail": "eor2007.s@gmail.com",
+    "uncommittedHash": "fatal: ambiguous argument 'diff': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'\ne69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "rootPath": "C:/Users/User PC/Documents/GitHub/MarkOS",
+    "commit": "3fbdd359597e754fff6cc93aeed1c991f3cd4db7",
+    "committedAt": 1775056707000,
+    "committerEmail": "eor2007.s@gmail.com",
+    "committerName": "estebanooortz",
+    "branch": "main",
+    "slug": "estebanooortz/markos",
+    "fromCI": false,
+    "parentCommits": [
+      "3fbdd359597e754fff6cc93aeed1c991f3cd4db7"
+    ]
+  },
+  "input": [],
+  "isOnboarding": true,
+  "isPublishOnly": false,
+  "isReactNativeApp": false,
+  "options": {
+    "fromCI": false,
+    "inAction": false,
+    "dryRun": false,
+    "debug": true,
+    "autoAcceptChanges": false,
+    "exitZeroOnChanges": false,
+    "exitOnceUploaded": false,
+    "diagnosticsFile": "chromatic-diagnostics.json",
+    "fileHashing": true,
+    "interactive": false,
+    "isLocalBuild": false,
+    "originalArgv": [
+      "--project-token=chpt_9659b8249b9a54c",
+      "--debug"
+    ],
+    "logFile": "chromatic.log",
+    "forceRebuild": true,
+    "buildScriptName": "build-storybook",
+    "storybookLogFile": "build-storybook.log",
+    "branchName": ""
+  },
+  "packageJson": {
+    "name": "markos",
+    "version": "2.0.0",
+    "description": "MarkOS — the Marketing Operating System. Protocol-grade marketing infrastructure for AI-ready teams.",
+    "keywords": [
+      "marketing",
+      "ai",
+      "agents",
+      "protocol",
+      "markos",
+      "marketing-os",
+      "operating-system",
+      "gsd"
+    ],
+    "homepage": "https://markos.esteban.marketing",
+    "license": "MIT",
+    "engines": {
+      "node": ">=20.16.0"
+    },
+    "bin": {
+      "markos": "./bin/install.cjs"
+    },
+    "files": [
+      "bin/",
+      ".agent/markos/",
+      "onboarding/",
+      "VERSION",
+      "README.md",
+      "CHANGELOG.md"
+    ],
+    "scripts": {
+      "test": "node --test test/**/*.test.js",
+      "test:install": "node --test test/install.test.js",
+      "test:patch": "node --test test/update.test.js",
+      "test:onboarding": "node --test test/onboarding-server.test.js",
+      "test:protocol": "node --test test/protocol.test.js",
+      "storybook": "storybook dev -p 6006",
+      "build-storybook": "storybook build",
+      "test:ui-a11y": "node --test test/ui-a11y/**/*.test.js",
+      "test:ui-security": "node --test test/ui-security/**/*.test.js",
+      "test:ui-all": "npm run build-storybook && npm run test:ui-a11y && npm run test:ui-security",
+      "prepublishOnly": "node -e \"console.log('Publishing markos v' + require('./package.json').version)\""
+    },
+    "dependencies": {
+      "@supabase/supabase-js": "^2.58.0",
+      "@upstash/vector": "^1.2.3",
+      "csv-parse": "^6.2.1",
+      "dotenv": "^17.3.1",
+      "formidable": "^3.5.4",
+      "mammoth": "^1.12.0",
+      "next": "^15.2.0",
+      "openai": "^6.32.0",
+      "pdf-parse": "^2.4.5",
+      "posthog-node": "^5.21.2",
+      "react": "^19.0.0",
+      "react-dom": "^19.0.0"
+    },
+    "devDependencies": {
+      "@chromatic-com/storybook": "^1.2.21",
+      "@storybook/addon-a11y": "^8.6.18",
+      "@storybook/addon-essentials": "^8.6.18",
+      "@storybook/addon-interactions": "^8.6.18",
+      "@storybook/addon-links": "^8.6.18",
+      "@storybook/react-vite": "^8.6.18",
+      "@types/node": "^20.0.0",
+      "@types/react": "^19.0.0",
+      "@types/react-dom": "^19.0.0",
+      "axe-core": "^4.10.0",
+      "axe-playwright": "^1.2.3",
+      "chromatic": "^16.0.0",
+      "storybook": "^8.6.18",
+      "typescript": "^5.4.0"
+    }
+  },
+  "packagePath": "C:\\Users\\User PC\\Documents\\GitHub\\MarkOS\\package.json",
+  "projectMetadata": {
+    "hasRouter": true,
+    "creationDate": {},
+    "numberOfCommitters": 5,
+    "numberOfAppFiles": 8
+  },
+  "rebuildForBuildId": "69cd56b04da2f3f99e15cd7c",
+  "runtimeMetadata": {
+    "nodePlatform": "win32",
+    "nodeVersion": "22.13.0",
+    "packageManager": "npm",
+    "packageManagerVersion": "10.9.2"
+  },
+  "sentinelUrls": [
+    "https://chromatic-builds.s3.us-west-2.amazonaws.com/69cd4fc62a670c2f6906a52c-dyredhdhst/.chromatic/files-copied.3400133816.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAJVVEQEOBEEPXSNNQ%2F20260401%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20260401T173554Z&X-Amz-Expires=1800&X-Amz-Signature=d11f5cd73b540bf9056a8022d26baa364f62fa03db44ea609a62e88e829084ba&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+  ],
+  "sessionId": "fc1bd0c0-2c79-419d-8c18-f8a92bd5826d",
+  "sourceDir": "C:\\Users\\USERPC~1\\AppData\\Local\\Temp\\chromatic--28364-muYAxVh4n3M5",
+  "startedAt": 1775064957917,
+  "storybook": {
+    "version": "8.6.18",
+    "builder": {
+      "name": "@storybook/react-vite",
+      "packageVersion": "8.6.18"
+    },
+    "baseDir": "."
+  },
+  "storybookUrl": "https://69cd4fc62a670c2f6906a52c-dyredhdhst.chromatic.com/",
+  "task": "snapshot",
+  "uploadedBytes": 1133,
+  "uploadedFiles": 1,
+  "userError": false
+}

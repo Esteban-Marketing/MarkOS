@@ -1,8 +1,8 @@
 # MarkOS (MarkOS Protocol)
 
-## Current Milestone: v2.4 — Beta Client Onboarding (completed)
+## Current Milestone: v2.6 — Post-Deployment Operations & Beta Activation
 
-**Status:** v2.1 shipped 2026-03-28. v2.2 shipped 2026-03-31 (Phases 28–32). v2.3 shipped 2026-03-31 (Phase 33). v2.4 shipped 2026-04-01 with Phase 34 intake automation, Phase 36 beta operations cadence, and Phase 37 MarkOS UI control-plane foundations. v2.5 remains archived after Phase 35 installer/readiness optimization.
+**Status:** v2.1 shipped 2026-03-28. v2.2 shipped 2026-03-31 (Phases 28–32). v2.3 shipped 2026-03-31 (Phase 33). v2.4 shipped 2026-04-01 with Phase 34 intake automation, Phase 36 beta operations cadence, and Phase 37 MarkOS UI control-plane foundations. v2.5 remains archived after Phase 35 installer/readiness optimization. v2.6 is now active following Phase 38 UI assurance completion.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -13,9 +13,9 @@ A protocol for agentic marketing execution, built as a parallel system to the de
 Standardization and automation of marketing ideation, planning, and execution via robust agentic workflows and Linear issue tracking.
 
 ## Context
-This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. Following the successful deployment of the core framework, onboarding engine, strategic enrichment layer, and documentation hardening, the next milestone is focused on product stabilization rather than net-new scaffolding. The system already operates as a local-first marketing OS with optional hosted entrypoints; the remaining work is to reduce identity drift, harden runtime behavior, improve onboarding reliability, and strengthen the path from approved strategy state into repeatable execution.
+This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. Following the successful deployment of the core framework, onboarding engine, strategic enrichment layer, and documentation hardening, the current milestone is focused on converting deployment and UI reliability into measurable operator outcomes rather than net-new scaffolding. The system already operates as a local-first marketing OS with optional hosted entrypoints; the remaining work is to strengthen pilot activation loops, preserve release-grade UI assurance, and improve the path from approved strategy state into repeatable execution.
 
-The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. Phase 34 delivered the intake automation backbone for beta onboarding. Phase 35 delivered installer/readiness optimization and is archived under v2.5. Phase 36 delivered the v2.4 beta-operations baseline with lifecycle ownership, weekly cadence, KPI scorecard, and PLG evidence-loop contracts. Phase 37 then delivered the MarkOS app/control-plane scaffolding with governance and data-model foundations, formally closing v2.4.
+The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. Phase 34 delivered the intake automation backbone for beta onboarding. Phase 35 delivered installer/readiness optimization and is archived under v2.5. Phase 36 delivered the v2.4 beta-operations baseline with lifecycle ownership, weekly cadence, KPI scorecard, and PLG evidence-loop contracts. Phase 37 then delivered the MarkOS app/control-plane scaffolding with governance and data-model foundations, formally closing v2.4. Phase 38 established the Storybook, Chromatic, accessibility, and UI security baseline that now anchors v2.6 execution.
 
 ## Residual Onboarding Warning Behavior
 
@@ -145,4 +145,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-01 after v2.4 milestone completion.
+Last updated: 2026-04-01 after Phase 38 completion and v2.6 activation.

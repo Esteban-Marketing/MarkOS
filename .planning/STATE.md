@@ -1,38 +1,38 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.4
-milestone_name: Beta Client Onboarding
-status: completed
-last_updated: "2026-04-01T14:44:56.411Z"
+milestone: v2.6
+milestone_name: Post-Deployment Operations and Beta Activation
+status: active
+last_updated: "2026-04-01T23:59:00.000Z"
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 11
-  completed_plans: 11
+  total_phases: 1
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
 ---
 
 Current Position
 ----------------
 
-Milestone: v2.4 — Beta Client Onboarding
-Phase: 37 — MarkOS UI Control Plane + White-Label System (COMPLETED)
-Status: Phase 37 execution completed with app scaffold, contracts, theming linkage, RBAC/telemetry, and Supabase RLS baseline.
-Next Phase: Define and plan next milestone follow-on scope.
+Milestone: v2.6 — Post-Deployment Operations and Beta Activation
+Phase: 38 — UI Coverage and Security Assurance (COMPLETED)
+Status: Phase 38 execution and verification completed with Storybook coverage, Chromatic publishing, accessibility gates, UI security tests, and CI enforcement scaffolding.
+Next Phase: Define and plan the next v2.6 follow-on phase after UI assurance baseline completion.
 
 Tooling Snapshot
 ----------------
 
-- Active milestone (v2.4) progress: Phase 34 and Phase 36 complete; campaign activation is next.
-- Global disk snapshot (all non-archived phase dirs): Phase 34 complete; Phase 35 complete and verified.
+- Active milestone (v2.6) progress: Phase 38 complete and verified; next work is follow-on beta-activation scope planning.
+- Global disk snapshot (all non-archived phase dirs): Phases 34, 35, 36, 37, and 38 are complete; Phase 38 verification passed.
 - Deferred roadmap track: v2.0 rebrand phases (17-22) remain intentionally unexecuted.
 
-Milestone v2.4 Focus
+Milestone v2.6 Focus
 --------------------
 
-🎯 Resume beta program operations after intake automation foundation
-🎯 Convert intake submissions into active pilot client rhythms
-🎯 Execute campaign activation and build-in-public operating cadence
-🎯 Keep installer/runtime gains from v2.5 as baseline, not active milestone scope
+🎯 Convert deployment and UI assurance gains into repeatable beta activation outcomes
+🎯 Keep Storybook, Chromatic, accessibility, and UI security evidence as required release controls
+🎯 Turn intake and control-plane surfaces into measurable pilot activation throughput
+🎯 Define the next operator-facing feedback loop and campaign activation execution phase
 
 MIR Gate Status
 ---------------
@@ -99,3 +99,5 @@ Roadmap Evolution
 - 2026-04-01: Phase 37 research completed at `.planning/phases/37-markos-ui-control-plane/37-RESEARCH.md`, defining the Next.js/Tailwind/Supabase control-plane, white-label design-system linkage, and AI-consumable documentation twin architecture.
 - 2026-04-01: Phase 37 execution plan created at `.planning/phases/37-markos-ui-control-plane/37-PLAN.md`.
 - 2026-04-01: Phase 37 completed with MarkOS app route scaffold, domain contracts, theme token pipeline, RBAC/telemetry contracts, Supabase migration baseline, and `.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md`.
+- 2026-04-01: Phase 38 planned and executed under v2.6 with Storybook coverage, Chromatic publishing, accessibility enforcement, UI security gates, and CI workflow hardening.
+- 2026-04-01: Phase 38 verification passed; v2.6 is now the active milestone baseline rather than deferred planning inventory.
