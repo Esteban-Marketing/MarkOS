@@ -1,5 +1,22 @@
 # Changelog — MarkOS
 
+## v2.3.0 — 2026-03-31
+
+### Codebase Documentation Intelligence (Phase 33 Complete)
+- **Canonical Mapping**: `.planning/codebase/` documentation system established as source of truth for codebase topology
+- **Route Inventory**: 18 local onboarding routes + 8 hosted API wrapper routes documented route-by-route
+- **Entrypoint Coverage**: CLI commands, protocol tools, and runtime entrypoints fully inventoried
+- **Folder & File Ownership**: all maintained surfaces (api/, bin/, onboarding/, .agent/, .planning/, RESEARCH/, scripts/, test/) documented with integration links
+- **Protocol-Summary Alignment**: README.md, TECH-MAP.md, and .protocol-lore/CODEBASE-MAP.md now delegate to canonical map instead of duplicating documentation
+- **Verification Coverage**: Drift detection tests for routes, wrappers, entrypoints enabled; topology audit checks ready for monthly cadence
+- **MIR Gates GREEN**: Gate 1 (PROFILE, VOICE-TONE, MESSAGING-FRAMEWORK, LEAN-CANVAS, JTBD-MATRIX) and Gate 2 (TRACKING, AUTOMATION, KPI-FRAMEWORK, PAID-MEDIA) fully populated
+- Archived: All Phase 33 artifacts to `.planning/phases/33-codebase-documentation-mapping/`
+
+### Milestone Transition
+- v2.3 archived 2026-03-31 with all 4 plan summaries, 11 protocol tests passing, and all concerns closed or deferred
+- Next milestone (v2.4 Beta Client Onboarding) roadmap pending stakeholder input
+- Operational transition: standby for beta intake SOP and PLG campaign launch
+
 ## Unreleased
 
 ### Documentation / protocol lore

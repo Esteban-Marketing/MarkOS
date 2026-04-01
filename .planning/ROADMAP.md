@@ -7,7 +7,8 @@
 - ✅ **v1.2 Future Integrations (Legacy Execution Track)** — Phases 10-16 (delivered)
 - 📋 **v2.0 MarkOS Rebrand** — Phases 17-22 (deferred; superseded by v2.1 sequencing)
 - ✅ **v2.1 Product Hardening & Identity Convergence** — Phases 23-27 (shipped 2026-03-28)
-- 📋 **v2.2 TBD** — Next milestone (not yet planned)
+- ✅ **v2.2 Platform Engineering** — Phases 28-32 shipped (2026-03-31)
+- ✅ **v2.3 Codebase Documentation Intelligence** — Phase 33 completed (2026-03-31) → **ARCHIVED**
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -17,6 +18,52 @@
 - 31-04: Operator-driven compatibility retirement policy with optional evidence references
 
 Compatibility retirement in Phase 31 is a manual operator decision recorded in `.planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json`. Recommended evidence remains listed, but there is no hard minimum evidence threshold before retirement.
+
+## Phase 32: Marketing Literacy Base
+
+**Goal:** Build the shared marketing literacy base contracts, ingestion tooling, and admin surfaces that support the two-layer retrieval model.
+**Requirements Mapped:** MLB-01, MLB-02, MLB-03, MLB-04
+**Depends on:** Phase 31
+**Status:** ✅ Complete (2026-03-31)
+**Artifacts:** `.planning/phases/32-marketing-literacy-base/32-RESEARCH.md`, `.planning/phases/32-marketing-literacy-base/32-LITERACY-SUPABASE.sql`, `.planning/phases/32-marketing-literacy-base/32-OPERATIONS.md`, `.planning/phases/32-marketing-literacy-base/32-VERIFICATION.md`
+
+- 32-01: Literacy storage contract and standards namespace primitives
+- 32-02: Ingestion and admin CLI tooling for literacy chunks
+- 32-03: Runtime/admin wiring for literacy retrieval and operations
+- 32-04: Documentation, runbook, and verification coverage for literacy primitives
+
+Phase 32 delivered the shared standards-layer infrastructure that lets MarkOS retrieve grounded marketing tactics alongside client-specific MIR context.
+
+## Phase 33: Codebase Documentation Mapping
+
+**Goal:** Create the canonical `.planning/codebase/` documentation system and align protocol-facing docs to it.
+**Requirements Mapped:** DOC-01, DOC-02, DOC-03, DOC-04
+**Depends on:** Stable post-v2.2 runtime surfaces and current phase artifacts on disk
+**Status:** ✅ Complete (2026-03-31)
+**Artifacts:** `.planning/phases/33-codebase-documentation-mapping/33-RESEARCH.md`, `.planning/phases/33-codebase-documentation-mapping/33-REQUIREMENTS.md`, `.planning/phases/33-codebase-documentation-mapping/33-VERIFICATION.md`, `.planning/codebase/`
+
+- 33-01: Bootstrap canonical `.planning/codebase/` mapping docs, coverage matrix, and freshness contract
+- 33-02: Document runtime surfaces route by route across onboarding HTTP endpoints, API wrappers, and CLI entrypoints
+- 33-03: Document the repository folder by folder and file by file, with ownership, purpose, and integration links
+- 33-04: Sync protocol-facing docs (`.protocol-lore/CODEBASE-MAP.md`, `TECH-MAP.md`, `README.md`) to the canonical GSD map and add verification guardrails
+
+Phase 33 completed the documentation follow-on for making the repository navigable through the GSD framework. The canonical output target is `.planning/codebase/`, with protocol and human-facing docs linking back to that map rather than duplicating its source of truth.
+
+---
+
+## v2.4 Planned: Beta Client Onboarding (Next Milestone — Pending Roadmap)
+
+**Goal:** Activate first 10 beta agency clients and establish operational rhythm.
+**Requirements to map:** BETA-01 (10 clients onboarded), PLG-01 (build-in-public LinkedIn)
+**Depends on:** v2.3 completion (canonical docs + MIR gates GREEN)
+**Status:** Roadmap pending — awaiting stakeholder input on v2.4 scope and sequencing
+
+Planned work (subject to refinement):
+- Client intake SOP (automated intake form → Linear tracking)
+- Beta program operations (weekly standups, rollout cohorts)
+- Campaign activation (first paid-media + SEO pilots)
+- Build-in-Public content (weekly LinkedIn drops from Esteban)
+- Litmus test: 10 clients in pilot by 2026-04-30 (90-day goal)
 
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
@@ -654,6 +701,3 @@ Plans:
 3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 <!-- EOF -->
-
-
-
