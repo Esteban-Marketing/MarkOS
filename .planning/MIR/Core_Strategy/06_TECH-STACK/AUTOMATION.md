@@ -1,199 +1,88 @@
-# AUTOMATION.md — n8n / Make Workflow Specifications
-<!-- markos-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/06_TECH-STACK/AUTOMATION.md` to customize it safely.
+# AUTOMATION — MarkOS by esteban.marketing
 
-> [!IMPORTANT]
-> **AGENT LOGIC**: These workflows define the project's nervous system. `markos-executor` MUST verify that any manual execution or fix aligns with the `Step-by-step logic` defined in Section 2. If a workflow fails, the agent MUST consult the `Automation Testing Protocol` (Section 7) before attempting a restart.
+## AUTOMATION STACK
+- Email: Loops.so (transactional and onboarding)
+- CRM automation: Supabase triggers + n8n (planned Q3 2026)
+- Linear automation: Linear API client (EST-52, in development)
+- Deployment triggers: Vercel webhooks
+- Notification: Slack + email
 
-**Dependencies:** Infrastructure (`INFRASTRUCTURE.md`), Tracking (`TRACKING.md`), Research (`RESEARCH/TECH-AUDIT.md`)
-**Assigned Agent:** `{{LEAD_AGENT}}` (markos-strategist)
-**Linear Project Manager:** `markos-linear-manager`
+## TRIGGER MAP
+### Trigger 1: New Install
+- Event: markos_install_complete
+- Condition: First time (not a reinstall)
+- Action sequence:
+  1. [Immediate] Send welcome email with quickstart guide
+  2. [+1hr] If onboarding not started → send "stuck?" prompt
+  3. [+24hr] If onboarding not complete → send checklist email
+  4. [+72hr] If still not complete → flag in Supabase for manual Esteban outreach
+- Owner: Esteban
+- Email templates: install_welcome_1, install_welcome_2, install_welcome_3
 
-```
-file_purpose  : Document all automation workflows: triggers, logic, data flows,
-                and system connections. All lead routing and data sync passes
-                through the middleware layer defined here.
-status        : empty
-last_updated  : YYYY-MM-DD
-authoritative : YES — all automation logic derives from this file
-```
-authoritative : YES — all automation architecture derives from this file
-```
+### Trigger 2: Onboarding Complete (MIR files written)
+- Event: markos_onboarding_complete
+- Action sequence:
+  1. [Immediate] Send "you're live" confirmation email
+  2. [+1d] Send "run your first campaign" tutorial email
+  3. [+3d] If no markos_first_draft event → send "first task ideas" email
+  4. [+7d] If no usage → send re-engagement email
+- Owner: Automated
 
----
+### Trigger 3: First Draft Generated
+- Event: markos_first_draft
+- Action sequence:
+  1. [Immediate] In-product congratulations + prompt for feedback
+  2. [+3d] Request for testimonial/case study participation
+- Owner: Automated
 
-## 1. Middleware Configuration
+### Trigger 4: Linear Ticket Push
+- Event: markos_linear_ticket_push
+- Action: Notify Esteban/Team (Juan/Maria) via Linear notification (native)
+- No email required — Linear handles this
 
-```yaml
-primary_middleware    : "[n8n | Make | BOTH]"
-n8n_instance_url      : "[https://your-n8n-instance.com or CLOUD]"
-n8n_version           : "[FILL]"
-make_team_id          : "[FILL]"
-make_region           : "[EU | US]"
-webhook_base_url      : "[URL that accepts webhook payloads from Vibe code pages]"
-```
+### Trigger 5: 14-Day Inactivity (Churn Risk)
+- Condition: No events for 14+ days post-activation
+- Action sequence:
+  1. [Day 14] Send "still there?" re-engagement email
+  2. [Day 21] Send "what went wrong?" email with survey link
+  3. [Day 30] Flag account as churned in Supabase
+- Owner: Automated
 
----
+### Trigger 6: Upwork Lead Response
+- Trigger: New Upwork message or proposal accepted
+- Action:
+  1. Create lead record in Supabase
+  2. Create Linear ticket for Esteban: "New Upwork lead — [client name]"
+  3. Send templated response within 12 hours
+- Owner: Esteban (manual + template)
 
-## 2. Core Workflow: Lead Capture & Routing
+## EMAIL SEQUENCE LIBRARY
+| Sequence            | Trigger                   | Email Count | Goal                      |
+|---------------------|---------------------------|-------------|---------------------------|
+| Install Welcome     | markos_install_complete   | 3           | Reach onboarding complete |
+| Activation Nurture  | markos_onboarding_complete| 4           | Reach first draft         |
+| Re-engagement       | 14d inactivity            | 3           | Return to active usage    |
+| Upgrade Trigger     | usage threshold met       | 2           | Convert to paid           |
+| Referral Ask        | markos_first_draft + 7d   | 1           | Generate word of mouth    |
 
-**Workflow ID:** WF-001
-**Name:** Lead Capture → CRM → CAPI → PostHog
+## SUPABASE AUTOMATION TRIGGERS
+```sql
+-- Example structure — coder fills in actual column names from schema:
+CREATE OR REPLACE FUNCTION trigger_welcome_sequence()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Insert into automation_queue table
+  -- Set sequence: 'install_welcome'
+  -- Set scheduled_at: NOW()
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-**Trigger:** Webhook from Vibe code form submission
-
-**Step-by-step logic:**
-
-```
-TRIGGER: POST /webhook/lead-capture
-  Payload: {
-    form_id, page_url, timestamp,
-    email, phone (optional), name,
-    utm_source, utm_medium, utm_campaign, utm_content, utm_term,
-    fbclid (if present), gclid (if present),
-    fbc (Meta cookie), fbp (Meta cookie),
-    client_ip, user_agent
-  }
-
-STEP 1: VALIDATE
-  - Check required fields: email, form_id, page_url
-  - If missing required field → log error, send Slack/email alert to {{LEAD_AGENT}}
-  - If valid → continue
-
-STEP 2: CRM RECORD CREATION
-  - Check if email already exists in CRM
-  - If new lead: CREATE new contact record with all fields
-  - If existing: UPDATE record, ADD to campaign, DO NOT overwrite original source
-  - Tag: "lead-[campaign_id]", "source-[utm_source]", "form-[form_id]"
-  - Set pipeline stage: "New Lead"
-
-STEP 3: META CAPI — LEAD EVENT
-  - Construct event payload (see TRACKING.md §7 for schema)
-  - Hash email (SHA-256), hash phone (SHA-256) if present
-  - Set event_id: "lead-[form_id]-[timestamp]-[email_hash_first8]"
-  - POST to Meta Graph API /[DATASET_ID]/events
-  - Log response: success or error code
-
-STEP 4: POSTHOG COHORT UPDATE
-  - Call PostHog /capture endpoint
-  - Fire server-side "lead_submitted" event with all properties
-  - Call PostHog /identify to link person properties
-
-STEP 5: INTERNAL NOTIFICATION
-  - Send notification to {{LEAD_AGENT}} (Slack / email / WhatsApp — configure per project)
-  - Payload: lead name, email, source, campaign, timestamp, page URL
-
-STEP 6: LEAD CONFIRMATION EMAIL
-  - Trigger ESP confirmation email via [ESP platform API]
-  - Template ID: [FILL]
-  - Send from: [from_email in EMAIL.md]
-
-STEP 7: LEAD SCORING (INITIAL)
-  - Score = 0 (base)
-  - +10 if utm_source = meta AND utm_medium = paid-social (high-intent paid)
-  - +15 if page_url contains /pricing/ (pricing page visitor)
-  - +20 if fbclid present (direct ad click)
-  - +5 if email domain is corporate (not gmail/yahoo/hotmail)
-  - Store score in CRM field: "initial_lead_score"
-
-ERROR HANDLING:
-  - Any step failure: log to error table
-  - Steps 3–7 failures are non-blocking (lead still goes to CRM)
-  - Step 2 failure: alert {{LEAD_AGENT}} immediately, retry 3x
+CREATE TRIGGER on_new_install
+AFTER INSERT ON users
+FOR EACH ROW
+EXECUTE FUNCTION trigger_welcome_sequence();
 ```
 
-**Error alert destination:** [Slack channel / email / FILL]
-**Retry policy:** 3 retries with 5-minute intervals for CAPI calls
-
----
-
-## 3. Workflow: CRM Stage Change → Notification
-
-**Workflow ID:** WF-002
-**Name:** CRM Stage Update → PostHog Event
-
-**Trigger:** CRM webhook on contact stage change
-
-```
-TRIGGER: Contact stage changes in CRM
-
-STEP 1: MAP CRM STAGE TO FUNNEL STAGE
-  - "New Lead" → funnel_stage: "evaluating"
-  - "Discovery Call Scheduled" → funnel_stage: "decision"
-  - "Client Onboarded" → funnel_stage: "customer"
-  - "Churned" → funnel_stage: "churned"
-
-STEP 2: FIRE POSTHOG EVENT
-  - event: "crm_stage_changed"
-  - properties: { crm_id, new_stage, previous_stage, days_in_previous_stage }
-
-STEP 3: META CAPI (conditional)
-  - If new_stage = "customer" → fire Purchase event via CAPI
-```
-
----
-
-## 4. Workflow: Email Open/Click → CRM Tag
-
-**Workflow ID:** WF-003
-**Name:** ESP Engagement → CRM Enrichment
-
-**Trigger:** ESP webhook on email event
-
-```
-TRIGGER: Email opened (3+ times) OR link clicked
-
-STEP 1: UPDATE CRM CONTACT
-  - Add tag: "email-engaged-[YYYY-MM]"
-  - Update lead score: +5 per email open, +15 per link click
-
-STEP 2: FIRE POSTHOG EVENT
-  - event: "email_link_clicked" or "email_opened_threshold_reached"
-  - Link to existing PostHog person by email
-
-STEP 3: CHECK RE-TARGETING TRIGGER
-  - If lead_score >= [threshold defined in AUDIENCES.md] AND stage = "New Lead"
-  → Add to Meta Custom Audience: "High-Engagement-Leads"
-```
-
----
-
-## 5. Workflow Index
-
-| Workflow ID | Name | Platform | Status | Trigger | Last Tested |
-|------------|------|---------|--------|---------|------------|
-| WF-001 | Lead Capture & Routing | [n8n / Make] | [ACTIVE / DRAFT] | Form webhook | [Date] |
-| WF-002 | CRM Stage → PostHog | [n8n / Make] | [ACTIVE / DRAFT] | CRM webhook | [Date] |
-| WF-003 | Email Engagement → CRM | [n8n / Make] | [ACTIVE / DRAFT] | ESP webhook | [Date] |
-| WF-004 | [Name] | [FILL] | [FILL] | [FILL] | [Date] |
-
----
-
-## 6. Data Mapping Reference
-
-**UTM to CRM field mapping:**
-
-| UTM Parameter | CRM Field Name | Notes |
-|--------------|---------------|-------|
-| utm_source | lead_source | |
-| utm_medium | lead_medium | |
-| utm_campaign | lead_campaign | |
-| utm_content | lead_ad_content | |
-| utm_term | lead_keyword | |
-| fbclid | facebook_click_id | |
-| gclid | google_click_id | |
-
----
-
-## 7. Automation Testing Protocol
-
-Before any workflow goes live:
-
-- [ ] Test with real payload via Webhook.site or n8n test mode
-- [ ] Verify CRM record created with all fields
-- [ ] Verify CAPI event appears in Meta Events Manager test events
-- [ ] Verify PostHog event appears in PostHog live events
-- [ ] Verify notification delivered to {{LEAD_AGENT}}
-- [ ] Verify confirmation email received by test address
-- [ ] Run error scenario: missing required field — verify error logged
-- [ ] Document test results in `Core_Strategy/00_META/CHANGELOG.md`
+## n8n WORKFLOW INVENTORY
+n8n workflows pending — see TECH-AUTOMATION-n8n.md for implementation spec

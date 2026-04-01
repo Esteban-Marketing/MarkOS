@@ -120,6 +120,17 @@ onboarding/
 .protocol-lore/           ← Agent navigation knowledge base (mandatory first-read)
 ```
 
+## Canonical Codebase Documentation
+
+Canonical route, folder, and file inventories now live in `.planning/codebase/`.
+
+- Start here: `.planning/codebase/README.md`
+- Runtime routes: `.planning/codebase/ROUTES.md`
+- Executable entrypoints: `.planning/codebase/ENTRYPOINTS.md`
+- Folder and file ownership: `.planning/codebase/FOLDERS.md`, `.planning/codebase/FILES.md`
+
+`README.md`, `TECH-MAP.md`, and `.protocol-lore/CODEBASE-MAP.md` are summary views and should delegate topology truth to the canonical map.
+
 ---
 
 ## Agent Quick-Boot
@@ -157,6 +168,35 @@ npm test
 ```
 
 Tests use Node's built-in test runner. Zero external test framework dependencies.
+
+---
+
+## Marketing Literacy Base (Phase 32)
+
+MarkOS now supports a standards literacy layer for reusable marketing tactics and benchmarks.
+
+- Vector namespace pattern: `markos-standards-{discipline}` (global standards scope)
+- Relational table: `markos_literacy_chunks` (canonical/superseded lifecycle)
+- Retrieval contract: canonical-first filters with optional `business_model`, `funnel_stage`, and `content_type`
+
+### Admin CLIs
+
+```bash
+# Ingest markdown standards corpus
+node bin/ingest-literacy.cjs --path literacy --dry-run
+node bin/ingest-literacy.cjs --path literacy --verbose
+
+# Query and lifecycle management
+node bin/literacy-admin.cjs query --discipline Paid_Media --query "b2b hook" --business_model B2B --topK 5
+node bin/literacy-admin.cjs deprecate --doc_id META-PAID-SOCIAL-META-B2B-SaaS-v1.2
+```
+
+### Admin HTTP Endpoints
+
+- `GET /admin/literacy/health`
+- `POST /admin/literacy/query`
+
+Both endpoints require header `x-markos-admin-secret` matching `MARKOS_ADMIN_SECRET`.
 
 ---
 

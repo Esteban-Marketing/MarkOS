@@ -1,215 +1,76 @@
-# TRACKING.md — PostHog Event Schema, Pixels & Attribution Config
+# TRACKING — MarkOS by esteban.marketing
 
-<!-- markos-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/06_TECH-STACK/TRACKING.md` to customize it safely.
+## ANALYTICS STACK
+- Primary analytics: PostHog (live)
+  - Property ID: PH-001 (<!-- Estimated: adjust after first 30 days of live data -->)
+  - Events tracking status: Configured and live for install, onboarding, and activation events
+- Product analytics: PostHog (see TECH-ANALYTICS-PostHog.md)
+- Attribution: UTM-based manual (to be automated in Q3 2026)
+- CRM: Supabase (native)
 
-> [!IMPORTANT]
-> **AGENT LOGIC**: This document is the source of truth for all data collection. `markos-analyst` MUST verify that events firing in PostHog match the the `Event Name` and `Required Properties` defined here. If a discrepancy > 15% is detected (Section 9), the agent MUST halt automated budget optimizations.
+## UTM TAXONOMY
+### UTM Source values (canonical list — agents must use ONLY these)
+linkedin, cold-email, upwork, referral, organic, newsletter, website, demo, paid, partner
 
+### UTM Medium values
+social, email, cpc, organic, referral, direct, display, retargeting
 
-```
-file_purpose  : Complete specification of the tracking implementation:
-                PostHog event schema, property standards, pixel config,
-                and CAPI event mapping. This file governs all analytics
-                implementation work.
-status        : empty
-last_updated  : YYYY-MM-DD
-authoritative : YES — all tracking implementation derives from this file
-```
+### UTM Campaign naming convention
+Format: YYYYMM-[audience]-[offer]-[variant]
+Example: 202604-agency-owners-free-install-v1
 
----
+### UTM Content values
+Use utm_content to distinguish creative or CTA variants within a campaign. Approved values: hero, testimonial, feature, cta1, cta2, retarget, demo, install, comparison
 
-## 1. PostHog Configuration
+## KEY EVENTS TO TRACK (PostHog + GA4)
+| Event Name                | Trigger Condition                        | Platform | Conversion Value |
+|--------------------------|------------------------------------------|----------|-----------------|
+| markos_install_start     | User begins npm install                  | PostHog  | Acquisition     |
+| markos_install_complete  | bin/install.cjs completes successfully   | PostHog  | Acquisition     |
+| markos_onboarding_start  | First time onboarding flow opens         | PostHog  | Activation      |
+| markos_onboarding_complete| MIR files written and approved          | PostHog  | Activation      |
+| markos_first_draft       | First content draft generated            | PostHog  | Activation      |
+| markos_draft_approved    | First draft approved by user             | PostHog  | Activation      |
+| markos_linear_ticket_push| First Linear ticket pushed by agent      | PostHog  | Activation      |
+| markos_session_return    | User returns after 7+ days inactive      | PostHog  | Retention       |
+| markos_paid_plan         | User upgrades to paid plan               | PostHog  | Revenue         |
+| markos_referral          | User refers another install              | PostHog  | Referral        |
+| markos_churn_flag        | 14+ days inactivity post-activation      | PostHog  | Churn           |
+| markos_demo_booked       | Demo booked via website                  | PostHog  | Consideration   |
+| markos_blog_visit        | Blog visit from organic search           | GA4      | Awareness       |
+| markos_upwork_lead       | Upwork lead generated                   | PostHog  | Acquisition     |
 
-```yaml
-posthog_project_id    : "[FILL]"
-posthog_api_key       : "[STORED IN SECRETS MANAGER — reference key name: POSTHOG_API_KEY]"
-posthog_host          : "[https://app.posthog.com or self-hosted URL]"
-sdk_version           : "[e.g. posthog-js ^1.90.0]"
-session_recording     : "[ENABLED | DISABLED]"
-feature_flags_active  : "[YES | NO]"
-```
+## CONVERSION EVENTS (FUNNEL STAGES)
+### Top of funnel (acquisition)
+- Event: markos_install_start
+- Goal: install CTA click
+- Benchmark target: 8% CTR <!-- Estimated: adjust after first 30 days of live data -->
 
----
+### Middle of funnel (activation)
+- Event: markos_onboarding_complete
+- Goal: User has at least 1 MIR file populated
+- Benchmark target: 60% of installs complete onboarding <!-- Estimated -->
 
-## 2. PostHog Event Schema
+### Bottom of funnel (revenue conversion)
+- Event: markos_paid_plan
+- Goal: 10% of activated users convert to paid <!-- Estimated -->
+- Benchmark target: 10% conversion rate <!-- Estimated -->
 
-> **Naming convention:** `object_action` — all lowercase, underscore-separated.
-> Example: `lead_submitted`, `pricing_page_viewed`, `email_link_clicked`
+## DASHBOARD STRUCTURE (PostHog)
+### Insight 1: Install-to-Activation Funnel
+- Steps: markos_install_start → markos_install_complete → markos_onboarding_complete → markos_first_draft
 
-### Core Events (Required for All Projects)
+### Insight 2: Daily Active Usage
+- Metric: markos_session_return event (DAU = unique users triggering this event)
 
-| Event Name | Trigger | Required Properties | Optional Properties |
-|-----------|---------|--------------------|--------------------|
-| `page_viewed` | Every page load | `$current_url`, `$pathname`, `$referrer` | `page_title`, `funnel_stage` |
-| `session_started` | New session | `$device_type`, `$browser`, `$os` | `utm_source`, `utm_medium`, `utm_campaign` |
-| `cta_clicked` | Any CTA button | `cta_text`, `cta_location`, `page_path` | `campaign_id`, `offer_id` |
-| `form_started` | First form field interaction | `form_id`, `form_name`, `page_path` | `campaign_id` |
-| `lead_submitted` | Form submission success | `form_id`, `page_path`, `offer_id` | `campaign_id`, `ad_id`, `lead_score` |
-| `thank_you_page_viewed` | Post-submission confirmation page | `form_id`, `offer_id` | `campaign_id` |
-| `email_link_clicked` | Email CTA click | `email_sequence_id`, `email_step`, `link_url` | `campaign_id` |
-| `pricing_page_viewed` | Pricing page load | `page_path` | `referral_source`, `session_depth` |
-| `case_study_viewed` | Case study page load | `case_study_id`, `case_study_name` | `referral_source` |
+### Insight 3: Feature Adoption
+- Track: markos_linear_ticket_push, markos_draft_approved, markos_referral
 
-### Business-Specific Events (Add Per Project)
+### Insight 4: Churn Signal
+- Early warning: markos_churn_flag event (no activity for 14+ days)
 
-| Event Name | Trigger | Required Properties | Optional Properties |
-|-----------|---------|--------------------|--------------------|
-| [FILL] | [FILL] | [FILL] | [FILL] |
-
----
-
-## 3. Standard Property Definitions
-
-> All events that include these properties must use these exact names and value formats.
-
-```yaml
-utm_source:
-  type: string
-  values: [meta, google, tiktok, x-ads, email, organic-instagram, organic-linkedin, direct, referral]
-
-utm_medium:
-  type: string
-  values: [paid-social, paid-search, email, organic, direct]
-
-campaign_id:
-  type: string
-  format: "[client-slug]-[initiative]-[YYMM]"
-
-ad_id:
-  type: string
-  format: "[campaign_id]-[adset_id]-[ad_variant]-v[N]"
-
-offer_id:
-  type: string
-  format: "OFR-[NNN]"  # References OFFERS.md
-
-form_id:
-  type: string
-  format: "[page-slug]-form-[N]"
-
-icp_segment:
-  type: string
-  values: [ICP-1, ICP-2, UNKNOWN]
-
-funnel_stage:
-  type: string
-  values: [unaware, aware, evaluating, decision, customer]
-
-device_type:
-  type: string
-  values: [mobile, tablet, desktop]
-```
-
----
-
-## 4. Person Properties (PostHog Identify)
-
-> Call `posthog.identify()` when a lead is captured.
-
-```javascript
-// Required properties on identify:
-{
-  email: "[hashed or raw depending on config]",
-  icp_segment: "[ICP-1 | ICP-2 | UNKNOWN]",
-  lead_source: "[utm_source value]",
-  lead_campaign: "[campaign_id]",
-  lead_offer: "[offer_id]",
-  created_at: "[ISO 8601 timestamp]"
-}
-
-// Optional enrichment properties:
-{
-  company_name: "[FILL]",
-  phone: "[hashed]",
-  crm_id: "[CRM record ID for cross-system tracking]"
-}
-```
-
----
-
-## 5. Cohorts & Feature Flags
-
-**Active cohorts:**
-
-| Cohort Name | Definition | Used For |
-|------------|-----------|---------|
-| [FILL] | [FILL] | [FILL] |
-
-**Active feature flags:**
-
-| Flag Name | State | Condition | Purpose |
-|-----------|-------|-----------|---------|
-| [FILL] | [ON / OFF] | [FILL] | [FILL] |
-
----
-
-## 6. Funnel Configuration in PostHog
-
-**Primary conversion funnel:**
-
-```
-Step 1: page_viewed (landing page URL)
-Step 2: form_started
-Step 3: lead_submitted
-Step 4: thank_you_page_viewed
-```
-
-**Conversion window:** [e.g. 30 days]
-
----
-
-## 7. Meta CAPI Event Mapping
-
-> Maps PostHog events to their corresponding Meta CAPI events.
-
-| PostHog Event | Meta CAPI Event | Priority | Fired By |
-|--------------|----------------|---------|---------|
-| `page_viewed` | `PageView` | HIGH | Browser pixel |
-| `pricing_page_viewed` | `ViewContent` | HIGH | n8n webhook → CAPI |
-| `lead_submitted` | `Lead` | REQUIRED | n8n webhook → CAPI |
-| `purchase_completed` | `Purchase` | REQUIRED | n8n webhook → CAPI |
-
-**Meta CAPI endpoint:**
-```
-POST https://graph.facebook.com/v18.0/[DATASET_ID]/events
-```
-
----
-
-## 8. Tracking Validation Checklist
-
-Before any campaign goes live:
-
-- [ ] PostHog SDK installed and firing `page_viewed` on all Vibe code pages
-- [ ] `lead_submitted` event firing with all required properties
-- [ ] Meta CAPI `Lead` event receiving test events in Events Manager
-- [ ] Event deduplication verified (event_id present in both browser and CAPI)
-- [ ] PostHog funnel showing all 4 steps
-- [ ] UTM parameters captured in PostHog session
-- [ ] n8n/Make webhook tested end-to-end
-- [ ] CRM record created on test lead submission
-- [ ] Thank you page loads and fires `thank_you_page_viewed`
-- [ ] Discrepancy between PostHog and Meta within 15% threshold
-
----
-
-## 9. Tracking Discrepancy Protocol
-
-```yaml
-acceptable_discrepancy_pct  : 15
-alert_threshold_pct         : 20
-escalation_threshold_pct    : 30
-```
-
-**If discrepancy > 15%:**
-1. Check PostHog event logs for the campaign period
-2. Check Meta Events Manager for CAPI event status
-3. Verify n8n/Make workflow is not throwing errors
-4. Compare by day — identify when discrepancy started
-5. If unresolved in 24h, escalate to {{LEAD_AGENT}}
-
-**If discrepancy > 30%:**
-1. Pause optimization decisions immediately
-2. Do not adjust budgets based on platform data
-3. {{LEAD_AGENT}} reviews within 4 hours
+## DATA GOVERNANCE
+- PII handling: Only email and install metadata stored; all usage data anonymized
+- GDPR compliance status: Configured
+- Data retention: 365 days
+- Who owns analytics review: Esteban (weekly cadence)

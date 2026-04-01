@@ -1,172 +1,73 @@
-# PROFILE.md — Company & Identity Profile
-<!-- markos-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/01_COMPANY/PROFILE.md` to customize it safely.
+# PROFILE — MarkOS by esteban.marketing
 
-> [!IMPORTANT]
-> **AGENT LOGIC**: This is the primary identity anchor for all marketing execution. `markos-strategist` MUST use this file to derive the `MESSAGE-HOUSE.md` and `AUDIENCES.md`. `markos-planner` MUST NOT approve any roadmap phase that contradicts Section 10 (What This Business Is NOT).
+## IDENTITY
+- Company: esteban.marketing
+- Website: https://esteban.marketing
+- Product: MarkOS
+- Project Slug: markos
+- Founded: 2024
+- Headquarters: Colombia
+- Markets: LATAM (primary), North America (secondary), Global English (tertiary)
 
-**Dependencies:** RESEARCH (`../../05_RESEARCH/ORG-PROFILE.md`), BRAND (`../02_BRAND/BRAND-VOICE.md`)
-**Assigned Agent:** `markos-strategist`
-**Linear Project Manager:** `markos-linear-manager`
+## PRODUCT DEFINITION
+MarkOS is an AI-powered marketing operating system designed for digital marketing agencies, B2B SaaS founders, and solo consultants who need to scale output without scaling headcount. It acts as a living Co-CEO agent embedded directly in the codebase, not a SaaS dashboard, and executes end-to-end marketing operations: content strategy, paid media, email automation, CRM management, lead generation, and team workflow. MarkOS's two-layer vector database (global standards + client MIR) ensures every output is contextually relevant, never generic. Key technical differentiators include codebase-native deployment, Linear-native team workflow, and Supabase-native CRM.
 
-```
-file_purpose  : The single most-read file in this repository. A complete, structured
-                declaration of who this business is. All marketing derives from this.
-status        : empty
-last_updated  : YYYY-MM-DD
-authoritative : YES — primary source for all business identity facts
-```
+## BUSINESS MODEL
+- Model type: Agents-aaS
+- Revenue streams: Self-hosted license, agency retainer, done-with-you setup
+- Pricing model: Freemium (free self-install trial) with usage-based upgrades
+- Sales motion: Product-led + Outbound
+- Current stage: Pre-revenue public launch / Build phase
 
-> **Instructions:** Fill every field. Use "N/A" only if a field genuinely does not apply. Use "UNKNOWN" if the answer exists but you don't have it yet. Never leave brackets unfilled.
+## ICP (IDEAL CLIENT PROFILE)
+### Primary ICP
+- Company type: Digital marketing agencies
+- Size: 5–50 people
+- Role: Agency owner / Head of Operations / CMO
+- Pain: Scaling output without scaling headcount
+- Proof that they need this:
+  - Reliance on freelancers to meet client demand
+  - Missed revenue due to bandwidth constraints
 
----
+### Secondary ICP
+- Company type: B2B SaaS startups
+- Stage: Seed to Series A
+- Role: Founder / CEO with no dedicated marketing hire
+- Pain: Needs fractional CMO intelligence embedded in workflow
 
-## 1. Basic Identity
+### Tertiary ICP
+- Company type: Solo marketing consultants
+- Role: Independent consultant
+- Pain: Competing with agencies without agency resources
 
-```yaml
-legal_name              : "[Full legal business name]"
-trading_name            : "[Name used in marketing — may differ from legal name]"
-tagline                 : "[One-line descriptor — not a slogan, a factual description]"
-business_type           : "[B2C | B2B | B2B2C | MARKETPLACE | OTHER]"
-industry                : "[Primary industry category]"
-sub_industry            : "[More specific category]"
-founded_year            : YYYY
-headquarters_location   : "[City, Country]"
-operating_regions       : "[Countries or regions where the business actively operates]"
-languages_of_operation  : "[Primary language(s) for marketing and customer communication]"
-primary_currency        : "[USD | EUR | COP | MXN | etc.]"
-company_stage           : "[PRE-REVENUE | EARLY | GROWTH | SCALE | MATURE]"
-team_size               : "[Number of full-time employees or SOLO | MICRO (<10) | SMALL (<50) | MEDIUM | LARGE]"
-```
+## TEAM
+- Esteban: Co-CEO / Generalist — cross-functional operations, outbound, strategy
+- Juan: Freelancer Designer — UI/UX, visual, creative assets
+- Maria: Freelancer Social & Strategy — distribution, community, social media execution
 
----
+## COMPETITIVE CONTEXT
+### Direct Competitors
+- Jasper: MarkOS is codebase-native and executes full operations, not just copywriting.
+- Copy.ai: MarkOS delivers strategy and workflow, not just content generation.
+- HubSpot AI: MarkOS requires no third-party CRM and integrates natively with Supabase and Linear.
 
-## 2. What The Business Does
+### Indirect Competitors
+- Hiring a full-time CMO
+- Using a traditional agency
+- Manual content workflow
 
-**In one sentence (use this when brevity is needed):**
-[FILL — e.g. "We build custom automation systems that reduce manual data entry for e-commerce operations teams."]
+### Positioning Statement
+For digital marketing agencies and SaaS founders, MarkOS is the AI marketing operating system that multiplies team output and embeds strategy in the codebase—unlike SaaS dashboards or generic AI tools.
 
-**In one paragraph (use this for onboarding and context):**
-[FILL — 3–5 sentences. What does the business do? For whom? How do they do it differently? What is the outcome for the customer?]
+## CONSTRAINTS AND PROHIBITIONS
+- Do NOT position MarkOS as a SaaS dashboard — it lives in the codebase
+- Do NOT use: "innovative", "cutting-edge", "synergy", "leverage", "robust", "seamless", "world-class"
+- Do NOT claim features that are still in the backlog (check EST-* issues for what's live)
+- Always cite: esteban.marketing as the creator company with website https://esteban.marketing
 
-**Core mechanism (how value is actually delivered):**
-[FILL — describe the delivery mechanism, not the marketing claim. e.g. "Client books a discovery call → we audit their ops stack → we build n8n flows → we deliver a handover doc and training session."]
-
----
-
-## 3. Business Model
-
-```yaml
-revenue_model         : "[SERVICE_FEES | SUBSCRIPTIONS | PRODUCT_SALES | LICENSING | 
-                          PERFORMANCE | COMMISSION | HYBRID | OTHER]"
-primary_transaction   : "[What does the customer pay for?]"
-average_order_value   : "[USD amount or range]"
-purchase_frequency    : "[ONE_TIME | MONTHLY | ANNUAL | TRANSACTIONAL | SUBSCRIPTION]"
-customer_lifetime     : "[Average duration of customer relationship]"
-primary_sales_channel : "[INBOUND | OUTBOUND | MARKETPLACE | REFERRAL | HYBRID]"
-```
-
----
-
-## 4. The Problem They Solve
-
-**The specific problem this business addresses:**
-[FILL — describe the problem from the customer's perspective, not the company's]
-
-**What customers were doing before this solution existed:**
-[FILL — the workaround or alternative that customers lived with]
-
-**Cost of inaction for the customer (why they must solve this):**
-[FILL — what happens to the customer if they do nothing]
-
----
-
-## 5. Target Customer
-
-> **Full detail lives in `Market_Audiences/03_MARKET/AUDIENCES.md`. This section is a summary only.**
-
-**Primary customer type:**
-[FILL — one sentence. e.g. "E-commerce store owners doing $30K–$300K/month in revenue who manage their own ad accounts."]
-
-**What they want:**
-[FILL — the stated desire, the outcome they want to achieve]
-
-**What they fear:**
-[FILL — the risk or loss they are trying to avoid]
-
-**What they need to believe before buying:**
-[FILL — the core belief shift required for purchase]
-
----
-
-## 6. Differentiators
-
-> **What makes this business objectively different from alternatives?**
-> Only list claims that can be proven. No vague claims. No "we care more" statements.
-
-| Differentiator | Proof / Evidence |
-|----------------|-----------------|
-| [Differentiator 1] | [Proof] |
-| [Differentiator 2] | [Proof] |
-| [Differentiator 3] | [Proof] |
-
-**What this business explicitly does NOT do** (boundaries that define it):
-[FILL — constraints that help marketing stay focused]
-
----
-
-## 7. Proof & Credibility
-
-**Existing social proof:**
-```yaml
-client_count          : "[Number or range]"
-case_studies          : "[YES — count | NO | IN PROGRESS]"
-testimonials          : "[YES — count | NO | IN PROGRESS]"
-notable_clients       : "[Names if public, or CONFIDENTIAL]"
-certifications        : "[Relevant certifications or NONE]"
-awards                : "[Relevant awards or NONE]"
-media_mentions        : "[Publications, podcasts, or NONE]"
-years_in_operation    : "[Number]"
-```
-
----
-
-## 8. Geographic & Language Focus
-
-**Primary market:**
-[FILL — country or region with the most revenue or target potential]
-
-**Secondary markets:**
-[FILL or N/A]
-
-**Language strategy:**
-[FILL — e.g. "Spanish primary. English for technical documentation and US-facing campaigns."]
-
-**Cultural considerations for marketing:**
-[FILL — any market-specific norms that affect messaging or creative direction]
-
----
-
-## 9. Business Goals (Current Period)
-
-> These must be updated when business priorities change. Stale goals mislead agents.
-
-**This quarter's primary goal:**
-[FILL — e.g. "Generate 50 qualified discovery calls for the agency retainer service."]
-
-**This year's primary goal:**
-[FILL]
-
-**3-year ambition:**
-[FILL — directional, not a rigid forecast]
-
----
-
-## 10. What This Business Is NOT
-
-> Explicit exclusions prevent agents from proposing work outside scope.
-
-- This is NOT: [FILL — e.g. "a software product company"]
-- This is NOT: [FILL — e.g. "a traditional creative agency that does print or TV"]
-- This is NOT targeting: [FILL — e.g. "enterprise companies with 500+ employees"]
-- This does NOT offer: [FILL — e.g. "social media management as a standalone service"]
+## CURRENT PRIORITIES (Q2 2026)
+1. Resolve P0 issues: resolveMirOutputPath crash, Node version constraint, gitignore protection
+2. Complete MIR self-population (this task)
+3. Build Linear API client for team ticket push
+4. Launch build-in-public content sequence on LinkedIn
+5. First 10 beta agency clients

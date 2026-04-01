@@ -10,69 +10,16 @@ const { execSync, execFileSync, spawnSync } = require('child_process');
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const MARKOS_ROOT_REL = '.agent/markos';
-const LEGACY_MARKOS_ROOT_REL = '.agent/markos';
+const LEGACY_MARKOS_ROOT_REL = '.markos';
 const PROTOCOL_PREFIX = 'MARKOS';
 
-// ─── Path helpers ────────────────────────────────────────────────────────────
-
-function toPosixPath(p) {
-  return p.split(path.sep).join('/');
-}
-
-function planningDir(cwd) {
-  return path.join(cwd, '.planning');
-}
-
-function planningPaths(cwd) {
-  const base = path.join(cwd, '.planning');
-  return {
-    planning: base,
-    state: path.join(base, 'STATE.md'),
-    roadmap: path.join(base, 'ROADMAP.md'),
-    project: path.join(base, 'PROJECT.md'),
-    config: path.join(base, 'config.json'),
-    phases: path.join(base, 'phases'),
-    requirements: path.join(base, 'REQUIREMENTS.md'),
-  };
-}
-
-function markosRoot(cwd) {
-  const canonicalRoot = path.join(cwd, MARKOS_ROOT_REL);
-  if (fs.existsSync(canonicalRoot)) {
-    return canonicalRoot;
-  }
-  return path.join(cwd, LEGACY_MARKOS_ROOT_REL);
-}
-
-function markosPaths(cwd) {
-  const root = markosRoot(cwd);
-  return {
-    root,
-    agents: path.join(root, 'agents'),
-    bin: path.join(root, 'bin'),
-    references: path.join(root, 'references'),
-    templates: path.join(root, 'templates'),
-    workflows: path.join(root, 'workflows'),
-    mir: path.join(root, 'templates', 'MIR'),
-    msp: path.join(root, 'templates', 'MSP'),
-    version: path.join(root, 'VERSION'),
-  };
-}
-
 // ─── Output helpers ──────────────────────────────────────────────────────────
-
 function output(result, raw, rawValue) {
   if (raw && rawValue !== undefined) {
     process.stdout.write(String(rawValue));
   } else {
     const json = JSON.stringify(result, null, 2);
-    if (json.length > 50000) {
-      const tmpPath = path.join(require('os').tmpdir(), `markos-${Date.now()}.json`);
-      fs.writeFileSync(tmpPath, json, 'utf-8');
-      process.stdout.write('@file:' + tmpPath);
-    } else {
-      process.stdout.write(json);
-    }
+    process.stdout.write(json);
   }
   process.exit(0);
 }
@@ -80,6 +27,196 @@ function output(result, raw, rawValue) {
 function error(message) {
   process.stderr.write('Error: ' + message + '\n');
   process.exit(1);
+}
+
+// ─── Path helpers ────────────────────────────────────────────────────────────
+/**
+ * Converts a Windows or mixed path to POSIX (forward slash) format.
+ * @param {string} p - The path to convert.
+ * @returns {string}
+ */
+function toPosixPath(p) {
+  return p.replace(/\\/g, '/');
+}
+
+/**
+ * Returns the absolute path to the .planning directory for the given cwd.
+ * @param {string} cwd
+ * @returns {string}
+ */
+function planningDir(cwd) {
+  return path.join(cwd, '.planning');
+}
+
+/**
+ * Returns an object with key planning file paths for the given cwd.
+ * @param {string} cwd
+ * @returns {object}
+ */
+function planningPaths(cwd) {
+  const dir = planningDir(cwd);
+  return {
+    planning: dir,
+    dir,
+    project: path.join(dir, 'PROJECT.md'),
+    config: path.join(dir, 'config.json'),
+    phases: path.join(dir, 'phases'),
+    state: path.join(dir, 'STATE.md'),
+    roadmap: path.join(dir, 'ROADMAP.md'),
+    requirements: path.join(dir, 'REQUIREMENTS.md'),
+  };
+}
+
+/**
+ * Returns the absolute path to the MarkOS root directory for the given cwd.
+ * @param {string} cwd
+ * @returns {string}
+ */
+function markosRoot(cwd) {
+  const canonical = path.join(cwd, MARKOS_ROOT_REL);
+  const legacy = path.join(cwd, LEGACY_MARKOS_ROOT_REL);
+  if (fs.existsSync(canonical)) return canonical;
+  if (fs.existsSync(legacy)) return legacy;
+  return canonical;
+}
+
+/**
+ * Returns an object with key MarkOS paths for the given cwd.
+ * @param {string} cwd
+ * @returns {object}
+ */
+function markosPaths(cwd) {
+  const root = markosRoot(cwd);
+  const localMir = path.join(cwd, '.markos-local', 'MIR');
+  const planningMir = path.join(cwd, '.planning', 'MIR');
+  const templatesMir = path.join(root, 'templates', 'MIR');
+  return {
+    root,
+    bin: path.join(root, 'bin'),
+    lib: path.join(root, 'lib'),
+    localMir,
+    planningMir,
+    templatesMir,
+    mir: localMir,
+  };
+}
+
+/**
+ * Resolves the active MIR directory for the current repository.
+ *
+ * Resolution order:
+ * 1. `.markos-local/MIR` for approved project-specific content.
+ * 2. `.planning/MIR` for scaffolded planning-state content.
+ * 3. `.agent/markos/templates/MIR` (or legacy `.markos/templates/MIR`) as a fallback.
+ *
+ * If none of the candidate directories exist yet, the function returns the first
+ * writable project-local path (`.markos-local/MIR`) so callers can create it.
+ *
+ * @param {string} cwd - The current working directory of the project root.
+ * @returns {string} Absolute path to the preferred MIR directory.
+ */
+function resolveActiveMirPath(cwd) {
+  const paths = markosPaths(cwd);
+  const candidates = [paths.localMir, paths.planningMir, paths.templatesMir];
+  const existing = candidates.find(candidate => fs.existsSync(candidate));
+  return existing || paths.localMir;
+}
+
+/**
+ * Finds and summarizes a phase directory and its plan/completion state.
+ *
+ * By default, if a phase-level VERIFICATION.md exists and indicates verification passed,
+ * the function will clear the incomplete_plans array, treating verification as authoritative.
+ *
+ * Backward compatibility note:
+ * - The clearIncompleteOnVerification parameter was introduced to control this behavior
+ *   and now defaults to true.
+ * - In earlier versions, verification status did not clear incomplete_plans automatically;
+ *   existing callers that did not pass this parameter would always see incomplete_plans
+ *   populated based solely on per-plan state.
+ * - After upgrading to a version that includes this parameter, callers that rely on
+ *   incomplete_plans being populated even when verification has passed must explicitly pass
+ *   false to preserve the legacy behavior.
+
+ * @param {string} cwd - The current working directory of the project root.
+ * @param {string} phase - The phase number or name to find.
+ * @param {boolean} [clearIncompleteOnVerification=true] - When true (default), a passed
+ *   VERIFICATION.md will clear incomplete_plans, treating verification as authoritative. Pass
+ *   false to retain the per-plan incomplete_plans list regardless of verification status.
+ * @returns {object|null} Phase summary object or null if not found.
+ */
+function findPhaseInternal(cwd, phase, clearIncompleteOnVerification = true) {
+  if (!phase) return null;
+  const phasesDir = path.join(cwd, '.planning', 'phases');
+  const normalized = normalizePhaseName(phase);
+
+  try {
+    const entries = fs.readdirSync(phasesDir, { withFileTypes: true });
+    const dirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort((a, b) => comparePhaseNum(a, b));
+    const match = dirs.find(d => d.startsWith(normalized) || d.toUpperCase().startsWith(normalized.toUpperCase()));
+    if (!match) return null;
+
+    const dirMatch = match.match(/^(\d+[A-Z]?(?:\.\d+)*)-?(.*)/i) || [null, match, null];
+    const phaseNumber = dirMatch ? dirMatch[1] : normalized;
+    const phaseName = dirMatch && dirMatch[2] ? dirMatch[2] : null;
+    const phaseDir = path.join(phasesDir, match);
+    const phaseFiles = fs.readdirSync(phaseDir);
+
+    const plans = phaseFiles.filter(f => f.endsWith('-PLAN.md') || f === 'PLAN.md').sort();
+    const summaries = phaseFiles.filter(f => f.endsWith('-SUMMARY.md') || f === 'SUMMARY.md').sort();
+    const hasResearch = phaseFiles.some(f => f.endsWith('-RESEARCH.md') || f === 'RESEARCH.md');
+    const hasContext = phaseFiles.some(f => f.endsWith('-CONTEXT.md') || f === 'CONTEXT.md');
+
+    // v1.1 Hardening: Detect plan verification status
+    const verificationFile = phaseFiles.find(f => f.endsWith('-VERIFICATION.md') || f === 'VERIFICATION.md');
+    let verificationPassed = false;
+    if (verificationFile) {
+      const vContent = safeReadFile(path.join(phaseDir, verificationFile));
+      if (hasPassingVerification(vContent)) {
+        verificationPassed = true;
+      }
+    }
+
+    const completedPlanIds = new Set(summaries.map(s => s.replace('-SUMMARY.md', '').replace('SUMMARY.md', '')));
+    let incompletePlans = plans.filter(p => {
+      const planId = p.replace('-PLAN.md', '').replace('PLAN.md', '');
+      return !completedPlanIds.has(planId);
+    });
+
+    // Some phases record completion at the phase level via VERIFICATION.md rather
+    // than per-plan summaries. If clearIncompleteOnVerification is true and verification passes,
+    // treat verification as authoritative and clear incompletePlans.
+    if (clearIncompleteOnVerification && verificationPassed) {
+      incompletePlans = [];
+    }
+
+    // v1.1 Hardening: Deep PROJECT.md check
+    const projectPath = path.join(cwd, '.planning', 'PROJECT.md');
+    let projectValid = false;
+    if (fs.existsSync(projectPath)) {
+      const pContent = safeReadFile(projectPath);
+      if (pContent && pContent.length > 200 && !pContent.includes('[FILL]')) {
+        projectValid = true;
+      }
+    }
+
+    return {
+      found: true,
+      directory: toPosixPath(path.join('.planning/phases', match)),
+      phase_number: phaseNumber,
+      phase_name: phaseName,
+      phase_slug: phaseName ? phaseName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : null,
+      plans,
+      summaries,
+      incomplete_plans: incompletePlans,
+      has_research: hasResearch,
+      has_context: hasContext,
+      verification_passed: verificationPassed,
+      project_valid: projectValid,
+    };
+  } catch {
+    return null;
+  }
 }
 
 // ─── File utilities ──────────────────────────────────────────────────────────
@@ -166,6 +303,22 @@ function normalizePhaseName(phase) {
   return str;
 }
 
+function hasPassingVerification(content) {
+  if (!content) return false;
+
+  const passingPatterns = [
+    /^status:\s*passed$/mi,
+    /^##\s*VERIFICATION PASSED$/mi,
+    /^Outcome:\s*\**passed\**\.?$/mi,
+    /^Current decision:\s*\**READY_FOR_HUMAN_APPROVAL\**/mi,
+    /Phase(?: \d+)? requirements are complete and verified\. Phase can transition\./i,
+    /Phase can transition\./i,
+    /approved for transition\./i,
+  ];
+
+  return passingPatterns.some(pattern => pattern.test(content));
+}
+
 function comparePhaseNum(a, b) {
   const pa = String(a).match(/^(\d+)([A-Z])?((?:\.\d+)*)/i);
   const pb = String(b).match(/^(\d+)([A-Z])?((?:\.\d+)*)/i);
@@ -192,71 +345,24 @@ function comparePhaseNum(a, b) {
   return 0;
 }
 
-function findPhaseInternal(cwd, phase) {
+/**
+ * Legacy variant of findPhaseInternal preserved for backward compatibility.
+ *
+ * This function intentionally mirrors the behavior of the pre-2024
+ * findPhaseInternal implementation so that:
+ *   - Older MARKOS runs / plans that rely on the previous phase layout or
+ *     semantics continue to work without migration.
+ *   - External tooling and integrations that call into the legacy behavior
+ *     do not break when the new findPhaseInternal semantics change.
+ *
+ * Internally this delegates to findPhaseInternal with
+ * clearIncompleteOnVerification=false to preserve the legacy semantics
+ * around VERIFICATION.md and incomplete_plans.
+ */
+function findPhaseInternalLegacy(cwd, phase) {
   if (!phase) return null;
-  const phasesDir = path.join(cwd, '.planning', 'phases');
-  const normalized = normalizePhaseName(phase);
-
-  try {
-    const entries = fs.readdirSync(phasesDir, { withFileTypes: true });
-    const dirs = entries.filter(e => e.isDirectory()).map(e => e.name).sort((a, b) => comparePhaseNum(a, b));
-    const match = dirs.find(d => d.startsWith(normalized) || d.toUpperCase().startsWith(normalized.toUpperCase()));
-    if (!match) return null;
-
-    const dirMatch = match.match(/^(\d+[A-Z]?(?:\.\d+)*)-?(.*)/i) || [null, match, null];
-    const phaseNumber = dirMatch ? dirMatch[1] : normalized;
-    const phaseName = dirMatch && dirMatch[2] ? dirMatch[2] : null;
-    const phaseDir = path.join(phasesDir, match);
-    const phaseFiles = fs.readdirSync(phaseDir);
-
-    const plans = phaseFiles.filter(f => f.endsWith('-PLAN.md') || f === 'PLAN.md').sort();
-    const summaries = phaseFiles.filter(f => f.endsWith('-SUMMARY.md') || f === 'SUMMARY.md').sort();
-    const hasResearch = phaseFiles.some(f => f.endsWith('-RESEARCH.md') || f === 'RESEARCH.md');
-    const hasContext = phaseFiles.some(f => f.endsWith('-CONTEXT.md') || f === 'CONTEXT.md');
-    
-    // v1.1 Hardening: Detect plan verification status
-    const verificationFile = phaseFiles.find(f => f.endsWith('-VERIFICATION.md') || f === 'VERIFICATION.md');
-    let verificationPassed = false;
-    if (verificationFile) {
-      const vContent = safeReadFile(path.join(phaseDir, verificationFile));
-      if (vContent && (vContent.includes('status: passed') || vContent.includes('## VERIFICATION PASSED'))) {
-        verificationPassed = true;
-      }
-    }
-
-    const completedPlanIds = new Set(summaries.map(s => s.replace('-SUMMARY.md', '').replace('SUMMARY.md', '')));
-    const incompletePlans = plans.filter(p => {
-      const planId = p.replace('-PLAN.md', '').replace('PLAN.md', '');
-      return !completedPlanIds.has(planId);
-    });
-
-    // v1.1 Hardening: Deep PROJECT.md check
-    const projectPath = path.join(cwd, '.planning', 'PROJECT.md');
-    let projectValid = false;
-    if (fs.existsSync(projectPath)) {
-      const pContent = safeReadFile(projectPath);
-      if (pContent && pContent.length > 200 && !pContent.includes('[FILL]')) {
-        projectValid = true;
-      }
-    }
-
-    return {
-      found: true,
-      directory: toPosixPath(path.join('.planning/phases', match)),
-      phase_number: phaseNumber,
-      phase_name: phaseName,
-      phase_slug: phaseName ? phaseName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') : null,
-      plans,
-      summaries,
-      incomplete_plans: incompletePlans,
-      has_research: hasResearch,
-      has_context: hasContext,
-      verification_passed: verificationPassed,
-      project_valid: projectValid,
-    };
-  } catch {
-    return null;
-  }
+  // Preserve legacy behavior by disabling verification-based override
+  return findPhaseInternal(cwd, phase, false);
 }
 
 // ─── MIR Gate Check ─────────────────────────────────────────────────────────
@@ -271,10 +377,14 @@ function checkMirGates(mirPath) {
     'Core_Strategy/01_COMPANY/PROFILE.md',
     'Core_Strategy/02_BRAND/VOICE-TONE.md',
     'Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md',
+    'Core_Strategy/02_BUSINESS/LEAN-CANVAS.md',
+    'Core_Strategy/02_BUSINESS/JTBD-MATRIX.md',
   ];
   const gate2Files = [
     'Core_Strategy/06_TECH-STACK/TRACKING.md',
     'Core_Strategy/06_TECH-STACK/AUTOMATION.md',
+    'Campaigns_Assets/05_CHANNELS/PAID-MEDIA.md',
+    'Core_Strategy/09_ANALYTICS/KPI-FRAMEWORK.md',
   ];
 
   function checkGate(files) {
@@ -314,7 +424,14 @@ module.exports = {
   isGitIgnored,
   normalizeMd,
   normalizePhaseName,
+  hasPassingVerification,
   comparePhaseNum,
   findPhaseInternal,
+  resolveActiveMirPath,
+  /**
+   * Legacy API: findPhaseInternalLegacy is exported for backward compatibility with
+   * external callers and integrations that depend on the legacy phase summary behavior.
+   */
+  findPhaseInternalLegacy,
   checkMirGates,
 };

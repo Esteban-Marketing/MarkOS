@@ -17,6 +17,16 @@ The MarkOS protocol is a complete **agentic marketing execution system** that in
 - **Agent Ecosystem**: 25+ specialized AI agents for strategy, execution, and verification
 - **Onboarding Engine**: Web-based form → AI draft generation → Supabase + Upstash Vector persistence
 - **Vector Memory**: Per-project Supabase + Upstash Vector collections for episodic learning and RAG
+- **Literacy Standards Layer**: Global `markos-standards-{discipline}` namespaces + `markos_literacy_chunks` metadata table
+
+### Canonical Topology Source
+
+This document is a technical summary. Canonical topology and ownership inventories live in `.planning/codebase/`.
+
+- Canonical index: `.planning/codebase/README.md`
+- Route inventory: `.planning/codebase/ROUTES.md`
+- Entrypoint inventory: `.planning/codebase/ENTRYPOINTS.md`
+- Folder and file inventories: `.planning/codebase/FOLDERS.md`, `.planning/codebase/FILES.md`
 
 ---
 
@@ -62,6 +72,8 @@ Serves the web form UI and orchestrates AI draft generation.
 | `/approve` | POST | `handleApprove()` | JIT-clones templates, writes approved drafts to `.markos-local/`, stamps STATE.md |
 | `/linear/sync` | POST | `handleLinearSync()` | Creates Linear issues from ITM tokens with deterministic assignee mapping |
 | `/campaign/result` | POST | `handleCampaignResult()` | Appends Winners Catalog rows and stores outcome classification metadata |
+| `/admin/literacy/health` | GET | `handleLiteracyHealth()` | Secret-gated literacy provider diagnostics |
+| `/admin/literacy/query` | POST | `handleLiteracyQuery()` | Secret-gated standards retrieval with namespace/filter diagnostics |
 | `/api/extract-sources` | POST | `handleExtractSources()` | Tavily API scraper: extracts structured data from URLs/files |
 | `/api/extract-and-score` | POST | `handleExtractAndScore()` | Confidence scorer: rates quality of extracted data (R/Y/G) |
 | `/api/generate-question` | POST | `handleGenerateQuestion()` | Gap-fill interview: generates follow-up questions for missing data |

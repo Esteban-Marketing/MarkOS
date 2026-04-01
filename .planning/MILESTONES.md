@@ -24,20 +24,33 @@
 - EXE-01, EXE-02, TLM-02 (Phase 27 REQUIREMENTS.md rows not checked off)
 - These were delivered (plans + summaries complete) but REQUIREMENTS.md was not updated during execution.
 
-## v2.2 - Platform Engineering (Planned: 2026-03-28)
+## v2.2 — Platform Engineering (Shipped: 2026-03-31)
 
-**Phases planned:** 4 phases (28-31), 13 plans
-**Execution order:** P0 Runtime Integrity -> P1 Operational Enablement -> MarkOSDB Migration -> Rollout Hardening
+**Phases completed:** 5 phases (28–32), 17 plans
+**Timeline:** 2026-03-28 → 2026-03-31
 
-**Planned phase map:**
+**Key accomplishments:**
 
-1. Phase 28 - Runtime Integrity (P0)
-2. Phase 29 - Operational Enablement (P1)
-3. Phase 30 - MarkOSDB Migration (P1.5/P2)
-4. Phase 31 - Rollout Hardening (P2)
+1. Crash-free approve-path write resolution with explicit local/hosted env guards and idempotent gitignore injection for private data (Phase 28).
+2. Linear sync endpoint creating issues from ITM templates with deterministic assignee mapping; campaign result endpoint writing winners catalogs (Phase 29).
+3. Interview flow capped at five questions with progress bar and auto-proceed after inactivity (Phase 29).
+4. MarkOSDB contracts defined for Supabase + Upstash; idempotent local-to-cloud ingestion from `.markos-local` artifacts; Next.js + Supabase auth boundary for cloud operations (Phase 30).
+5. Reliability/observability SLOs, migration dry-run/rollback safety, secrets/log guardrails, and compatibility retirement policy shipped and test-covered (Phase 31).
+6. Marketing Literacy Base: vector-store literacy primitives, ingestion CLI (`ingest-literacy`), admin CLI (`literacy-admin`), and runtime orchestrator integration (Phase 32).
 
-**Milestone artifacts:**
-- `.planning/milestones/v2.2-ROADMAP.md`
-- `.planning/milestones/v2.2-REQUIREMENTS.md`
-- `.planning/milestones/v2.2-phases/README.md`
+**Known Gaps (proceeding with yolo mode):**
+- MIR Gate 1 and Gate 2 still RED at milestone close — gate intake files populated post-milestone via direct write (EST-55 bypass).
+
+## v2.3 — Codebase Documentation Intelligence (Shipped: 2026-03-31)
+
+**Phases completed:** 1 phase (33), 4 plans
+**Timeline:** 2026-03-31 (single-session milestone)
+
+**Key accomplishments:**
+
+1. Canonical codebase map established under `.planning/codebase/` covering architecture, routes, folder structure, conventions, testing, and concerns (Phase 33).
+2. Every runtime surface documented route-by-route across onboarding HTTP endpoints, API wrappers, and CLI entrypoints with handler files, side effects, and hosted/local constraints (Phase 33).
+3. Repository documented folder-by-folder and file-by-file for all maintained surfaces (Phase 33).
+4. Documentation freshness rules and verification checks defined for route additions, file moves, and topology changes (Phase 33).
+5. Protocol-facing and human-facing docs updated to deep-link to canonical map rather than maintain independent drift-prone copies (Phase 33).
 

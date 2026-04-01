@@ -120,12 +120,31 @@ async function orchestrate(seed, slug) {
   console.log(`[orchestrator] Starting draft generation for: ${slug}`);
 
   const errors = [];
+  let literacyContextHits = [];
   const warningCodes = new Set();
   const warnOnce = (code, message) => {
     if (warningCodes.has(code)) return;
     warningCodes.add(code);
     console.warn(message);
   };
+
+  try {
+    const discipline = 'Paid_Media';
+    const businessModel = seed && seed.company ? seed.company.business_model : null;
+    literacyContextHits = await vectorStore.getLiteracyContext(
+      discipline,
+      `${seed?.product?.name || ''} ${seed?.audience?.segment_name || ''}`.trim() || 'summary',
+      { business_model: businessModel || null },
+      3
+    );
+    telemetry.capture('literacy_context_observed', {
+      project_slug: slug,
+      literacy_namespace: 'markos-standards-paid_media',
+      literacy_context_hits: literacyContextHits.length,
+    });
+  } catch (error) {
+    warnOnce('literacy-context', `[orchestrator] Literacy context skipped: ${error.message}`);
+  }
 
   // ── 1. Store raw seed in vector memory stores ─────────────────────────────
   let vectorStoreResults = [];
@@ -187,6 +206,10 @@ async function orchestrate(seed, slug) {
     brand_voice:        brandVoiceResult.text,
     channel_strategy:   channelStrategyResult.text,
   };
+
+  if (literacyContextHits.length > 0) {
+    drafts.standards_context = literacyContextHits.map((entry) => entry.text).join('\n\n');
+  }
 
   // Track any LLM errors
   const agentResults = {

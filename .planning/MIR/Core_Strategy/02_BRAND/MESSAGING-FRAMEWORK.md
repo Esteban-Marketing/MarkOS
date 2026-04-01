@@ -1,182 +1,102 @@
-# MESSAGING-FRAMEWORK.md — Core Value Propositions & Messaging Architecture
-<!-- markos-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Core_Strategy/02_BRAND/MESSAGING-FRAMEWORK.md` to customize it safely.
+# MESSAGING-FRAMEWORK — MarkOS by esteban.marketing
 
-> [!IMPORTANT]
-> **AGENT LOGIC**: This file is the "Message House" that anchors all external communication. `markos-copywriter` MUST derive all ad scripts and landing page copy from Section 1 and Section 3. `markos-analyst` MUST use Section 8 (Objection Responses) when training or configuring AI chat/outbound systems.
+## PRIMARY VALUE PROPOSITION
+For agencies and SaaS founders who need to scale marketing output without scaling headcount, MarkOS is the AI Co-CEO that lives in your codebase and delivers strategy-to-execution with measurable results in days, not months.
 
-**Dependencies:** PROFILE (`../01_COMPANY/PROFILE.md`), AUDIENCES (`../../Market_Audiences/03_MARKET/AUDIENCES.md`)
-**Assigned Agent:** `markos-copywriter`
-**Linear Project Manager:** `markos-linear-manager`
+## SECONDARY VALUE PROPOSITIONS (by ICP)
+### For Agency Owners
+Stop losing revenue to bandwidth limits — MarkOS multiplies your team's output without hiring.
 
-```
-file_purpose  : Define the structured messaging system: what we say, why it matters,
-                to whom, and in what format. All copy derives from this architecture.
-status        : empty
-last_updated  : YYYY-MM-DD
-authoritative : YES — primary source for all marketing messaging
-```
+### For SaaS Founders
+Get a fractional CMO embedded in your workflow — MarkOS runs campaigns, not just content.
 
----
+### For Solo Consultants
+Compete with agencies on output and strategy — MarkOS is your silent partner for execution.
 
-## 1. Core Value Proposition
+## MESSAGING PILLARS
+### Pillar 1: No-Fluff Execution
+- Core claim: MarkOS delivers results, not process theater.
+- Supporting proof points:
+  - Every action is tracked to install or revenue
+  - Linear tickets are auto-generated from agent decisions
+  - No dashboards, no manual copy-paste
+- Copy applications: LinkedIn posts, onboarding emails, product UI
+- Keywords this pillar owns: execution, no-fluff, output, install, Linear, ticket
 
-**The single most important claim this business makes:**
+### Pillar 2: Codebase-Native Intelligence
+- Core claim: MarkOS lives in your repo, not a SaaS dashboard.
+- Supporting proof points:
+  - Zero integration friction — install and go
+  - All data and workflow are client-owned
+  - No third-party CRM dependency
+- Copy applications: Website hero, install docs, outbound email
+- Keywords this pillar owns: codebase, install, Supabase, repo, native, workflow
 
-```
-[FILL — one sentence. This is the primary marketing claim that everything else supports.
-Example: "We build and run paid media systems that generate qualified leads without requiring 
-the client to understand any of the technical stack."]
-```
+### Pillar 3: Empirically Grounded Output
+- Core claim: Every output is contextually relevant, never generic.
+- Supporting proof points:
+  - Two-layer vector retrieval (global standards + client MIR)
+  - No hallucinated claims — every statement is sourced
+  - Output is benchmarked against real campaign data
+- Copy applications: Case studies, product onboarding, campaign briefs
+- Keywords this pillar owns: standards, MIR, literacy base, vector, proof, claim
 
-**Why a customer should believe this claim (proof points):**
-1. [FILL]
-2. [FILL]
-3. [FILL]
+### Pillar 4: Team Leverage
+- Core claim: One agent multiplies a 3-person team to 10-person output.
+- Supporting proof points:
+  - Automated campaign and content generation
+  - CRM and project management integration
+  - Agents-aaS model scales with your needs
+- Copy applications: Outbound, demo scripts, onboarding
+- Keywords this pillar owns: leverage, agent, team, automation, activation
 
----
+## FUNNEL STAGE MESSAGING MAP
+### Awareness (problem-aware, not solution-aware)
+- Core message: Most agencies and SaaS teams are bottlenecked by bandwidth, not ideas.
+- Channels: LinkedIn, SEO content
+- Hook formula: "[X]% of agencies still [do X manually]. MarkOS automates it."
 
-## 2. Positioning Statement (Internal Use)
+### Consideration (solution-aware, evaluating options)
+- Core message: MarkOS delivers strategy and execution in your codebase — no more dashboard fatigue.
+- Channels: Landing pages, email nurture, case studies
+- Hook formula: "What if your marketing agent lived in your repo, not another SaaS?"
 
-> Use this to align the team — not as a marketing headline.
+### Decision (ready to act)
+- Core message: Install MarkOS, run your first campaign, see measurable results in 7 days.
+- Channels: Demo page, cold email follow-up, proposal
+- CTA formula: "Install now — see your first campaign live this week."
 
-```
-For [target customer description],
-[Brand name] is the [category]
-that delivers [key benefit]
-because [reason to believe].
+### Retention (existing users)
+- Core message: MarkOS keeps delivering — new features, new campaigns, always tracked to outcome.
+- Channels: In-product, email, LinkedIn
 
-Unlike [main alternative],
-[Brand name] [key differentiator].
-```
+## OBJECTION HANDLING MAP
+1. "We already use Jasper/Copy.ai/ChatGPT for content"
+   - Reframe: MarkOS is not just a content tool — it runs strategy, workflow, and reporting end-to-end.
+   - Proof: Linear tickets, campaign tracking, and CRM integration are built-in.
+2. "I don't want something that lives in my codebase — too technical"
+   - Reframe: MarkOS installs with one command and requires no ongoing dev work.
+   - Proof: Agencies with no in-house devs have installed in under 30 minutes.
+3. "We don't have the budget for another tool"
+   - Reframe: MarkOS replaces multiple tools and reduces freelance/agency spend.
+   - Proof: Early users report 30% reduction in outsourced hours.
+4. "AI marketing tools produce generic output"
+   - Reframe: MarkOS uses your MIR and standards layer — every output is context-specific.
+   - Proof: No two clients see the same campaign or copy.
+5. "How is this different from just prompting GPT-4 well?"
+   - Reframe: MarkOS encodes your business context, ICP, and workflow — not just prompts.
+   - Proof: Agents auto-generate tickets, campaigns, and reporting with no manual prompt engineering.
 
-**Filled version:**
-```
-For [FILL],
-[FILL] is the [FILL]
-that delivers [FILL]
-because [FILL].
+## PROOF ARCHITECTURE
+### Tier 1 proof (strongest — use for decision stage)
+- Case studies from beta agency clients (to be published Q3 2026)
+- Install-to-activation funnel data (tracked in PostHog)
 
-Unlike [FILL],
-[FILL] [FILL].
-```
+### Tier 2 proof (medium — use for consideration stage)
+- Technical demo videos
+- Architecture diagrams
+- Benchmarks vs. manual workflow
 
----
-
-## 3. Message Hierarchy by Audience
-
-> For each major audience segment, define what message leads. Full audience definitions: `Market_Audiences/03_MARKET/AUDIENCES.md`.
-
-### Segment A: [Audience Name from AUDIENCES.md]
-
-```yaml
-segment_id          : "A1"
-primary_message     : "[The ONE thing this segment needs to hear first]"
-supporting_messages : 
-  - "[Supporting claim 1]"
-  - "[Supporting claim 2]"
-  - "[Supporting claim 3]"
-proof_that_works    : "[Most persuasive proof element for this segment]"
-objection_to_address: "[The main reason they won't buy — and how we counter it]"
-emotional_hook      : "[What fear or desire drives them]"
-```
-
-### Segment B: [Audience Name]
-
-```yaml
-segment_id          : "A2"
-primary_message     : "[FILL]"
-supporting_messages : 
-  - "[FILL]"
-proof_that_works    : "[FILL]"
-objection_to_address: "[FILL]"
-emotional_hook      : "[FILL]"
-```
-
----
-
-## 4. Messaging by Funnel Stage
-
-| Stage | Awareness | Consideration | Decision |
-|-------|-----------|---------------|---------|
-| **Goal** | Problem/outcome framing | Solution education | Conversion |
-| **Lead message** | [FILL] | [FILL] | [FILL] |
-| **Tone** | [FILL] | [FILL] | [FILL] |
-| **CTA** | [FILL] | [FILL] | [FILL] |
-| **Proof type** | [Social proof / stats] | [Case studies / demos] | [Guarantees / testimonials] |
-
----
-
-## 5. Headlines Bank
-
-> Pre-approved headline structures and examples. AI agents: use these as models.
-
-### Formula-Based Headlines
-
-| Formula | Example | Context |
-|---------|---------|---------|
-| [Problem] → [Outcome] | [FILL] | Cold audience |
-| [Outcome] without [pain] | [FILL] | Cold audience |
-| [Specific result] in [timeframe] | [FILL] | Retargeting |
-| How [brand] does [X] differently | [FILL] | Consideration |
-| The reason [audience] can't [outcome] | [FILL] | Awareness |
-| [Number] [things/steps/reasons] [claim] | [FILL] | Content / organic |
-
-### Approved Headlines (Ready to Use)
-
-| Headline | Channel | Audience | Status |
-|----------|---------|---------|--------|
-| [FILL] | [FILL] | [FILL] | [APPROVED / DRAFT] |
-| [FILL] | [FILL] | [FILL] | [FILL] |
-
----
-
-## 6. Elevator Pitches
-
-> Pre-written versions for different contexts and time constraints.
-
-**10 seconds (for profile bios, intros):**
-[FILL]
-
-**30 seconds (for ads, quick pitches):**
-[FILL]
-
-**2 minutes (for landing page hero, discovery calls):**
-[FILL]
-
----
-
-## 7. Key Proof Points
-
-> Specific, quantifiable, or verifiable claims available for use in marketing.
-
-| Proof Point | Type | Where to Use | Verification |
-|------------|------|-------------|-------------|
-| [FILL] | [Stat / Testimonial / Case study / Award] | [Context] | [Source or date] |
-| [FILL] | [FILL] | [FILL] | [FILL] |
-
----
-
-## 8. Objection Responses
-
-> Standard responses to the most common objections. Agents: use these when writing
-> FAQ sections, email sequences, or retargeting copy.
-
-| Objection | Response Strategy | Short Answer |
-|-----------|------------------|-------------|
-| "Too expensive" | [FILL] | [FILL] |
-| "I don't know if this will work for me" | [FILL] | [FILL] |
-| "I've tried this before and it didn't work" | [FILL] | [FILL] |
-| "I need to think about it" | [FILL] | [FILL] |
-| "I'll do it myself" | [FILL] | [FILL] |
-| [Add project-specific objection] | [FILL] | [FILL] |
-
----
-
-## 9. What We Do NOT Claim
-
-> Hard limits on what marketing may never say.
-
-- We do NOT claim: [FILL]
-- We do NOT use: [FILL — e.g. "competitors' names in ad copy"]
-- We do NOT promise: [FILL]
+### Tier 3 proof (softest — use for awareness stage)
+- Founder credibility (Esteban's build-in-public posts)
+- GitHub stars + Community mentions

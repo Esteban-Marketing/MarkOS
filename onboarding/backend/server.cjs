@@ -93,6 +93,8 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/migrate/local-to-cloud')) return handlers.handleMarkosdbMigration(req, res);
   if (req.method === 'POST' && req.url.startsWith('/linear/sync')) return handlers.handleLinearSync(req, res);
   if (req.method === 'POST' && req.url.startsWith('/campaign/result')) return handlers.handleCampaignResult(req, res);
+  if (req.method === 'GET' && req.url.startsWith('/admin/literacy/health')) return handlers.handleLiteracyHealth(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/admin/literacy/query')) return handlers.handleLiteracyQuery(req, res);
 
 
   // ── Static File Serving ────────────────────────────────────────────────────

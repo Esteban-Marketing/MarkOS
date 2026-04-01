@@ -210,4 +210,76 @@ test('Suite 4: Protocol Integrity Checks', async (t) => {
     assert.doesNotMatch(techMap, /all of the following are true/i, 'TECH-MAP must not require all-gates-must-pass retirement wording');
     assert.doesNotMatch(phaseUat, /all of the following are true/i, '31-UAT must not drift back to hard-gate retirement wording');
   });
+
+  await t.test('4.9 Canonical codebase map exists and summary docs delegate to it', () => {
+    const requiredDocs = [
+      '.planning/codebase/README.md',
+      '.planning/codebase/ROUTES.md',
+      '.planning/codebase/ENTRYPOINTS.md',
+      '.planning/codebase/FOLDERS.md',
+      '.planning/codebase/FILES.md',
+      '.planning/codebase/COVERAGE-MATRIX.md'
+    ];
+
+    for (const relPath of requiredDocs) {
+      assert.ok(fs.existsSync(path.join(REPO_ROOT, relPath)), `Missing canonical codebase doc: ${relPath}`);
+    }
+
+    const read = (relPath) => fs.readFileSync(path.join(REPO_ROOT, relPath), 'utf8');
+    const readme = read('README.md');
+    const techMap = read('TECH-MAP.md');
+    const protocolMap = read('.protocol-lore/CODEBASE-MAP.md');
+
+    assert.match(readme, /\.planning\/codebase\//, 'README must reference canonical .planning/codebase docs');
+    assert.match(techMap, /\.planning\/codebase\//, 'TECH-MAP must reference canonical .planning/codebase docs');
+    assert.match(protocolMap, /\.planning\/codebase\//, 'CODEBASE-MAP must reference canonical .planning/codebase docs');
+  });
+
+  await t.test('4.10 Route and wrapper documentation parity checks', () => {
+    const read = (relPath) => fs.readFileSync(path.join(REPO_ROOT, relPath), 'utf8');
+    const routesDoc = read('.planning/codebase/ROUTES.md');
+    const concernsDoc = read('.planning/codebase/CONCERNS.md');
+
+    // Core local routes that must always be represented.
+    for (const route of ['/config', '/status', '/submit', '/approve', '/linear/sync']) {
+      assert.match(routesDoc, new RegExp(route.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `ROUTES.md must include ${route}`);
+    }
+
+    // Hosted wrappers that must stay represented in the wrapper table.
+    for (const wrapperFile of [
+      'api/config.js',
+      'api/status.js',
+      'api/submit.js',
+      'api/approve.js',
+      'api/regenerate.js',
+      'api/migrate.js',
+      'api/campaign/result.js',
+      'api/linear/sync.js'
+    ]) {
+      assert.match(routesDoc, new RegExp(wrapperFile.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `ROUTES.md must include wrapper ${wrapperFile}`);
+    }
+
+    // Auth variance must remain explicitly documented.
+    assert.match(concernsDoc, /auth variance/i, 'CONCERNS.md must explicitly mention auth variance');
+  });
+
+  await t.test('4.11 Entrypoint documentation covers command surfaces', () => {
+    const read = (relPath) => fs.readFileSync(path.join(REPO_ROOT, relPath), 'utf8');
+    const entrypointsDoc = read('.planning/codebase/ENTRYPOINTS.md');
+
+    const requiredEntrypoints = [
+      'bin/install.cjs',
+      'bin/update.cjs',
+      'bin/ensure-vector.cjs',
+      'bin/ingest-literacy.cjs',
+      'bin/literacy-admin.cjs',
+      '.agent/get-shit-done/bin/gsd-tools.cjs',
+      '.agent/markos/bin/markos-tools.cjs'
+    ];
+
+    for (const relPath of requiredEntrypoints) {
+      assert.ok(fs.existsSync(path.join(REPO_ROOT, relPath)), `Entrypoint file missing from repository: ${relPath}`);
+      assert.match(entrypointsDoc, new RegExp(relPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `ENTRYPOINTS.md must include ${relPath}`);
+    }
+  });
 });

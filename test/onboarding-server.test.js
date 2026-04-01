@@ -1054,5 +1054,59 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       }
     }
   });
+
+  await t.test('3.16 Literacy admin endpoints require secret and return diagnostics', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+    const oldAdminSecret = process.env.MARKOS_ADMIN_SECRET;
+    process.env.MARKOS_ADMIN_SECRET = 'test-secret';
+
+    try {
+      await withMockedModule(vectorStorePath, {
+        configure: () => {},
+        healthCheck: async () => ({ status: 'providers_ready', providers: { supabase: { configured: true }, upstash_vector: { configured: true } } }),
+        getLiteracyContext: async () => ([{ text: 'match one', metadata: { status: 'canonical' }, score: 0.9 }]),
+      }, async () => {
+        const handlers = loadFreshModule(handlersPath);
+
+        const deniedHealthRes = createMockResponse();
+        await handlers.handleLiteracyHealth({ method: 'GET', url: '/admin/literacy/health', headers: {} }, deniedHealthRes);
+        assert.equal(deniedHealthRes.statusCode, 401);
+
+        const allowedHealthRes = createMockResponse();
+        await handlers.handleLiteracyHealth({ method: 'GET', url: '/admin/literacy/health', headers: { 'x-markos-admin-secret': 'test-secret' } }, allowedHealthRes);
+        assert.equal(allowedHealthRes.statusCode, 200);
+        const healthPayload = JSON.parse(allowedHealthRes.body);
+        assert.equal(healthPayload.success, true);
+        assert.equal(healthPayload.literacy.status, 'providers_ready');
+
+        const deniedQueryRes = createMockResponse();
+        await handlers.handleLiteracyQuery(createJsonRequest({ discipline: 'Paid Media' }, '/admin/literacy/query'), deniedQueryRes);
+        assert.equal(deniedQueryRes.statusCode, 401);
+
+        const queryRes = createMockResponse();
+        const queryReq = createJsonRequest({
+          discipline: 'Paid Media',
+          query: 'cta hooks',
+          business_model: 'B2B',
+          topK: 3,
+        }, '/admin/literacy/query');
+        queryReq.headers['x-markos-admin-secret'] = 'test-secret';
+
+        await handlers.handleLiteracyQuery(queryReq, queryRes);
+        assert.equal(queryRes.statusCode, 200);
+        const queryPayload = JSON.parse(queryRes.body);
+        assert.equal(queryPayload.success, true);
+        assert.equal(queryPayload.diagnostics.returned, 1);
+        assert.equal(queryPayload.matches[0].text, 'match one');
+      });
+    } finally {
+      if (oldAdminSecret === undefined) {
+        delete process.env.MARKOS_ADMIN_SECRET;
+      } else {
+        process.env.MARKOS_ADMIN_SECRET = oldAdminSecret;
+      }
+    }
+  });
 });
 

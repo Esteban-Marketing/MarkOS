@@ -32,6 +32,8 @@ const REQUIRED_SECRET_MATRIX = Object.freeze({
   approve_write: Object.freeze({ required: [], hostedOnly: false }),
   campaign_result_write: Object.freeze({ required: [], hostedOnly: false }),
   telemetry_write: Object.freeze({ required: ['POSTHOG_API_KEY'], hostedOnly: false }),
+  literacy_ingest_write: Object.freeze({ required: ['SUPABASE_SERVICE_ROLE_KEY', 'UPSTASH_VECTOR_REST_TOKEN'], hostedOnly: false }),
+  literacy_admin_write: Object.freeze({ required: ['SUPABASE_SERVICE_ROLE_KEY', 'UPSTASH_VECTOR_REST_TOKEN'], hostedOnly: false }),
 });
 
 const RETENTION_POLICY = Object.freeze({

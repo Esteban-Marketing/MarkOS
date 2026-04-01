@@ -5,7 +5,39 @@
 
 const fs = require('fs');
 const path = require('path');
-const { output, error, planningPaths, markosPaths, findPhaseInternal, loadConfig, safeReadFile, toPosixPath, checkMirGates } = require('./core.cjs');
+const { output, error, planningPaths, markosPaths, findPhaseInternal, loadConfig, safeReadFile, toPosixPath, checkMirGates, resolveActiveMirPath } = require('./core.cjs');
+
+/**
+ * Attempts to determine the active or current phase from the planning STATE.md file.
+ *
+ * Looks for lines in STATE.md matching either:
+ *   - "Active Phase: <phase>" (preferred)
+ *   - "Phase: <phase>" (fallback)
+ *
+ * @param {string} cwd - The current working directory of the project root.
+ * @returns {string|null} The detected phase number/name, or null if not found.
+ *
+ * Expected STATE.md format example:
+ *   Active Phase: 1.2
+ *   Phase: 1.2
+ */
+function resolveDefaultPhase(cwd) {
+  const statePath = planningPaths(cwd).state;
+  const content = safeReadFile(statePath);
+  if (!content) return null;
+
+  const activePhaseMatch = content.match(/^Active Phase:\s*(.+)$/m);
+  if (activePhaseMatch) {
+    return activePhaseMatch[1].trim();
+  }
+
+  const currentPhaseMatch = content.match(/^Phase:\s*(.+)$/m);
+  if (currentPhaseMatch) {
+    return currentPhaseMatch[1].trim();
+  }
+
+  return null;
+}
 
 function resolveModel(config, agentType) {
   const profile = config.model_profile || 'balanced';
@@ -33,8 +65,9 @@ function cmdInit(cwd, command, args, raw) {
 
   // Check MIR gates
   let mirGates = null;
-  if (fs.existsSync(mp.mir)) {
-    mirGates = checkMirGates(mp.mir);
+  const activeMirPath = resolveActiveMirPath(cwd);
+  if (fs.existsSync(activeMirPath)) {
+    mirGates = checkMirGates(activeMirPath);
   }
 
   const base = {
@@ -48,6 +81,7 @@ function cmdInit(cwd, command, args, raw) {
     parallelization: config.parallelization,
     mir_gate_enforcement: config.mir_gate_enforcement,
     mir_gates: mirGates,
+    mir_path: toPosixPath(path.relative(cwd, activeMirPath)),
     state_path: stateExists ? toPosixPath(path.relative(cwd, pp.state)) : null,
     roadmap_path: roadmapExists ? toPosixPath(path.relative(cwd, pp.roadmap)) : null,
     requirements_path: fs.existsSync(pp.requirements) ? toPosixPath(path.relative(cwd, pp.requirements)) : null,
@@ -96,13 +130,16 @@ function cmdInit(cwd, command, args, raw) {
     }
 
     case 'execute-phase': {
-      const phaseArg = args;
+      const phaseArg = args && !String(args).startsWith('--')
+        ? args
+        : resolveDefaultPhase(cwd);
       const phaseInfo = phaseArg ? findPhaseInternal(cwd, phaseArg) : null;
 
       output({
         ...base,
         executor_model: resolveModel(config, 'executor'),
         verifier_model: resolveModel(config, 'verifier'),
+        requested_phase: phaseArg || null,
         phase_found: phaseInfo ? phaseInfo.found : false,
         phase_dir: phaseInfo ? phaseInfo.directory : null,
         phase_number: phaseInfo ? phaseInfo.phase_number : null,

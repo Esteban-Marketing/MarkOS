@@ -1541,6 +1541,70 @@ function handleCorsPreflight(req, res) {
   res.end();
 }
 
+function isValidAdminSecret(req) {
+  const configured = String(process.env.MARKOS_ADMIN_SECRET || '').trim();
+  if (!configured) return false;
+  const provided = String((req && req.headers && (req.headers['x-markos-admin-secret'] || req.headers['X-Markos-Admin-Secret'])) || '').trim();
+  return provided.length > 0 && provided === configured;
+}
+
+async function handleLiteracyHealth(req, res) {
+  if (!isValidAdminSecret(req)) {
+    return json(res, 401, { success: false, error: 'ADMIN_SECRET_REQUIRED' });
+  }
+
+  const vectorStore = require('./vector-store-client.cjs');
+  const runtime = createRuntimeContext();
+  vectorStore.configure(runtime.config || {});
+
+  const health = await vectorStore.healthCheck();
+  return json(res, 200, {
+    success: true,
+    literacy: {
+      mode: runtime.mode,
+      providers: health.providers || {},
+      status: health.status || 'unknown',
+    },
+  });
+}
+
+async function handleLiteracyQuery(req, res) {
+  if (!isValidAdminSecret(req)) {
+    return json(res, 401, { success: false, error: 'ADMIN_SECRET_REQUIRED' });
+  }
+
+  const body = await readBody(req);
+  const discipline = String(body.discipline || '').trim();
+  const query = String(body.query || 'summary');
+  const topK = Math.max(1, Number(body.topK) || 5);
+
+  if (!discipline) {
+    return json(res, 400, { success: false, error: 'discipline is required' });
+  }
+
+  const vectorStore = require('./vector-store-client.cjs');
+  const runtime = createRuntimeContext();
+  vectorStore.configure(runtime.config || {});
+
+  const filters = {
+    business_model: body.business_model || null,
+    funnel_stage: body.funnel_stage || null,
+    content_type: body.content_type || null,
+  };
+
+  const matches = await vectorStore.getLiteracyContext(discipline, query, filters, topK);
+  return json(res, 200, {
+    success: true,
+    diagnostics: {
+      namespace: `markos-standards-${String(discipline).trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')}`,
+      topK,
+      filters,
+      returned: matches.length,
+    },
+    matches,
+  });
+}
+
 module.exports = {
   handleConfig,
   handleStatus,
@@ -1556,5 +1620,7 @@ module.exports = {
   handleParseAnswer,
   handleSparkSuggestion,
   handleCompetitorDiscovery,
-  handleCorsPreflight
+  handleCorsPreflight,
+  handleLiteracyHealth,
+  handleLiteracyQuery
 };

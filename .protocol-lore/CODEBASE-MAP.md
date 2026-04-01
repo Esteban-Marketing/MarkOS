@@ -2,6 +2,7 @@
 <purpose>LLM-navigable map of the MarkOS repository. Read after QUICKSTART.md to locate components without blind filesystem search.</purpose>
 <last_updated>2026-03-29</last_updated>
 <canonical_state path="../.planning/STATE.md">GSD mission state (milestone, phase, next actions).</canonical_state>
+<canonical_codebase_docs path="../.planning/codebase/README.md">Canonical route, folder, and file inventories live under `.planning/codebase/` and override summary-level topology notes.</canonical_codebase_docs>
 
 <implementation_index>
   <file path="onboarding/backend/agents/orchestrator.cjs">Draft generation orchestrator and retry boundaries.</file>

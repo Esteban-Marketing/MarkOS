@@ -1,178 +1,120 @@
-# PAID-MEDIA.md — Ad Accounts, Pixels, CAPI & Tracking Config
-<!-- markos-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to `.markos-local/MIR/Campaigns_Assets/05_CHANNELS/PAID-MEDIA.md` to customize it safely.
+# PAID-MEDIA — MarkOS by esteban.marketing
 
-> [!IMPORTANT]
-> **AGENT LOGIC**: This is the "Tracking & Attribution" source of truth. `markos-media-buyer` MUST use Section 7 (UTM Parameter Standards) for all campaign launches. `markos-analyst` MUST use Section 6 (Attribution Model) to validate conversion data in performance reports.
+## PAID MEDIA STATUS
 
-**Dependencies:** AUDIENCES (`../../Market_Audiences/03_MARKET/AUDIENCES.md`), BUDGET (`../../Operations/08_BUDGET/MCB-BUDGET.md`)
-**Assigned Agent:** `markos-media-buyer`
-**Linear Project Manager:** `markos-linear-manager`
+Current status: Pre-launch / organic-first / paid pending first 10 clients
+First paid channel activation: LinkedIn Ads
+Paid activation trigger: After 10 beta agency clients onboarded and $2,000 MRR achieved <!-- Decision assumption: conservative early-stage trigger -->
 
-```
-file_purpose  : Define the complete paid media infrastructure: account IDs,
-                tracking setup, pixel configuration, and CAPI parameters.
-                This file is mandatory reading for any tracking or campaign work.
-status        : empty
-last_updated  : YYYY-MM-DD
-authoritative : YES — all paid media configuration derives from this file
-```
+## BUDGET FRAMEWORK
 
-> ⚠️ Do not store credentials, passwords, or API tokens here. Use a secrets manager. This file stores IDs and structural config only.
+Total monthly paid budget (at activation): $1,500 <!-- Estimated: early-stage, single-channel focus -->
+Allocation model:
 
----
+Awareness: 50%
+Conversion: 30%
+Retargeting: 20%
 
-## 1. Meta (Facebook / Instagram)
+Budget per channel:
 
-```yaml
-business_manager_id   : "[FILL]"
-ad_account_id         : "[act_XXXXXXXXXX]"
-ad_account_name       : "[FILL]"
-pixel_id              : "[FILL]"
-pixel_status          : "[ACTIVE | NOT_INSTALLED | DEGRADED]"
-capi_status           : "[ACTIVE | CONFIGURED_NOT_LIVE | NOT_CONFIGURED]"
-capi_access_token     : "[STORED IN SECRETS MANAGER — reference key name only]"
-dataset_id            : "[FILL — same as pixel_id for most setups]"
-instagram_account_id  : "[FILL]"
-facebook_page_id      : "[FILL]"
-```
+LinkedIn Ads: $1,000 — Primary channel for agency/SaaS ICP, best targeting granularity
+Google Search: $300 — Branded and competitor terms, capture high-intent buyers
+Meta Ads: Not yet — B2B tool, Meta is secondary
+Retargeting (cross-channel): $200 — Focused on LinkedIn and Google Display
 
-**Active Meta events (browser + CAPI):**
+## TARGETING ARCHITECTURE
 
-| Event Name | Trigger | Browser | CAPI | Priority |
-|-----------|---------|---------|------|---------|
-| PageView | All page loads | YES | YES | REQUIRED |
-| ViewContent | Key page visits | YES | YES | HIGH |
-| Lead | Form submission | NO | YES | REQUIRED |
-| Purchase | Transaction complete | NO | YES | REQUIRED |
-| InitiateCheckout | Checkout start | YES | NO | MEDIUM |
-| CompleteRegistration | Account created | NO | YES | HIGH |
+### LinkedIn Ads (Primary Channel)
 
-**Meta CAPI mandatory parameters for Lead event:**
-```json
-{
-  "event_name": "Lead",
-  "event_time": "[UNIX timestamp]",
-  "event_source_url": "[page URL where event occurred]",
-  "action_source": "website",
-  "user_data": {
-    "em": "[SHA-256 hashed email]",
-    "ph": "[SHA-256 hashed phone]",
-    "fbc": "[Facebook click ID from _fbc cookie]",
-    "fbp": "[Facebook browser ID from _fbp cookie]",
-    "client_ip_address": "[visitor IP]",
-    "client_user_agent": "[visitor user agent]"
-  },
-  "custom_data": {
-    "currency": "[ISO currency code]",
-    "value": "[estimated lead value]",
-    "content_name": "[offer or product name]"
-  }
-}
-```
+**Audience 1: Agency Owners — Cold**
+- Job title targeting: Marketing Agency Owner, Founder, CEO, Managing Director
+- Company size: 1–50 employees
+- Industry: Marketing & Advertising, Internet
+- Geography: Colombia, Mexico, Argentina, Chile, US, Canada, UK, Spain
+- Exclusions: Non-decision-maker roles (e.g., Account Executive, Junior Marketer)
 
-**Event deduplication strategy:**
-```yaml
-dedup_method          : "[event_id — unique ID sent in both browser and CAPI]"
-event_id_format       : "[e.g. lead-[form_id]-[timestamp]-[user_hash]]"
-```
+**Audience 2: SaaS Founders — Cold**
+- Job title targeting: Founder, Co-Founder, CEO, Head of Marketing
+- Company size: 1–50 employees
+- Industry: Computer Software, Internet, Technology
+- Seniority: Owner, CXO
 
----
+**Audience 3: Retargeting — Website Visitors**
+- Insight Tag required: Yes — install on esteban.marketing
+- Window: 30 days
+- Message shift: More direct — skip awareness, focus on outcome and proof
 
-## 2. Google Ads
+**Audience 4: Lookalike — From Activated Users**
+- Seed: Uploaded customer list (activated MarkOS users)
+- Expansion: 1% similarity (tightest)
 
-```yaml
-google_ads_account_id : "[XXX-XXX-XXXX]"
-manager_account_id    : "[MCC ID if applicable]"
-conversion_tracking   : "[ACTIVE | NOT_CONFIGURED]"
-gtag_id               : "[G-XXXXXXXXXX or AW-XXXXXXXXXX]"
-google_analytics_id   : "[G-XXXXXXXXXX — NOTE: GA4 is signal only. PostHog is source of truth.]"
-```
+### Google Search (Secondary — Branded + Competitor)
 
-**Active Google conversion actions:**
+**Campaign 1: Branded**
+- Keywords: markos, markos AI, esteban.marketing, MarkOS marketing agent
+- Match type: Exact + Phrase
+- Goal: Capture anyone who already knows the brand
 
-| Conversion Name | Category | Counting | Value | Attribution Window |
-|----------------|---------|---------|-------|------------------|
-| [e.g. Discovery Call Booked] | Lead | One per click | [Value] | [30-day click / 1-day view] |
-| [FILL] | [FILL] | [FILL] | [FILL] | [FILL] |
+**Campaign 2: Competitor Terms**
+- Keywords: jasper alternative, copy ai alternative, AI marketing agent, AI CMO
+- Match type: Phrase
+- Goal: Intercept comparison-stage buyers
 
----
+**Campaign 3: High-Intent Generic**
+- Keywords: AI marketing tool, marketing automation AI, AI CMO
+- Match type: Phrase
+- Goal: Awareness-to-consideration traffic
 
-## 3. Meta Ads Campaign Structure
+## CREATIVE RULES FOR PAID ADS
 
-**Current account structure:**
+### LinkedIn Ad Creative Standards
+- Image format: 1200x627px, dark background, minimal text, product UI screenshot or bold claim
+- Headline formula for cold: "[Pain point]? MarkOS [claim]. [Proof point]"
+- Headline character limit: 70 characters (LinkedIn spec)
+- Body copy rule: Lead with pain, not product
+- CTA options approved: Download, Learn More, Sign Up (use "Install" for product pages, "Learn More" for awareness)
+- What to never show in ad creative: Stock photos, generic AI icons, buzzwords, fake testimonials, overpromising claims
 
-| Campaign Name | Objective | Daily Budget | Status |
-|--------------|-----------|-------------|--------|
-| [FILL] | [Lead gen / Sales / Awareness] | [$] | [ACTIVE / PAUSED] |
+### Copy Hooks — Approved Formulas
+- Hook 1 (pain-lead): "68% of agencies still build briefs manually. MarkOS automates it."
+- Hook 2 (outcome-lead): "First campaign live in 48 hours. No CMO required."
+- Hook 3 (contrast): "What a 3-person agency looks like with and without MarkOS."
+- Hook 4 (authority): "Built by esteban.marketing — trusted by agency founders."
+- Hook 5 (proof): "Track every campaign to install — not just impressions."
+- Hook 6 (team leverage): "Multiply your output, not your headcount."
 
-**Naming conventions:**
-```yaml
-campaign_naming : "[Client slug]-[Objective]-[Audience type]-[YYMM]"
-adset_naming    : "[ICP segment]-[Placement]-[YYMM]"
-ad_naming       : "[Creative type]-[Variant]-[YYMM]-v[N]"
-```
+## LANDING PAGE DESTINATIONS
 
----
+| Campaign                | Destination URL                        | CTA         | Conversion Goal         |
+|-------------------------|----------------------------------------|-------------|------------------------|
+| LinkedIn Cold — Agency  | https://esteban.marketing/agency       | Install     | Install / Demo request |
+| LinkedIn Cold — SaaS    | https://esteban.marketing/saas         | Install     | Install                |
+| Google Branded          | https://esteban.marketing              | Install     | Install                |
+| Google Competitor       | https://esteban.marketing/vs/jasper    | Install     | Install / Email capture|
+| Retargeting             | https://esteban.marketing/onboarding   | Demo        | Demo / Direct contact  |
 
-## 4. X Ads (Twitter)
+## ATTRIBUTION SETUP FOR PAID
 
-```yaml
-x_ads_account_id    : "[FILL or NOT_ACTIVE]"
-x_pixel_id          : "[FILL or N/A]"
-status              : "[ACTIVE | NOT_ACTIVE]"
-```
+- LinkedIn: Insight Tag + LinkedIn conversion event
+- Google: GA4 linked + Google Ads conversion import
+- UTM structure: See TRACKING.md UTM taxonomy
+- ROAS target: Not applicable pre-revenue; optimize for CPI (cost per install)
+- Primary KPI for paid at launch: Cost per Install (CPI)
+- Secondary KPI: Install-to-Activation rate from paid traffic
 
----
+## RETARGETING SEQUENCES
 
-## 5. TikTok Ads
+### Sequence 1: Homepage Visitor (No CTA click) — 0–7 days
+- Platform: LinkedIn
+- Message: "Still building briefs by hand? MarkOS automates your workflow."
+- Frequency cap: 4 impressions / week
 
-```yaml
-tiktok_ads_account_id : "[FILL or NOT_ACTIVE]"
-tiktok_pixel_id       : "[FILL or N/A]"
-tiktok_events_api     : "[ACTIVE | NOT_CONFIGURED | NOT_ACTIVE]"
-status                : "[ACTIVE | NOT_ACTIVE]"
-```
+### Sequence 2: Install Page Visitor (No install) — 0–14 days
+- Platform: LinkedIn + Google Display
+- Message: "Worried MarkOS is too technical? Install in 30 minutes — no dev required."
+- Frequency cap: 5 impressions / week
 
----
-
-## 6. Attribution Model
-
-```yaml
-primary_attribution   : "PostHog"
-attribution_logic     : "Server-side event data via CAPI + PostHog session recording"
-platform_data_role    : "signal_only"
-max_acceptable_discrepancy_pct : 15
-attribution_window    : "[e.g. 7-day click, 1-day view for Meta | Last click for Google]"
-```
-
-**Attribution hierarchy:**
-```
-1. PostHog event data (primary source of truth)
-2. Meta CAPI (primary for Meta-attributed conversions)
-3. Platform-reported data (signal only — do not use for optimization decisions)
-```
-
----
-
-## 7. UTM Parameter Standards
-
-```yaml
-utm_source_values:
-  - meta
-  - google
-  - tiktok
-  - x-ads
-  - email
-  - organic-instagram
-  - organic-linkedin
-  - direct
-utm_medium_values:
-  - paid-social
-  - paid-search
-  - email
-  - organic
-utm_campaign_format: "[client-slug]-[initiative]-[YYMM]"
-utm_content_format:  "[asset-type]-[variant]-v[N]"
-utm_term_format:     "[keyword or audience-segment]"
-```
+### Sequence 3: Installed (No activation) — 0–30 days
+- Platform: LinkedIn
+- Message: "Your MIR is empty — activate your agent for full value."
+- Frequency cap: 3 impressions / week

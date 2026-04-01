@@ -9,6 +9,45 @@ let _bootReport = null;
 
 const LEGACY_NAMESPACE_PREFIX = 'markos';
 const FUTURE_NAMESPACE_PREFIX = 'markos';
+const STANDARDS_NAMESPACE_PREFIX = 'markos-standards';
+
+function slugifyDiscipline(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function escapeFilterValue(value) {
+  return String(value || '').replace(/'/g, "\\'");
+}
+
+function buildStandardsNamespaceName(discipline) {
+  const normalized = slugifyDiscipline(discipline);
+  if (!normalized) {
+    throw new Error('DISCIPLINE_REQUIRED');
+  }
+  return `${STANDARDS_NAMESPACE_PREFIX}-${normalized}`;
+}
+
+function buildLiteracyFilter(filters = {}) {
+  const parts = ["status = 'canonical'"];
+
+  if (filters.business_model) {
+    parts.push(`business_model CONTAINS '${escapeFilterValue(filters.business_model)}'`);
+  }
+
+  if (filters.funnel_stage) {
+    parts.push(`funnel_stage = '${escapeFilterValue(filters.funnel_stage)}'`);
+  }
+
+  if (filters.content_type) {
+    parts.push(`content_type = '${escapeFilterValue(filters.content_type)}'`);
+  }
+
+  return parts.join(' AND ');
+}
 
 function getCanonicalCollectionPrefix() {
   const prefix = (process.env.MARKOS_VECTOR_PREFIX || LEGACY_NAMESPACE_PREFIX).trim().toLowerCase();
@@ -312,6 +351,140 @@ async function getContext(slug, section, query = 'summary', nResults = 1) {
   return [];
 }
 
+async function getLiteracyContext(discipline, query = 'summary', filters = {}, topK = 5) {
+  const index = getUpstashIndex();
+  if (!index) return [];
+
+  const namespaceName = buildStandardsNamespaceName(discipline);
+  const namespace = index.namespace(namespaceName);
+  const filter = buildLiteracyFilter(filters);
+
+  try {
+    const matches = await namespace.query({
+      data: String(query || ''),
+      topK: Math.max(1, Number(topK) || 5),
+      includeData: true,
+      includeMetadata: true,
+      filter,
+    });
+
+    if (!Array.isArray(matches) || matches.length === 0) {
+      return [];
+    }
+
+    return matches
+      .map((entry) => ({
+        text: typeof entry.data === 'string' ? entry.data : '',
+        metadata: entry.metadata || {},
+        score: typeof entry.score === 'number' ? entry.score : 0,
+      }))
+      .filter((entry) => entry.text.trim().length > 0);
+  } catch {
+    return [];
+  }
+}
+
+async function upsertLiteracyChunk(chunk) {
+  const client = getSupabaseClient();
+  const index = getUpstashIndex();
+
+  const chunkId = String(chunk && chunk.chunk_id ? chunk.chunk_id : '').trim();
+  const discipline = String(chunk && chunk.discipline ? chunk.discipline : '').trim();
+  const chunkText = String(chunk && chunk.chunk_text ? chunk.chunk_text : '').trim();
+
+  if (!chunkId || !discipline || !chunkText) {
+    return { ok: false, error: 'INVALID_LITERACY_CHUNK' };
+  }
+
+  const namespaceName = buildStandardsNamespaceName(discipline);
+  const nowIso = new Date().toISOString();
+  const metadata = {
+    category: chunk.category || 'STANDARDS',
+    discipline,
+    sub_discipline: chunk.sub_discipline || null,
+    business_model: Array.isArray(chunk.business_model) ? chunk.business_model : [],
+    funnel_stage: chunk.funnel_stage || null,
+    content_type: chunk.content_type || null,
+    status: chunk.status || 'canonical',
+    evidence_level: chunk.evidence_level || null,
+    source_ref: chunk.source_ref || null,
+    version: chunk.version || null,
+    chunk_id: chunkId,
+    doc_id: chunk.doc_id || null,
+    checksum_sha256: chunk.checksum_sha256 || null,
+    last_validated: chunk.last_validated || null,
+    ttl_days: typeof chunk.ttl_days === 'number' ? chunk.ttl_days : 180,
+  };
+
+  let relational = { ok: false, error: 'SUPABASE_UNCONFIGURED' };
+  if (client) {
+    const row = {
+      chunk_id: chunkId,
+      doc_id: chunk.doc_id || null,
+      category: metadata.category,
+      discipline,
+      sub_discipline: metadata.sub_discipline,
+      business_model: metadata.business_model,
+      company_size: Array.isArray(chunk.company_size) ? chunk.company_size : [],
+      industry_tags: Array.isArray(chunk.industry_tags) ? chunk.industry_tags : [],
+      funnel_stage: metadata.funnel_stage,
+      content_type: metadata.content_type,
+      evidence_level: metadata.evidence_level,
+      recency: chunk.recency || null,
+      source_type: chunk.source_type || null,
+      source_ref: metadata.source_ref,
+      last_validated: metadata.last_validated,
+      version: metadata.version,
+      ttl_days: metadata.ttl_days,
+      status: metadata.status,
+      agent_use: Array.isArray(chunk.agent_use) ? chunk.agent_use : [],
+      retrieval_keywords: Array.isArray(chunk.retrieval_keywords) ? chunk.retrieval_keywords : [],
+      chunk_text: chunkText,
+      vector_namespace: namespaceName,
+      checksum_sha256: metadata.checksum_sha256,
+      conflict_note: chunk.conflict_note || null,
+      updated_at: nowIso,
+    };
+
+    const { error } = await client
+      .from('markos_literacy_chunks')
+      .upsert(row, { onConflict: 'chunk_id' });
+
+    relational = error ? { ok: false, error: error.message } : { ok: true, table: 'markos_literacy_chunks' };
+  }
+
+  let vector = { ok: false, error: 'UPSTASH_UNCONFIGURED' };
+  if (index) {
+    try {
+      vector = await upsertVectorDocument(namespaceName, chunkId, chunkText, metadata);
+    } catch (error) {
+      vector = { ok: false, error: error.message };
+    }
+  }
+
+  return {
+    ok: relational.ok || vector.ok,
+    relational,
+    vector,
+    namespace: namespaceName,
+    chunk_id: chunkId,
+  };
+}
+
+async function supersedeLiteracyDoc(docId) {
+  const client = getSupabaseClient();
+  if (!client) return { ok: false, error: 'SUPABASE_UNCONFIGURED' };
+  if (!docId) return { ok: false, error: 'DOC_ID_REQUIRED' };
+
+  const { error } = await client
+    .from('markos_literacy_chunks')
+    .update({ status: 'superseded', updated_at: new Date().toISOString() })
+    .eq('doc_id', String(docId));
+
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, doc_id: String(docId), status: 'superseded' };
+}
+
 async function storeDraft(slug, section, content, meta = {}) {
   const id = `${slug}-draft-${section}`;
   const metadata = {
@@ -527,4 +700,8 @@ module.exports = {
   upsertMarkosdbArtifact,
   storeCampaignOutcome,
   getWinningCampaignPatterns,
+  buildStandardsNamespaceName,
+  getLiteracyContext,
+  upsertLiteracyChunk,
+  supersedeLiteracyDoc,
 };

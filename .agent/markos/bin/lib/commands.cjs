@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { output, error, planningPaths, findPhaseInternal, normalizePhaseName, toPosixPath, execGit, isGitIgnored, loadConfig, safeReadFile, markosPaths, checkMirGates } = require('./core.cjs');
+const { output, error, findPhaseInternal, normalizePhaseName, execGit, isGitIgnored, loadConfig, safeReadFile, checkMirGates, toPosixPath, resolveActiveMirPath } = require('./core.cjs');
 const { sanitizeForPrompt } = require('./security.cjs');
 
 function cmdCommit(cwd, message, files, raw, noVerify) {
@@ -51,9 +51,9 @@ function cmdCommit(cwd, message, files, raw, noVerify) {
   output({ committed: true, hash, reason: 'committed' }, raw, hash || 'committed');
 }
 
+// Use robust resolveActiveMirPath from core.cjs
 function cmdMirAudit(cwd, raw) {
-  const paths = markosPaths(cwd);
-  const mirPath = paths.mir;
+  const mirPath = resolveActiveMirPath(cwd);
 
   if (!fs.existsSync(mirPath)) {
     error('MIR templates not found at ' + mirPath);
@@ -97,6 +97,7 @@ function cmdMirAudit(cwd, raw) {
   gaps.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 
   output({
+    mir_path: toPosixPath(path.relative(cwd, mirPath)),
     gate1: gates.gate1,
     gate2: gates.gate2,
     gaps,

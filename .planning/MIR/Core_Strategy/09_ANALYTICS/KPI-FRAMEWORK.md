@@ -1,133 +1,150 @@
-# KPI-FRAMEWORK.md — KPIs, Targets & Measurement Logic
+# KPI-FRAMEWORK — MarkOS by esteban.marketing
 
-<!-- markos-token: MIR -->
-> [!NOTE] OVERRIDE PATH: Copy this file to .markos-local/MIR/Core_Strategy/09_ANALYTICS/KPI-FRAMEWORK.md to customize it safely.
+## NORTH STAR METRIC
 
+**NSM: Activated Users (MIR Complete)**
+- Definition: Number of unique installations with all MIR files populated and at least one campaign executed
+- Target (90-day): 25 activated users <!-- Estimated: early-stage, pre-revenue -->
+- Target (12-month): 150 activated users <!-- Estimated: aggressive but achievable for Agents-aaS -->
+- Why this NSM: Activated users are the best predictor of long-term value and revenue for MarkOS, as they have completed onboarding, engaged with the agent, and are likely to generate referrals and paid conversions.
 
-```
-file_purpose  : Define every KPI used to measure marketing performance.
-                Establishes baseline, targets, and the PostHog-first measurement
-                methodology. Governs all reporting and optimization decisions.
-status        : empty
-last_updated  : YYYY-MM-DD
-authoritative : YES — all optimization decisions reference this file
-```
+## PIRATE METRICS (AARRR) FOR MARKOS
 
----
+### Acquisition
+- Primary metric: New installs per week
+- Source breakdown: 40% organic, 30% outbound, 20% Upwork, 10% paid
+- Target week 4: 10 installs
+- Target week 12: 40 installs
+- Measurement: PostHog markos_install_complete event
 
-## 1. Measurement Philosophy
+### Activation
+- Definition of activated: MIR files complete + first draft generated
+- Metric: Activation rate (activated / installed)
+- Target rate: 60%
+- Time-to-activate target: 48 hours from install
+- Measurement: markos_onboarding_complete + markos_first_draft events
 
-```yaml
-primary_source_of_truth   : "PostHog"
-platform_data_role        : "signal_only"
-max_acceptable_discrepancy: "15%"
-decision_rule             : "No budget or strategy decision is made based on platform-reported 
-                             data alone. PostHog data is required."
-```
+### Retention
+- Definition of retained: Active usage (≥1 agent task/week) at day 30
+- Metric: Day-30 retention rate
+- Target: 40%
+- Measurement: PostHog cohort analysis on weekly active users
 
----
+### Referral
+- Metric: Referral rate (new installs from referred sources / total installs)
+- Target: 15%
+- Mechanism: Word of mouth via LinkedIn, explicit referral program (planned Q4 2026)
 
-## 2. North Star Metric
+### Revenue
+- Metric: MRR (Monthly Recurring Revenue)
+- Target month 3: $1,000 <!-- Estimated: first paid conversions -->
+- Target month 6: $4,000 <!-- Estimated: ramp-up with agency clients -->
+- Target month 12: $12,000 <!-- Estimated: 80 paid installs at $150/mo avg -->
+- Conversion rate target (install → paid): 20%
 
-**The single metric that best captures whether marketing is working:**
+## CHANNEL KPIs
 
-```yaml
-north_star_metric   : "[FILL — e.g. Qualified leads per month at or below target CPL]"
-current_value       : "[FILL]"
-target_value        : "[FILL]"
-measurement_source  : "PostHog — lead_submitted event with icp_segment = ICP-1"
-```
+### LinkedIn Organic (Esteban Personal Brand)
+- Metric: Post impressions
+- Target (monthly): 10,000
+- Source: LinkedIn Analytics
 
----
+- Metric: Profile visits
+- Target (monthly): 400
+- Source: LinkedIn Analytics
 
-## 3. KPI Dictionary
+- Metric: Website clicks from LinkedIn
+- Target (monthly): 120
+- Source: GA4 UTM
 
-### Acquisition KPIs
+- Metric: Install referrals from LinkedIn
+- Target (monthly): 10
+- Source: PostHog + UTM
 
-| KPI | Definition | Formula | Target | Source | Alert Threshold |
-|-----|-----------|---------|--------|--------|----------------|
-| CPL (Cost per Lead) | Total ad spend ÷ total leads | Spend / Leads | [FILL] | PostHog + Ad Platform | >[FILL] = review |
-| CPC (Cost per Click) | Spend ÷ link clicks | Spend / Clicks | [FILL] | Platform (signal) | — |
-| CTR (Click-Through Rate) | Clicks ÷ impressions | Clicks / Impressions × 100 | [FILL] | Platform (signal) | <[FILL]% = creative review |
-| Impression Share | % of available impressions captured | — | [FILL] | Platform (signal) | — |
-| Lead Volume | Total form submissions per period | Count of `lead_submitted` events | [FILL] | PostHog | — |
+### SEO (esteban.marketing blog)
+- Metric: Organic sessions
+- Target (90d): 1,200
+- Source: GA4
 
-### Funnel KPIs
+- Metric: Keyword rankings (top 10)
+- Target (90d): 8
+- Source: Semrush/Ahrefs
 
-| KPI | Definition | Formula | Target | Source |
-|-----|-----------|---------|--------|--------|
-| LP Conversion Rate | Leads ÷ landing page visitors | Leads / Sessions × 100 | [FILL]% | PostHog funnel |
-| Form Start Rate | Form starts ÷ page visitors | Form starts / Sessions × 100 | [FILL]% | PostHog |
-| Form Completion Rate | Form submits ÷ form starts | Submits / Starts × 100 | [FILL]% | PostHog |
-| Thank You Page Rate | TY page views ÷ form submits | TY views / Submits × 100 | ≥95% | PostHog — verifies tracking |
+- Metric: Blog-to-install conversion rate
+- Target (90d): 2.5%
+- Source: GA4 funnel
 
-### Quality KPIs
+### Cold Outbound (Email + LinkedIn DM)
+- Metric: Emails sent per week
+- Target: 50
+- Source: Outreach tool
 
-| KPI | Definition | Formula | Target | Source |
-|-----|-----------|---------|--------|--------|
-| Qualified Lead Rate | ICP-matched leads ÷ total leads | Qualified / Total × 100 | [FILL]% | CRM |
-| Lead-to-Call Rate | Discovery calls ÷ leads | Calls / Leads × 100 | [FILL]% | CRM |
-| Call-to-Close Rate | New clients ÷ calls | Closes / Calls × 100 | [FILL]% | CRM |
-| CPQ (Cost per Qualified Lead) | Spend ÷ qualified leads | Spend / Qualified Leads | [FILL] | PostHog + CRM |
+- Metric: Open rate
+- Target: 45%
+- Source: Lemlist/Apollo
 
-### Revenue KPIs
+- Metric: Reply rate
+- Target: 8%
+- Source: Lemlist/Apollo
 
-| KPI | Definition | Target | Source |
-|-----|-----------|--------|--------|
-| Revenue Attributed | Revenue from marketing-sourced leads | [FILL] | CRM |
-| CAC (Customer Acquisition Cost) | Total marketing spend ÷ new clients | [FILL] | CRM + Ad Platforms |
-| LTV:CAC Ratio | Customer lifetime value ÷ CAC | ≥3:1 | CRM |
-| MER (Marketing Efficiency Ratio) | Total revenue ÷ total ad spend | [FILL] | CRM + Platforms |
+- Metric: Demos booked per week
+- Target: 2
+- Source: Calendar
 
-### Channel KPIs
+- Metric: Installs from outbound
+- Target: 4 per week
+- Source: PostHog + UTM
 
-| Channel | Primary KPI | Target | Secondary KPI | Target |
-|---------|------------|--------|--------------|--------|
-| Meta Ads | CPL | [FILL] | Lead quality rate | [FILL]% |
-| Google Ads | CPL | [FILL] | Conversion rate | [FILL]% |
-| Email | CTR | [FILL]% | Lead conversion rate | [FILL]% |
-| Organic Social | Lead attribution | [FILL/month] | Reach | [FILL] |
+### Upwork
+- Metric: Profile views per week
+- Target: 30
+- Source: Upwork analytics
 
----
+- Metric: Proposals sent per week
+- Target: 8
+- Source: Manual
 
-## 4. Baseline Data
+- Metric: Proposal-to-contract rate
+- Target: 20%
+- Source: Manual
 
-```yaml
-baseline_established    : "[YES — YYYY-MM-DD | NOT_YET]"
-baseline_period         : "[YYYY-MM to YYYY-MM]"
-baseline_cpl            : "[USD or UNKNOWN]"
-baseline_lead_volume    : "[# per month or UNKNOWN]"
-baseline_qualified_rate : "[% or UNKNOWN]"
-```
+- Metric: Monthly Upwork revenue
+- Target: $1,000
+- Source: Upwork
 
----
+## CAMPAIGN-LEVEL KPI STANDARDS
 
-## 5. Reporting Cadence
+### Content Campaign (LinkedIn posts)
+- Minimum acceptable: 1,000 impressions, 2% engagement rate
+- Good: 2,500 impressions, 4% engagement, 30 profile visits
+- Great: 5,000+ impressions, 6% engagement, ≥1 inbound DM or install
 
-> Full reporting schedule in `Core_Strategy/09_ANALYTICS/REPORTING-CADENCE.md`.
+### Email Campaign (outbound)
+- Minimum acceptable: 35% open rate, 5% reply rate
+- Good: 45% open, 8% positive reply
+- Great: ≥1 demo booked per 50 emails sent
 
-| Report Type | Frequency | Owner | Audience |
-|------------|-----------|-------|---------|
-| Campaign pulse check | Daily (first 7 days) | {{LEAD_AGENT}} | {{LEAD_AGENT}} only |
-| Weekly performance review | Weekly | {{LEAD_AGENT}} | {{LEAD_AGENT}} + Client |
-| Monthly report | Monthly | {{LEAD_AGENT}} | Client |
-| Campaign post-mortem | Per campaign end | {{LEAD_AGENT}} | {{LEAD_AGENT}} + Client |
+### Paid Ad (LinkedIn — when activated)
+- Minimum acceptable: CPI < $60, CTR > 1.5%
+- Good: CPI < $40, CTR > 2.5%, activation rate > 50%
+- Kill threshold: CPI > $80 after $500 spend — pause and rebuild creative
 
----
+## REPORTING CADENCE
 
-## 6. Optimization Decision Rules
+| Report                  | Frequency         | Owner         | Format                    | Distribution         |
+|-------------------------|-------------------|---------------|--------------------------|----------------------|
+| Install + Activation    | Weekly (Monday)   | MarkOS Agent  | Supabase query → Linear   | Esteban              |
+| Channel performance     | Weekly (Monday)   | MarkOS Agent  | Table in Linear           | Esteban              |
+| MRR + Revenue          | Monthly           | Esteban       | Supabase dashboard        | Esteban + team       |
+| Full AARRR review      | Monthly           | Esteban       | Linear document           | Esteban              |
+| KPI vs target review   | Quarterly         | Esteban       | Linear document           | Full team            |
 
-```yaml
-# Budget rules
-budget_increase_condition   : "CPL ≤ target AND lead volume ≥ target for 7 consecutive days"
-budget_decrease_condition   : "CPL > [150% of target] for 5 consecutive days"
-campaign_pause_condition    : "CPL > [200% of target] OR zero conversions for 4 days"
+## ALERT THRESHOLDS (Auto-flag to Esteban)
 
-# Creative rules
-creative_refresh_condition  : "CTR drops >30% vs. 7-day average OR frequency >4"
-creative_test_condition     : "Any ad set running >7 days with ≥500 impressions"
-
-# Attribution rules  
-optimization_data_source    : "PostHog — PostHog event count is the number used in all decisions"
-platform_data_usage         : "Platform ROAS/CPA used only to cross-check. Never used alone."
-```
+| Condition                                 | Threshold                | Action                                 |
+|-------------------------------------------|--------------------------|----------------------------------------|
+| Install-to-activation rate drops           | Below 50% for 7 days     | Linear ticket: "Activation rate alert" |
+| Day-30 retention drops                     | Below 30%                | Linear ticket: "Retention alert"       |
+| Outbound open rate drops                   | Below 30%                | Linear ticket: "Review email deliverability" |
+| Zero installs                             | 7 consecutive days       | Linear ticket: "Acquisition gap — action required" |
+| Paid CPL spikes                           | 2× baseline              | Linear ticket: "Pause paid — CPI spike"|

@@ -14,10 +14,12 @@ const path = require('path');
 const fs = require('fs');
 
 const CWD = process.cwd();
-const MARKOS_ROOT = path.resolve(CWD, '.agent/markos');
-const LEGACY_MARKOS_ROOT = path.resolve(CWD, '.agent/markos');
-const MARKOS_ROOT = fs.existsSync(MARKOS_ROOT) ? MARKOS_ROOT : LEGACY_MARKOS_ROOT;
 
+// ...existing code...
+
+// Use shared markosRoot utility from core.cjs for DRY and maintainability
+const { markosRoot } = require('./lib/core.cjs');
+const MARKOS_ROOT = markosRoot(CWD);
 // ─── Vector Provider Bootstrap ───────────────────────────────────────────────
 // Ensures vector providers are configured before vector-dependent commands run.
 const VECTOR_BOOTSTRAP_FILE = path.join(CWD, 'bin/ensure-vector.cjs');
@@ -60,9 +62,7 @@ function getFilesList() {
   return args.slice(idx + 1).filter(a => !a.startsWith('--'));
 }
 
-// ─── Command router ──────────────────────────────────────────────────────────
-
-if (!command) {
+function printUsage() {
   const version = fs.existsSync(path.join(MARKOS_ROOT, 'VERSION'))
     ? fs.readFileSync(path.join(MARKOS_ROOT, 'VERSION'), 'utf-8').trim()
     : 'unknown';
@@ -98,143 +98,167 @@ if (!command) {
   console.log('Documentation:');
   console.log('  Read .protocol-lore/INDEX.md for full architecture map.');
   console.log('  Read .protocol-lore/DEFCON.md for emergency escalation rules.');
-  process.exit(0);
 }
 
-// ─── Route commands ──────────────────────────────────────────────────────────
+// Commands that require vector providers to be configured
+const VECTOR_COMMANDS = new Set(['init', 'mir-audit']);
 
-switch (command) {
-  // ── Init ────────────────────────────────────────────────────────────────────
-  case 'init': {
-    checkSetup();
-    const { cmdInit } = require('./lib/init.cjs');
-    cmdInit(CWD, getArg(1), getArg(2), rawFlag);
-    break;
+async function main() {
+  if (!command) {
+    printUsage();
+    process.exit(0);
   }
 
-  // ── Config ──────────────────────────────────────────────────────────────────
-  case 'config-new-project': {
-    const { cmdConfigNewProject } = require('./lib/config.cjs');
-    cmdConfigNewProject(CWD, getArg(1), rawFlag);
-    break;
-  }
-  case 'config-set': {
-    const { cmdConfigSet } = require('./lib/config.cjs');
-    cmdConfigSet(CWD, getArg(1), getArg(2), rawFlag);
-    break;
-  }
-  case 'config-get': {
-    const { cmdConfigGet } = require('./lib/config.cjs');
-    cmdConfigGet(CWD, getArg(1), rawFlag);
-    break;
-  }
-
-  // ── Roadmap ─────────────────────────────────────────────────────────────────
-  case 'roadmap': {
-    checkSetup();
-    const subCmd = getArg(1);
-    const { cmdRoadmapGetPhase, cmdRoadmapListPhases } = require('./lib/roadmap.cjs');
-    switch (subCmd) {
-      case 'get-phase':
-        cmdRoadmapGetPhase(CWD, getArg(2), rawFlag);
-        break;
-      case 'list-phases':
-        cmdRoadmapListPhases(CWD, rawFlag);
-        break;
-      default:
-        process.stderr.write(`Unknown roadmap subcommand: ${subCmd}\n`);
-        process.exit(1);
+  if (VECTOR_COMMANDS.has(command)) {
+    try {
+      await bootstrapVectorStores();
+    } catch (err) {
+      // Gracefully handle optional missing bootstrap file; rethrow other errors.
+      if (err && (err.code === 'MODULE_NOT_FOUND' || /ensure-vector\.cjs/.test(String(err.message || '')))) {
+        process.stderr.write('[MarkOS] Optional vector bootstrap file missing (bin/ensure-vector.cjs). Continuing without vector store initialization.\n');
+      } else {
+        throw err;
+      }
     }
-    break;
   }
 
-  // ── Phase ───────────────────────────────────────────────────────────────────
-  case 'phase-plan-index': {
-    checkSetup();
-    const { cmdPhasePlanIndex } = require('./lib/phase.cjs');
-    cmdPhasePlanIndex(CWD, getArg(1), rawFlag);
-    break;
-  }
-  case 'find-phase': {
-    checkSetup();
-    const { cmdFindPhase } = require('./lib/phase.cjs');
-    cmdFindPhase(CWD, getArg(1), rawFlag);
-    break;
-  }
-  case 'phase': {
-    checkSetup();
-    const subCmd = getArg(1);
-    if (subCmd === 'complete') {
-      const { cmdPhaseComplete } = require('./lib/phase.cjs');
-      cmdPhaseComplete(CWD, getArg(2), rawFlag);
-    } else {
-      process.stderr.write(`Unknown phase subcommand: ${subCmd}\n`);
+  switch (command) {
+    // ── Init ──────────────────────────────────────────────────────────────────
+    case 'init': {
+      checkSetup();
+      const { cmdInit } = require('./lib/init.cjs');
+      cmdInit(CWD, getArg(1), getArg(2), rawFlag);
+      break;
+    }
+
+    // ── Config ────────────────────────────────────────────────────────────────
+    case 'config-new-project': {
+      const { cmdConfigNewProject } = require('./lib/config.cjs');
+      cmdConfigNewProject(CWD, getArg(1), rawFlag);
+      break;
+    }
+    case 'config-set': {
+      const { cmdConfigSet } = require('./lib/config.cjs');
+      cmdConfigSet(CWD, getArg(1), getArg(2), rawFlag);
+      break;
+    }
+    case 'config-get': {
+      const { cmdConfigGet } = require('./lib/config.cjs');
+      cmdConfigGet(CWD, getArg(1), rawFlag);
+      break;
+    }
+
+    // ── Roadmap ───────────────────────────────────────────────────────────────
+    case 'roadmap': {
+      checkSetup();
+      const subCmd = getArg(1);
+      const { cmdRoadmapGetPhase, cmdRoadmapListPhases } = require('./lib/roadmap.cjs');
+      switch (subCmd) {
+        case 'get-phase':
+          cmdRoadmapGetPhase(CWD, getArg(2), rawFlag);
+          break;
+        case 'list-phases':
+          cmdRoadmapListPhases(CWD, rawFlag);
+          break;
+        default:
+          process.stderr.write(`Unknown roadmap subcommand: ${subCmd}\n`);
+          process.exit(1);
+      }
+      break;
+    }
+
+    // ── Phase ─────────────────────────────────────────────────────────────────
+    case 'phase-plan-index': {
+      checkSetup();
+      const { cmdPhasePlanIndex } = require('./lib/phase.cjs');
+      cmdPhasePlanIndex(CWD, getArg(1), rawFlag);
+      break;
+    }
+    case 'find-phase': {
+      checkSetup();
+      const { cmdFindPhase } = require('./lib/phase.cjs');
+      cmdFindPhase(CWD, getArg(1), rawFlag);
+      break;
+    }
+    case 'phase': {
+      checkSetup();
+      const subCmd = getArg(1);
+      if (subCmd === 'complete') {
+        const { cmdPhaseComplete } = require('./lib/phase.cjs');
+        cmdPhaseComplete(CWD, getArg(2), rawFlag);
+      } else {
+        process.stderr.write(`Unknown phase subcommand: ${subCmd}\n`);
+        process.exit(1);
+      }
+      break;
+    }
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    case 'state': {
+      checkSetup();
+      const subCmd = getArg(1);
+      const { cmdStateBeginPhase, cmdStateUpdate } = require('./lib/state.cjs');
+      switch (subCmd) {
+        case 'begin-phase':
+          cmdStateBeginPhase(CWD, getFlag('phase'), getFlag('name'), getFlag('plans'), rawFlag);
+          break;
+        case 'update':
+          cmdStateUpdate(CWD, getArg(2), getArg(3), rawFlag);
+          break;
+        default:
+          process.stderr.write(`Unknown state subcommand: ${subCmd}\n`);
+          process.exit(1);
+      }
+      break;
+    }
+
+    // ── Utilities ─────────────────────────────────────────────────────────────
+    case 'commit': {
+      const { cmdCommit } = require('./lib/commands.cjs');
+      const noVerify = args.includes('--no-verify');
+      cmdCommit(CWD, getArg(1), getFilesList(), rawFlag, noVerify);
+      break;
+    }
+    case 'mir-audit': {
+      checkSetup();
+      const { cmdMirAudit } = require('./lib/commands.cjs');
+      cmdMirAudit(CWD, rawFlag);
+      break;
+    }
+    case 'slug': {
+      const { cmdGenerateSlug } = require('./lib/commands.cjs');
+      cmdGenerateSlug(getArg(1), rawFlag);
+      break;
+    }
+    case 'timestamp': {
+      const { cmdCurrentTimestamp } = require('./lib/commands.cjs');
+      cmdCurrentTimestamp(getArg(1), rawFlag);
+      break;
+    }
+    case 'verify-path': {
+      const { cmdVerifyPathExists } = require('./lib/commands.cjs');
+      cmdVerifyPathExists(CWD, getArg(1), rawFlag);
+      break;
+    }
+
+    // ── Unknown ───────────────────────────────────────────────────────────────
+    default:
+      process.stderr.write(`[MarkOS] Unknown command: '${command}'\n`);
+      process.stderr.write('Run markos-tools without arguments for usage.\n');
       process.exit(1);
-    }
-    break;
   }
-
-  // ── State ───────────────────────────────────────────────────────────────────
-  case 'state': {
-    checkSetup();
-    const subCmd = getArg(1);
-    const { cmdStateBeginPhase, cmdStateUpdate } = require('./lib/state.cjs');
-    switch (subCmd) {
-      case 'begin-phase':
-        cmdStateBeginPhase(CWD, getFlag('phase'), getFlag('name'), getFlag('plans'), rawFlag);
-        break;
-      case 'update':
-        cmdStateUpdate(CWD, getArg(2), getArg(3), rawFlag);
-        break;
-      default:
-        process.stderr.write(`Unknown state subcommand: ${subCmd}\n`);
-        process.exit(1);
-    }
-    break;
-  }
-
-  // ── Utilities ───────────────────────────────────────────────────────────────
-  case 'commit': {
-    const { cmdCommit } = require('./lib/commands.cjs');
-    const noVerify = args.includes('--no-verify');
-    cmdCommit(CWD, getArg(1), getFilesList(), rawFlag, noVerify);
-    break;
-  }
-  case 'mir-audit': {
-    checkSetup();
-    const { cmdMirAudit } = require('./lib/commands.cjs');
-    cmdMirAudit(CWD, rawFlag);
-    break;
-  }
-  case 'slug': {
-    const { cmdGenerateSlug } = require('./lib/commands.cjs');
-    cmdGenerateSlug(getArg(1), rawFlag);
-    break;
-  }
-  case 'timestamp': {
-    const { cmdCurrentTimestamp } = require('./lib/commands.cjs');
-    cmdCurrentTimestamp(getArg(1), rawFlag);
-    break;
-  }
-  case 'verify-path': {
-    const { cmdVerifyPathExists } = require('./lib/commands.cjs');
-    cmdVerifyPathExists(CWD, getArg(1), rawFlag);
-    break;
-  }
-
-  // ── Unknown ─────────────────────────────────────────────────────────────────
-  default:
-    process.stderr.write(`[MarkOS] Unknown command: '${command}'\n`);
-    process.stderr.write('Run markos-tools without arguments for usage.\n');
-    process.exit(1);
 }
 
-// ─── Execution ───────────────────────────────────────────────────────────────
-
-(async () => {
-  // Commands that require vector providers to be configured
-  const vectorCommands = ['init', 'mir-audit'];
-  if (vectorCommands.includes(command)) {
-    await bootstrapVectorStores();
+main().catch((err) => {
+  // Error categorization for better debugging
+  if (err && err.name === 'ValidationError') {
+    process.stderr.write(`[MarkOS] Validation error: ${err.message}\n`);
+    process.exit(2);
+  } else if (err && err.code === 'MODULE_NOT_FOUND') {
+    process.stderr.write(`[MarkOS] Module not found: ${err.message}\n`);
+    process.exit(3);
+  } else {
+    process.stderr.write(`[MarkOS] Unexpected error: ${err && err.message ? err.message : String(err)}\n`);
+    process.exit(1);
   }
-})();
+});

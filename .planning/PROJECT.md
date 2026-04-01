@@ -1,8 +1,8 @@
 # MarkOS (MarkOS Protocol)
 
-## Current Milestone: v2.2 — Platform Engineering (planned)
+## Current Milestone: v2.3 — Codebase Documentation Intelligence (completed 2026-03-31)
 
-**Status:** v2.1 shipped 2026-03-28. v2.2 planned with Phases 28-31 and ready for execution sequencing.
+**Status:** v2.1 shipped 2026-03-28. v2.2 shipped 2026-03-31 (Phases 28–32). v2.3 shipped 2026-03-31 (Phase 33). All requirements through DOC-05 are validated and delivered.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -14,6 +14,8 @@ Standardization and automation of marketing ideation, planning, and execution vi
 
 ## Context
 This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. Following the successful deployment of the core framework, onboarding engine, strategic enrichment layer, and documentation hardening, the next milestone is focused on product stabilization rather than net-new scaffolding. The system already operates as a local-first marketing OS with optional hosted entrypoints; the remaining work is to reduce identity drift, harden runtime behavior, improve onboarding reliability, and strengthen the path from approved strategy state into repeatable execution.
+
+The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. The next planning horizon is MIR Gate completion, beta client onboarding, and paid-media activation once MRR targets are established.
 
 ## Residual Onboarding Warning Behavior
 
@@ -55,19 +57,16 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 ## Requirements
 
 ### Active
-- [ ] P0-01: Approve path write resolution is crash-free and local/hosted behavior is explicit.
-- [ ] P0-02: Node runtime contract is enforced at `>=20.16.0` in metadata, installer, and docs.
-- [ ] P0-03: Install flow idempotently injects private-data `.gitignore` protections.
-- [ ] P1-01: `/linear/sync` creates issues from ITM templates with deterministic assignee mapping.
-- [ ] P1-02: `/campaign/result` writes winners catalogs and persists retrieval tags.
-- [ ] P1-03: Interview flow is capped at five questions with progress + auto-proceed.
-- [ ] MDB-01: MarkOSDB contracts defined for Supabase + Upstash.
-- [ ] MDB-02: Idempotent local-to-cloud ingestion from `.markos-local` artifacts.
-- [ ] MDB-03: Next.js + Supabase auth boundary for cloud-canonical operations.
+- [ ] MIR-G1: Gate 1 intake files fully populated without placeholders (PROFILE, VOICE-TONE, MESSAGING-FRAMEWORK, LEAN-CANVAS, JTBD-MATRIX).
+- [ ] MIR-G2: Gate 2 intake files fully populated without placeholders (TRACKING, AUTOMATION, KPI-FRAMEWORK).
+- [ ] BETA-01: First 10 beta agency clients onboarded and producing live MarkOS sessions.
+- [ ] PLG-01: build-in-public LinkedIn content sequence launched (Esteban personal brand).
+
+### Validated & Delivered (v2.1)
 - [x] RLH-01: Reliability/observability SLOs for core onboarding endpoints.
 - [x] RLH-02: Migration readiness controls with dry-run and rollback-safe modes.
 - [x] RLH-03: Security/compliance guardrails for secrets, logs, and retention.
-- [x] RLH-04: Compatibility retirement policy with operator discretion and optional evidence references.
+- [x] RLH-04: Compatibility retirement policy with manual-discretion and optional evidence references.
 
 ### Validated & Delivered (v2.1)
 - âœ“ Normalized MarkOS identity across public UX, package metadata, and onboarding UI with explicit backward-compat classification map — v2.1 (Phase 23)
@@ -77,7 +76,19 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 - âœ“ Strengthened handoff from approved MIR/MSP state into execution workflows with checklist-based readiness contract and actionable telemetry — v2.1 (Phase 27)
 
 ### Validated & Delivered (v2.2)
-- âœ“ Completed rollout hardening for reliability checkpoints, deterministic migration safety, hosted auth guardrails, and operator-driven compatibility retirement policy — v2.2 (Phase 31)
+- ✔ Crash-free approve-path write resolution with explicit local/hosted env guards and idempotent gitignore injection — v2.2 (Phase 28)
+- ✔ Linear sync + campaign result endpoints with ITM-template issue creation and winners-catalog persistence — v2.2 (Phase 29)
+- ✔ Interview flow capped at five questions with progress bar and auto-proceed — v2.2 (Phase 29)
+- ✔ MarkOSDB contracts for Supabase + Upstash, idempotent ingestion, and Next.js auth boundary — v2.2 (Phase 30)
+- ✔ Rollout hardening: reliability SLOs, migration safety, secrets guardrails, compatibility retirement policy — v2.2 (Phase 31)
+- ✔ Marketing Literacy Base: vector-store literacy primitives, ingestion/admin CLI, orchestrator integration — v2.2 (Phase 32)
+
+### Validated & Delivered (v2.3)
+- ✔ Canonical codebase map under `.planning/codebase/` covering architecture, routes, structure, conventions, testing, and concerns — v2.3 (Phase 33)
+- ✔ Route-by-route documentation for all runtime surfaces (onboarding HTTP, API wrappers, CLI entrypoints) — v2.3 (Phase 33)
+- ✔ Folder-by-folder and file-by-file documentation for all maintained surfaces — v2.3 (Phase 33)
+- ✔ Documentation freshness rules and verification checks for route additions, file moves, topology changes — v2.3 (Phase 33)
+- ✔ Protocol-facing and human-facing docs updated to deep-link to canonical map — v2.3 (Phase 33)
 
 ### Validated & Delivered (v1.0 & v1.1)
 - âœ“ Defined the core `markos` workflow integrating MIR-TEMPLATE and MSP-TEMPLATE — v1.0
@@ -105,6 +116,7 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 | Fixture-driven quality assertions | Extraction quality assertions are fixture-backed rather than inline payload-heavy tests | âœ“ Good — Phase 25 test suite |
 | Hosted runtime write limitation | Vercel/API-wrapper mode intentionally cannot persist approve/write flows to local disk — explicit degraded behavior | âœ“ Good — documented in Phase 24 residuals |
 | v2.2 sequencing | Execute P0 runtime/data-safety gates before operational integrations, then MarkOSDB migration, then rollout hardening | âœ“ Good — locked in Phases 28-31 |
+| Canonical codebase map | GSD `.planning/codebase/` becomes the canonical documentation layer; `TECH-MAP.md`, `.protocol-lore/CODEBASE-MAP.md`, and `README.md` should summarize and deep-link rather than compete with it | ✔ Delivered — v2.3 Phase 33 |
 
 ## Evolution
 
@@ -126,5 +138,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-03-28 after v2.2 planning (Phases 28-31).
-
+Last updated: 2026-03-31 after v2.3 completion (Phase 33). All requirements through DOC-05 validated and delivered.
