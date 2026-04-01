@@ -144,6 +144,13 @@ Plans:
 **Status:** 📋 Planned
 **Milestone:** v3.0 MarkOS Literacy System
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 41-01-PLAN.md — Wave 1 test scaffold: create node:test todo contract for 8 required resolver/generator/approve behaviors
+- [ ] 41-02-PLAN.md — Wave 2 implementation: add resolveSkeleton + SEED_PATH + skeleton-generator + approve hook + executable tests
+- [ ] 41-03-PLAN.md — Wave 3 template registry: author and verify 35 base skeleton files across 5 disciplines x 7 models
+
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
 
