@@ -413,6 +413,97 @@ function parseAssigneeMap(rawMap) {
   }
 }
 
+function shouldApplyIntakeValidation(seed = {}) {
+  return Boolean(
+    seed?.company?.stage ||
+    seed?.audience?.pain_points ||
+    seed?.market?.competitors ||
+    seed?.market?.market_trends ||
+    seed?.content?.content_maturity ||
+    seed?.project_slug
+  );
+}
+
+async function autoCreateLinearIntakeTickets({ slug, phase = '34', seed = {} }) {
+  const intakeTokens = ['MARKOS-ITM-OPS-03', 'MARKOS-ITM-INT-01'];
+
+  try {
+    const secretCheck = validateRequiredSecrets({
+      runtimeMode: createRuntimeContext().mode,
+      operation: 'linear_sync_write',
+      env: process.env,
+    });
+
+    if (!secretCheck.ok) {
+      return {
+        created: [],
+        skipped: intakeTokens.map((token) => ({ token, reason: 'missing_linear_secret' })),
+      };
+    }
+
+    const { getTeamId, getUserId, createIssue } = require('./linear-client.cjs');
+    const registry = readLinearTemplateRegistry();
+    const teamKeyOrId = process.env.LINEAR_TEAM_KEY || process.env.LINEAR_TEAM_ID;
+    const teamId = await getTeamId(teamKeyOrId);
+    const assigneeMap = parseAssigneeMap(process.env.LINEAR_ASSIGNEE_MAP);
+    const created = [];
+    const skipped = [];
+
+    for (const token of intakeTokens) {
+      const templatePath = registry.get(token);
+      if (!templatePath || !fs.existsSync(templatePath)) {
+        skipped.push({ token, reason: 'unknown_token' });
+        continue;
+      }
+
+      const templateContent = fs.readFileSync(templatePath, 'utf8');
+      const domain = deriveTokenDomain(token);
+      const assigneeHint = assigneeMap[domain] || process.env.LINEAR_ASSIGNEE_DEFAULT;
+      const assigneeId = await getUserId(assigneeHint);
+      const variables = {
+        client_name: seed?.company?.name || slug,
+        company_stage: seed?.company?.stage || 'unknown-stage',
+        project_slug: slug,
+      };
+      const title = buildLinearTitle(token, templateContent, variables, {
+        campaign_name: slug,
+        phase,
+      });
+
+      const description = [
+        `Token: ${token}`,
+        `Project Slug: ${slug}`,
+        `Phase: ${phase}`,
+        '',
+        templateContent,
+      ].join('\n');
+
+      const issue = await createIssue({
+        teamId,
+        title,
+        description,
+        assigneeId: assigneeId || undefined,
+      });
+
+      created.push({
+        token,
+        identifier: issue.identifier,
+        id: issue.id,
+        title: issue.title,
+        url: issue.url,
+      });
+    }
+
+    return { created, skipped };
+  } catch (error) {
+    return {
+      created: [],
+      skipped: intakeTokens.map((token) => ({ token, reason: 'linear_sync_error' })),
+      error: error.message,
+    };
+  }
+}
+
 async function handleLinearSync(req, res) {
   const startedAt = Date.now();
   const runtime = createRuntimeContext();
@@ -967,9 +1058,13 @@ async function handleSubmit(req, res) {
     const body = await readBody(req);
     const seed = body.seed || body; // Support payload {"seed": {...}, "project_slug": "..."}
 
-    // Phase 34: Validate intake (8 business rules)
-    const validation = validateIntake(seed);
-    if (!validation.valid) {
+    // Phase 34: strict validation is applied for enriched intake payloads.
+    const applyStrictValidation = shouldApplyIntakeValidation(seed);
+    const validation = applyStrictValidation
+      ? validateIntake(seed)
+      : { valid: true, failedRules: [], errors: {} };
+
+    if (applyStrictValidation && !validation.valid) {
       emitRolloutEndpointTelemetry({
         endpoint,
         startedAt,
@@ -1010,6 +1105,12 @@ async function handleSubmit(req, res) {
 
     slug = resolveProjectSlug(runtime, slug);
 
+    const linearTickets = await autoCreateLinearIntakeTickets({
+      slug,
+      phase: '34',
+      seed,
+    });
+
     let seedPath = null;
     if (runtime.canWriteLocalFiles) {
       const outputPath = resolveSeedOutputPath(runtime.config);
@@ -1034,7 +1135,16 @@ async function handleSubmit(req, res) {
       success: true,
       seed_path: seedPath,
       slug,
+      validation: {
+        applied: applyStrictValidation,
+        valid: true,
+        failed_rules: [],
+      },
+      linear_tickets: linearTickets.created || [],
+      linear_skipped: linearTickets.skipped || [],
+      linear_error: linearTickets.error || null,
       drafts,
+      session_url: `http://localhost:${runtime.config?.port || 4242}/?slug=${encodeURIComponent(slug)}`,
       vector_store: vectorStoreResults,
       errors,
     });

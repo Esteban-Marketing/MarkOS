@@ -9,7 +9,7 @@ created: 2026-03-31
 
 # MARKOS-ITM-OPS-03 — Client Intake Received
 
-**Linear Title Template:** `[MARKOS] Intake: {client_name} — {company_stage}`
+**Linear Title format:** `[MARKOS] Intake: {client_name} — {company_stage}`
 
 **Description:**
 Client intake received and validated. Project `{client_name}` ready for onboarding.

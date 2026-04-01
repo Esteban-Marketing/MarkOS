@@ -48,6 +48,8 @@ mir_gate_required: none
 | MARKOS-ITM-ACQ-03 | `LINEAR-TASKS/MARKOS-ITM-ACQ-03-linkedin-outbound.md` | Acquisition | B03, B05, B07, B08 | Gate 1 | active |
 | MARKOS-ITM-ACQ-04 | `LINEAR-TASKS/MARKOS-ITM-ACQ-04-affiliate-influencer.md` | Acquisition — Affiliate/Influencer | B03, B05 | Gate 1 + legal | active |
 | MARKOS-ITM-COM-01 | `LINEAR-TASKS/MARKOS-ITM-COM-01-community-event.md` | Community & Events | B07 | Gate 1 | active |
+| MARKOS-ITM-OPS-03 | `LINEAR-TASKS/MARKOS-ITM-OPS-03.md` | Intake Ops | R001-R008 | none | active |
+| MARKOS-ITM-INT-01 | `LINEAR-TASKS/MARKOS-ITM-INT-01.md` | Intake Validation | R001-R008 | none | active |
 | MARKOS-ITM-OPS-02 | `LINEAR-TASKS/MARKOS-ITM-ANA-02-ab-test.md` | Campaign Ops — Lifecycle Automation | B01, B02 | Gate 2 | active |
 | MARKOS-ITM-ANA-02 | `LINEAR-TASKS/MARKOS-ITM-ANA-02-ab-test-config.md` | Campaign Analytics — A/B Test | B08, B09 | Gate 2 | active |
 
@@ -89,6 +91,8 @@ mir_gate_required: none
 | MARKOS-ITM-ACQ-03 | `[MARKOS] LinkedIn Outbound: {segment_name} — {sequence_name} — {N}-touch` |
 | MARKOS-ITM-ACQ-04 | `[MARKOS] Influencer Activation: {creator_name} — {platform} — {campaign_name}` |
 | MARKOS-ITM-COM-01 | `[MARKOS] Community Event: {event_name} — {date}` |
+| MARKOS-ITM-OPS-03 | `[MARKOS] Intake: {client_name} — {company_stage}` |
+| MARKOS-ITM-INT-01 | `[MARKOS] Intake Validation: {client_name} — Data Quality Check` |
 | MARKOS-ITM-OPS-02 | `[MARKOS] Lifecycle Automation: {sequence_name} — {trigger_event}` |
 | MARKOS-ITM-ANA-02 | `[MARKOS] A/B Test: {element_tested} — {page_or_channel} — {hypothesis_slug}` |
 

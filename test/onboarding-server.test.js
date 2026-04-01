@@ -25,6 +25,66 @@ function createMockResponse() {
   };
 }
 
+function createPhase34ValidSeed(overrides = {}) {
+  const base = {
+    company: {
+      name: 'Acme Corp',
+      stage: 'pre-launch',
+      industry: 'Cybersecurity',
+    },
+    product: {
+      name: 'Acme Shield',
+      category: 'Software',
+    },
+    audience: {
+      segment_name: 'CISOs',
+      pain_points: ['Noisy tooling', 'Unclear attribution'],
+    },
+    market: {
+      competitors: [
+        { name: 'Corp A', positioning: 'Enterprise-first' },
+        { name: 'Corp B', positioning: 'SMB-first' },
+      ],
+      market_trends: ['AI-assisted security triage'],
+    },
+    content: {
+      content_maturity: 'basic',
+    },
+  };
+
+  return {
+    ...base,
+    ...overrides,
+    company: { ...base.company, ...(overrides.company || {}) },
+    product: { ...base.product, ...(overrides.product || {}) },
+    audience: { ...base.audience, ...(overrides.audience || {}) },
+    market: { ...base.market, ...(overrides.market || {}) },
+    content: { ...base.content, ...(overrides.content || {}) },
+  };
+}
+
+function seedPhase34LinearTemplates(tmpRoot) {
+  const linearTemplatesDir = path.join(tmpRoot, '.agent', 'markos', 'templates', 'LINEAR-TASKS');
+  fs.mkdirSync(linearTemplatesDir, { recursive: true });
+  fs.writeFileSync(path.join(linearTemplatesDir, '_CATALOG.md'), [
+    '| TOKEN_ID | File | Category | Triggers | Gate | Status |',
+    '|----------|------|----------|----------|------|--------|',
+    '| MARKOS-ITM-OPS-03 | `LINEAR-TASKS/MARKOS-ITM-OPS-03.md` | Intake Ops | R001-R008 | none | active |',
+    '| MARKOS-ITM-INT-01 | `LINEAR-TASKS/MARKOS-ITM-INT-01.md` | Intake Validation | R001-R008 | none | active |',
+    '',
+  ].join('\n'));
+  fs.writeFileSync(path.join(linearTemplatesDir, 'MARKOS-ITM-OPS-03.md'), [
+    '**Linear Title format:** `[MARKOS] Intake: {client_name} — {company_stage}`',
+    '',
+    '# Intake Received',
+  ].join('\n'));
+  fs.writeFileSync(path.join(linearTemplatesDir, 'MARKOS-ITM-INT-01.md'), [
+    '**Linear Title format:** `[MARKOS] Intake Validation: {client_name} — Data Quality Check`',
+    '',
+    '# Intake Validation',
+  ].join('\n'));
+}
+
 function loadFreshModule(modulePath) {
   delete require.cache[require.resolve(modulePath)];
   return require(modulePath);
@@ -1105,6 +1165,331 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
         delete process.env.MARKOS_ADMIN_SECRET;
       } else {
         process.env.MARKOS_ADMIN_SECRET = oldAdminSecret;
+      }
+    }
+  });
+
+  await t.test('3.17 Phase 34: Intake Validation Rule R001 - company.name required', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+
+    const handlers = loadFreshModule(handlersPath);
+    const invalidRes = createMockResponse();
+    await handlers.handleSubmit(
+      createJsonRequest(createPhase34ValidSeed({ company: { name: '' } }), '/submit'),
+      invalidRes
+    );
+    assert.equal(invalidRes.statusCode, 400);
+    const invalidPayload = JSON.parse(invalidRes.body);
+    assert.equal(invalidPayload.error, 'INTAKE_VALIDATION_FAILED');
+    assert.ok(invalidPayload.failed_rules.includes('R001'));
+
+    await withMockedModule(orchestratorPath, {
+      orchestrate: async () => ({ drafts: { company_profile: 'ok' }, vectorStoreResults: [], errors: [] }),
+    }, async () => {
+      const refreshedHandlers = loadFreshModule(handlersPath);
+      const validRes = createMockResponse();
+      await refreshedHandlers.handleSubmit(
+        createJsonRequest(createPhase34ValidSeed(), '/submit'),
+        validRes
+      );
+      assert.equal(validRes.statusCode, 200);
+    });
+  });
+
+  await t.test('3.18 Phase 34: Intake Validation Rule R002 - company.stage enum', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+
+    const handlers = loadFreshModule(handlersPath);
+    const invalidRes = createMockResponse();
+    await handlers.handleSubmit(
+      createJsonRequest(createPhase34ValidSeed({ company: { stage: 'invalid-stage' } }), '/submit'),
+      invalidRes
+    );
+    assert.equal(invalidRes.statusCode, 400);
+    const invalidPayload = JSON.parse(invalidRes.body);
+    assert.ok(invalidPayload.failed_rules.includes('R002'));
+
+    await withMockedModule(orchestratorPath, {
+      orchestrate: async () => ({ drafts: { company_profile: 'ok' }, vectorStoreResults: [], errors: [] }),
+    }, async () => {
+      const refreshedHandlers = loadFreshModule(handlersPath);
+      const validRes = createMockResponse();
+      await refreshedHandlers.handleSubmit(
+        createJsonRequest(createPhase34ValidSeed({ company: { stage: '+10M MRR' } }), '/submit'),
+        validRes
+      );
+      assert.equal(validRes.statusCode, 200);
+    });
+  });
+
+  await t.test('3.19 Phase 34: Intake Validation Rule R004 - audience.pain_points min 2', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+
+    const handlers = loadFreshModule(handlersPath);
+
+    const missingRes = createMockResponse();
+    await handlers.handleSubmit(
+      createJsonRequest(createPhase34ValidSeed({ audience: { pain_points: [] } }), '/submit'),
+      missingRes
+    );
+    assert.equal(missingRes.statusCode, 400);
+    assert.ok(JSON.parse(missingRes.body).failed_rules.includes('R004'));
+
+    const oneRes = createMockResponse();
+    await handlers.handleSubmit(
+      createJsonRequest(createPhase34ValidSeed({ audience: { pain_points: ['only one'] } }), '/submit'),
+      oneRes
+    );
+    assert.equal(oneRes.statusCode, 400);
+    assert.ok(JSON.parse(oneRes.body).failed_rules.includes('R004'));
+
+    await withMockedModule(orchestratorPath, {
+      orchestrate: async () => ({ drafts: { audience: 'ok' }, vectorStoreResults: [], errors: [] }),
+    }, async () => {
+      const refreshedHandlers = loadFreshModule(handlersPath);
+      const validRes = createMockResponse();
+      await refreshedHandlers.handleSubmit(
+        createJsonRequest(createPhase34ValidSeed({ audience: { pain_points: ['pain one', 'pain two'] } }), '/submit'),
+        validRes
+      );
+      assert.equal(validRes.statusCode, 200);
+    });
+  });
+
+  await t.test('3.20 Phase 34: Intake Validation Rule R005 - market.competitors min 2 with positioning', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+
+    const handlers = loadFreshModule(handlersPath);
+
+    const missingRes = createMockResponse();
+    await handlers.handleSubmit(
+      createJsonRequest(createPhase34ValidSeed({ market: { competitors: [] } }), '/submit'),
+      missingRes
+    );
+    assert.equal(missingRes.statusCode, 400);
+    assert.ok(JSON.parse(missingRes.body).failed_rules.includes('R005'));
+
+    const invalidShapeRes = createMockResponse();
+    await handlers.handleSubmit(
+      createJsonRequest(createPhase34ValidSeed({ market: { competitors: [{ name: 'A' }, { name: 'B', positioning: '' }] } }), '/submit'),
+      invalidShapeRes
+    );
+    assert.equal(invalidShapeRes.statusCode, 400);
+    assert.ok(JSON.parse(invalidShapeRes.body).failed_rules.includes('R005'));
+
+    await withMockedModule(orchestratorPath, {
+      orchestrate: async () => ({ drafts: { competitive: 'ok' }, vectorStoreResults: [], errors: [] }),
+    }, async () => {
+      const refreshedHandlers = loadFreshModule(handlersPath);
+      const validRes = createMockResponse();
+      await refreshedHandlers.handleSubmit(
+        createJsonRequest(createPhase34ValidSeed(), '/submit'),
+        validRes
+      );
+      assert.equal(validRes.statusCode, 200);
+    });
+  });
+
+  await t.test('3.21 Phase 34: Linear automation creates intake tickets when configured', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+    const linearClientPath = path.join(env.dir, 'onboarding', 'backend', 'linear-client.cjs');
+
+    const oldLinearApiKey = process.env.LINEAR_API_KEY;
+    process.env.LINEAR_API_KEY = 'linear_test_key';
+    seedPhase34LinearTemplates(env.dir);
+
+    try {
+      await withMockedModule(linearClientPath, {
+        getTeamId: async () => 'team-123',
+        getUserId: async () => null,
+        createIssue: async (input) => ({
+          id: `id-${input.title}`,
+          identifier: input.title.includes('Validation') ? 'MKT-202' : 'MKT-201',
+          title: input.title,
+          url: `https://linear.app/acme/issue/${input.title.includes('Validation') ? 'MKT-202' : 'MKT-201'}`,
+        }),
+      }, async () => {
+        await withMockedModule(orchestratorPath, {
+          orchestrate: async () => ({ drafts: { company_profile: 'ok' }, vectorStoreResults: [], errors: [] }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const res = createMockResponse();
+          await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), res);
+          assert.equal(res.statusCode, 200);
+
+          const payload = JSON.parse(res.body);
+          assert.ok(Array.isArray(payload.linear_tickets));
+          assert.equal(payload.linear_tickets.length, 2);
+          assert.equal(payload.linear_tickets[0].token, 'MARKOS-ITM-OPS-03');
+          assert.equal(payload.linear_tickets[1].token, 'MARKOS-ITM-INT-01');
+        });
+      });
+    } finally {
+      if (oldLinearApiKey === undefined) {
+        delete process.env.LINEAR_API_KEY;
+      } else {
+        process.env.LINEAR_API_KEY = oldLinearApiKey;
+      }
+    }
+  });
+
+  await t.test('3.22 Phase 34: Linear automation degrades gracefully when unavailable', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+    const linearClientPath = path.join(env.dir, 'onboarding', 'backend', 'linear-client.cjs');
+
+    const oldLinearApiKey = process.env.LINEAR_API_KEY;
+    process.env.LINEAR_API_KEY = 'linear_test_key';
+    seedPhase34LinearTemplates(env.dir);
+
+    try {
+      await withMockedModule(linearClientPath, {
+        getTeamId: async () => { throw new Error('linear unavailable'); },
+        getUserId: async () => null,
+        createIssue: async () => { throw new Error('should not run'); },
+      }, async () => {
+        await withMockedModule(orchestratorPath, {
+          orchestrate: async () => ({ drafts: { company_profile: 'ok' }, vectorStoreResults: [], errors: [] }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const res = createMockResponse();
+          await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), res);
+          assert.equal(res.statusCode, 200);
+
+          const payload = JSON.parse(res.body);
+          assert.equal(payload.success, true);
+          assert.equal(payload.linear_tickets.length, 0);
+          assert.equal(payload.linear_skipped.length, 2);
+          assert.match(payload.linear_error, /linear unavailable/);
+        });
+      });
+    } finally {
+      if (oldLinearApiKey === undefined) {
+        delete process.env.LINEAR_API_KEY;
+      } else {
+        process.env.LINEAR_API_KEY = oldLinearApiKey;
+      }
+    }
+  });
+
+  await t.test('3.23 Phase 34: submit response includes validation, drafts, and session url', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+
+    await withMockedModule(orchestratorPath, {
+      orchestrate: async () => ({
+        drafts: {
+          company_profile: 'company draft',
+          mission_values: 'mission draft',
+          audience: 'audience draft',
+          competitive: 'competitive draft',
+          brand_voice: 'brand voice draft',
+          channel_strategy: 'channel strategy draft',
+        },
+        vectorStoreResults: [{ ok: true }],
+        errors: [],
+      }),
+    }, async () => {
+      const handlers = loadFreshModule(handlersPath);
+      const res = createMockResponse();
+      await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), res);
+
+      assert.equal(res.statusCode, 200);
+      const payload = JSON.parse(res.body);
+      assert.equal(payload.success, true);
+      assert.equal(payload.validation.valid, true);
+      assert.equal(payload.validation.applied, true);
+      assert.equal(typeof payload.session_url, 'string');
+      assert.match(payload.session_url, /\?slug=/);
+      assert.ok(payload.drafts.company_profile);
+      assert.ok(payload.drafts.channel_strategy);
+    });
+  });
+
+  await t.test('3.24 Phase 34: legacy intake payload remains compatible (validation not applied)', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+
+    const legacySeed = {
+      company: { name: 'Legacy Corp', industry: 'SaaS' },
+      product: { name: 'Legacy Product' },
+      audience: { segment_name: 'founders' },
+      market: { maturity: 'early' },
+    };
+
+    await withMockedModule(orchestratorPath, {
+      orchestrate: async () => ({ drafts: { company_profile: 'ok' }, vectorStoreResults: [], errors: [] }),
+    }, async () => {
+      const handlers = loadFreshModule(handlersPath);
+      const res = createMockResponse();
+      await handlers.handleSubmit(createJsonRequest(legacySeed, '/submit'), res);
+
+      assert.equal(res.statusCode, 200);
+      const payload = JSON.parse(res.body);
+      assert.equal(payload.validation.applied, false);
+      assert.equal(payload.validation.valid, true);
+    });
+  });
+
+  await t.test('3.25 Phase 34: end-to-end intake response includes automation contract fields', async () => {
+    const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+    const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+    const linearClientPath = path.join(env.dir, 'onboarding', 'backend', 'linear-client.cjs');
+
+    const oldLinearApiKey = process.env.LINEAR_API_KEY;
+    process.env.LINEAR_API_KEY = 'linear_test_key';
+    seedPhase34LinearTemplates(env.dir);
+
+    try {
+      await withMockedModule(linearClientPath, {
+        getTeamId: async () => 'team-123',
+        getUserId: async () => null,
+        createIssue: async (input) => ({
+          id: `id-${input.title}`,
+          identifier: input.title.includes('Validation') ? 'MKT-302' : 'MKT-301',
+          title: input.title,
+          url: `https://linear.app/acme/issue/${input.title.includes('Validation') ? 'MKT-302' : 'MKT-301'}`,
+        }),
+      }, async () => {
+        await withMockedModule(orchestratorPath, {
+          orchestrate: async () => ({
+            drafts: {
+              company_profile: 'company',
+              mission_values: 'mission',
+              audience: 'audience',
+              competitive: 'competitive',
+              brand_voice: 'brand',
+              channel_strategy: 'channel',
+            },
+            vectorStoreResults: [{ ok: true }],
+            errors: [],
+          }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const res = createMockResponse();
+          await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), res);
+
+          assert.equal(res.statusCode, 200);
+          const payload = JSON.parse(res.body);
+          assert.equal(payload.success, true);
+          assert.equal(payload.validation.valid, true);
+          assert.equal(payload.linear_tickets.length, 2);
+          assert.equal(typeof payload.seed_path, 'string');
+          assert.equal(typeof payload.session_url, 'string');
+          assert.ok(payload.drafts.company_profile);
+          assert.deepEqual(payload.errors, []);
+        });
+      });
+    } finally {
+      if (oldLinearApiKey === undefined) {
+        delete process.env.LINEAR_API_KEY;
+      } else {
+        process.env.LINEAR_API_KEY = oldLinearApiKey;
       }
     }
   });

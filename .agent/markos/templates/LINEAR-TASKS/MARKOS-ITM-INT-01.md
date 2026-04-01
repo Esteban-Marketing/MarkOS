@@ -9,7 +9,7 @@ created: 2026-03-31
 
 # MARKOS-ITM-INT-01 — Intake Validation: Data Quality Check
 
-**Linear Title Template:** `[MARKOS] Intake Validation: {client_name} — Data Quality Check`
+**Linear Title format:** `[MARKOS] Intake Validation: {client_name} — Data Quality Check`
 
 **Description:**
 Data quality assurance gate for {client_name} intake. Verify seed completeness before drafts are finalized.
