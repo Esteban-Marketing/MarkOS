@@ -136,6 +136,14 @@ Plans:
 - [ ] 40-01-PLAN.md — Wave 1 router/filter contract: Wave 0 tests, deterministic discipline-router, optional taxonomy fallback, exported OR-style pain_point_tags filter
 - [ ] 40-02-PLAN.md — Wave 2 orchestrator runtime: top-3 dual-query retrieval, doc_id-first dedupe, fixed chunk cap, literacy_retrieval_observed telemetry, focused integration tests
 
+## Phase 41: Dynamic Skeleton Template Generator
+
+**Goal:** Build a skeleton generator that produces a starter content pack — pre-filled template stubs customized to the client's business model and top pain points — that populates the `.markos-local/` workspace immediately after onboarding approval.
+**Requirements Mapped:** LIT-07 (skeleton registry coverage), LIT-08 (approval-triggered hydration)
+**Depends on:** Phase 40 (discipline router must exist for ranked discipline selection)
+**Status:** 📋 Planned
+**Milestone:** v3.0 MarkOS Literacy System
+
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
 
