@@ -144,7 +144,7 @@ Plans:
 **Status:** 📋 Planned
 **Milestone:** v3.0 MarkOS Literacy System
 
-**Plans:** 5 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 41-01-PLAN.md — Wave 0 test scaffold: create node:test todo contract for 8 required resolver/generator/approve behaviors
@@ -161,7 +161,7 @@ Plans:
 **Status:** 📋 Planned
 **Milestone:** v3.0 MarkOS Literacy System
 
-**Plans:** 5 plans
+**Plans:** 6 plans
 
 Plans:
 - [x] 42-01-PLAN.md — Wave 0 Nyquist test scaffolding for db setup, migrations, RLS, and namespace audit contracts
@@ -237,7 +237,8 @@ Plans:
 Plans:
 - [ ] 45-01-PLAN.md — Read-only flow extraction CLI + locked taxonomy classification
 - [ ] 45-02-PLAN.md — Canonical FLOW-INVENTORY and operator-browsable mockup contract
-- [ ] 45-03-PLAN.md — contracts/schema.json + 17 contract stubs + FLOW-CONTRACTS mapping
+- [ ] 45-03-PLAN.md — contracts/schema.json + subset validator + first-batch stubs (F-01..F-08)
+- [ ] 45-06-PLAN.md — second-batch contract stubs (F-09..F-17) + FLOW-CONTRACTS closure
 - [ ] 45-04-PLAN.md — Automated flow coverage tests + FLOW-VERIFICATION reviewer gate
 - [ ] 45-05-PLAN.md — T0 KPI baseline capture + freeze sign-off metadata
 
