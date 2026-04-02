@@ -1,0 +1,34 @@
+flow_id: "F-09"
+flow_name: "literacy-coverage-report"
+domain: "reporting"
+flow_type: "query"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Literacy Coverage Report"
+  version: "1.0.0"
+  description: "Returns current literacy coverage metrics — token counts, source coverage percentages, and gap analysis for the operator's literacy corpus."
+
+x-markos-meta:
+  actor: "Operator"
+  auth_local: "none"
+  auth_hosted: "status_read Supabase JWT"
+  handler: "handleLiteracyCoverage"
+  local_path: "/api/literacy/coverage"
+  hosted_path: "/api/literacy/coverage"
+  slo_tier: "standard"
+  method: "GET"
+
+paths:
+  /api/literacy/coverage:
+    get:
+      summary: "Get literacy coverage report"
+      operationId: "literacyCoverageReport"
+      responses:
+        "200":
+          description: "Coverage metrics returned"
+        "401":
+          description: "Unauthorized — missing or invalid JWT"
+        "500":
+          description: "Server error"

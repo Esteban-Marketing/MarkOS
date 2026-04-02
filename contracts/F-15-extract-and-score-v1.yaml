@@ -1,0 +1,34 @@
+flow_id: "F-15"
+flow_name: "extract-and-score"
+domain: "enrichment"
+flow_type: "enrichment"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Extract and Score"
+  version: "1.0.0"
+  description: "Combined enrichment pass — extracts structured intelligence signals from raw content and scores them for relevance, authority, and recency before MIR merge."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "N/A (local only)"
+  handler: "handleExtractAndScore"
+  local_path: "/api/extract-and-score"
+  hosted_path: ""
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /api/extract-and-score:
+    post:
+      summary: "Extract and score intelligence signals"
+      operationId: "extractAndScore"
+      responses:
+        "200":
+          description: "Signals extracted and scored"
+        "400":
+          description: "Invalid content payload"
+        "500":
+          description: "Server error"

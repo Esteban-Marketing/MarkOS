@@ -1,0 +1,34 @@
+flow_id: "F-17"
+flow_name: "competitor-discovery"
+domain: "enrichment"
+flow_type: "enrichment"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Competitor Discovery"
+  version: "1.0.0"
+  description: "Discovers and profiles competitor entities from operator context — produces structured competitor intelligence objects for MIR competitive-landscape population."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "N/A (local only)"
+  handler: "handleCompetitorDiscovery"
+  local_path: "/api/competitor-discovery"
+  hosted_path: ""
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /api/competitor-discovery:
+    post:
+      summary: "Discover and profile competitor entities"
+      operationId: "competitorDiscovery"
+      responses:
+        "200":
+          description: "Competitor profiles generated"
+        "400":
+          description: "Invalid operator context payload"
+        "500":
+          description: "Server error"

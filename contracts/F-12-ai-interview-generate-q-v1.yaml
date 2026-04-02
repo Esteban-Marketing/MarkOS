@@ -1,0 +1,34 @@
+flow_id: "F-12"
+flow_name: "ai-interview-generate-q"
+domain: "enrichment"
+flow_type: "query"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS AI Interview Generate Question"
+  version: "1.0.0"
+  description: "Generates the next AI interview question for a given onboarding session context — drives the conversational intake enrichment loop."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "N/A (local only)"
+  handler: "handleGenerateQuestion"
+  local_path: "/api/generate-question"
+  hosted_path: ""
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /api/generate-question:
+    post:
+      summary: "Generate next AI interview question"
+      operationId: "aiInterviewGenerateQuestion"
+      responses:
+        "200":
+          description: "Next question generated"
+        "400":
+          description: "Invalid session context"
+        "500":
+          description: "Server error"

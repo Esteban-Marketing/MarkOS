@@ -1,0 +1,34 @@
+flow_id: "F-16"
+flow_name: "spark-suggestion"
+domain: "enrichment"
+flow_type: "enrichment"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Spark Suggestion"
+  version: "1.0.0"
+  description: "Generates AI-powered spark content suggestions — produces short-form campaign starters, angle variations, and hook candidates based on MIR context."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "N/A (local only)"
+  handler: "handleSparkSuggestion"
+  local_path: "/api/spark-suggestion"
+  hosted_path: ""
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /api/spark-suggestion:
+    post:
+      summary: "Generate spark content suggestions"
+      operationId: "sparkSuggestion"
+      responses:
+        "200":
+          description: "Spark suggestions generated"
+        "400":
+          description: "Invalid MIR context payload"
+        "500":
+          description: "Server error"

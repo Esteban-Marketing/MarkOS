@@ -1,0 +1,34 @@
+flow_id: "F-13"
+flow_name: "ai-interview-parse-answer"
+domain: "enrichment"
+flow_type: "query"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS AI Interview Parse Answer"
+  version: "1.0.0"
+  description: "Parses and structures a raw operator answer from the AI interview loop into scored enrichment signals for downstream MIR population."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "N/A (local only)"
+  handler: "handleParseAnswer"
+  local_path: "/api/parse-answer"
+  hosted_path: ""
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /api/parse-answer:
+    post:
+      summary: "Parse AI interview answer into enrichment signals"
+      operationId: "aiInterviewParseAnswer"
+      responses:
+        "200":
+          description: "Answer parsed and signals extracted"
+        "400":
+          description: "Invalid answer payload"
+        "500":
+          description: "Server error"

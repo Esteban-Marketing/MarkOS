@@ -1,0 +1,34 @@
+flow_id: "F-10"
+flow_name: "literacy-admin-health"
+domain: "admin"
+flow_type: "health_check"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Literacy Admin Health"
+  version: "1.0.0"
+  description: "Local-only admin health-check for the literacy subsystem — returns vector store status, chunker state, and ingest queue depth."
+
+x-markos-meta:
+  actor: "Admin"
+  auth_local: "Admin secret header"
+  auth_hosted: "N/A (local only)"
+  handler: "handleLiteracyHealth"
+  local_path: "/admin/literacy/health"
+  hosted_path: ""
+  slo_tier: "standard"
+  method: "GET"
+
+paths:
+  /admin/literacy/health:
+    get:
+      summary: "Literacy subsystem health check"
+      operationId: "literacyAdminHealth"
+      responses:
+        "200":
+          description: "Health status returned"
+        "401":
+          description: "Unauthorized — missing admin secret"
+        "500":
+          description: "Server error"
