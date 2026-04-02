@@ -102,7 +102,12 @@ test('Literacy chunker propagates pain_point_tags onto each chunk', () => {
   const markdown = require('fs').readFileSync(fixturePath, 'utf8');
   const metadata = chunker.parseLiteracyFrontmatter(markdown);
   const chunks = chunker.chunkLiteracyFile(markdown, metadata);
-  assert.ok(chunks.length > 0, 'fixture should produce at least 1 chunk');
+  assert.ok(chunks.length >= 6, `fixture should produce multiple section chunks, got ${chunks.length}`);
+  assert.ok(chunks.some((chunk) => chunk.content_type === 'evidence'), 'fixture should produce an evidence chunk');
+  assert.ok(chunks.some((chunk) => chunk.content_type === 'tactic'), 'fixture should produce tactic chunks');
+  assert.ok(chunks.some((chunk) => chunk.content_type === 'benchmark'), 'fixture should produce a benchmark chunk');
+  assert.ok(chunks.some((chunk) => chunk.content_type === 'counter-indicators'), 'fixture should produce a counter-indicators chunk');
+  assert.ok(chunks.some((chunk) => chunk.content_type === 'vocabulary'), 'fixture should produce vocabulary chunks');
   for (const chunk of chunks) {
     assert.deepEqual(
       chunk.pain_point_tags,

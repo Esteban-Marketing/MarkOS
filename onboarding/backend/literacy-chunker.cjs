@@ -60,7 +60,7 @@ function createLiteracyChunkId(docId, sectionSlug, index) {
 
 function findSection(text, heading) {
   const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const rx = new RegExp(`^##\\s+${escaped}\\s*$([\\s\\S]*?)(?=^##\\s+|\\n#\\s+|$)`, 'im');
+  const rx = new RegExp(`(?:^##\\s+${escaped}\\s*$\\r?\\n)([\\s\\S]*?)(?=\\r?\\n##\\s+|\\r?\\n#\\s+|$)`, 'im');
   const match = text.match(rx);
   return match ? match[1].trim() : '';
 }
