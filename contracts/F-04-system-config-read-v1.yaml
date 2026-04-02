@@ -1,0 +1,34 @@
+flow_id: "F-04"
+flow_name: "system-config-read"
+domain: "reporting"
+flow_type: "query"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS System Config Read"
+  version: "1.0.0"
+  description: "Reads runtime configuration values. Hosted endpoint protected by config_read Supabase JWT. Phase 37 RBAC baseline."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "config_read Supabase JWT"
+  handler: "handleConfig"
+  local_path: "/config"
+  hosted_path: "/api/config"
+  slo_tier: "standard"
+  method: "GET"
+
+paths:
+  /config:
+    get:
+      summary: "Read system configuration"
+      operationId: "systemConfigRead"
+      responses:
+        "200":
+          description: "Configuration values returned"
+        "401":
+          description: "Unauthorized (hosted: missing or invalid JWT)"
+        "500":
+          description: "Server error"

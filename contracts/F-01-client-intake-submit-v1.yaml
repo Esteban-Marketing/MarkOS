@@ -1,0 +1,34 @@
+flow_id: "F-01"
+flow_name: "client-intake-submit"
+domain: "onboarding"
+flow_type: "submission"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Client Intake Submit"
+  version: "1.0.0"
+  description: "Primary onboarding flow — receives raw seed JSON, validates, resolves project slug, auto-creates Linear tickets, orchestrates AI draft generation."
+
+x-markos-meta:
+  actor: "Operator"
+  auth_local: "none"
+  auth_hosted: "none"
+  handler: "handleSubmit"
+  local_path: "/submit"
+  hosted_path: "/api/submit"
+  slo_tier: "critical"
+  method: "POST"
+
+paths:
+  /submit:
+    post:
+      summary: "Submit client intake seed"
+      operationId: "clientIntakeSubmit"
+      responses:
+        "200":
+          description: "Intake accepted and drafts initiated"
+        "400":
+          description: "Invalid seed JSON"
+        "500":
+          description: "Server error"

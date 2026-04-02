@@ -1,0 +1,34 @@
+flow_id: "F-02"
+flow_name: "draft-approve"
+domain: "execution"
+flow_type: "approval"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Draft Approve"
+  version: "1.0.0"
+  description: "Operator approval of AI-generated draft content. Marks sections as approved and triggers downstream campaign preparation."
+
+x-markos-meta:
+  actor: "Operator"
+  auth_local: "none"
+  auth_hosted: "none"
+  handler: "handleApprove"
+  local_path: "/approve"
+  hosted_path: "/api/approve"
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /approve:
+    post:
+      summary: "Approve generated draft"
+      operationId: "draftApprove"
+      responses:
+        "200":
+          description: "Draft approved"
+        "400":
+          description: "Invalid approval payload"
+        "500":
+          description: "Server error"

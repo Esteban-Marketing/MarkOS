@@ -1,0 +1,34 @@
+flow_id: "F-07"
+flow_name: "campaign-result-record"
+domain: "integration"
+flow_type: "record"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Campaign Result Record"
+  version: "1.0.0"
+  description: "Records campaign execution results for downstream reporting and audit trails."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "none"
+  handler: "handleCampaignResult"
+  local_path: "/campaign/result"
+  hosted_path: "/api/campaign/result"
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /campaign/result:
+    post:
+      summary: "Record campaign result"
+      operationId: "campaignResultRecord"
+      responses:
+        "200":
+          description: "Campaign result recorded"
+        "400":
+          description: "Invalid result payload"
+        "500":
+          description: "Server error"

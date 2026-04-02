@@ -1,0 +1,36 @@
+flow_id: "F-08"
+flow_name: "markosdb-migrate"
+domain: "migration"
+flow_type: "migration"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS DB Migrate"
+  version: "1.0.0"
+  description: "Runs database migration from local markosdb to Supabase cloud. Protected by migration_write Supabase JWT on hosted endpoint. Phase 37 RBAC baseline."
+
+x-markos-meta:
+  actor: "Operator"
+  auth_local: "none"
+  auth_hosted: "migration_write Supabase JWT"
+  handler: "handleMarkosdbMigration"
+  local_path: "/migrate/local-to-cloud"
+  hosted_path: "/api/migrate"
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /migrate/local-to-cloud:
+    post:
+      summary: "Migrate local markosdb to cloud"
+      operationId: "markosdbMigrate"
+      responses:
+        "200":
+          description: "Migration completed successfully"
+        "401":
+          description: "Unauthorized (hosted: missing or invalid JWT)"
+        "400":
+          description: "Invalid migration request"
+        "500":
+          description: "Migration error"

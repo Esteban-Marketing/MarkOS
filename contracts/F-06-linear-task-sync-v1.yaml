@@ -1,0 +1,34 @@
+flow_id: "F-06"
+flow_name: "linear-task-sync"
+domain: "integration"
+flow_type: "sync"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Linear Task Sync"
+  version: "1.0.0"
+  description: "Synchronizes project tasks with Linear. Creates or updates Linear issues from MarkOS intake context."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "none"
+  handler: "handleLinearSync"
+  local_path: "/linear/sync"
+  hosted_path: "/api/linear/sync"
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /linear/sync:
+    post:
+      summary: "Sync tasks to Linear"
+      operationId: "linearTaskSync"
+      responses:
+        "200":
+          description: "Tasks synced to Linear"
+        "400":
+          description: "Invalid sync payload"
+        "500":
+          description: "Server error or Linear API error"

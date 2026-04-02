@@ -1,0 +1,34 @@
+flow_id: "F-03"
+flow_name: "section-regenerate"
+domain: "execution"
+flow_type: "regeneration"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Section Regenerate"
+  version: "1.0.0"
+  description: "Re-generates a specific section of a draft using AI. Operator-triggered when a section requires revision."
+
+x-markos-meta:
+  actor: "Operator"
+  auth_local: "none"
+  auth_hosted: "none"
+  handler: "handleRegenerate"
+  local_path: "/regenerate"
+  hosted_path: "/api/regenerate"
+  slo_tier: "standard"
+  method: "POST"
+
+paths:
+  /regenerate:
+    post:
+      summary: "Regenerate a draft section"
+      operationId: "sectionRegenerate"
+      responses:
+        "200":
+          description: "Section regenerated"
+        "400":
+          description: "Invalid regeneration request"
+        "500":
+          description: "Server error"

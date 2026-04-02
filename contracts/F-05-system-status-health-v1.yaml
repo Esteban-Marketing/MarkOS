@@ -1,0 +1,34 @@
+flow_id: "F-05"
+flow_name: "system-status-health"
+domain: "reporting"
+flow_type: "health_check"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS System Status Health"
+  version: "1.0.0"
+  description: "Returns system health and readiness status. Hosted endpoint protected by status_read Supabase JWT. Phase 37 RBAC baseline."
+
+x-markos-meta:
+  actor: "System"
+  auth_local: "none"
+  auth_hosted: "status_read Supabase JWT"
+  handler: "handleStatus"
+  local_path: "/status"
+  hosted_path: "/api/status"
+  slo_tier: "standard"
+  method: "GET"
+
+paths:
+  /status:
+    get:
+      summary: "Get system health status"
+      operationId: "systemStatusHealth"
+      responses:
+        "200":
+          description: "Status report returned"
+        "401":
+          description: "Unauthorized (hosted: missing or invalid JWT)"
+        "500":
+          description: "Server error"
