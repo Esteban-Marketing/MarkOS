@@ -97,7 +97,7 @@ Target: 1 execution wave (7-10 days) to establish baseline operating rhythm, the
 @.planning/STATE.md
 @.planning/PROJECT.md
 @.planning/ROADMAP.md
-@.planning/phases/34-client-intake-sop-automation/34-SUMMARY.md
+@.planning/phases/34-client-intake-sop-automation/34-01-SUMMARY.md
 @.planning/codebase/INTAKE-SOP.md
 @onboarding/backend/handlers/submit.cjs
 
@@ -184,5 +184,6 @@ Run a documentation integrity pass and confirm cross-links resolve:
 </success_criteria>
 
 <output>
-After completion, create `.planning/phases/36-beta-program-operations/36-SUMMARY.md`.
+After completion, create `.planning/phases/36-beta-program-operations/36-01-SUMMARY.md`.
 </output>
+

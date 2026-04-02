@@ -18,7 +18,7 @@ Implemented artifacts are now executable in the current workspace state and all 
 ## Pre-Flight Checks
 
 - Plan file present: `.planning/phases/38-ui-coverage-security-assurance/38-PLAN.md`
-- Summary file present: `.planning/phases/38-ui-coverage-security-assurance/38-SUMMARY.md`
+- Summary file present: `.planning/phases/38-ui-coverage-security-assurance/38-01-SUMMARY.md`
 - MIR gate audit command executed successfully.
 - `requirements_path` from MarkOS init is `null` for this phase context, so requirement coverage evidence is derived from phase plan artifacts.
 
@@ -87,3 +87,4 @@ Executed in terminal:
 
 - Configure repository branch protection to require Phase 38 gate checks in GitHub.
 - Configure `CHROMATIC_PROJECT_TOKEN` and validate first CI Chromatic upload.
+

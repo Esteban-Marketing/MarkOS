@@ -101,7 +101,7 @@ Target: 2 execution waves
 @.planning/STATE.md
 @.planning/PROJECT.md
 @.planning/ROADMAP.md
-@.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md
+@.planning/phases/37-markos-ui-control-plane/37-01-SUMMARY.md
 @.planning/phases/38-ui-coverage-security-assurance/38-CONTEXT.md
 @.planning/phases/38-ui-coverage-security-assurance/38-RESEARCH.md
 
@@ -252,5 +252,7 @@ Execute validation in this order:
 </success_criteria>
 
 <output>
-After completion, create .planning/phases/38-ui-coverage-security-assurance/38-SUMMARY.md.
+After completion, create .planning/phases/38-ui-coverage-security-assurance/38-01-SUMMARY.md.
 </output>
+
+

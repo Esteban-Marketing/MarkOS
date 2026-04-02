@@ -1,38 +1,38 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.4
-milestone_name: Beta Client Onboarding
-status: Plans 40-01 and 40-02 executed end-to-end. Router, vector filter contracts, and orchestrator dual-query retrieval are implemented with focused test coverage and summaries committed.
-last_updated: "2026-04-02T15:23:57.621Z"
+milestone: v3.0
+milestone_name: MarkOS Literacy System
+status: Phases 43 and 44 executed and verified end-to-end. Literacy readiness contracts, coverage API parity, lifecycle E2E assertions, and zero-hit regression gates are in place.
+last_updated: "2026-04-02T23:59:00.000Z"
 progress:
-  total_phases: 2
-  completed_phases: 2
-  total_plans: 8
-  completed_plans: 8
+  total_phases: 6
+  completed_phases: 6
+  total_plans: 25
+  completed_plans: 25
 ---
 
 Current Position
 ----------------
 
 Milestone: v3.0 — MarkOS Literacy System
-Phase: 40 — Multi-Discipline Orchestrator Retrieval (COMPLETE)
-Status: Plans 40-01 and 40-02 executed end-to-end. Router, vector filter contracts, and orchestrator dual-query retrieval are implemented with focused test coverage and summaries committed.
-Next Phase: Phase 41 — Dynamic Skeleton Template Generator
+Phase: 44 — End-to-End Literacy Integration Verification (COMPLETE)
+Status: Waves 44-01 through 44-05 completed with full regression validation and verification artifacts recorded.
+Next Phase: Phase 45 — TBD (milestone follow-on planning)
 
 Tooling Snapshot
 ----------------
 
-- Active milestone (v2.6) progress: Phase 38 complete and verified; next work is follow-on beta-activation scope planning.
-- Global disk snapshot (all non-archived phase dirs): Phases 34, 35, 36, 37, and 38 are complete; Phase 38 verification passed.
+- Active milestone (v3.0) progress: Phases 39 through 44 complete and verified; literacy lifecycle is now regression-gated.
+- Global disk snapshot (all non-archived phase dirs): latest execution artifacts include 43 and 44 validation/verification bundles.
 - Deferred roadmap track: v2.0 rebrand phases (17-22) remain intentionally unexecuted.
 
-Milestone v2.6 Focus
+Milestone v3.0 Focus
 --------------------
 
-🎯 Convert deployment and UI assurance gains into repeatable beta activation outcomes
-🎯 Keep Storybook, Chromatic, accessibility, and UI security evidence as required release controls
-🎯 Turn intake and control-plane surfaces into measurable pilot activation throughput
-🎯 Define the next operator-facing feedback loop and campaign activation execution phase
+🎯 Maintain stable literacy activation readiness from onboarding submit/status through draft generation
+🎯 Preserve deterministic coverage telemetry and parity across local and hosted routes
+🎯 Keep zero-hit regression checks enforced in focused and CI execution paths
+🎯 Define the v3.0 follow-on scope after full lifecycle hardening
 
 MIR Gate Status
 ---------------
@@ -98,7 +98,10 @@ Roadmap Evolution
 - 2026-04-01: Phase 36 completed with runbook, KPI scorecard, weekly cadence contracts, and PLG evidence-loop integration.
 - 2026-04-01: Phase 37 research completed at `.planning/phases/37-markos-ui-control-plane/37-RESEARCH.md`, defining the Next.js/Tailwind/Supabase control-plane, white-label design-system linkage, and AI-consumable documentation twin architecture.
 - 2026-04-01: Phase 37 execution plan created at `.planning/phases/37-markos-ui-control-plane/37-PLAN.md`.
-- 2026-04-01: Phase 37 completed with MarkOS app route scaffold, domain contracts, theme token pipeline, RBAC/telemetry contracts, Supabase migration baseline, and `.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md`.
+- 2026-04-01: Phase 37 completed with MarkOS app route scaffold, domain contracts, theme token pipeline, RBAC/telemetry contracts, Supabase migration baseline, and `.planning/phases/37-markos-ui-control-plane/37-01-SUMMARY.md`.
 - 2026-04-01: Phase 38 planned and executed under v2.6 with Storybook coverage, Chromatic publishing, accessibility enforcement, UI security gates, and CI workflow hardening.
 - 2026-04-01: Phase 38 verification passed; v2.6 is now the active milestone baseline rather than deferred planning inventory.
 - 2026-04-02: Phase 40 completed with deterministic discipline routing, pain-point OR filter support, top-3 dual-query literacy retrieval, doc_id-first dedupe, fixed context-budget enforcement, and literacy retrieval telemetry.
+- 2026-04-02: Phase 43 completed with post-submit literacy activation readiness evaluation, submit/status readiness parity, and activation telemetry contracts.
+- 2026-04-02: Phase 44 completed with lifecycle E2E verification, literacy coverage API contract enforcement, populated-corpus zero-hit regression gating, and CI integration.
+

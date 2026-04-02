@@ -249,5 +249,6 @@ Run `node --test test/install.test.js`, `node --test test/update.test.js`, and t
 </success_criteria>
 
 <output>
-After completion, create `.planning/phases/35-smart-one-command-deployment/35-SUMMARY.md`.
+After completion, create `.planning/phases/35-smart-one-command-deployment/35-01-SUMMARY.md`.
 </output>
+

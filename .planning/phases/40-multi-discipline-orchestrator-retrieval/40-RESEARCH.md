@@ -1,6 +1,6 @@
 # Phase 40: Multi-Discipline Orchestrator Retrieval - Research
 
-**Researched:** 2026-04-01
+**Researched:** 2026-04-02
 **Domain:** Multi-discipline literacy retrieval orchestration in the onboarding runtime
 **Confidence:** MEDIUM
 
@@ -51,6 +51,17 @@ None provided in `40-CONTEXT.md`.
 - Test commands are `npm test` or `node --test test/**/*.test.js`.
 - Local onboarding UI entrypoint is `node onboarding/backend/server.cjs`.
 
+<phase_requirements>
+## Phase Requirements
+
+| ID | Description | Research Support |
+|----|-------------|------------------|
+| LIT-04 | Multi-discipline routing replaces hardcoded single-discipline literacy retrieval. | Router contract rankDisciplines(seed), deterministic channel and pain-point mapping, and top-3 orchestration pattern define the implementation path. |
+| LIT-05 | Pain-point-boosted retrieval across model-specific and universal literacy content. | Dual-query merge pattern, pain_point_tags OR filter extension, and doc_id-first dedupe provide the retrieval behavior contract. |
+| LIT-06 | Context budget enforcement for prompt grounding. | Global merged-hit trim to configurable literacy.max_context_chunks (default 6) plus post-cap telemetry token estimate preserve deterministic budget control. |
+
+Requirement sources: .planning/ROADMAP.md (Phase 40 mapping line with LIT-04/LIT-05/LIT-06) and .planning/milestones/v3.0-LITERACY-SYSTEM-ROADMAP.md (Phase 40 technical requirements). .planning/REQUIREMENTS.md is not present in the current workspace.
+</phase_requirements>
 ## Summary
 
 Phase 40 should be implemented as a focused extension of the existing onboarding runtime, not a rewrite. The only runtime modules that need core behavior changes are `onboarding/backend/agents/orchestrator.cjs` and `onboarding/backend/vector-store-client.cjs`; the new routing logic belongs in a new pure module at `onboarding/backend/agents/discipline-router.cjs`. The current orchestrator still performs a single `Paid_Media` lookup with only a `business_model` filter, and the current vector client still lacks both exported `buildLiteracyFilter()` and any `pain_point_tags` filter support.
@@ -377,6 +388,15 @@ Math.ceil(Buffer.byteLength(finalContextText, 'utf8') / 4)
 | Secrets/env vars | Existing vector provider env vars (`SUPABASE_*`, `UPSTASH_VECTOR_*`) are reused unchanged. No secret key rename required. | None. |
 | Build artifacts | None specific to this phase. No package rename or generated artifact rename is involved. | None. |
 
+## Risk Analysis And Mitigations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Missing Phase 39 taxonomy and corpus artifacts in live workspace | Router/retrieval quality drops or runtime errors if code assumes artifacts exist | Treat taxonomy load as optional with deterministic fallback constant; preserve empty-context degradation path and emit warning telemetry. |
+| Locked-decision inconsistency in 40-CONTEXT.md (Paid_Media-only fallback vs top-3 fallback) | Planner and implementation drift; tests may encode different fallback contracts | Treat D-40-04 as authoritative in implementation/tests and document explicit resolution in plan acceptance criteria. |
+| Overly aggressive doc_id dedupe removes useful chunk diversity | Prompt quality regression even when retrieval appears successful | Keep doc_id as locked primary key, retain chunk_id or stable hash fallback, and verify with targeted integration fixtures for multi-chunk docs. |
+| Telemetry semantics ambiguity (pre-cap vs post-cap counts) | Observability noise and non-comparable metrics across runs | Define total_hits and pain_point_match_count as pre-cap deduped counts, with context_tokens measured post-cap only. |
+
 ## Common Pitfalls
 
 ### Pitfall 1: Excluding universal docs by using only `business_model`
@@ -570,6 +590,28 @@ Source: Phase 40 locked chunk-cap strategy plus current no-tokenizer repo design
    - chunk cap obeys `.planning/config.json` override or default `6`
    - telemetry event payload includes `disciplines_queried`, `total_hits`, `pain_point_match_count`, `context_tokens`
 
+## Planning-Ready Wave/Task Decomposition
+
+### Wave 0: Test and contract scaffold (pre-implementation lock)
+- T40-00-01: Add router contract tests in test/discipline-router.test.js for channel mapping, pain-point boost, and empty-signal fallback.
+- T40-00-02: Extend test/vector-store-client.test.js for exported buildLiteracyFilter() and OR-style pain_point_tags filtering.
+- T40-00-03: Add orchestrator retrieval integration scaffold in test/orchestrator-literacy.test.js with mocked router, vector, and telemetry seams.
+
+### Wave 1: Router and filter implementation (aligns to 40-01-PLAN.md)
+- T40-01-01: Implement onboarding/backend/agents/discipline-router.cjs with deterministic ranking and top-3 floor guarantees.
+- T40-01-02: Extend and export buildLiteracyFilter() in onboarding/backend/vector-store-client.cjs with pain_point_tags CONTAINS ANY behavior.
+- T40-01-03: Ensure retrieval result contract includes stable metadata for doc_id-first dedupe fallback logic.
+
+### Wave 2: Orchestrator runtime integration (aligns to 40-02-PLAN.md)
+- T40-02-01: Refactor orchestrator literacy block to call rankDisciplines(seed).slice(0, 3) and run dual-query retrieval per discipline via Promise.all().
+- T40-02-02: Merge and dedupe hits by doc_id (fallback chunk_id or stable hash), then apply global chunk cap from .planning/config.json with default 6.
+- T40-02-03: Emit literacy_retrieval_observed telemetry with required payload fields and preserve empty-context backward compatibility.
+
+### Wave 3: Verification and operational hardening
+- T40-03-01: Execute focused suite (discipline-router, vector-store-client, orchestrator-literacy) and then npm test.
+- T40-03-02: Run live-provider manual checks once Phase 39 corpus artifacts are present (taxonomy plus ingested chunks).
+- T40-03-03: Capture unresolved contract questions (fallback canon, dedupe depth) in phase summary for planner/verifier traceability.
+
 ## Sources
 
 ### Primary (HIGH confidence)
@@ -596,5 +638,9 @@ Source: Phase 40 locked chunk-cap strategy plus current no-tokenizer repo design
 - Architecture: MEDIUM - The implementation shape is clear, but the live repo is missing the expected Phase 39 taxonomy and filter artifacts.
 - Pitfalls: HIGH - The main risks come directly from verified code/planning mismatches and locked decision conflicts.
 
-**Research date:** 2026-04-01
-**Valid until:** 2026-04-08
+**Research date:** 2026-04-02
+**Valid until:** 2026-04-09
+
+
+
+

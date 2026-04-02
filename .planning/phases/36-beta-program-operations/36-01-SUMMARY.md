@@ -40,8 +40,9 @@ executed_by: GitHub Copilot
 - `.planning/phases/36-beta-program-operations/36-RUNBOOK.md`
 - `.planning/phases/36-beta-program-operations/36-METRICS.md`
 - `.planning/phases/36-beta-program-operations/36-CADENCE.md`
-- `.planning/phases/36-beta-program-operations/36-SUMMARY.md`
+- `.planning/phases/36-beta-program-operations/36-01-SUMMARY.md`
 
 ## Outcome
 
 Phase 36 converted the post-intake beta operations scope from a roadmap intention into a concrete operating system with lifecycle ownership, cadence, and measurable KPI tracking. v2.4 now has an executable operational baseline for progressing toward 10 active pilots.
+

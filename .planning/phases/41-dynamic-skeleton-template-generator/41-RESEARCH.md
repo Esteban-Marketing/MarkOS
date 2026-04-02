@@ -30,7 +30,27 @@
 - Skeleton versioning or content diff on re-approval.
 </user_constraints>
 
+## Project Constraints (from CLAUDE.md)
+
+- Read order for repo context: `.protocol-lore/QUICKSTART.md` -> `.protocol-lore/INDEX.md` -> `.planning/STATE.md` -> `.agent/markos/MARKOS-INDEX.md`.
+- Treat `.planning/STATE.md` as canonical project state; do not treat `.protocol-lore/STATE.md` as live state.
+- Respect the GSD vs MarkOS split; do not mix MarkOS client overrides into `.mgsd-local`.
+- Client overrides live only under `.markos-local/`.
+- Primary CLI is `npx markos`.
+- Test commands are `npm test` or `node --test test/**/*.test.js`.
+- Local onboarding UI entrypoint is `node onboarding/backend/server.cjs`.
 ---
+
+<phase_requirements>
+## Phase Requirements
+
+| ID | Description | Research Support |
+|----|-------------|------------------|
+| LIT-07 | Skeleton registry coverage (7 business models x 5 disciplines with stable template naming and resolver contract). | `MODEL_SLUG` + `resolveSkeleton` contract, explicit 35-file matrix, and naming invariants guarantee deterministic lookup and generation coverage. |
+| LIT-08 | Approval-triggered hydration after MIR/MSP approval with non-fatal failure reporting. | `handleApprove` insertion point, blocking-await behavior, non-fatal `skeletons.failed[]` contract, and integration test plan preserve existing approve success semantics. |
+
+Requirement source: `.planning/ROADMAP.md` (Phase 41 mapping), because `.planning/REQUIREMENTS.md` is not present in the current workspace.
+</phase_requirements>
 
 ## Summary
 
@@ -203,6 +223,27 @@ The 5 canonical MSP discipline names (from D-40-01 channel→discipline map, use
 These exact strings are used for `{discipline}` in all path operations. Confirm with `DISCIPLINE_ALIASES` in handlers.cjs (line 46).
 
 ---
+
+## Exact File/Discipline/Model Matrix
+
+### Registry dimensions
+- Disciplines (5): `Paid_Media`, `Content_SEO`, `Lifecycle_Email`, `Social`, `Landing_Pages`
+- Business models (7): `B2B`, `B2C`, `B2B2C`, `DTC`, `Marketplace`, `SaaS`, `Agents-aaS`
+- Slugs: `b2b`, `b2c`, `b2b2c`, `dtc`, `marketplace`, `saas`, `agents-aas`
+
+### Base template paths (author once, resolve at runtime)
+
+| Discipline | b2b | b2c | b2b2c | dtc | marketplace | saas | agents-aas |
+|------------|-----|-----|-------|-----|-------------|------|------------|
+| Paid_Media | `.agent/markos/templates/SKELETONS/Paid_Media/_SKELETON-b2b.md` | `.agent/markos/templates/SKELETONS/Paid_Media/_SKELETON-b2c.md` | `.agent/markos/templates/SKELETONS/Paid_Media/_SKELETON-b2b2c.md` | `.agent/markos/templates/SKELETONS/Paid_Media/_SKELETON-dtc.md` | `.agent/markos/templates/SKELETONS/Paid_Media/_SKELETON-marketplace.md` | `.agent/markos/templates/SKELETONS/Paid_Media/_SKELETON-saas.md` | `.agent/markos/templates/SKELETONS/Paid_Media/_SKELETON-agents-aas.md` |
+| Content_SEO | `.agent/markos/templates/SKELETONS/Content_SEO/_SKELETON-b2b.md` | `.agent/markos/templates/SKELETONS/Content_SEO/_SKELETON-b2c.md` | `.agent/markos/templates/SKELETONS/Content_SEO/_SKELETON-b2b2c.md` | `.agent/markos/templates/SKELETONS/Content_SEO/_SKELETON-dtc.md` | `.agent/markos/templates/SKELETONS/Content_SEO/_SKELETON-marketplace.md` | `.agent/markos/templates/SKELETONS/Content_SEO/_SKELETON-saas.md` | `.agent/markos/templates/SKELETONS/Content_SEO/_SKELETON-agents-aas.md` |
+| Lifecycle_Email | `.agent/markos/templates/SKELETONS/Lifecycle_Email/_SKELETON-b2b.md` | `.agent/markos/templates/SKELETONS/Lifecycle_Email/_SKELETON-b2c.md` | `.agent/markos/templates/SKELETONS/Lifecycle_Email/_SKELETON-b2b2c.md` | `.agent/markos/templates/SKELETONS/Lifecycle_Email/_SKELETON-dtc.md` | `.agent/markos/templates/SKELETONS/Lifecycle_Email/_SKELETON-marketplace.md` | `.agent/markos/templates/SKELETONS/Lifecycle_Email/_SKELETON-saas.md` | `.agent/markos/templates/SKELETONS/Lifecycle_Email/_SKELETON-agents-aas.md` |
+| Social | `.agent/markos/templates/SKELETONS/Social/_SKELETON-b2b.md` | `.agent/markos/templates/SKELETONS/Social/_SKELETON-b2c.md` | `.agent/markos/templates/SKELETONS/Social/_SKELETON-b2b2c.md` | `.agent/markos/templates/SKELETONS/Social/_SKELETON-dtc.md` | `.agent/markos/templates/SKELETONS/Social/_SKELETON-marketplace.md` | `.agent/markos/templates/SKELETONS/Social/_SKELETON-saas.md` | `.agent/markos/templates/SKELETONS/Social/_SKELETON-agents-aas.md` |
+| Landing_Pages | `.agent/markos/templates/SKELETONS/Landing_Pages/_SKELETON-b2b.md` | `.agent/markos/templates/SKELETONS/Landing_Pages/_SKELETON-b2c.md` | `.agent/markos/templates/SKELETONS/Landing_Pages/_SKELETON-b2b2c.md` | `.agent/markos/templates/SKELETONS/Landing_Pages/_SKELETON-dtc.md` | `.agent/markos/templates/SKELETONS/Landing_Pages/_SKELETON-marketplace.md` | `.agent/markos/templates/SKELETONS/Landing_Pages/_SKELETON-saas.md` | `.agent/markos/templates/SKELETONS/Landing_Pages/_SKELETON-agents-aas.md` |
+
+### Generated output path rule
+`generateSkeletons` writes one file per discipline per approval event using:
+`.markos-local/MSP/{discipline}/SKELETONS/_SKELETON-{model_slug}.md`
 
 ## Architecture Patterns
 
@@ -520,6 +561,32 @@ Section prompts are 1–3 sentences, written as imperative instructions for the 
 
 ---
 
+## Task Decomposition (Planning-Ready)
+
+1. Wave 0: test scaffold lock
+- Create `test/skeleton-generator.test.js` with 8 todo tests from `41-VALIDATION.md`.
+- Verify green scaffold: `node --test test/skeleton-generator.test.js`.
+
+2. Wave 1: runtime contract implementation
+- Extend `onboarding/backend/agents/example-resolver.cjs` with `resolveSkeleton` and export update.
+- Extend `onboarding/backend/path-constants.cjs` with `SEED_PATH`.
+- Add `onboarding/backend/agents/skeleton-generator.cjs` with `generateSkeletons`, `buildFrontmatter`, `interpolatePainPoints`.
+- Integrate blocking non-fatal hook in `onboarding/backend/handlers.cjs` `handleApprove` and response `skeletons` block.
+- Convert todo tests to executable unit/integration assertions.
+
+3. Wave 2A: template registry authoring part 1
+- Author 14 base files for `Paid_Media` + `Content_SEO`.
+- Run focused and full tests.
+
+4. Wave 2B: template registry authoring part 2
+- Author 14 base files for `Lifecycle_Email` + `Social`.
+- Run focused and full tests.
+
+5. Wave 2C: template registry completion
+- Author 7 base files for `Landing_Pages`.
+- Run full suite and assert 35-file registry completeness.
+- Confirm generated outputs include YAML frontmatter and dynamic pain-point headings.
+
 ## Validation Architecture
 
 ### Test Framework
@@ -758,6 +825,12 @@ Step 2.6: SKIPPED — all work is code + file authoring; no external services or
 
 ---
 
+## Open Questions
+
+1. Should `generated[]` response paths be normalized to POSIX-style slashes for cross-platform UI consistency, or remain OS-native filesystem paths?
+2. Should missing `onboarding-seed.json` at approve time be surfaced as an explicit warning string in `skeletons.failed[]` (for UX clarity), or remain discipline-only failure labels?
+3. Confirm whether future planners want `approvedDrafts` to influence section prompt tone in Phase 43+, since it is intentionally unused in Phase 41.
+
 ## Sources
 
 ### Primary (HIGH confidence)
@@ -782,3 +855,4 @@ Step 2.6: SKIPPED — all work is code + file authoring; no external services or
 
 **Research date:** 2026-04-01  
 **Valid until:** 2026-05-01 (or until handlers.cjs handleApprove is modified by another phase)
+

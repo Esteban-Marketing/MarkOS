@@ -126,8 +126,8 @@ Target: 2 execution waves
 @.planning/STATE.md
 @.planning/PROJECT.md
 @.planning/ROADMAP.md
-@.planning/phases/34-client-intake-sop-automation/34-SUMMARY.md
-@.planning/phases/36-beta-program-operations/36-SUMMARY.md
+@.planning/phases/34-client-intake-sop-automation/34-01-SUMMARY.md
+@.planning/phases/36-beta-program-operations/36-01-SUMMARY.md
 @.planning/phases/37-markos-ui-control-plane/37-RESEARCH.md
 
 ## Current Constraints
@@ -248,5 +248,6 @@ Execute validation in this order:
 </success_criteria>
 
 <output>
-After completion, create .planning/phases/37-markos-ui-control-plane/37-SUMMARY.md.
+After completion, create .planning/phases/37-markos-ui-control-plane/37-01-SUMMARY.md.
 </output>
+

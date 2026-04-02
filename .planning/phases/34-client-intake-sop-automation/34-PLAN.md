@@ -1718,7 +1718,7 @@ interface IntakeSeed {
 
 <output>
 
-After completing all tasks, create `.planning/phases/34-client-intake-sop-automation/34-SUMMARY.md` with:
+After completing all tasks, create `.planning/phases/34-client-intake-sop-automation/34-01-SUMMARY.md` with:
 
 ```markdown
 # Phase 34 Summary: Client Intake SOP Automation
@@ -1796,7 +1796,7 @@ After completing all tasks, create `.planning/phases/34-client-intake-sop-automa
 5. Target: 10 clients onboarded by 2026-04-30
 ```
 
-This summary file should be committed to `.planning/phases/34-client-intake-sop-automation/34-SUMMARY.md` at phase completion.
+This summary file should be committed to `.planning/phases/34-client-intake-sop-automation/34-01-SUMMARY.md` at phase completion.
 
 </output>
 
@@ -1948,3 +1948,4 @@ Task 0 (fixtures) → Task 1,2,4 (validation + Linear + handler) → Task 3 (orc
 - **Approval Status:** READY FOR EXECUTION ✅
 
 </instructions>
+

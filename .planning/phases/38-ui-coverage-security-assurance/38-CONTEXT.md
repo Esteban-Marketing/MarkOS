@@ -106,7 +106,7 @@ Establish complete and scalable UI quality coverage for the MarkOS app using Sto
 
 - [.planning/ROADMAP.md](.planning/ROADMAP.md)
 - [.planning/STATE.md](.planning/STATE.md)
-- [.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md](.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md)
+- [.planning/phases/37-markos-ui-control-plane/37-01-SUMMARY.md](.planning/phases/37-markos-ui-control-plane/37-01-SUMMARY.md)
 - [app/(markos)/layout.tsx](app/(markos)/layout.tsx)
 - [app/(markos)/page.tsx](app/(markos)/page.tsx)
 - [lib/markos/contracts/schema.ts](lib/markos/contracts/schema.ts)
@@ -136,3 +136,4 @@ Establish complete and scalable UI quality coverage for the MarkOS app using Sto
 - Rebuilding route architecture from Phase 37
 - Non-UI backend migrations unrelated to coverage/security gates
 - Marketing campaign strategy changes not tied to UI quality assurance
+

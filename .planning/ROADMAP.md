@@ -12,7 +12,7 @@
 - ✅ **v2.4 Beta Client Onboarding** — Phases 34, 36, 37 shipped (2026-04-01) → **ARCHIVED** (`.planning/milestones/v2.4-ROADMAP.md`)
 - ✅ **v2.5 Enhancement & Optimization Process** — Phase 35 completed (2026-04-01) → **ARCHIVED**
 - 🟢 **v2.6 Post-Deployment Operations & Beta Activation** — Active milestone; Phase 38 shipped (2026-04-01)
-- 📋 **v3.0 MarkOS Literacy System** — Phases 39-44 (planned; roadmap at `.planning/milestones/v3.0-LITERACY-SYSTEM-ROADMAP.md`)
+- � **v3.0 MarkOS Literacy System** — Phases 39-44 in execution; Phases 43-44 completed (roadmap at `.planning/milestones/v3.0-LITERACY-SYSTEM-ROADMAP.md`)
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -76,7 +76,7 @@ Phase 33 completed the documentation follow-on for making the repository navigab
 **Requirements Mapped:** DX-01, DX-02, OPS-READY-01, CI-01
 **Depends on:** Existing `bin/install.cjs`, `bin/update.cjs`, `bin/ensure-vector.cjs`, and onboarding backend health surfaces
 **Status:** ✅ Complete (2026-04-01)
-**Artifacts:** `.planning/phases/35-smart-one-command-deployment/35-RESEARCH.md`, `.planning/phases/35-smart-one-command-deployment/35-PLAN.md`, `.planning/phases/35-smart-one-command-deployment/35-SUMMARY.md`
+**Artifacts:** `.planning/phases/35-smart-one-command-deployment/35-RESEARCH.md`, `.planning/phases/35-smart-one-command-deployment/35-PLAN.md`, `.planning/phases/35-smart-one-command-deployment/35-01-SUMMARY.md`
 
 - 35-01: Define installer contract for interactive, non-interactive, and update handoff modes
 - 35-02: Auto-detect and hydrate runtime defaults before prompting for missing values
@@ -100,7 +100,7 @@ Phase 35 completed the installer/readiness hardening needed to make `npx markos`
 **Requirements Mapped:** BETA-01, PLG-01
 **Depends on:** Phase 37 control-plane foundations and the v2.5 archived deployment baseline
 **Status:** ✅ Complete (2026-04-01)
-**Artifacts:** `.planning/phases/38-ui-coverage-security-assurance/38-PLAN.md`, `.planning/phases/38-ui-coverage-security-assurance/38-SUMMARY.md`, `.planning/phases/38-ui-coverage-security-assurance/38-VERIFICATION.md`
+**Artifacts:** `.planning/phases/38-ui-coverage-security-assurance/38-PLAN.md`, `.planning/phases/38-ui-coverage-security-assurance/38-01-SUMMARY.md`, `.planning/phases/38-ui-coverage-security-assurance/38-VERIFICATION.md`
 
 - 38-01: Bootstrap deterministic Storybook infrastructure for route and foundation coverage
 - 38-02: Publish visual baselines through Chromatic with PR-oriented CI wiring
@@ -175,34 +175,36 @@ Plans:
 **Goal:** Close the gap between onboarding seed submission and literacy activation by wiring a post-submission pipeline that evaluates literacy coverage and reports readiness in submit/status responses.
 **Requirements Mapped:** LIT-13 (post-submit activation + gaps), LIT-14 (readiness contract in submit/status), LIT-15 (activation telemetry)
 **Depends on:** Phase 42 (secure provisioning baseline for literacy data plane)
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-02)
 **Milestone:** v3.0 MarkOS Literacy System
+**Artifacts:** `.planning/phases/43-onboarding-to-literacy-activation-pipeline/43-05-SUMMARY.md`, `.planning/phases/43-onboarding-to-literacy-activation-pipeline/43-VALIDATION.md`, `.planning/phases/43-onboarding-to-literacy-activation-pipeline/43-VERIFICATION.md`
 
 **Plans:** 5 plans
 
 Plans:
-- [ ] 43-01-PLAN.md — Wave 0 Nyquist contract scaffolding for submit readiness, status literacy block, and telemetry assertions
-- [ ] 43-02-PLAN.md — Wave 1 shared readiness evaluator and deterministic discipline fallback
-- [ ] 43-03-PLAN.md — Wave 2 submit integration for literacy readiness and activation telemetry
-- [ ] 43-04-PLAN.md — Wave 3 status integration and submit/status readiness parity
-- [ ] 43-05-PLAN.md — Wave 4 regression gate, docs alignment, and verification closure
+- [x] 43-01-PLAN.md — Wave 0 Nyquist contract scaffolding for submit readiness, status literacy block, and telemetry assertions
+- [x] 43-02-PLAN.md — Wave 1 shared readiness evaluator and deterministic discipline fallback
+- [x] 43-03-PLAN.md — Wave 2 submit integration for literacy readiness and activation telemetry
+- [x] 43-04-PLAN.md — Wave 3 status integration and submit/status readiness parity
+- [x] 43-05-PLAN.md — Wave 4 regression gate, docs alignment, and verification closure
 
 ## Phase 44: End-to-End Literacy Integration Verification
 
 **Goal:** Validate the complete literacy lifecycle from content authoring through onboarding activation to draft generation, confirming pain-points-first retrieval improves output relevance and remains regression-safe.
 **Requirements Mapped:** LIT-16 (lifecycle E2E relevance), LIT-17 (coverage API contract), LIT-18 (zero-hit regression gate), LIT-19 (operator runbook and execution workflow)
 **Depends on:** Phase 43 (onboarding-to-literacy activation baseline)
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-02)
 **Milestone:** v3.0 MarkOS Literacy System
+**Artifacts:** `.planning/phases/44-end-to-end-literacy-integration-verification/44-05-SUMMARY.md`, `.planning/phases/44-end-to-end-literacy-integration-verification/44-VALIDATION.md`, `.planning/phases/44-end-to-end-literacy-integration-verification/44-VERIFICATION.md`
 
 **Plans:** 5 plans
 
 Plans:
-- [ ] 44-01-PLAN.md — Wave 0 Nyquist scaffolding: lifecycle/coverage/regression contract tests + deterministic fixture corpus
-- [ ] 44-02-PLAN.md — Wave 1 coverage implementation: backend handler, vector aggregation helper, local/hosted route wiring
-- [ ] 44-03-PLAN.md — Wave 2 lifecycle verification: fixture ingest harness, standards_context relevance assertions, coverage parity checks
-- [ ] 44-04-PLAN.md — Wave 3 regression enforcement: populated-corpus zero-hit gate and CI integration with diagnostics
-- [ ] 44-05-PLAN.md — Wave 4 closure: operator runbook, validation ledger completion, full-suite final regression verification
+- [x] 44-01-PLAN.md — Wave 0 Nyquist scaffolding: lifecycle/coverage/regression contract tests + deterministic fixture corpus
+- [x] 44-02-PLAN.md — Wave 1 coverage implementation: backend handler, vector aggregation helper, local/hosted route wiring
+- [x] 44-03-PLAN.md — Wave 2 lifecycle verification: fixture ingest harness, standards_context relevance assertions, coverage parity checks
+- [x] 44-04-PLAN.md — Wave 3 regression enforcement: populated-corpus zero-hit gate and CI integration with diagnostics
+- [x] 44-05-PLAN.md — Wave 4 closure: operator runbook, validation ledger completion, full-suite final regression verification
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
 
@@ -839,3 +841,5 @@ Plans:
 3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 <!-- EOF -->
+
+

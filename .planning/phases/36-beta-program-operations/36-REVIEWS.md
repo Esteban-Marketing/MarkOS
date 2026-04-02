@@ -10,7 +10,7 @@ artifacts_reviewed:
   - 36-RUNBOOK.md
   - 36-METRICS.md
   - 36-CADENCE.md
-  - 36-SUMMARY.md
+  - 36-01-SUMMARY.md
 review_mode: inline-single-reviewer
 cli_audit: gemini=missing, claude=missing, codex=missing
 ---
@@ -229,3 +229,4 @@ Review fires.
 
 *Review produced inline by GitHub Copilot (model: Claude Sonnet 4.6). External CLI review
 can be run once gemini, claude, or codex CLIs are installed.*
+
