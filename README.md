@@ -48,6 +48,9 @@ npx markos --no-onboarding
 
 # Accept defaults non-interactively
 npx markos --yes --project-name "Acme Client"
+
+# Run secure database provisioning setup (Supabase + Upstash)
+npx markos db:setup
 ```
 
 In ~60 seconds you get:
@@ -69,10 +72,15 @@ npx markos update
 
 # `npx markos install` remains a compatibility alias for the primary install flow.
 
+# Guided DB provisioning with migration + security audit gates:
+npx markos db:setup
+
 # Run the onboarding form to fill your brand intelligence:
 node onboarding/backend/server.cjs
 # Then open http://localhost:4242
 ```
+
+`db:setup` prerequisites: valid Supabase service-role credentials and Upstash Vector REST credentials. The command validates both providers, applies pending migrations safely, verifies RLS + namespace isolation, and prints a structured health snapshot.
 
 ---
 
