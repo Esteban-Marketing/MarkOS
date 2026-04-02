@@ -43,3 +43,63 @@ The setup wizard prompts for these values, validates provider reachability, and 
 - `Migration failed for <file>`: inspect SQL file and resolve syntax/runtime issue.
 - `RLS verification failed`: confirm required tables have RLS enabled and anon access denied.
 - `Namespace audit failed`: verify project slug-scoped namespaces and standards namespace format.
+- `Namespace audit failed`: verify project slug-scoped namespaces and standards namespace format.
+
+---
+
+## Phase 43 — Literacy Activation Readiness (LIT-13 / LIT-14 / LIT-15)
+
+### Overview
+
+After Phase 43, every `/submit` and `/status` response includes a `literacy` block indicating how much marketing-playbook content is available for the submitted context. This block drives operator awareness without blocking the core onboarding flow.
+
+### Response Shape
+
+```json
+"literacy": {
+	"readiness": "ready | partial | unconfigured",
+	"disciplines_available": ["Paid_Media", "Content_SEO"],
+	"gaps": ["Lifecycle_Email"],
+	"last_ingestion_at": null
+}
+```
+
+> `/status` also returns `last_ingestion_at` (nullable). `/submit` omits it.
+
+### Readiness States
+
+| State | Meaning | Operator Action |
+|-------|---------|-----------------|
+| `ready` | Providers healthy; all required disciplines have content | No action needed. Full playbook coverage available. |
+| `partial` | Providers healthy; some disciplines lack indexed content | Run `npx markos ingest` for the disciplines listed in `gaps`. |
+| `unconfigured` | Vector providers not reachable or not configured | Configure `UPSTASH_VECTOR_REST_URL` + `UPSTASH_VECTOR_REST_TOKEN`, then re-run `npx markos db:setup`. |
+
+### Gap Remediation
+
+When `readiness` is `partial`, the `gaps` array lists the discipline slugs that have no indexed content (e.g., `["Lifecycle_Email", "Social"]`). To fill these gaps:
+
+1. Ensure literacy content exists for each discipline under `.agent/markos/literacy/`.
+2. Run `npx markos ingest --discipline <slug>` for each gap entry.
+3. Re-submit or call `/status` to confirm `readiness` advances to `ready`.
+
+### Telemetry (LIT-15)
+
+Every successful `/submit` emits exactly one `literacy_activation_observed` PostHog event with:
+
+| Property | Type | Notes |
+|----------|------|-------|
+| `readiness_status` | string | `ready \| partial \| unconfigured` |
+| `disciplines_available` | string[] | disciplines with content |
+| `disciplines_missing` | string[] | disciplines with no content |
+| `business_model` | string | from `seed.product.business_model` |
+| `pain_point_count` | number | count only — never raw pain-point text |
+
+Raw pain-point strings are never included in telemetry payloads (privacy-safe count only).
+
+### Implementation Files
+
+| File | Role |
+|------|------|
+| `onboarding/backend/literacy/activation-readiness.cjs` | Core `evaluateLiteracyReadiness()` primitive |
+| `onboarding/backend/literacy/discipline-selection.cjs` | `resolveRequiredDisciplines()` — ranks disciplines from seed |
+| `onboarding/backend/handlers.cjs` | `handleSubmit` + `handleStatus` wiring |
