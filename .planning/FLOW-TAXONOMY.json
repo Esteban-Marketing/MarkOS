@@ -1,0 +1,44 @@
+{
+  "phase": "45-operations-flow-inventory-contract-map",
+  "locked_at": "2026-04-02",
+  "note": "Controlled enums locked per D-02. Unknown labels fail validation (D-03). No expansion in Phase 45 (D-16).",
+  "domains": [
+    "onboarding",
+    "execution",
+    "enrichment",
+    "integration",
+    "migration",
+    "reporting",
+    "admin"
+  ],
+  "flow_types": [
+    "submission",
+    "approval",
+    "regeneration",
+    "query",
+    "health_check",
+    "sync",
+    "record",
+    "migration",
+    "enrichment"
+  ],
+  "classification": {
+    "F-01": { "domain": "onboarding",   "flow_type": "submission"    },
+    "F-02": { "domain": "execution",    "flow_type": "approval"      },
+    "F-03": { "domain": "execution",    "flow_type": "regeneration"  },
+    "F-04": { "domain": "reporting",    "flow_type": "query"         },
+    "F-05": { "domain": "reporting",    "flow_type": "health_check"  },
+    "F-06": { "domain": "integration",  "flow_type": "sync"          },
+    "F-07": { "domain": "integration",  "flow_type": "record"        },
+    "F-08": { "domain": "migration",    "flow_type": "migration"     },
+    "F-09": { "domain": "reporting",    "flow_type": "query"         },
+    "F-10": { "domain": "admin",        "flow_type": "health_check"  },
+    "F-11": { "domain": "admin",        "flow_type": "query"         },
+    "F-12": { "domain": "enrichment",   "flow_type": "query"         },
+    "F-13": { "domain": "enrichment",   "flow_type": "query"         },
+    "F-14": { "domain": "enrichment",   "flow_type": "enrichment"    },
+    "F-15": { "domain": "enrichment",   "flow_type": "enrichment"    },
+    "F-16": { "domain": "enrichment",   "flow_type": "enrichment"    },
+    "F-17": { "domain": "enrichment",   "flow_type": "enrichment"    }
+  }
+}
