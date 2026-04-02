@@ -1,7 +1,8 @@
 ---
 phase: 45
 slug: operations-flow-inventory-contract-map
-status: draft
+status: approved
+reviewed_at: 2026-04-02T00:00:00Z
 shadcn_initialized: false
 preset: none
 created: 2026-04-02
@@ -137,6 +138,11 @@ Required views:
 3. Verification checklist panel: show 100% mapping checks, schema validation status, and reviewer sign-off status.
 4. KPI baseline strip: show T0 placeholders and capture window metadata (instrumented aggregate window only, per D-13 to D-15).
 
+Primary focal point and first-scan hierarchy:
+- First attention: coverage status ratio (numerator/denominator, e.g., 17/17) and verification state.
+- Second attention: inventory table rows and domain/flow_type tags.
+- Third attention: checklist detail and KPI baseline strip metadata.
+
 Required states:
 - Loading
 - Ready
@@ -155,11 +161,11 @@ Required interaction rules:
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved
