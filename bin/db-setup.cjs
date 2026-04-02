@@ -125,6 +125,16 @@ async function defaultAuditNamespaces() {
   throw new Error('Namespace auditor dependencies are not configured. Pass auditNamespaces to runDbSetup.');
 }
 
+async function defaultHealthSnapshot(values) {
+  const vectorStore = require('../onboarding/backend/vector-store-client.cjs');
+  return vectorStore.buildProvisioningHealthSnapshot({
+    supabase_url: values.SUPABASE_URL,
+    supabase_service_role_key: values.SUPABASE_SERVICE_ROLE_KEY,
+    upstash_vector_rest_url: values.UPSTASH_VECTOR_REST_URL,
+    upstash_vector_rest_token: values.UPSTASH_VECTOR_REST_TOKEN,
+  });
+}
+
 function normalizePromptValue(value) {
   return String(value || '').trim();
 }
@@ -197,6 +207,7 @@ async function runDbSetup(options = {}) {
   const runNamespaceAudit = options.auditNamespaces || (async ({ projectSlug }) => {
     return auditNamespaces({ projectSlug, listNamespaces: defaultAuditNamespaces });
   });
+  const runHealthSnapshot = options.healthCheck || defaultHealthSnapshot;
 
   try {
     const existingContent = fsApi.existsSync(envPath)
@@ -235,6 +246,8 @@ async function runDbSetup(options = {}) {
       throw new Error(`Namespace audit failed: ${namespaces.errors.join(' | ')}`);
     }
 
+    const health = await runHealthSnapshot(values);
+
     return {
       ok: true,
       persisted: REQUIRED_KEYS.map((field) => field.key),
@@ -247,6 +260,7 @@ async function runDbSetup(options = {}) {
       migrations: migrationSummary,
       rls,
       namespaces,
+      health,
       redacted: buildRedactedSummary(values),
     };
   } finally {
@@ -260,7 +274,15 @@ async function runDbSetupCLI(options = {}) {
   try {
     const report = await runDbSetup(options);
     console.log('db:setup completed successfully');
-    console.log(JSON.stringify({ ok: report.ok, providers: report.providers, gitignore: report.gitignore }, null, 2));
+    console.log(JSON.stringify({
+      ok: report.ok,
+      providers: report.providers,
+      migrations: report.migrations,
+      rls: report.rls,
+      namespaces: report.namespaces,
+      health: report.health,
+      gitignore: report.gitignore,
+    }, null, 2));
   } catch (error) {
     console.error(`db:setup failed: ${error.message}`);
     process.exitCode = 1;

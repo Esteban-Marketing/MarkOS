@@ -166,3 +166,36 @@ test('42-04-03 db:setup fails with actionable diagnostics when security auditors
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 });
+
+test('42-05-01 runDbSetup emits consolidated health snapshot without secret leakage', async () => {
+  const tmpDir = makeTempDir();
+  const answers = [
+    'https://supabase.example.com',
+    'supabase-secret-value',
+    'https://upstash.example.com',
+    'upstash-secret-value',
+  ];
+
+  try {
+    const report = await runDbSetup({
+      cwd: tmpDir,
+      prompt: { ask: async () => answers.shift(), close: () => {} },
+      probeSupabase: async () => {},
+      probeUpstash: async () => {},
+      runMigrations: async () => ({ applied: ['37_markos_ui_control_plane.sql'], skipped: [], total: 1 }),
+      verifyRls: async () => ({ ok: true, tables: [{ table: 'markos_literacy_chunks', ok: true }] }),
+      auditNamespaces: async () => ({ ok: true, errors: [] }),
+      healthCheck: async () => ({ ok: true, status: 'providers_ready' }),
+    });
+
+    assert.equal(report.ok, true);
+    assert.equal(report.health.status, 'providers_ready');
+    assert.equal(report.migrations.total, 1);
+
+    const serialized = JSON.stringify(report);
+    assert.equal(serialized.includes('supabase-secret-value'), false);
+    assert.equal(serialized.includes('upstash-secret-value'), false);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});

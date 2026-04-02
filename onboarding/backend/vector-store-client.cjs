@@ -242,6 +242,16 @@ async function healthCheck() {
   };
 }
 
+async function buildProvisioningHealthSnapshot(overrides = {}) {
+  const previousConfig = { ...runtimeConfig };
+  configure({ ...runtimeConfig, ...overrides });
+  try {
+    return await healthCheck();
+  } finally {
+    configure(previousConfig);
+  }
+}
+
 function createChecksum(content) {
   return crypto.createHash('sha256').update(String(content || ''), 'utf8').digest('hex');
 }
@@ -696,6 +706,7 @@ async function clearProject(slug) {
 }
 
 module.exports = {
+  buildProvisioningHealthSnapshot,
   configure,
   healthCheck,
   upsertSeed,
