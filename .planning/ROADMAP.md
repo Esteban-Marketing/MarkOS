@@ -147,11 +147,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 41-01-PLAN.md — Wave 0 test scaffold: create node:test todo contract for 8 required resolver/generator/approve behaviors
-- [ ] 41-02-PLAN.md — Wave 1 implementation: add resolveSkeleton + SEED_PATH + skeleton-generator + approve hook + executable tests
-- [ ] 41-03-PLAN.md — Wave 2 templates A: author Paid_Media + Content_SEO skeleton sets (14 files)
-- [ ] 41-04-PLAN.md — Wave 2 templates B: author Lifecycle_Email + Social skeleton sets (14 files)
-- [ ] 41-05-PLAN.md — Wave 2 templates C: author Landing_Pages skeleton set (7 files) + full 35-file registry validation
+- [x] 41-01-PLAN.md — Wave 0 test scaffold: create node:test todo contract for 8 required resolver/generator/approve behaviors
+- [x] 41-02-PLAN.md — Wave 1 implementation: add resolveSkeleton + SEED_PATH + skeleton-generator + approve hook + executable tests
+- [x] 41-03-PLAN.md — Wave 2 templates A: author Paid_Media + Content_SEO skeleton sets (14 files)
+- [x] 41-04-PLAN.md — Wave 2 templates B: author Lifecycle_Email + Social skeleton sets (14 files)
+- [x] 41-05-PLAN.md — Wave 2 templates C: author Landing_Pages skeleton set (7 files) + full 35-file registry validation
 
 ## Phase 42: Secure Database Provisioning Flow
 
