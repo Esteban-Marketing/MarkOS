@@ -232,7 +232,14 @@ Plans:
   3. Contract schema `contracts/schema.json` validates all existing flow contracts
   4. FLOW-VERIFICATION.md is reviewed and approved (zero open checklist items)
   5. Baseline T0 KPI metrics captured and stored for Phase 50 comparison
-**Plans:** 4–5 plans
+**Plans:** 5 plans
+
+Plans:
+- [ ] 45-01-PLAN.md — Read-only flow extraction CLI + locked taxonomy classification
+- [ ] 45-02-PLAN.md — Canonical FLOW-INVENTORY and operator-browsable mockup contract
+- [ ] 45-03-PLAN.md — contracts/schema.json + 17 contract stubs + FLOW-CONTRACTS mapping
+- [ ] 45-04-PLAN.md — Automated flow coverage tests + FLOW-VERIFICATION reviewer gate
+- [ ] 45-05-PLAN.md — T0 KPI baseline capture + freeze sign-off metadata
 
 ---
 
@@ -264,7 +271,14 @@ Plans:
   3. API versioning policy documented in `.planning/codebase/API-VERSIONING-POLICY.md` and reviewed
   4. All per-flow contracts follow canonical schema from Phase 45; validation passes
   5. CI enforces spec ↔ implementation parity: `npm run generate-openapi` passes before each commit
-**Plans:** 4–5 plans
+**Plans:** 5 plans
+
+Plans:
+- [ ] 45-01-PLAN.md — Read-only flow extraction CLI + locked taxonomy classification
+- [ ] 45-02-PLAN.md — Canonical FLOW-INVENTORY and operator-browsable mockup contract
+- [ ] 45-03-PLAN.md — contracts/schema.json + 17 contract stubs + FLOW-CONTRACTS mapping
+- [ ] 45-04-PLAN.md — Automated flow coverage tests + FLOW-VERIFICATION reviewer gate
+- [ ] 45-05-PLAN.md — T0 KPI baseline capture + freeze sign-off metadata
 
 ---
 
@@ -967,5 +981,6 @@ Plans:
 3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 <!-- EOF -->
+
 
 
