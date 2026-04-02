@@ -1,0 +1,26 @@
+{
+  "phase": "45-operations-flow-inventory-contract-map",
+  "baseline_doc": ".planning/T0-KPI-BASELINE.md",
+  "window_start": "2026-03-03",
+  "window_end": "2026-04-02",
+  "window_days": 30,
+  "source_events": [
+    "approval_completed",
+    "rollout_endpoint_observed",
+    "literacy_activation_observed",
+    "execution_loop_completed"
+  ],
+  "telemetry_query_attempted": true,
+  "telemetry_query_reference": "PostHog Events API — us.i.posthog.com — date_from=2026-03-03 date_to=2026-04-02 events=[approval_completed,rollout_endpoint_observed,literacy_activation_observed]",
+  "telemetry_query_status": "PARTIAL — POSTHOG_API_KEY not set in execution environment; tmp/posthog_drop.json stub present but contains diagnostics only, not a full event export",
+  "export_reference": "tmp/posthog_drop.json",
+  "fallback_metrics": [
+    "time_to_first_task",
+    "evidence_capture_rate",
+    "operator_self_service_rate"
+  ],
+  "outlier_policy": "LOW-confidence values are estimate-anchored. Phase 50 re-measurement will use live PostHog event export for the same window duration. flow_coverage is HIGH confidence (automated extraction). If Phase 50 window differs, a rebase note is required before delta publication.",
+  "reviewer_status": "PENDING",
+  "reviewer_name": null,
+  "reviewer_date": null
+}
