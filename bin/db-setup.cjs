@@ -113,8 +113,33 @@ async function probeUpstash(values) {
   await namespace.query({ data: 'health', topK: 1 });
 }
 
-async function defaultMigrationExecution() {
-  throw new Error('SQL executor is not configured for migrations. Pass runMigrations to runDbSetup.');
+async function defaultMigrationExecution(sql, meta, values) {
+  const client = createClient(values.SUPABASE_URL, values.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  const rpcCandidates = [
+    { fn: 'markos_exec_sql', arg: 'query' },
+    { fn: 'markos_exec_sql', arg: 'sql' },
+    { fn: 'exec_sql', arg: 'query' },
+    { fn: 'exec_sql', arg: 'sql' },
+    { fn: 'run_sql', arg: 'query' },
+    { fn: 'run_sql', arg: 'sql' },
+  ];
+
+  const errors = [];
+  for (const candidate of rpcCandidates) {
+    const { data, error } = await client.rpc(candidate.fn, { [candidate.arg]: sql });
+    if (!error) {
+      return {
+        rows: Array.isArray(data) ? data : [],
+        meta: { ...meta, rpc: candidate.fn },
+      };
+    }
+    errors.push(`${candidate.fn}:${error.message}`);
+  }
+
+  throw new Error(`No SQL RPC executor available. Tried: ${errors.join(' | ')}`);
 }
 
 async function defaultVerifyRls() {
@@ -199,7 +224,10 @@ async function runDbSetup(options = {}) {
   const runSupabaseProbe = options.probeSupabase || probeSupabase;
   const runUpstashProbe = options.probeUpstash || probeUpstash;
   const runMigrations = options.runMigrations || (async ({ migrationsDir }) => {
-    return applyPendingMigrations({ migrationsDir, executeSql: defaultMigrationExecution });
+    return applyPendingMigrations({
+      migrationsDir,
+      executeSql: (sql, meta) => defaultMigrationExecution(sql, meta, valuesForSetup),
+    });
   });
   const runRlsVerification = options.verifyRls || (async () => {
     return verifyRlsPolicies({ fetchTableRlsStatus: defaultVerifyRls, checkAnonDenied: defaultVerifyRls });
@@ -208,6 +236,7 @@ async function runDbSetup(options = {}) {
     return auditNamespaces({ projectSlug, listNamespaces: defaultAuditNamespaces });
   });
   const runHealthSnapshot = options.healthCheck || defaultHealthSnapshot;
+  let valuesForSetup = null;
 
   try {
     const existingContent = fsApi.existsSync(envPath)
@@ -222,6 +251,7 @@ async function runDbSetup(options = {}) {
       defaults: defaultValues,
       output,
     });
+    valuesForSetup = values;
 
     await runSupabaseProbe(values);
     await runUpstashProbe(values);
