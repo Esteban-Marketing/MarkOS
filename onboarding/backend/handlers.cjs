@@ -855,6 +855,11 @@ async function handleStatus(req, res) {
   vectorStore.configure(runtime.config);
   const vectorHealth = await vectorStore.healthCheck();
   const migrationCheckpoints = loadMigrationCheckpoints(MIGRATION_CHECKPOINTS_PATH);
+
+    // Phase 43 LIT-14: add literacy readiness to status response.
+    const { evaluateLiteracyReadiness } = require('./literacy/activation-readiness.cjs');
+    const literacyStatus = await evaluateLiteracyReadiness(null, runtime.config);
+
   const activeRolloutMode = getRolloutMode(process.env);
 
   let mirGateStatus = { total: 0, complete: 0, gate1Ready: false };
@@ -890,6 +895,12 @@ async function handleStatus(req, res) {
       source: path.relative(PROJECT_ROOT, MIGRATION_CHECKPOINTS_PATH),
     },
     retention_policy: RETENTION_POLICY,
+      literacy: {
+        readiness: literacyStatus.readiness,
+        disciplines_available: literacyStatus.disciplines_available,
+        gaps: literacyStatus.gaps,
+        last_ingestion_at: null,
+      },
   });
 }
 

@@ -1576,7 +1576,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
 
     // --- 43-01-02: status literacy block contract (LIT-14) ----------------------
 
-    await t.test('[43-04-01 LIT-14] status response includes literacy block with correct field shapes', { todo: 'pending: Wave 3 implementation' }, async () => {
+    await t.test('[43-04-01 LIT-14] status response includes literacy block with correct field shapes', async () => {
       const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
       const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
       await withMockedModule(vectorStorePath, {
@@ -1597,7 +1597,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       });
     });
 
-    await t.test('[43-04-02 LIT-14] submit and status produce same readiness under identical mocked conditions', { todo: 'pending: Waves 2+3 implementation' }, async () => {
+    await t.test('[43-04-02 LIT-14] submit and status produce same readiness under identical mocked conditions', async () => {
       const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
       const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
       const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
