@@ -1493,5 +1493,182 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       }
     }
   });
+
+    // ─── Phase 43 Wave 0: Nyquist Contract Stubs ─────────────────────────────────
+    // Contracts for LIT-13 / LIT-14 / LIT-15. All are `todo` until Waves 2-3
+    // wire evaluateLiteracyReadiness into handleSubmit / handleStatus.
+
+    // --- 43-01-01: submit readiness states (LIT-13) ----------------------------
+
+    await t.test('[43-02-01 LIT-13] submit returns literacy.readiness=ready when providers healthy', { todo: 'pending: Wave 2 implementation' }, async () => {
+      const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+      const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+      const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+      await withMockedModule(vectorStorePath, {
+        configure: () => {},
+        healthCheck: async () => ({ ok: true, mode: 'cloud', status: 'providers_ready' }),
+        getLiteracyContext: async () => ([{ text: 'paid media tactic', metadata: {}, score: 0.9 }]),
+      }, async () => {
+        await withMockedModule(orchestratorPath, {
+          orchestrate: async () => ({ drafts: {}, vectorStoreResults: [], errors: [] }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const res = createMockResponse();
+          await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), res);
+          assert.equal(res.statusCode, 200);
+          const payload = JSON.parse(res.body);
+          assert.equal(typeof payload.literacy, 'object', 'submit must include literacy block');
+          assert.equal(payload.literacy.readiness, 'ready');
+          assert.ok(Array.isArray(payload.literacy.disciplines_available));
+          assert.ok(Array.isArray(payload.literacy.gaps));
+        });
+      });
+    });
+
+    await t.test('[43-03-01 LIT-13] submit returns literacy.readiness=partial when some disciplines empty', { todo: 'pending: Wave 2 implementation' }, async () => {
+      const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+      const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+      const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+      let callCount = 0;
+      await withMockedModule(vectorStorePath, {
+        configure: () => {},
+        healthCheck: async () => ({ ok: true, mode: 'cloud', status: 'providers_ready' }),
+        getLiteracyContext: async () => { callCount++; return callCount <= 1 ? [{ text: 'content seo', metadata: {}, score: 0.8 }] : []; },
+      }, async () => {
+        await withMockedModule(orchestratorPath, {
+          orchestrate: async () => ({ drafts: {}, vectorStoreResults: [], errors: [] }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const res = createMockResponse();
+          await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), res);
+          assert.equal(res.statusCode, 200);
+          const payload = JSON.parse(res.body);
+          assert.equal(typeof payload.literacy, 'object', 'submit must include literacy block');
+          assert.equal(payload.literacy.readiness, 'partial');
+          assert.ok(payload.literacy.gaps.length > 0, 'gaps must list missing disciplines');
+        });
+      });
+    });
+
+    await t.test('[43-03-03 LIT-13] submit remains successful when literacy is unconfigured', { todo: 'pending: Wave 2 implementation' }, async () => {
+      const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+      const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+      const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+      await withMockedModule(vectorStorePath, {
+        configure: () => {},
+        healthCheck: async () => ({ ok: false, mode: 'cloud', status: 'providers_unconfigured' }),
+        getLiteracyContext: async () => [],
+      }, async () => {
+        await withMockedModule(orchestratorPath, {
+          orchestrate: async () => ({ drafts: {}, vectorStoreResults: [], errors: [] }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const res = createMockResponse();
+          await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), res);
+          assert.equal(res.statusCode, 200, 'submit must succeed even when literacy unconfigured');
+          const payload = JSON.parse(res.body);
+          assert.equal(payload.success, true, 'submit success must not depend on literacy state');
+          assert.equal(typeof payload.literacy, 'object', 'literacy block must be present');
+          assert.equal(payload.literacy.readiness, 'unconfigured');
+        });
+      });
+    });
+
+    // --- 43-01-02: status literacy block contract (LIT-14) ----------------------
+
+    await t.test('[43-04-01 LIT-14] status response includes literacy block with correct field shapes', { todo: 'pending: Wave 3 implementation' }, async () => {
+      const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+      const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+      await withMockedModule(vectorStorePath, {
+        configure: () => {},
+        healthCheck: async () => ({ ok: true, mode: 'cloud', status: 'providers_ready' }),
+        getLiteracyContext: async () => ([{ text: 'lifecycle email tactic', metadata: {}, score: 0.85 }]),
+      }, async () => {
+        const handlers = loadFreshModule(handlersPath);
+        const res = createMockResponse();
+        await handlers.handleStatus({ method: 'GET', url: '/status' }, res);
+        assert.equal(res.statusCode, 200);
+        const payload = JSON.parse(res.body);
+        assert.equal(typeof payload.literacy, 'object', 'status must include literacy block');
+        assert.ok(['ready', 'partial', 'unconfigured'].includes(payload.literacy.readiness));
+        assert.ok(Array.isArray(payload.literacy.disciplines_available));
+        assert.ok(Array.isArray(payload.literacy.gaps));
+        assert.ok(Object.prototype.hasOwnProperty.call(payload.literacy, 'last_ingestion_at'), 'last_ingestion_at must be present');
+      });
+    });
+
+    await t.test('[43-04-02 LIT-14] submit and status produce same readiness under identical mocked conditions', { todo: 'pending: Waves 2+3 implementation' }, async () => {
+      const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+      const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+      const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+      const sharedVectorMock = {
+        configure: () => {},
+        healthCheck: async () => ({ ok: false, mode: 'cloud', status: 'providers_unconfigured' }),
+        getLiteracyContext: async () => [],
+      };
+      let submitReadiness;
+      let statusReadiness;
+      await withMockedModule(vectorStorePath, sharedVectorMock, async () => {
+        await withMockedModule(orchestratorPath, {
+          orchestrate: async () => ({ drafts: {}, vectorStoreResults: [], errors: [] }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const submitRes = createMockResponse();
+          await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), submitRes);
+          submitReadiness = JSON.parse(submitRes.body)?.literacy?.readiness;
+          const statusRes = createMockResponse();
+          await handlers.handleStatus({ method: 'GET', url: '/status' }, statusRes);
+          statusReadiness = JSON.parse(statusRes.body)?.literacy?.readiness;
+        });
+      });
+      assert.equal(submitReadiness, 'unconfigured', 'submit readiness must be unconfigured');
+      assert.equal(statusReadiness, 'unconfigured', 'status readiness must match submit');
+      assert.equal(submitReadiness, statusReadiness, 'readiness must be identical across submit and status');
+    });
+
+    // --- 43-01-03: activation telemetry contract (LIT-15) -----------------------
+
+    await t.test('[43-05-03 LIT-15] submit emits one literacy_activation_observed event with normalized payload', { todo: 'pending: Wave 2 implementation' }, async () => {
+      const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+      const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+      const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+      const telemetryPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'telemetry.cjs');
+      const captured = [];
+      await withMockedModule(telemetryPath, {
+        capture: (eventName, properties) => captured.push({ eventName, properties }),
+        captureRolloutEndpointEvent: () => {},
+        captureExecutionCheckpoint: () => {},
+      }, async () => {
+        await withMockedModule(vectorStorePath, {
+          configure: () => {},
+          healthCheck: async () => ({ ok: true, mode: 'cloud', status: 'providers_ready' }),
+          getLiteracyContext: async () => ([{ text: 'paid media content', metadata: {}, score: 0.9 }]),
+        }, async () => {
+          await withMockedModule(orchestratorPath, {
+            orchestrate: async () => ({ drafts: {}, vectorStoreResults: [], errors: [] }),
+          }, async () => {
+            const handlers = loadFreshModule(handlersPath);
+            const res = createMockResponse();
+            await handlers.handleSubmit(createJsonRequest(createPhase34ValidSeed(), '/submit'), res);
+            assert.equal(res.statusCode, 200);
+            const activationEvents = captured.filter((e) => e.eventName === 'literacy_activation_observed');
+            assert.equal(activationEvents.length, 1, 'exactly one literacy_activation_observed event per submit');
+            const evt = activationEvents[0].properties;
+            assert.ok(['ready', 'partial', 'unconfigured'].includes(evt.readiness_status));
+            assert.ok(Array.isArray(evt.disciplines_available));
+            assert.ok(Array.isArray(evt.disciplines_missing));
+            assert.equal(typeof evt.business_model, 'string');
+            assert.equal(typeof evt.pain_point_count, 'number');
+            // LIT-15: no raw pain-point strings in telemetry
+            const rawPainPoints = createPhase34ValidSeed().audience.pain_points;
+            const evtStr = JSON.stringify(evt);
+            for (const pp of rawPainPoints) {
+              assert.ok(!evtStr.includes(pp), `raw pain point "${pp}" must not appear in telemetry`);
+            }
+          });
+        });
+      });
+    });
+
 });
 
