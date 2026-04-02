@@ -50,6 +50,17 @@ function buildLiteracyFilter(filters = {}) {
     parts.push(`pain_point_tags CONTAINS '${escapeFilterValue(filters.pain_point_tag)}'`);
   }
 
+  if (Array.isArray(filters.pain_point_tags) && filters.pain_point_tags.length > 0) {
+    const tagClauses = filters.pain_point_tags
+      .map((tag) => String(tag || '').trim())
+      .filter(Boolean)
+      .map((tag) => `pain_point_tags CONTAINS '${escapeFilterValue(tag)}'`);
+
+    if (tagClauses.length > 0) {
+      parts.push(`(${tagClauses.join(' OR ')})`);
+    }
+  }
+
   return parts.join(' AND ');
 }
 
@@ -378,6 +389,7 @@ async function getLiteracyContext(discipline, query = 'summary', filters = {}, t
 
     return matches
       .map((entry) => ({
+        id: entry && entry.id ? entry.id : null,
         text: typeof entry.data === 'string' ? entry.data : '',
         metadata: entry.metadata || {},
         score: typeof entry.score === 'number' ? entry.score : 0,
