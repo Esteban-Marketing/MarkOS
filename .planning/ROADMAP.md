@@ -144,12 +144,31 @@ Plans:
 **Status:** 📋 Planned
 **Milestone:** v3.0 MarkOS Literacy System
 
-**Plans:** 3 plans
+**Plans:** 5 plans
 
 Plans:
-- [ ] 41-01-PLAN.md — Wave 1 test scaffold: create node:test todo contract for 8 required resolver/generator/approve behaviors
-- [ ] 41-02-PLAN.md — Wave 2 implementation: add resolveSkeleton + SEED_PATH + skeleton-generator + approve hook + executable tests
-- [ ] 41-03-PLAN.md — Wave 3 template registry: author and verify 35 base skeleton files across 5 disciplines x 7 models
+- [ ] 41-01-PLAN.md — Wave 0 test scaffold: create node:test todo contract for 8 required resolver/generator/approve behaviors
+- [ ] 41-02-PLAN.md — Wave 1 implementation: add resolveSkeleton + SEED_PATH + skeleton-generator + approve hook + executable tests
+- [ ] 41-03-PLAN.md — Wave 2 templates A: author Paid_Media + Content_SEO skeleton sets (14 files)
+- [ ] 41-04-PLAN.md — Wave 2 templates B: author Lifecycle_Email + Social skeleton sets (14 files)
+- [ ] 41-05-PLAN.md — Wave 2 templates C: author Landing_Pages skeleton set (7 files) + full 35-file registry validation
+
+## Phase 42: Secure Database Provisioning Flow
+
+**Goal:** Implement a guided, safe database connection and provisioning workflow that validates credentials, creates required tables and RLS policies, and isolates per-client data without risking existing production data.
+**Requirements Mapped:** LIT-09 (guided setup command), LIT-10 (idempotent migration runner), LIT-11 (RLS verification), LIT-12 (namespace isolation + health snapshot)
+**Depends on:** Phase 41 (post-approval skeleton generation baseline)
+**Status:** 📋 Planned
+**Milestone:** v3.0 MarkOS Literacy System
+
+**Plans:** 5 plans
+
+Plans:
+- [ ] 42-01-PLAN.md — Wave 0 Nyquist test scaffolding for db setup, migrations, RLS, and namespace audit contracts
+- [ ] 42-02-PLAN.md — Wave 1 setup command path: CLI routing, secure credential wizard, connectivity probes, safe env persistence
+- [ ] 42-03-PLAN.md — Wave 2 migration engine: deterministic ordering, `markos_migrations` ledger, fail-fast diagnostics
+- [ ] 42-04-PLAN.md — Wave 3 security verification: RLS policy checks and namespace isolation audits
+- [ ] 42-05-PLAN.md — Wave 4 integration gate: health snapshot, docs parity, and full regression verification
 
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>

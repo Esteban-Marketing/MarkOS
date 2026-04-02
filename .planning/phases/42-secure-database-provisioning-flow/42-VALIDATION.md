@@ -44,7 +44,6 @@ created: 2026-04-01
 | 42-02-01 | 02 | 1 | LIT-09 | integration | `node --test test/db-setup.test.js -x` | ✅ | ⬜ pending |
 | 42-02-02 | 02 | 1 | LIT-09 | unit | `node --test test/db-setup.test.js -x` | ✅ | ⬜ pending |
 | 42-02-03 | 02 | 1 | LIT-12 | unit | `node --test test/db-setup.test.js -x` | ✅ | ⬜ pending |
-| 42-02-04 | 02 | 1 | LIT-09 | unit | `node --test test/db-setup.test.js -x` | ✅ | ⬜ pending |
 | 42-03-01 | 03 | 2 | LIT-10 | unit | `node --test test/migration-runner.test.js -x` | ✅ | ⬜ pending |
 | 42-03-02 | 03 | 2 | LIT-10 | unit | `node --test test/migration-runner.test.js -x` | ✅ | ⬜ pending |
 | 42-03-03 | 03 | 2 | LIT-10 | integration | `node --test test/migration-runner.test.js -x` | ✅ | ⬜ pending |
