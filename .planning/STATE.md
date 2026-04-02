@@ -1,7 +1,7 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.6
-milestone_name: Post-Deployment Operations and Beta Activation
+milestone: v3.0
+milestone_name: MarkOS Literacy System
 status: active
 last_updated: "2026-04-01T23:59:00.000Z"
 progress:
@@ -14,10 +14,10 @@ progress:
 Current Position
 ----------------
 
-Milestone: v2.6 — Post-Deployment Operations and Beta Activation
-Phase: 38 — UI Coverage and Security Assurance (COMPLETED)
-Status: Phase 38 execution and verification completed with Storybook coverage, Chromatic publishing, accessibility gates, UI security tests, and CI enforcement scaffolding.
-Next Phase: v3.0 Literacy System milestone roadmap defined (Phases 39-44). Pending approval to begin Phase 39 execution.
+Milestone: v3.0 — MarkOS Literacy System
+Phase: 39 — Pain-Points-First Content Corpus (VERIFICATION: human_needed)
+Status: Phase 39 executed and verified. All 15 corpus docs authored, taxonomy.json built, ingest CLI wired, 117 tests pass. 4 live-DB assertions remain (migration apply, live ingest, round-trip retrieval, business-model filter isolation) — require Supabase + Upstash environment access.
+Next Phase: Phase 40 — Two-Layer Retrieval and Discipline Routing (LIT-04, LIT-05, LIT-06)
 
 Tooling Snapshot
 ----------------
@@ -101,3 +101,4 @@ Roadmap Evolution
 - 2026-04-01: Phase 37 completed with MarkOS app route scaffold, domain contracts, theme token pipeline, RBAC/telemetry contracts, Supabase migration baseline, and `.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md`.
 - 2026-04-01: Phase 38 planned and executed under v2.6 with Storybook coverage, Chromatic publishing, accessibility enforcement, UI security gates, and CI workflow hardening.
 - 2026-04-01: Phase 38 verification passed; v2.6 is now the active milestone baseline rather than deferred planning inventory.
+
