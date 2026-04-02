@@ -170,6 +170,23 @@ Plans:
 - [ ] 42-04-PLAN.md — Wave 3 security verification: RLS policy checks and namespace isolation audits
 - [ ] 42-05-PLAN.md — Wave 4 integration gate: health snapshot, docs parity, and full regression verification
 
+## Phase 43: Onboarding-to-Literacy Activation Pipeline
+
+**Goal:** Close the gap between onboarding seed submission and literacy activation by wiring a post-submission pipeline that evaluates literacy coverage and reports readiness in submit/status responses.
+**Requirements Mapped:** LIT-13 (post-submit activation + gaps), LIT-14 (readiness contract in submit/status), LIT-15 (activation telemetry)
+**Depends on:** Phase 42 (secure provisioning baseline for literacy data plane)
+**Status:** 📋 Planned
+**Milestone:** v3.0 MarkOS Literacy System
+
+**Plans:** 5 plans
+
+Plans:
+- [ ] 43-01-PLAN.md — Wave 0 Nyquist contract scaffolding for submit readiness, status literacy block, and telemetry assertions
+- [ ] 43-02-PLAN.md — Wave 1 shared readiness evaluator and deterministic discipline fallback
+- [ ] 43-03-PLAN.md — Wave 2 submit integration for literacy readiness and activation telemetry
+- [ ] 43-04-PLAN.md — Wave 3 status integration and submit/status readiness parity
+- [ ] 43-05-PLAN.md — Wave 4 regression gate, docs alignment, and verification closure
+
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
 
