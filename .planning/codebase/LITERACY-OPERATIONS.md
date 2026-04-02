@@ -103,3 +103,58 @@ Raw pain-point strings are never included in telemetry payloads (privacy-safe co
 | `onboarding/backend/literacy/activation-readiness.cjs` | Core `evaluateLiteracyReadiness()` primitive |
 | `onboarding/backend/literacy/discipline-selection.cjs` | `resolveRequiredDisciplines()` — ranks disciplines from seed |
 | `onboarding/backend/handlers.cjs` | `handleSubmit` + `handleStatus` wiring |
+
+---
+
+## Phase 44 — End-To-End Literacy Lifecycle Verification (LIT-16 / LIT-17 / LIT-18 / LIT-19)
+
+### Operator Workflow (Install → Setup → Ingest → Coverage → Onboarding)
+
+1. Install and baseline environment:
+	 - `npm ci`
+	 - ensure `.env` contains: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `UPSTASH_VECTOR_REST_URL`, `UPSTASH_VECTOR_REST_TOKEN`
+2. Provision providers and schema:
+	 - `npx markos db:setup`
+	 - expected: connectivity probes pass, migrations apply/skip idempotently, health snapshot emitted
+3. Ingest literacy corpus:
+	 - `npx markos ingest`
+	 - expected: canonical chunks indexed, no fatal ingest errors
+4. Verify coverage API contract:
+	 - `GET /api/literacy/coverage`
+	 - expected payload shape:
+		 - `disciplines.{name}.doc_count` number
+		 - `disciplines.{name}.chunk_count` number
+		 - `disciplines.{name}.last_updated` nullable ISO string
+		 - `disciplines.{name}.business_models[]` string array
+	 - failure indicator: all-zero coverage with a known populated corpus
+5. Run onboarding submit verification:
+	 - `POST /submit` with valid intake seed
+	 - expected:
+		 - `literacy.readiness` is returned
+		 - `drafts.standards_context` includes discipline/pain-point-relevant evidence
+6. Run automated verification commands:
+	 - `node --test test/literacy-e2e.test.js -x`
+	 - `node --test test/**/*.test.js`
+	 - `npm test`
+
+### Expected Pass/Fail Signals
+
+- Pass:
+	- `test/literacy-e2e.test.js` shows all 8 assertions passing.
+	- full suite remains green (`npm test` pass, zero fail).
+	- coverage endpoint returns non-zero counts for ingested disciplines.
+- Fail:
+	- LIT-18 zero-hit gate error:
+		- `LIT-18 regression: populated corpus produced zero retrieval hits ...`
+	- coverage response missing required count/freshness fields.
+	- submit returns empty or irrelevant `standards_context` under populated corpus conditions.
+
+### CI Enforcement
+
+- Workflow: `.github/workflows/ui-quality.yml`
+- Merge-blocking regression command:
+	- `node --test test/literacy-e2e.test.js -x`
+- Trigger paths include:
+	- `onboarding/backend/**`
+	- `api/literacy/**`
+	- `test/literacy-e2e.test.js`
