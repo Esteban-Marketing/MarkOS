@@ -327,27 +327,40 @@ Current state (v3.0 end):
 
 ## 6. Traceability (Filled by Roadmapper)
 
-| REQ-ID | Phase | Status |
-|--------|-------|--------|
-| OPS-01 | 46 | — |
-| OPS-02 | 46 | — |
-| OPS-03 | 46 | — |
-| OPS-04 | 46 | — |
-| OPS-05 | 46 | — |
-| OPS-06 | 49 | — |
-| API-01 | 45 | — |
-| API-02 | 47 | — |
-| API-03 | 47 | — |
-| API-04 | 48 | — |
-| CONTRACT-01 | 47 | — |
-| CONTRACT-02 | 48 | — |
-| RBAC-01 | 49 | — |
-| RBAC-02 | 49 | — |
-| HARD-01 | 49 | — |
-| HARD-02 | 49 | — |
-| HARD-03 | 49 | — |
-| ONBOARD-01 | 50 | — |
-| ONBOARD-02 | 50 | — |
+| REQ-ID | Phase | Pillar | Description | Status |
+|--------|-------|--------|-------------|--------|
+| **OPS-01** | 46 | Task UI | Live task graph showing current state, queued actions, completion path | Mapped to Phase 46 SC1 |
+| **OPS-02** | 46 | Task UI | Step-by-step state transitions (start → in-progress → complete) | Mapped to Phase 46 SC2 |
+| **OPS-03** | 46 | Task UI | Approval checkpoint blocking execution until human decision recorded | Mapped to Phase 46 SC3 |
+| **OPS-04** | 46 | Task UI | Retry failed step with optional input mutation and attempt logging | Mapped to Phase 46 SC4 |
+| **OPS-05** | 46 | Task UI | Evidence panel (inputs, outputs, logs, timestamps, actor ID) | Mapped to Phase 46 SC5 |
+| **OPS-06** | 49 | Hardening | Inline guardrails before risky actions (migrations, rollbacks, bulk ops) | Mapped to Phase 49 Inline Guardrails |
+| **API-01** | 45 | API Coverage | Every production flow mapped to versioned contract(s) | Mapped to Phase 45 SC2 |
+| **API-02** | 47 | API Coverage | Versioned OpenAPI contracts for all flows in codebase | Mapped to Phase 47 SC1–SC4 |
+| **API-03** | 47 | API Coverage | Auto-generated OpenAPI spec committed to repo | Mapped to Phase 47 SC3–SC5 |
+| **API-04** | 48 | API Coverage | Contract test suite enforces request/response shape and lifecycle | Mapped to Phase 48 SC1–SC4 |
+| **CONTRACT-01** | 47 | API Contracts | API versioning policy (SemVer + deprecation + compat guarantees) | Mapped to Phase 47 SC3 |
+| **CONTRACT-02** | 48 | API Contracts | Backward compatibility enforced (v1 clients work on v2 endpoints) | Mapped to Phase 48 SC3 |
+| **RBAC-01** | 49 | Hardening | Role-based access control at UI and API; unauthorized blocked | Mapped to Phase 49 SC1 |
+| **RBAC-02** | 49 | Hardening | Operator sees assigned role and permissions inline in UI | Mapped to Phase 49 SC2 |
+| **HARD-01** | 49 | Hardening | Preflight checks prevent unsafe state transitions in migrations | Mapped to Phase 49 SC3 |
+| **HARD-02** | 49 | Hardening | Rollback endpoint exists; restores pre-operation state; idempotent | Mapped to Phase 49 SC4 |
+| **HARD-03** | 49 | Hardening | Health diagnostics surface operator/admin view (30s refresh) | Mapped to Phase 49 SC5 |
+| **ONBOARD-01** | 50 | Enablement | Operator onboarding path documented and executable without support | Mapped to Phase 50 SC1–SC3 |
+| **ONBOARD-02** | 50 | Enablement | First-run wizard guides operator through role setup, perms, first task | Mapped to Phase 50 SC1 |
+
+**Coverage Verification:**
+- **Total Requirements:** 19
+- **Mapped to Phases:** 19 (100%)
+- **Orphaned Requirements:** 0
+- **Phase 45:** 1 requirement (API-01)
+- **Phase 46:** 5 requirements (OPS-01–OPS-05)
+- **Phase 47:** 3 requirements (API-02, API-03, CONTRACT-01)
+- **Phase 48:** 2 requirements (API-04, CONTRACT-02)
+- **Phase 49:** 6 requirements (OPS-06, RBAC-01, RBAC-02, HARD-01, HARD-02, HARD-03)
+- **Phase 50:** 2 requirements (ONBOARD-01, ONBOARD-02)
+
+**Roadmap Status:** ✅ Locked 2026-04-02 | See `.planning/v3.1.0-ROADMAP.md` for detailed phase breakdown
 
 ---
 

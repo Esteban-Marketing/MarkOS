@@ -2,22 +2,23 @@
 gsd_state_version: 1.0
 milestone: v3.1.0
 milestone_name: Operator Surface Unification
-status: Milestone definition phase. Phase requirements and roadmap being locked before execution starts.
+status: Roadmap generated and locked. Ready for Phase 45 planning and execution.
 last_updated: "2026-04-02T00:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 6
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
+
 ---
 
 Current Position
 ----------------
 
 Milestone: v3.1.0 — Operator Surface Unification
-Phase: Requirements & Roadmap Definition (pre-execution)
-Status: Tightening phase frame and activation KPI baseline before roadmap generation.
-Next Phase: Phase 45 — Operations Flow Inventory & Canonical Contract Map
+Phase: Roadmap complete (ready for Phase 45 planning)
+Status: All 19 requirements mapped to 6 phases (45–50). Roadmap locked and verified for 100% coverage.
+Next Phase: Phase 45 — Operations Flow Inventory & Canonical Contract Map (ready for discussion and planning)
 
 Tooling Snapshot
 ----------------

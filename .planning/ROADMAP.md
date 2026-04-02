@@ -205,6 +205,132 @@ Plans:
 - [x] 44-03-PLAN.md — Wave 2 lifecycle verification: fixture ingest harness, standards_context relevance assertions, coverage parity checks
 - [x] 44-04-PLAN.md — Wave 3 regression enforcement: populated-corpus zero-hit gate and CI integration with diagnostics
 - [x] 44-05-PLAN.md — Wave 4 closure: operator runbook, validation ledger completion, full-suite final regression verification
+
+---
+
+## 🟢 v3.1.0 — Operator Surface Unification
+
+> **6 phases (45–50) · ~35 plans · In planning phase · Roadmap locked 2026-04-02**
+>
+> **Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.
+>
+> **Scope:** Integrated task UI flow (non-technical operators), complete API coverage (all MarkOS flows), platform hardening (upgrade safety, RBAC, diagnostics), guided operator onboarding, and measured KPI improvement (v3.0 baseline → v3.1.0 target).
+>
+> **Status:** Requirements definition complete. Ready for Phase 45 planning and kickoff.
+>
+> **Roadmap:** [`.planning/ROADMAP.md#v310---operator-surface-unification`](.planning/ROADMAP.md)
+
+### Phase 45: Operations Flow Inventory & Canonical Contract Map
+
+**Goal:** Audit all production MarkOS flows, create canonical flow registry, and establish API contract mapping foundation.
+**Requirements Mapped:** API-01, partial API-02
+**Depends on:** Nothing (first phase of v3.1.0)
+**Status:** 📋 Planned (ready for launch)
+**Success Criteria:**
+  1. Operator can browse canonical flow inventory UI mockup showing ≥10 active flows with descriptions
+  2. All production flows are mapped to ≥1 contract; FLOW-VERIFICATION.md shows 100% coverage
+  3. Contract schema `contracts/schema.json` validates all existing flow contracts
+  4. FLOW-VERIFICATION.md is reviewed and approved (zero open checklist items)
+  5. Baseline T0 KPI metrics captured and stored for Phase 50 comparison
+**Plans:** 4–5 plans
+
+---
+
+### Phase 46: Operator Task Graph UI (MVP)
+
+**Goal:** Ship functional task graph UI with step-by-step execution, approval checkpoints, and evidence panel.
+**Requirements Mapped:** OPS-01, OPS-02, OPS-03, OPS-04, OPS-05
+**Depends on:** Phase 45 (flow inventory and contract mapping)
+**Status:** 📋 Planned
+**Success Criteria:**
+  1. Task graph UI renders without error for all 5 task states; Storybook stories live and accessible
+  2. Step state transitions (start → in-progress → complete) are atomic and logged with timestamps
+  3. Approval checkpoint blocks task execution until human approves or rejects
+  4. Failed task steps can be retried with input preview/edit; retry attempts logged separately
+  5. Evidence panel displays for ≥95% of executed steps; evidence is immutable post-execution
+**Plans:** 6–8 plans
+
+---
+
+### Phase 47: OpenAPI Generation Pipeline & Versioning Policy
+
+**Goal:** Auto-generate authoritative OpenAPI spec from contract files; lock versioning policy.
+**Requirements Mapped:** API-02 (complete), API-03, CONTRACT-01
+**Depends on:** Phase 45 (contracts exist) and Phase 46 (UI context for API design)
+**Status:** 📋 Planned
+**Success Criteria:**
+  1. OpenAPI spec (`api/openapi.yaml`) is valid against OpenAPI 3.0 schema; CI validation passes
+  2. 100% of contract endpoints documented in OpenAPI spec; endpoint count matches contract count
+  3. API versioning policy documented in `.planning/codebase/API-VERSIONING-POLICY.md` and reviewed
+  4. All per-flow contracts follow canonical schema from Phase 45; validation passes
+  5. CI enforces spec ↔ implementation parity: `npm run generate-openapi` passes before each commit
+**Plans:** 4–5 plans
+
+---
+
+### Phase 48: Contract Testing Framework & CI Compatibility Gates
+
+**Goal:** Ship contract test suite enforcing backward compatibility; prevent unapproved breaking changes in CI.
+**Requirements Mapped:** API-04, CONTRACT-02
+**Depends on:** Phase 47 (contracts and versioning policy stable)
+**Status:** 📋 Planned
+**Success Criteria:**
+  1. Contract test suite is a required CI gate: no merge without passing contract-tests
+  2. ≥1 test per contract covering happy path and ≥2 error scenarios
+  3. Version compatibility test (v1 client requests) successfully calls v2 endpoints
+  4. CI reports breaking changes clearly and blocks unapproved changes
+  5. Contract fixtures cover ≥90% of endpoint parameter variations
+**Plans:** 5–6 plans
+
+---
+
+### Phase 49: Hardening Layer (RBAC, Diagnostics, Preflight Checks, Rollback Safety)
+
+**Goal:** Harden operations surface with role-based access control, health diagnostics, migration safety, and rollback mechanisms.
+**Requirements Mapped:** OPS-06, RBAC-01, RBAC-02, HARD-01, HARD-02, HARD-03
+**Depends on:** Phase 46 (UI exists) and Phase 48 (APIs tested and stable)
+**Status:** 📋 Planned
+**Success Criteria:**
+  1. 100% of protected operations routes guarded by RBAC middleware; unauthorized role attempts return 403
+  2. Operator can view assigned role and full permission list in settings page
+  3. Preflight check executes before migration; blocks if unsafe; shows clear reason and remediation
+  4. Rollback endpoint (POST `/api/rollback/{tx_id}`) restores pre-operation state; idempotent
+  5. Health dashboard displays component status; updates ≥1x per 30s; alerts on degradation
+**Plans:** 7–8 plans
+
+---
+
+### Phase 50: Guided Operator Onboarding + End-to-End Activation Verification
+
+**Goal:** Ship operator onboarding path and measure v3.1.0 activation KPI improvement (T0 → T1).
+**Requirements Mapped:** ONBOARD-01, ONBOARD-02
+**Depends on:** Phase 46 (UI exists) and Phase 49 (RBAC and health stable)
+**Status:** 📋 Planned
+**Success Criteria:**
+  1. Operator onboarding wizard completes error-free; operator assigned role and first task queued
+  2. New operator can execute first task without manual engineering support
+  3. E2E test passes consistently in CI
+  4. T1 metrics show ≥70% improvement vs T0 baseline (time ≤5 min, evidence ≥95%, self-service ≥85%)
+  5. All flows from FLOW-INVENTORY accessible from operator UI task selector; 100% coverage
+**Plans:** 5–6 plans
+
+---
+
+### v3.1.0 Milestone Acceptance Criteria
+
+**Milestone complete when ALL of the following are TRUE:**
+
+1. All 19 requirements mapped to phases and all phases complete
+2. Flow contract coverage: 100% of active flows documented and mapped
+3. OpenAPI coverage: 100% of contract endpoints documented and valid
+4. Contract tests required CI gate: zero unapproved breaking changes allowed
+5. Task evidence completeness: ≥95% of executed steps contain evidence
+6. RBAC enforcement: 100% of protected routes guarded; unauthorized attempts blocked
+7. Hardening & safety: Preflight checks, rollback endpoint, health dashboard operational
+8. Operator activation: T1 metrics show ≥70% improvement vs T0 baseline
+9. All Phase 45–50 plans complete (100% CI green)
+
+---
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
 
