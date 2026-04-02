@@ -348,6 +348,13 @@ async function run() {
     process.exit(1);
   }
 
+  if (cli.command === 'db:setup') {
+    rl.close();
+    const { runDbSetupCLI } = require('./db-setup.cjs');
+    await runDbSetupCLI();
+    return;
+  }
+
   if (cli.command === 'update') {
     rl.close();
     require('./update.cjs');

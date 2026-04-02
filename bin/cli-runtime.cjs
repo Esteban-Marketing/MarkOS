@@ -80,6 +80,9 @@ function parseCliArgs(argv = process.argv.slice(2)) {
   } else if (tokens[0] === 'update') {
     parsed.command = 'update';
     tokens.shift();
+  } else if (tokens[0] === 'db:setup') {
+    parsed.command = 'db:setup';
+    tokens.shift();
   }
 
   for (let index = 0; index < tokens.length; index++) {
@@ -106,6 +109,7 @@ function parseCliArgs(argv = process.argv.slice(2)) {
 function printInstallUsage() {
   console.log('Usage: npx markos [install] [--yes] [--project-name <name>] [--no-onboarding] [--project|--global]');
   console.log('       npx markos update');
+  console.log('       npx markos db:setup');
 }
 
 function detectGSD(targetDir) {
