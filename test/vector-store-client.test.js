@@ -183,6 +183,21 @@ test('Literacy namespace naming and canonical filter composition are stable', as
   });
 });
 
+test('buildLiteracyFilter adds OR pain_point_tags clauses and stays exported', () => {
+  const vectorStore = loadFreshVectorStoreClient();
+  assert.equal(typeof vectorStore.buildLiteracyFilter, 'function');
+
+  const filter = vectorStore.buildLiteracyFilter({
+    pain_point_tags: ['high_acquisition_cost', 'low_conversions'],
+  });
+
+  assert.match(filter, /status = 'canonical'/);
+  assert.match(
+    filter,
+    /\(pain_point_tags CONTAINS 'high_acquisition_cost' OR pain_point_tags CONTAINS 'low_conversions'\)/
+  );
+});
+
 test('Literacy chunk upsert returns partial success details', async () => {
   await withMockedModule(supabaseModulePath, {
     createClient: () => ({
