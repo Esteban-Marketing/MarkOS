@@ -81,6 +81,18 @@ async function main() {
     try {
       const markdown = fs.readFileSync(filePath, 'utf8');
       const metadata = parseLiteracyFrontmatter(markdown);
+      const REQUIRED_FIELDS = ['doc_id', 'discipline', 'business_model', 'pain_point_tags'];
+      for (const field of REQUIRED_FIELDS) {
+        const value = metadata[field];
+        const missing = value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0);
+        if (missing) {
+          if (field === 'pain_point_tags') {
+            throw new Error(`MISSING_REQUIRED_FIELD:pain_point_tags in ${filePath}`);
+          }
+          throw new Error(`MISSING_REQUIRED_FIELD:${field} in ${filePath}`);
+        }
+      }
+
       if (args.discipline && String(metadata.discipline || '').toLowerCase() !== String(args.discipline).toLowerCase()) {
         continue;
       }
@@ -109,6 +121,7 @@ async function main() {
           last_validated: metadata.last_validated || null,
           ttl_days: Number(metadata.ttl_days) || 180,
           retrieval_keywords: Array.isArray(metadata.retrieval_keywords) ? metadata.retrieval_keywords : [],
+          pain_point_tags: Array.isArray(metadata.pain_point_tags) ? metadata.pain_point_tags : [],
           agent_use: Array.isArray(metadata.agent_use) ? metadata.agent_use : [],
           chunk_text: chunk.chunk_text,
           checksum_sha256: checksum(chunk.chunk_text),

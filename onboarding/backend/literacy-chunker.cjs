@@ -115,6 +115,7 @@ function chunkLiteracyFile(markdown, metadata = {}) {
     content_type: chunk.type,
     section_title: chunk.title,
     chunk_text: chunk.text,
+    pain_point_tags: Array.isArray(metadata.pain_point_tags) ? metadata.pain_point_tags : [],
     metadata,
   }));
 }

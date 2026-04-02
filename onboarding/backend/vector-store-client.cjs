@@ -46,6 +46,10 @@ function buildLiteracyFilter(filters = {}) {
     parts.push(`content_type = '${escapeFilterValue(filters.content_type)}'`);
   }
 
+  if (filters.pain_point_tag) {
+    parts.push(`pain_point_tags CONTAINS '${escapeFilterValue(filters.pain_point_tag)}'`);
+  }
+
   return parts.join(' AND ');
 }
 
@@ -414,6 +418,7 @@ async function upsertLiteracyChunk(chunk) {
     checksum_sha256: chunk.checksum_sha256 || null,
     last_validated: chunk.last_validated || null,
     ttl_days: typeof chunk.ttl_days === 'number' ? chunk.ttl_days : 180,
+    pain_point_tags: Array.isArray(chunk.pain_point_tags) ? chunk.pain_point_tags : [],
   };
 
   let relational = { ok: false, error: 'SUPABASE_UNCONFIGURED' };
@@ -439,6 +444,7 @@ async function upsertLiteracyChunk(chunk) {
       status: metadata.status,
       agent_use: Array.isArray(chunk.agent_use) ? chunk.agent_use : [],
       retrieval_keywords: Array.isArray(chunk.retrieval_keywords) ? chunk.retrieval_keywords : [],
+      pain_point_tags: Array.isArray(chunk.pain_point_tags) ? chunk.pain_point_tags : [],
       chunk_text: chunkText,
       vector_namespace: namespaceName,
       checksum_sha256: metadata.checksum_sha256,
@@ -704,4 +710,5 @@ module.exports = {
   getLiteracyContext,
   upsertLiteracyChunk,
   supersedeLiteracyDoc,
+  buildLiteracyFilter,
 };
