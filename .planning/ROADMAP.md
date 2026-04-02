@@ -133,8 +133,8 @@ Plans:
 **Plans:** 2 plans
 
 Plans:
-- [ ] 40-01-PLAN.md — Wave 1 router/filter contract: Wave 0 tests, deterministic discipline-router, optional taxonomy fallback, exported OR-style pain_point_tags filter
-- [ ] 40-02-PLAN.md — Wave 2 orchestrator runtime: top-3 dual-query retrieval, doc_id-first dedupe, fixed chunk cap, literacy_retrieval_observed telemetry, focused integration tests
+- [x] 40-01-PLAN.md — Wave 1 router/filter contract: Wave 0 tests, deterministic discipline-router, optional taxonomy fallback, exported OR-style pain_point_tags filter
+- [x] 40-02-PLAN.md — Wave 2 orchestrator runtime: top-3 dual-query retrieval, doc_id-first dedupe, fixed chunk cap, literacy_retrieval_observed telemetry, focused integration tests
 
 ## Phase 41: Dynamic Skeleton Template Generator
 

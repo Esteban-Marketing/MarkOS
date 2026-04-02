@@ -1,23 +1,23 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: MarkOS Literacy System
-status: active
-last_updated: "2026-04-01T23:59:00.000Z"
+milestone: v2.4
+milestone_name: Beta Client Onboarding
+status: verifying
+last_updated: "2026-04-02T14:44:42.041Z"
 progress:
-  total_phases: 1
-  completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
+  total_phases: 14
+  completed_phases: 6
+  total_plans: 48
+  completed_plans: 16
 ---
 
 Current Position
 ----------------
 
 Milestone: v3.0 — MarkOS Literacy System
-Phase: 39 — Pain-Points-First Content Corpus (VERIFICATION: human_needed)
-Status: Phase 39 executed and verified. All 15 corpus docs authored, taxonomy.json built, ingest CLI wired, 117 tests pass. 4 live-DB assertions remain (migration apply, live ingest, round-trip retrieval, business-model filter isolation) — require Supabase + Upstash environment access.
-Next Phase: Phase 40 — Two-Layer Retrieval and Discipline Routing (LIT-04, LIT-05, LIT-06)
+Phase: 40 — Multi-Discipline Orchestrator Retrieval (COMPLETE)
+Status: Plans 40-01 and 40-02 executed end-to-end. Router, vector filter contracts, and orchestrator dual-query retrieval are implemented with focused test coverage and summaries committed.
+Next Phase: Phase 41 — Dynamic Skeleton Template Generator
 
 Tooling Snapshot
 ----------------
@@ -101,4 +101,4 @@ Roadmap Evolution
 - 2026-04-01: Phase 37 completed with MarkOS app route scaffold, domain contracts, theme token pipeline, RBAC/telemetry contracts, Supabase migration baseline, and `.planning/phases/37-markos-ui-control-plane/37-SUMMARY.md`.
 - 2026-04-01: Phase 38 planned and executed under v2.6 with Storybook coverage, Chromatic publishing, accessibility enforcement, UI security gates, and CI workflow hardening.
 - 2026-04-01: Phase 38 verification passed; v2.6 is now the active milestone baseline rather than deferred planning inventory.
-
+- 2026-04-02: Phase 40 completed with deterministic discipline routing, pain-point OR filter support, top-3 dual-query literacy retrieval, doc_id-first dedupe, fixed context-budget enforcement, and literacy retrieval telemetry.
