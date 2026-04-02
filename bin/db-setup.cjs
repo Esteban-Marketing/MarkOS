@@ -5,6 +5,7 @@ const path = require('node:path');
 const readline = require('node:readline');
 const { createClient } = require('@supabase/supabase-js');
 const { Index } = require('@upstash/vector');
+const { applyPendingMigrations } = require('../onboarding/backend/provisioning/migration-runner.cjs');
 
 const REQUIRED_KEYS = Object.freeze([
   { key: 'SUPABASE_URL', secret: false },
@@ -110,6 +111,10 @@ async function probeUpstash(values) {
   await namespace.query({ data: 'health', topK: 1 });
 }
 
+async function defaultMigrationExecution() {
+  throw new Error('SQL executor is not configured for migrations. Pass runMigrations to runDbSetup.');
+}
+
 function normalizePromptValue(value) {
   return String(value || '').trim();
 }
@@ -173,6 +178,9 @@ async function runDbSetup(options = {}) {
   const defaultValues = options.defaultValues || process.env;
   const runSupabaseProbe = options.probeSupabase || probeSupabase;
   const runUpstashProbe = options.probeUpstash || probeUpstash;
+  const runMigrations = options.runMigrations || (async ({ migrationsDir }) => {
+    return applyPendingMigrations({ migrationsDir, executeSql: defaultMigrationExecution });
+  });
 
   try {
     const existingContent = fsApi.existsSync(envPath)
@@ -195,6 +203,10 @@ async function runDbSetup(options = {}) {
     fsApi.writeFileSync(envPath, nextEnv, 'utf8');
 
     const gitignore = ensureGitignoreHasEnv(cwd, fsApi);
+    const migrationSummary = await runMigrations({
+      migrationsDir: path.join(cwd, 'supabase', 'migrations'),
+      values,
+    });
 
     return {
       ok: true,
@@ -205,6 +217,7 @@ async function runDbSetup(options = {}) {
         supabase: 'ok',
         upstash_vector: 'ok',
       },
+      migrations: migrationSummary,
       redacted: buildRedactedSummary(values),
     };
   } finally {

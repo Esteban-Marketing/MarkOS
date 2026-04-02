@@ -40,6 +40,7 @@ test('42-02-02 interactive credential wizard captures required keys and redacts 
       output: (line) => output.push(String(line)),
       probeSupabase: async () => {},
       probeUpstash: async () => {},
+      runMigrations: async () => ({ applied: [], skipped: [], total: 0 }),
     });
 
     assert.equal(report.ok, true);
@@ -72,6 +73,7 @@ test('42-02-03 provider probes gate .env persistence and enforce idempotent reru
           throw new Error('probe failed');
         },
         probeUpstash: async () => {},
+        runMigrations: async () => ({ applied: [], skipped: [], total: 0 }),
       }),
       /probe failed/
     );
@@ -90,6 +92,7 @@ test('42-02-03 provider probes gate .env persistence and enforce idempotent reru
       prompt: { ask: async () => firstAnswers.shift(), close: () => {} },
       probeSupabase: async () => {},
       probeUpstash: async () => {},
+      runMigrations: async () => ({ applied: ['37_markos_ui_control_plane.sql'], skipped: [], total: 1 }),
     });
 
     const secondAnswers = ['', 'supabase-secret-value-2', '', 'upstash-secret-value-2'];
@@ -98,6 +101,7 @@ test('42-02-03 provider probes gate .env persistence and enforce idempotent reru
       prompt: { ask: async () => secondAnswers.shift(), close: () => {} },
       probeSupabase: async () => {},
       probeUpstash: async () => {},
+      runMigrations: async () => ({ applied: [], skipped: ['37_markos_ui_control_plane.sql'], total: 1 }),
     });
 
     const envText = fs.readFileSync(envPath, 'utf8');
