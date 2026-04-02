@@ -1,23 +1,23 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: MarkOS Literacy System
-status: Phases 43 and 44 executed and verified end-to-end. Literacy readiness contracts, coverage API parity, lifecycle E2E assertions, and zero-hit regression gates are in place.
-last_updated: "2026-04-02T23:59:00.000Z"
+milestone: v3.1.0
+milestone_name: Operator Surface Unification
+status: Milestone definition phase. Phase requirements and roadmap being locked before execution starts.
+last_updated: "2026-04-02T00:00:00.000Z"
 progress:
-  total_phases: 6
-  completed_phases: 6
-  total_plans: 25
-  completed_plans: 25
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 Current Position
 ----------------
 
-Milestone: v3.0 — MarkOS Literacy System
-Phase: 44 — End-to-End Literacy Integration Verification (COMPLETE)
-Status: Waves 44-01 through 44-05 completed with full regression validation and verification artifacts recorded.
-Next Phase: Phase 45 — TBD (milestone follow-on planning)
+Milestone: v3.1.0 — Operator Surface Unification
+Phase: Requirements & Roadmap Definition (pre-execution)
+Status: Tightening phase frame and activation KPI baseline before roadmap generation.
+Next Phase: Phase 45 — Operations Flow Inventory & Canonical Contract Map
 
 Tooling Snapshot
 ----------------

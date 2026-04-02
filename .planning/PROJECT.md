@@ -1,8 +1,15 @@
 # MarkOS (MarkOS Protocol)
 
-## Current Milestone: v2.6 — Post-Deployment Operations & Beta Activation
+## Current Milestone: v3.1.0 — Operator Surface Unification
 
-**Status:** v2.1 shipped 2026-03-28. v2.2 shipped 2026-03-31 (Phases 28–32). v2.3 shipped 2026-03-31 (Phase 33). v2.4 shipped 2026-04-01 with Phase 34 intake automation, Phase 36 beta operations cadence, and Phase 37 MarkOS UI control-plane foundations. v2.5 remains archived after Phase 35 installer/readiness optimization. v2.6 is now active following Phase 38 UI assurance completion.
+**Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.
+
+**Target features:**
+- Integrated task UI with live task graph, step-by-step execution, approval points, retries, and evidence capture
+- Complete API contract coverage for all MarkOS flows with versioning, OpenAPI generation, and compatibility guarantees
+- Platform hardening with role-based operations UI, migration safety, health diagnostics, and guided operator onboarding
+
+**Status:** v3.1.0 initiated 2026-04-02. v3.0 (Phases 39-44) shipped 2026-04-02 with pain-points-first literacy system verified end-to-end.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -13,7 +20,7 @@ A protocol for agentic marketing execution, built as a parallel system to the de
 Standardization and automation of marketing ideation, planning, and execution via robust agentic workflows and Linear issue tracking.
 
 ## Context
-This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. Following the successful deployment of the core framework, onboarding engine, strategic enrichment layer, and documentation hardening, the current milestone is focused on converting deployment and UI reliability into measurable operator outcomes rather than net-new scaffolding. The system already operates as a local-first marketing OS with optional hosted entrypoints; the remaining work is to strengthen pilot activation loops, preserve release-grade UI assurance, and improve the path from approved strategy state into repeatable execution.
+This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. The system is production-grade with literacy lifecycle verified (v3.0). The v3.1.0 milestone focuses on **operator surface unification**: consolidating all MarkOS flows into a single auditable operational UI with complete API contracts, clear versioning/compatibility policies, and hardening for enterprise rollout. The shift is from framework-building to operational excellence — putting non-technical operators in control of execution with evidence trails, approval workflows, and built-in safeguards.
 
 The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. Phase 34 delivered the intake automation backbone for beta onboarding. Phase 35 delivered installer/readiness optimization and is archived under v2.5. Phase 36 delivered the v2.4 beta-operations baseline with lifecycle ownership, weekly cadence, KPI scorecard, and PLG evidence-loop contracts. Phase 37 then delivered the MarkOS app/control-plane scaffolding with governance and data-model foundations, formally closing v2.4. Phase 38 established the Storybook, Chromatic, accessibility, and UI security baseline that now anchors v2.6 execution.
 
@@ -56,11 +63,15 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 
 ## Requirements
 
-### Active
-- [ ] MIR-G1: Gate 1 intake files fully populated without placeholders (PROFILE, VOICE-TONE, MESSAGING-FRAMEWORK, LEAN-CANVAS, JTBD-MATRIX).
-- [ ] MIR-G2: Gate 2 intake files fully populated without placeholders (TRACKING, AUTOMATION, KPI-FRAMEWORK).
-- [ ] BETA-01: First 10 beta agency clients onboarded and producing live MarkOS sessions.
-- [ ] PLG-01: build-in-public LinkedIn content sequence launched (Esteban personal brand).
+### Active (v3.1.0)
+- [ ] OPS-01: Operator can execute a complete task chain from UI with explicit state transitions, approval checkpoints, retries, and timestamped evidence per step.
+- [ ] API-01: Every active MarkOS flow (onboarding, execution, reporting) is represented in a versioned OpenAPI contract stored in the codebase.
+- [ ] API-02: Contract test suite enforces backward compatibility and prevents unapproved breaking changes in CI.
+- [ ] CONTRACT-01: API versioning policy is documented (SemVer, deprecation windows, compatibility guarantees, migration path).
+- [ ] RBAC-01: Operations UI enforces role-based access control; unauthorized actions are blocked and logged; permissions are visible in-product.
+- [ ] HARD-01: Preflight checks prevent unsafe migrations; rollback paths exist for all data-altering flows.
+- [ ] HARD-02: Health diagnostics surface operator/admin health status (DB connectivity, vector store status, provider health, data consistency).
+- [ ] ONBOARD-01: Operator onboarding path (first-run, training, role assignment) is documented and executable without direct engineering support.
 
 ### Validated & Delivered (v2.1)
 - [x] RLH-01: Reliability/observability SLOs for core onboarding endpoints.
@@ -145,4 +156,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-01 after Phase 38 completion and v2.6 activation.
+Last updated: 2026-04-02 after Phase 44 completion and v3.1.0 initiated.
