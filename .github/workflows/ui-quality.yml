@@ -5,6 +5,9 @@ on:
     paths:
       - "app/**"
       - "lib/markos/**"
+      - "onboarding/backend/**"
+      - "api/literacy/**"
+      - "test/literacy-e2e.test.js"
       - "package.json"
       - "package-lock.json"
       - ".storybook/**"
@@ -15,6 +18,9 @@ on:
     paths:
       - "app/**"
       - "lib/markos/**"
+      - "onboarding/backend/**"
+      - "api/literacy/**"
+      - "test/literacy-e2e.test.js"
 
 jobs:
   # ============================================================================
@@ -143,6 +149,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run literacy e2e regression gate
+        run: node --test test/literacy-e2e.test.js -x
 
       - name: Validate story coverage matrix
         run: |

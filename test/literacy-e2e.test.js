@@ -106,6 +106,28 @@ function createMockResponse() {
   };
 }
 
+function getFixtureDisciplineSet(fixtures) {
+  return [...new Set(fixtures.map((doc) => doc.discipline))].sort();
+}
+
+function assertNoZeroHitRegression(disciplines, expectedDisciplines) {
+  const missing = [];
+
+  for (const discipline of expectedDisciplines) {
+    const entry = disciplines && disciplines[discipline];
+    if (!entry || Number(entry.doc_count || 0) === 0 || Number(entry.chunk_count || 0) === 0) {
+      missing.push(discipline);
+    }
+  }
+
+  if (missing.length > 0) {
+    throw new Error(
+      `LIT-18 regression: populated corpus produced zero retrieval hits for disciplines: ${missing.join(', ')}. ` +
+      'Expected fixture-backed coverage from test/fixtures/literacy/.'
+    );
+  }
+}
+
 test('Phase 44 literacy e2e contracts (Wave 0 stubs)', async (t) => {
   const fixtures = loadFixtureCorpus();
 
@@ -389,11 +411,38 @@ test('Phase 44 literacy e2e contracts (Wave 0 stubs)', async (t) => {
     }
   });
 
-  await t.test('[44-04-01 LIT-18] populated corpus must not produce zero retrieval hits', { todo: 'pending Wave 3 regression gate implementation' }, async () => {
-    assert.equal(typeof fixtures.length, 'number');
+  await t.test('[44-04-01 LIT-18] populated corpus must not produce zero retrieval hits', async () => {
+    const expectedDisciplines = getFixtureDisciplineSet(fixtures);
+    const goodCoverage = {
+      Paid_Media: { doc_count: 1, chunk_count: 2 },
+      Content_SEO: { doc_count: 1, chunk_count: 1 },
+      Lifecycle_Email: { doc_count: 1, chunk_count: 1 },
+    };
+
+    assert.doesNotThrow(() => {
+      assertNoZeroHitRegression(goodCoverage, expectedDisciplines);
+    });
   });
 
-  await t.test('[44-04-03 LIT-18] zero-hit diagnostics include missing disciplines and fixture expectation', { todo: 'pending Wave 3 diagnostics implementation' }, async () => {
-    assert.ok(fixtures.length > 0);
+  await t.test('[44-04-03 LIT-18] zero-hit diagnostics include missing disciplines and fixture expectation', async () => {
+    const expectedDisciplines = getFixtureDisciplineSet(fixtures);
+    const badCoverage = {
+      Paid_Media: { doc_count: 0, chunk_count: 0 },
+      Content_SEO: { doc_count: 1, chunk_count: 1 },
+      Lifecycle_Email: { doc_count: 0, chunk_count: 0 },
+    };
+
+    let error;
+    try {
+      assertNoZeroHitRegression(badCoverage, expectedDisciplines);
+    } catch (err) {
+      error = err;
+    }
+
+    assert.ok(error, 'expected diagnostics error for zero-hit regression');
+    assert.ok(error.message.includes('LIT-18 regression: populated corpus produced zero retrieval hits for disciplines:'));
+    assert.ok(error.message.includes('Paid_Media'));
+    assert.ok(error.message.includes('Lifecycle_Email'));
+    assert.ok(error.message.includes('test/fixtures/literacy/'));
   });
 });
