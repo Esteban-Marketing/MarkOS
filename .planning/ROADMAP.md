@@ -187,6 +187,22 @@ Plans:
 - [ ] 43-04-PLAN.md — Wave 3 status integration and submit/status readiness parity
 - [ ] 43-05-PLAN.md — Wave 4 regression gate, docs alignment, and verification closure
 
+## Phase 44: End-to-End Literacy Integration Verification
+
+**Goal:** Validate the complete literacy lifecycle from content authoring through onboarding activation to draft generation, confirming pain-points-first retrieval improves output relevance and remains regression-safe.
+**Requirements Mapped:** LIT-16 (lifecycle E2E relevance), LIT-17 (coverage API contract), LIT-18 (zero-hit regression gate), LIT-19 (operator runbook and execution workflow)
+**Depends on:** Phase 43 (onboarding-to-literacy activation baseline)
+**Status:** 📋 Planned
+**Milestone:** v3.0 MarkOS Literacy System
+
+**Plans:** 5 plans
+
+Plans:
+- [ ] 44-01-PLAN.md — Wave 0 Nyquist scaffolding: lifecycle/coverage/regression contract tests + deterministic fixture corpus
+- [ ] 44-02-PLAN.md — Wave 1 coverage implementation: backend handler, vector aggregation helper, local/hosted route wiring
+- [ ] 44-03-PLAN.md — Wave 2 lifecycle verification: fixture ingest harness, standards_context relevance assertions, coverage parity checks
+- [ ] 44-04-PLAN.md — Wave 3 regression enforcement: populated-corpus zero-hit gate and CI integration with diagnostics
+- [ ] 44-05-PLAN.md — Wave 4 closure: operator runbook, validation ledger completion, full-suite final regression verification
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
 
