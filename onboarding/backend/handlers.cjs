@@ -1133,23 +1133,45 @@ async function handleSubmit(req, res) {
       runtimeMode: runtime.mode,
       projectSlug: slug,
     });
-    json(res, 200, {
-      success: true,
-      seed_path: seedPath,
-      slug,
-      validation: {
-        applied: applyStrictValidation,
-        valid: true,
-        failed_rules: [],
-      },
-      linear_tickets: linearTickets.created || [],
-      linear_skipped: linearTickets.skipped || [],
-      linear_error: linearTickets.error || null,
-      drafts,
-      session_url: `http://localhost:${runtime.config?.port || 4242}/?slug=${encodeURIComponent(slug)}`,
-      vector_store: vectorStoreResults,
-      errors,
-    });
+
+      // Phase 43 LIT-13 / LIT-15: evaluate literacy readiness and emit activation telemetry.
+      // Inline require ensures withMockedModule patches are picked up at call time.
+      const { evaluateLiteracyReadiness } = require('./literacy/activation-readiness.cjs');
+      const literacyResult = await evaluateLiteracyReadiness(seed, runtime.config);
+
+      if (telemetry && typeof telemetry.capture === 'function') {
+        telemetry.capture('literacy_activation_observed', {
+          readiness_status: literacyResult.readiness,
+          disciplines_available: literacyResult.disciplines_available,
+          disciplines_missing: literacyResult.gaps,
+          business_model: String(seed && seed.product ? (seed.product.business_model || '') : ''),
+          pain_point_count: Array.isArray(seed && seed.audience ? seed.audience.pain_points : null)
+            ? seed.audience.pain_points.length : 0,
+        });
+      }
+
+      json(res, 200, {
+        success: true,
+        seed_path: seedPath,
+        slug,
+        validation: {
+          applied: applyStrictValidation,
+          valid: true,
+          failed_rules: [],
+        },
+        linear_tickets: linearTickets.created || [],
+        linear_skipped: linearTickets.skipped || [],
+        linear_error: linearTickets.error || null,
+        drafts,
+        session_url: `http://localhost:${runtime.config?.port || 4242}/?slug=${encodeURIComponent(slug)}`,
+        vector_store: vectorStoreResults,
+        errors,
+        literacy: {
+          readiness: literacyResult.readiness,
+          disciplines_available: literacyResult.disciplines_available,
+          gaps: literacyResult.gaps,
+        },
+      });
   } catch (err) {
     console.error('[POST /submit] Error:', redactSensitive(err.message));
     emitRolloutEndpointTelemetry({

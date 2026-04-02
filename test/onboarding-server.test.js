@@ -1500,7 +1500,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
 
     // --- 43-01-01: submit readiness states (LIT-13) ----------------------------
 
-    await t.test('[43-02-01 LIT-13] submit returns literacy.readiness=ready when providers healthy', { todo: 'pending: Wave 2 implementation' }, async () => {
+    await t.test('[43-02-01 LIT-13] submit returns literacy.readiness=ready when providers healthy', async () => {
       const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
       const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
       const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
@@ -1525,7 +1525,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       });
     });
 
-    await t.test('[43-03-01 LIT-13] submit returns literacy.readiness=partial when some disciplines empty', { todo: 'pending: Wave 2 implementation' }, async () => {
+    await t.test('[43-03-01 LIT-13] submit returns literacy.readiness=partial when some disciplines empty', async () => {
       const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
       const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
       const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
@@ -1550,7 +1550,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       });
     });
 
-    await t.test('[43-03-03 LIT-13] submit remains successful when literacy is unconfigured', { todo: 'pending: Wave 2 implementation' }, async () => {
+    await t.test('[43-03-03 LIT-13] submit remains successful when literacy is unconfigured', async () => {
       const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
       const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
       const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
@@ -1628,7 +1628,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
 
     // --- 43-01-03: activation telemetry contract (LIT-15) -----------------------
 
-    await t.test('[43-05-03 LIT-15] submit emits one literacy_activation_observed event with normalized payload', { todo: 'pending: Wave 2 implementation' }, async () => {
+    await t.test('[43-05-03 LIT-15] submit emits one literacy_activation_observed event with normalized payload', async () => {
       const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
       const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
       const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
