@@ -256,7 +256,17 @@ Plans:
   3. Approval checkpoint blocks task execution until human approves or rejects
   4. Failed task steps can be retried with input preview/edit; retry attempts logged separately
   5. Evidence panel displays for ≥95% of executed steps; evidence is immutable post-execution
-**Plans:** 6–8 plans
+**Plans:** 8 plans
+
+Plans:
+- [ ] 46-01-PLAN.md — operations route shell + nav/RBAC wiring (owner/operator only)
+- [ ] 46-02-PLAN.md — task types, typed fixtures, reducer, and in-memory store architecture
+- [ ] 46-03-PLAN.md — linear task graph + sequential step runner UI composition
+- [ ] 46-04-PLAN.md — blocking approval gate + failed-step retry flow with attempt logs
+- [ ] 46-05-PLAN.md — evidence drawer + UI immutability contract wiring
+- [ ] 46-06-PLAN.md — telemetry integration for executed/approved/rejected/retried events
+- [ ] 46-07-PLAN.md — Storybook five-state coverage for operations tasks
+- [ ] 46-08-PLAN.md — node:test coverage + phase verification artifact
 
 ---
 
