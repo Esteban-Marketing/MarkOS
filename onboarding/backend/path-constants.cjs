@@ -40,6 +40,7 @@ const INSTALL_MANIFEST_PATH = fs.existsSync(path.join(PROJECT_ROOT, '.markos-ins
 // Config & Seed
 const CONFIG_PATH = path.join(ONBOARDING_DIR, 'onboarding-config.json');
 const SCHEMA_PATH = path.join(ONBOARDING_DIR, 'onboarding-seed.schema.json');
+const SEED_PATH = path.join(PROJECT_ROOT, 'onboarding-seed.json');
 
 module.exports = {
   PROJECT_ROOT,
@@ -55,5 +56,6 @@ module.exports = {
   PROJECT_CONFIG_PATH,
   INSTALL_MANIFEST_PATH,
   CONFIG_PATH,
-  SCHEMA_PATH
+  SCHEMA_PATH,
+  SEED_PATH
 };

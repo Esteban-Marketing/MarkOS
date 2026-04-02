@@ -106,5 +106,23 @@ function resolveExample(templateName, businessModel, templateSubdir = '', basePa
   ].join('\n');
 }
 
+function resolveSkeleton(discipline, businessModel, basePath = DEFAULT_BASE) {
+  const slug = MODEL_SLUG[businessModel];
+  if (!slug) {
+    return '';
+  }
+
+  const filePath = path.join(basePath, 'SKELETONS', discipline, `_SKELETON-${slug}.md`);
+  if (!fs.existsSync(filePath)) {
+    return '';
+  }
+
+  try {
+    return fs.readFileSync(filePath, 'utf8').trim();
+  } catch (_err) {
+    return '';
+  }
+}
+
 // ─── EXPORTS ───────────────────────────────────────────────────────────────────
-module.exports = { resolveExample, MODEL_SLUG, DEFAULT_BASE };
+module.exports = { resolveExample, resolveSkeleton, MODEL_SLUG, DEFAULT_BASE };
