@@ -45,8 +45,92 @@ const mspFiller  = require('./msp-filler.cjs');
 const vectorStore = require('../vector-store-client.cjs');
 const telemetry  = require('./telemetry.cjs');
 const llm        = require('./llm-adapter.cjs');
+const disciplineRouter = require('./discipline-router.cjs');
 const fs         = require('fs');
 const path       = require('path');
+const crypto     = require('crypto');
+
+const PLANNING_CONFIG_PATH = path.resolve(__dirname, '../../../.planning/config.json');
+const DEFAULT_MAX_CONTEXT_CHUNKS = 6;
+const PARENT_KEYWORDS = {
+  high_acquisition_cost: ['cac', 'cpl', 'cpa', 'cpr', 'roas', 'expensive leads', 'ad costs', 'acquisition cost'],
+  low_conversions: ['conversion', 'cvr', 'form completion', 'checkout', 'landing page', 'low conversions'],
+  poor_retention_churn: ['churn', 'retention', 'unsubscribes', 'repeat purchase', 'retention drop', 'high churn'],
+  low_organic_visibility: ['seo', 'rankings', 'organic traffic', 'search visibility', 'low organic'],
+  attribution_measurement: ['attribution', 'tracking', 'measurement', 'analytics', 'utm'],
+  audience_mismatch: ['wrong audience', 'bad fit', 'irrelevant traffic', 'unqualified'],
+  pipeline_velocity: ['stalled leads', 'pipeline', 'follow-up', 'nurture', 'mid funnel', 'velocity'],
+  content_engagement: ['engagement', 'shares', 'comments', 'reach', 'awareness'],
+};
+
+function getMaxContextChunks() {
+  try {
+    const config = require(PLANNING_CONFIG_PATH);
+    const candidate = config && config.literacy ? config.literacy.max_context_chunks : null;
+    if (Number.isInteger(candidate) && candidate > 0) {
+      return candidate;
+    }
+  } catch {
+    // Use default when config cannot be loaded.
+  }
+  return DEFAULT_MAX_CONTEXT_CHUNKS;
+}
+
+function normalizePainPoints(seed) {
+  if (!seed || !seed.audience || !Array.isArray(seed.audience.pain_points)) {
+    return [];
+  }
+  return seed.audience.pain_points
+    .map((value) => String(value || '').trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function deriveParentTags(painPoints) {
+  const matched = new Set();
+  for (const phrase of painPoints) {
+    for (const [parentTag, keywords] of Object.entries(PARENT_KEYWORDS)) {
+      if (keywords.some((keyword) => phrase.includes(keyword))) {
+        matched.add(parentTag);
+      }
+    }
+  }
+  return [...matched];
+}
+
+function buildDedupKey(entry) {
+  const metadata = entry && entry.metadata ? entry.metadata : {};
+  if (metadata.doc_id) return `doc:${String(metadata.doc_id)}`;
+  if (metadata.chunk_id) return `chunk:${String(metadata.chunk_id)}`;
+  return `hash:${crypto.createHash('sha1').update(String(entry && entry.text ? entry.text : ''), 'utf8').digest('hex')}`;
+}
+
+function normalizeHit(entry, discipline, matchedParentTags) {
+  const metadata = entry && entry.metadata ? entry.metadata : {};
+  const entryTags = Array.isArray(metadata.pain_point_tags) ? metadata.pain_point_tags.map((tag) => String(tag)) : [];
+  const overlap = entryTags.filter((tag) => matchedParentTags.includes(tag)).length;
+  const baseScore = typeof entry.score === 'number' ? entry.score : 0;
+  return {
+    discipline,
+    id: entry && entry.id ? entry.id : null,
+    text: entry && typeof entry.text === 'string' ? entry.text : '',
+    metadata,
+    score: baseScore,
+    pain_point_match_count: overlap,
+    effective_score: baseScore + Math.min(0.3, overlap * 0.1),
+  };
+}
+
+function dedupeByPriority(entries) {
+  const deduped = new Map();
+  for (const entry of entries) {
+    const key = buildDedupKey(entry);
+    const current = deduped.get(key);
+    if (!current || entry.effective_score > current.effective_score) {
+      deduped.set(key, entry);
+    }
+  }
+  return [...deduped.values()];
+}
 
 // ── Rate Limits & Retries ───────────────────────────────────────────────────
 /**
@@ -129,18 +213,58 @@ async function orchestrate(seed, slug) {
   };
 
   try {
-    const discipline = 'Paid_Media';
+    const disciplines = disciplineRouter.rankDisciplines(seed).slice(0, 3);
     const businessModel = seed && seed.company ? seed.company.business_model : null;
-    literacyContextHits = await vectorStore.getLiteracyContext(
-      discipline,
-      `${seed?.product?.name || ''} ${seed?.audience?.segment_name || ''}`.trim() || 'summary',
-      { business_model: businessModel || null },
-      3
+    const painPoints = normalizePainPoints(seed);
+    const matchedParentTags = deriveParentTags(painPoints);
+    const query = [
+      seed && seed.product ? seed.product.name : '',
+      seed && seed.audience ? seed.audience.segment_name : '',
+      ...painPoints,
+    ]
+      .map((value) => String(value || '').trim())
+      .filter(Boolean)
+      .join(' ') || 'summary';
+    const maxContextChunks = getMaxContextChunks();
+
+    const perDiscipline = await Promise.all(
+      disciplines.map(async (discipline) => {
+        const [filteredHits, universalHits] = await Promise.all([
+          vectorStore.getLiteracyContext(
+            discipline,
+            query,
+            { business_model: businessModel || null, pain_point_tags: matchedParentTags },
+            3
+          ),
+          vectorStore.getLiteracyContext(
+            discipline,
+            query,
+            { pain_point_tags: matchedParentTags },
+            3
+          ),
+        ]);
+
+        const normalized = [...(filteredHits || []), ...(universalHits || [])]
+          .map((entry) => normalizeHit(entry, discipline, matchedParentTags))
+          .filter((entry) => entry.text.trim().length > 0);
+
+        return dedupeByPriority(normalized);
+      })
     );
-    telemetry.capture('literacy_context_observed', {
+
+    const globalDeduped = dedupeByPriority(perDiscipline.flat())
+      .sort((a, b) => b.effective_score - a.effective_score);
+    const totalHits = globalDeduped.length;
+    const painPointMatchCount = globalDeduped.filter((entry) => entry.pain_point_match_count > 0).length;
+    literacyContextHits = globalDeduped.slice(0, maxContextChunks);
+    const standardsContext = literacyContextHits.map((entry) => entry.text).join('\n\n');
+
+    telemetry.capture('literacy_retrieval_observed', {
       project_slug: slug,
-      literacy_namespace: 'markos-standards-paid_media',
-      literacy_context_hits: literacyContextHits.length,
+      disciplines_queried: disciplines,
+      total_hits: totalHits,
+      pain_point_match_count: painPointMatchCount,
+      context_tokens: Math.ceil(Buffer.byteLength(standardsContext || '', 'utf8') / 4),
     });
   } catch (error) {
     warnOnce('literacy-context', `[orchestrator] Literacy context skipped: ${error.message}`);
