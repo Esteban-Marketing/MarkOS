@@ -8,6 +8,7 @@ const {
   TEMPLATES_DIR,
   LEGACY_LOCAL_DIR,
   COMPATIBILITY_LOCAL_DIRS,
+  SEED_PATH,
 } = require('./path-constants.cjs');
 const fs = require('fs');
 const path = require('path');
@@ -28,6 +29,7 @@ const {
   validateRequiredSecrets,
 } = require('./runtime-context.cjs');
 const telemetry = require('./agents/telemetry.cjs');
+const { generateSkeletons } = require('./agents/skeleton-generator.cjs');
 const {
   MARKOSDB_SCHEMA_VERSION,
   SUPABASE_RELATIONAL_CONTRACT,
@@ -1413,6 +1415,30 @@ async function handleApprove(req, res) {
       });
     }
 
+    let skeletonsSummary = { generated: [], failed: [] };
+    try {
+      let seed = {};
+      if (fs.existsSync(SEED_PATH)) {
+        seed = JSON.parse(fs.readFileSync(SEED_PATH, 'utf8'));
+      }
+
+      const skeletonResults = await generateSkeletons(seed, approvedDrafts);
+      skeletonsSummary = skeletonResults.reduce(
+        (accumulator, result) => {
+          if (Array.isArray(result.files) && result.files.length > 0) {
+            accumulator.generated.push(...result.files);
+          }
+          if (result.error) {
+            accumulator.failed.push(result.discipline);
+          }
+          return accumulator;
+        },
+        { generated: [], failed: [] }
+      );
+    } catch (_error) {
+      skeletonsSummary = { generated: [], failed: ['all'] };
+    }
+
     const readiness = buildExecutionReadiness(approvedDrafts || {});
     const onboardingCompleted = written.length > 0;
 
@@ -1441,6 +1467,7 @@ async function handleApprove(req, res) {
           onboarding_completed: onboardingCompleted,
           execution_readiness: readiness,
         },
+        skeletons: skeletonsSummary,
         outcome: createOutcome('warning', 'APPROVE_PARTIAL_WARNING', 'Drafts were written with warnings.', {
           warnings: [...mergeFallbackWarnings, ...combinedErrors],
         }),
@@ -1486,6 +1513,7 @@ async function handleApprove(req, res) {
         onboarding_completed: onboardingCompleted,
         execution_readiness: readiness,
       },
+      skeletons: skeletonsSummary,
       outcome: createOutcome('success', 'APPROVE_OK', 'Drafts were written successfully.'),
     });
   } catch (err) {
