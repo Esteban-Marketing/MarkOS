@@ -30,7 +30,7 @@ created: 2026-04-01
 - **After every task commit:** Run `node --test test/literacy-e2e.test.js -x`
 - **After every plan wave:** Run `node --test test/**/*.test.js`
 - **Before `/gsd-verify-work`:** Full suite must be green via `npm test`
-- **Max feedback latency:** 45 seconds
+- **Max feedback latency:** 30 seconds
 
 ---
 
@@ -78,7 +78,7 @@ All phase behaviors have automated verification.
 - [ ] Sampling continuity: no 3 consecutive tasks without automated verify
 - [ ] Wave 0 covers all MISSING references
 - [ ] No watch-mode flags
-- [ ] Feedback latency < 45s
+- [ ] Feedback latency < 30s
 - [ ] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending
