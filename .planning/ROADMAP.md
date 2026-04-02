@@ -164,11 +164,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 42-01-PLAN.md — Wave 0 Nyquist test scaffolding for db setup, migrations, RLS, and namespace audit contracts
-- [ ] 42-02-PLAN.md — Wave 1 setup command path: CLI routing, secure credential wizard, connectivity probes, safe env persistence
-- [ ] 42-03-PLAN.md — Wave 2 migration engine: deterministic ordering, `markos_migrations` ledger, fail-fast diagnostics
-- [ ] 42-04-PLAN.md — Wave 3 security verification: RLS policy checks and namespace isolation audits
-- [ ] 42-05-PLAN.md — Wave 4 integration gate: health snapshot, docs parity, and full regression verification
+- [x] 42-01-PLAN.md — Wave 0 Nyquist test scaffolding for db setup, migrations, RLS, and namespace audit contracts
+- [x] 42-02-PLAN.md — Wave 1 setup command path: CLI routing, secure credential wizard, connectivity probes, safe env persistence
+- [x] 42-03-PLAN.md — Wave 2 migration engine: deterministic ordering, `markos_migrations` ledger, fail-fast diagnostics
+- [x] 42-04-PLAN.md — Wave 3 security verification: RLS policy checks and namespace isolation audits
+- [x] 42-05-PLAN.md — Wave 4 integration gate: health snapshot, docs parity, and full regression verification
 
 ## Phase 43: Onboarding-to-Literacy Activation Pipeline
 
