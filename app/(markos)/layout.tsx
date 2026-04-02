@@ -11,6 +11,7 @@ const ACTIVE_ROLE: MarkOSRole = "owner";
 
 const NAV_ITEMS = [
   { href: "/markos", label: "Dashboard", route: "dashboard" },
+  { href: "/markos/operations", label: "Operations", route: "operations" },
   { href: "/markos/company", label: "Company", route: "company" },
   { href: "/markos/mir", label: "MIR", route: "mir" },
   { href: "/markos/msp", label: "MSP", route: "msp" },

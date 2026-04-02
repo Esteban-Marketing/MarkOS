@@ -2,6 +2,7 @@ export type MarkOSRole = "owner" | "operator" | "strategist" | "viewer" | "agent
 
 export type RouteKey =
   | "dashboard"
+  | "operations"
   | "company"
   | "mir"
   | "msp"
@@ -12,6 +13,7 @@ export type RouteKey =
 
 const routePermissions: Record<RouteKey, MarkOSRole[]> = {
   dashboard: ["owner", "operator", "strategist", "viewer", "agent"],
+  operations: ["owner", "operator"],
   company: ["owner", "operator", "strategist", "agent"],
   mir: ["owner", "operator", "strategist", "agent"],
   msp: ["owner", "operator", "strategist", "agent"],
