@@ -6,6 +6,8 @@ const readline = require('node:readline');
 const { createClient } = require('@supabase/supabase-js');
 const { Index } = require('@upstash/vector');
 const { applyPendingMigrations } = require('../onboarding/backend/provisioning/migration-runner.cjs');
+const { verifyRlsPolicies } = require('../onboarding/backend/provisioning/rls-verifier.cjs');
+const { auditNamespaces } = require('../onboarding/backend/provisioning/namespace-auditor.cjs');
 
 const REQUIRED_KEYS = Object.freeze([
   { key: 'SUPABASE_URL', secret: false },
@@ -115,6 +117,14 @@ async function defaultMigrationExecution() {
   throw new Error('SQL executor is not configured for migrations. Pass runMigrations to runDbSetup.');
 }
 
+async function defaultVerifyRls() {
+  throw new Error('RLS verifier dependencies are not configured. Pass verifyRls to runDbSetup.');
+}
+
+async function defaultAuditNamespaces() {
+  throw new Error('Namespace auditor dependencies are not configured. Pass auditNamespaces to runDbSetup.');
+}
+
 function normalizePromptValue(value) {
   return String(value || '').trim();
 }
@@ -181,6 +191,12 @@ async function runDbSetup(options = {}) {
   const runMigrations = options.runMigrations || (async ({ migrationsDir }) => {
     return applyPendingMigrations({ migrationsDir, executeSql: defaultMigrationExecution });
   });
+  const runRlsVerification = options.verifyRls || (async () => {
+    return verifyRlsPolicies({ fetchTableRlsStatus: defaultVerifyRls, checkAnonDenied: defaultVerifyRls });
+  });
+  const runNamespaceAudit = options.auditNamespaces || (async ({ projectSlug }) => {
+    return auditNamespaces({ projectSlug, listNamespaces: defaultAuditNamespaces });
+  });
 
   try {
     const existingContent = fsApi.existsSync(envPath)
@@ -208,6 +224,17 @@ async function runDbSetup(options = {}) {
       values,
     });
 
+    const projectSlug = String(options.projectSlug || process.env.MARKOS_PROJECT_SLUG || path.basename(cwd)).trim();
+    const rls = await runRlsVerification({ values });
+    if (!rls.ok) {
+      throw new Error(`RLS verification failed for one or more tables.`);
+    }
+
+    const namespaces = await runNamespaceAudit({ values, projectSlug });
+    if (!namespaces.ok) {
+      throw new Error(`Namespace audit failed: ${namespaces.errors.join(' | ')}`);
+    }
+
     return {
       ok: true,
       persisted: REQUIRED_KEYS.map((field) => field.key),
@@ -218,6 +245,8 @@ async function runDbSetup(options = {}) {
         upstash_vector: 'ok',
       },
       migrations: migrationSummary,
+      rls,
+      namespaces,
       redacted: buildRedactedSummary(values),
     };
   } finally {

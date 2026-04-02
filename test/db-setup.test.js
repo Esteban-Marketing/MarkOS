@@ -41,6 +41,8 @@ test('42-02-02 interactive credential wizard captures required keys and redacts 
       probeSupabase: async () => {},
       probeUpstash: async () => {},
       runMigrations: async () => ({ applied: [], skipped: [], total: 0 }),
+      verifyRls: async () => ({ ok: true, tables: [] }),
+      auditNamespaces: async () => ({ ok: true, errors: [] }),
     });
 
     assert.equal(report.ok, true);
@@ -74,6 +76,8 @@ test('42-02-03 provider probes gate .env persistence and enforce idempotent reru
         },
         probeUpstash: async () => {},
         runMigrations: async () => ({ applied: [], skipped: [], total: 0 }),
+        verifyRls: async () => ({ ok: true, tables: [] }),
+        auditNamespaces: async () => ({ ok: true, errors: [] }),
       }),
       /probe failed/
     );
@@ -93,6 +97,8 @@ test('42-02-03 provider probes gate .env persistence and enforce idempotent reru
       probeSupabase: async () => {},
       probeUpstash: async () => {},
       runMigrations: async () => ({ applied: ['37_markos_ui_control_plane.sql'], skipped: [], total: 1 }),
+      verifyRls: async () => ({ ok: true, tables: [] }),
+      auditNamespaces: async () => ({ ok: true, errors: [] }),
     });
 
     const secondAnswers = ['', 'supabase-secret-value-2', '', 'upstash-secret-value-2'];
@@ -102,6 +108,8 @@ test('42-02-03 provider probes gate .env persistence and enforce idempotent reru
       probeSupabase: async () => {},
       probeUpstash: async () => {},
       runMigrations: async () => ({ applied: [], skipped: ['37_markos_ui_control_plane.sql'], total: 1 }),
+      verifyRls: async () => ({ ok: true, tables: [] }),
+      auditNamespaces: async () => ({ ok: true, errors: [] }),
     });
 
     const envText = fs.readFileSync(envPath, 'utf8');
@@ -127,6 +135,33 @@ test('42-02-04 db:setup checks .gitignore protections for .env secrets', async (
 
     const gitignore = fs.readFileSync(gitignorePath, 'utf8');
     assert.equal((gitignore.match(/^\.env$/gm) || []).length, 1);
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('42-04-03 db:setup fails with actionable diagnostics when security auditors fail', async () => {
+  const tmpDir = makeTempDir();
+  const answers = [
+    'https://supabase.example.com',
+    'supabase-secret-value',
+    'https://upstash.example.com',
+    'upstash-secret-value',
+  ];
+
+  try {
+    await assert.rejects(
+      () => runDbSetup({
+        cwd: tmpDir,
+        prompt: { ask: async () => answers.shift(), close: () => {} },
+        probeSupabase: async () => {},
+        probeUpstash: async () => {},
+        runMigrations: async () => ({ applied: ['37_markos_ui_control_plane.sql'], skipped: [], total: 1 }),
+        verifyRls: async () => ({ ok: false, tables: [{ table: 'markos_literacy_chunks', ok: false }] }),
+        auditNamespaces: async () => ({ ok: true, errors: [] }),
+      }),
+      /RLS verification failed/
+    );
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
