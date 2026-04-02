@@ -20,7 +20,7 @@
     "operator_self_service_rate"
   ],
   "outlier_policy": "LOW-confidence values are estimate-anchored. Phase 50 re-measurement will use live PostHog event export for the same window duration. flow_coverage is HIGH confidence (automated extraction). If Phase 50 window differs, a rebase note is required before delta publication.",
-  "reviewer_status": "PENDING",
-  "reviewer_name": null,
-  "reviewer_date": null
+  "reviewer_status": "APPROVED",
+  "reviewer_name": "Esteban (operator)",
+  "reviewer_date": "2026-04-02"
 }

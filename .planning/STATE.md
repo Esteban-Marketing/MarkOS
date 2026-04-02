@@ -1,24 +1,23 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.1.0
-milestone_name: Operator Surface Unification
-status: Roadmap generated and locked. Ready for Phase 45 planning and execution.
-last_updated: "2026-04-02T00:00:00.000Z"
+milestone: v2.4
+milestone_name: Beta Client Onboarding
+status: complete
+last_updated: "2026-04-02"
 progress:
-  total_phases: 6
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-
+  total_phases: 25
+  completed_phases: 9
+  total_plans: 45
+  completed_plans: 34
 ---
 
 Current Position
 ----------------
 
 Milestone: v3.1.0 — Operator Surface Unification
-Phase: Roadmap complete (ready for Phase 45 planning)
-Status: All 19 requirements mapped to 6 phases (45–50). Roadmap locked and verified for 100% coverage.
-Next Phase: Phase 45 — Operations Flow Inventory & Canonical Contract Map (ready for discussion and planning)
+Phase: 45 — Operations Flow Inventory & Canonical Contract Map (COMPLETE)
+Status: All 6 plans executed and verified. 17 flows registered, 17 contracts validated, test suite 19/19. Baseline approved.
+Next Phase: Phase 46 — (next in v3.1.0 milestone)
 
 Tooling Snapshot
 ----------------
@@ -105,4 +104,3 @@ Roadmap Evolution
 - 2026-04-02: Phase 40 completed with deterministic discipline routing, pain-point OR filter support, top-3 dual-query literacy retrieval, doc_id-first dedupe, fixed context-budget enforcement, and literacy retrieval telemetry.
 - 2026-04-02: Phase 43 completed with post-submit literacy activation readiness evaluation, submit/status readiness parity, and activation telemetry contracts.
 - 2026-04-02: Phase 44 completed with lifecycle E2E verification, literacy coverage API contract enforcement, populated-corpus zero-hit regression gating, and CI integration.
-

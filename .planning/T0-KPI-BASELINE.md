@@ -1,7 +1,7 @@
 # T0 KPI BASELINE — Phase 45 Activation Baseline
 **Phase:** 45 — Operations Flow Inventory & Canonical Contract Map  
 **Frozen for:** Phase 50 delta comparison  
-**Status:** PENDING reviewer sign-off (Task 45-05-02)
+**Status:** APPROVED — frozen 2026-04-02 (Task 45-05-02 signed off)
 
 ---
 
