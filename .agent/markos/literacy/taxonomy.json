@@ -1,0 +1,81 @@
+{
+  "version": "1.0",
+  "description": "Two-tier pain-point taxonomy for MarkOS literacy corpus. Parent tags drive Phase 40 discipline routing; sub-tags sharpen within-discipline filter precision.",
+  "parents": [
+    {
+      "tag": "high_acquisition_cost",
+      "label": "High Acquisition Cost",
+      "definition": "CAC / CPL / CPR trending above benchmark; budget efficiency degrading",
+      "disciplines": ["Paid_Media", "Content_SEO"]
+    },
+    {
+      "tag": "low_conversions",
+      "label": "Low Conversions",
+      "definition": "Low CVR at key funnel moments - ad to landing page, landing page to lead, lead to trial",
+      "disciplines": ["Paid_Media", "Landing_Pages"]
+    },
+    {
+      "tag": "poor_retention_churn",
+      "label": "Poor Retention / Churn",
+      "definition": "MRR churn, subscriber loss, repeat purchase rate declining",
+      "disciplines": ["Lifecycle_Email"]
+    },
+    {
+      "tag": "low_organic_visibility",
+      "label": "Low Organic Visibility",
+      "definition": "Search rankings declining or stagnant; organic traffic share shrinking",
+      "disciplines": ["Content_SEO"]
+    },
+    {
+      "tag": "attribution_measurement",
+      "label": "Attribution & Measurement",
+      "definition": "Cannot accurately attribute revenue to channel; data fragmentation across touchpoints",
+      "disciplines": ["Paid_Media", "Social"]
+    },
+    {
+      "tag": "audience_mismatch",
+      "label": "Audience Mismatch",
+      "definition": "Reaching wrong ICP; poor segmentation; high bounce from irrelevant audiences",
+      "disciplines": ["Paid_Media", "Content_SEO", "Lifecycle_Email", "Social", "Landing_Pages"]
+    },
+    {
+      "tag": "pipeline_velocity",
+      "label": "Pipeline Velocity",
+      "definition": "Leads stalling in mid-funnel; follow-up gaps; nurture sequences not converting",
+      "disciplines": ["Lifecycle_Email", "Landing_Pages"]
+    },
+    {
+      "tag": "content_engagement",
+      "label": "Content Engagement",
+      "definition": "Content published but not driving interaction, shares, comments, return visits",
+      "disciplines": ["Social", "Content_SEO"]
+    }
+  ],
+  "sub_tags": {
+    "Paid_Media": [
+      { "tag": "paid_media:high_cpr", "label": "High CPR", "definition": "Cost-per-result above benchmark for ad format / objective" },
+      { "tag": "paid_media:low_roas", "label": "Low ROAS", "definition": "Return on ad spend below profitable threshold" },
+      { "tag": "paid_media:attribution_gap", "label": "Attribution Gap", "definition": "Multi-touch attribution fragmented across platforms" }
+    ],
+    "Content_SEO": [
+      { "tag": "content_seo:low_rankings", "label": "Low Rankings", "definition": "Target keywords not ranking in top 20" },
+      { "tag": "content_seo:thin_content", "label": "Thin Content", "definition": "Pages lacking depth, E-E-A-T signals, or citable evidence" },
+      { "tag": "content_seo:low_organic_ctr", "label": "Low Organic CTR", "definition": "Ranking but not driving clicks - title/meta optimization gap" }
+    ],
+    "Lifecycle_Email": [
+      { "tag": "lifecycle_email:low_open_rate", "label": "Low Open Rate", "definition": "Open rates below channel benchmark; deliverability / subject line issues" },
+      { "tag": "lifecycle_email:high_unsubscribe", "label": "High Unsubscribe Rate", "definition": "List churn driven by frequency, irrelevance, or list hygiene" },
+      { "tag": "lifecycle_email:weak_nurture", "label": "Weak Nurture Sequences", "definition": "Mid-funnel sequences not progressing leads to qualified stage" }
+    ],
+    "Social": [
+      { "tag": "social:low_engagement", "label": "Low Engagement", "definition": "Content receiving near-zero interaction relative to reach" },
+      { "tag": "social:audience_growth_plateau", "label": "Audience Growth Plateau", "definition": "Follower growth stalled; organic reach declining" },
+      { "tag": "social:poor_brand_awareness", "label": "Poor Brand Awareness", "definition": "Low unaided recall; brand not associating with category problem" }
+    ],
+    "Landing_Pages": [
+      { "tag": "landing_pages:low_cvr", "label": "Low CVR", "definition": "Page visitor to form-fill below benchmark (< 2.5% for B2B)" },
+      { "tag": "landing_pages:high_bounce", "label": "High Bounce", "definition": "Visitors leave without scrolling or engaging - message/offer mismatch" },
+      { "tag": "landing_pages:poor_form_completion", "label": "Poor Form Completion", "definition": "Form started but abandoned; friction, length, or trust issue" }
+    ]
+  }
+}
