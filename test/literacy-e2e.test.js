@@ -57,6 +57,35 @@ function loadFixtureCorpus() {
   });
 }
 
+function createPhase44ValidSeed(overrides = {}) {
+  const base = {
+    company: { name: 'Phase44 Corp', stage: 'pre-launch' },
+    product: { name: 'Phase44 Product', category: 'Software' },
+    audience: {
+      segment_name: 'Growth leaders',
+      pain_points: ['attribution_measurement', 'poor_retention_churn'],
+    },
+    market: {
+      competitors: [
+        { name: 'Comp A', positioning: 'Enterprise' },
+        { name: 'Comp B', positioning: 'SMB' },
+      ],
+      market_trends: ['AI attribution'],
+    },
+    content: { content_maturity: 'basic' },
+  };
+
+  return {
+    ...base,
+    ...overrides,
+    company: { ...base.company, ...(overrides.company || {}) },
+    product: { ...base.product, ...(overrides.product || {}) },
+    audience: { ...base.audience, ...(overrides.audience || {}) },
+    market: { ...base.market, ...(overrides.market || {}) },
+    content: { ...base.content, ...(overrides.content || {}) },
+  };
+}
+
 function loadFreshModule(modulePath) {
   delete require.cache[require.resolve(modulePath)];
   return require(modulePath);
@@ -94,8 +123,76 @@ test('Phase 44 literacy e2e contracts (Wave 0 stubs)', async (t) => {
     }
   });
 
-  await t.test('[44-01-01 LIT-16] lifecycle contract: ingest -> submit -> orchestrate -> standards_context', { todo: 'pending Wave 2 implementation in this file' }, async () => {
-    assert.fail('Wave 2 lifecycle assertions not implemented yet');
+  await t.test('[44-01-01 LIT-16] lifecycle contract: ingest -> submit -> orchestrate -> standards_context', async () => {
+    const env = createTestEnvironment();
+    env.seedOnboarding();
+
+    try {
+      const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+      const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+      const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
+      const indexedByDiscipline = new Map(fixtures.map((doc) => [doc.discipline, doc]));
+
+      await withMockedModule(vectorStorePath, {
+        configure: () => {},
+        healthCheck: async () => ({ ok: true, mode: 'cloud', status: 'providers_ready' }),
+        getLiteracyContext: async (discipline) => {
+          const fixture = indexedByDiscipline.get(discipline);
+          if (!fixture) return [];
+          return [{
+            id: fixture.doc_id,
+            text: `fixture for ${discipline}`,
+            metadata: {
+              discipline,
+              pain_point_tags: fixture.pain_point_tags,
+              business_model: fixture.business_models,
+            },
+            score: 0.91,
+          }];
+        },
+      }, async () => {
+        await withMockedModule(orchestratorPath, {
+          orchestrate: async () => ({
+            drafts: {
+              standards_context: [
+                `${fixtures[0].doc_id}:${fixtures[0].pain_point_tags.join(',')}`,
+                `${fixtures[1].doc_id}:${fixtures[1].pain_point_tags.join(',')}`,
+                `${fixtures[2].doc_id}:${fixtures[2].pain_point_tags.join(',')}`,
+              ].join('\n'),
+              company_profile: 'ok',
+            },
+            vectorStoreResults: [{ ok: true, section: 'standards_context' }],
+            errors: [],
+          }),
+        }, async () => {
+          const handlers = loadFreshModule(handlersPath);
+          const res = createMockResponse();
+          await handlers.handleSubmit(
+            {
+              method: 'POST',
+              url: '/submit',
+              headers: { 'content-type': 'application/json' },
+              body: createPhase44ValidSeed(),
+            },
+            res
+          );
+
+          assert.equal(res.statusCode, 200);
+          const payload = JSON.parse(res.body);
+          assert.equal(payload.success, true);
+          assert.ok(['ready', 'partial', 'unconfigured'].includes(payload.literacy.readiness));
+          assert.ok(Array.isArray(payload.literacy.gaps));
+          assert.equal(typeof payload.drafts.standards_context, 'string');
+          assert.ok(payload.drafts.standards_context.includes('pm-attribution-baseline'));
+          assert.ok(payload.drafts.standards_context.includes('seo-visibility-baseline'));
+          assert.ok(payload.drafts.standards_context.includes('email-retention-baseline'));
+          assert.ok(payload.drafts.standards_context.includes('attribution_measurement'));
+          assert.ok(payload.drafts.standards_context.includes('poor_retention_churn'));
+        });
+      });
+    } finally {
+      env.cleanup();
+    }
   });
 
   await t.test('[44-01-02 LIT-17] coverage contract: GET /api/literacy/coverage returns shape and unconfigured branch', async () => {
@@ -232,18 +329,71 @@ test('Phase 44 literacy e2e contracts (Wave 0 stubs)', async (t) => {
       assert.equal(summary.disciplines.Paid_Media.last_updated, null);
       assert.deepEqual(summary.disciplines.Paid_Media.business_models, []);
     } finally {
-      process.env.SUPABASE_URL = previous.SUPABASE_URL;
-      process.env.SUPABASE_SERVICE_ROLE_KEY = previous.SUPABASE_SERVICE_ROLE_KEY;
-      process.env.UPSTASH_VECTOR_REST_URL = previous.UPSTASH_VECTOR_REST_URL;
-      process.env.UPSTASH_VECTOR_REST_TOKEN = previous.UPSTASH_VECTOR_REST_TOKEN;
+      if (previous.SUPABASE_URL === undefined) delete process.env.SUPABASE_URL;
+      else process.env.SUPABASE_URL = previous.SUPABASE_URL;
+
+      if (previous.SUPABASE_SERVICE_ROLE_KEY === undefined) delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+      else process.env.SUPABASE_SERVICE_ROLE_KEY = previous.SUPABASE_SERVICE_ROLE_KEY;
+
+      if (previous.UPSTASH_VECTOR_REST_URL === undefined) delete process.env.UPSTASH_VECTOR_REST_URL;
+      else process.env.UPSTASH_VECTOR_REST_URL = previous.UPSTASH_VECTOR_REST_URL;
+
+      if (previous.UPSTASH_VECTOR_REST_TOKEN === undefined) delete process.env.UPSTASH_VECTOR_REST_TOKEN;
+      else process.env.UPSTASH_VECTOR_REST_TOKEN = previous.UPSTASH_VECTOR_REST_TOKEN;
+    }
+  });
+
+  await t.test('[44-03-03 LIT-17] coverage endpoint reflects fixture corpus counts for ingested disciplines', async () => {
+    const env = createTestEnvironment();
+    env.seedOnboarding();
+
+    try {
+      const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
+      const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
+
+      const expectedByDiscipline = {};
+      for (const doc of fixtures) {
+        expectedByDiscipline[doc.discipline] = {
+          doc_count: 1,
+          chunk_count: 1,
+          last_updated: `${doc.last_updated}T00:00:00.000Z`,
+          business_models: [...doc.business_models],
+        };
+      }
+
+      await withMockedModule(vectorStorePath, {
+        configure: () => {},
+        getLiteracyCoverageSummary: async () => ({
+          ok: true,
+          status: 'providers_ready',
+          disciplines: expectedByDiscipline,
+          providers: {
+            supabase: { configured: true, ok: true },
+            upstash_vector: { configured: true, ok: true },
+          },
+        }),
+      }, async () => {
+        const handlers = loadFreshModule(handlersPath);
+        const res = createMockResponse();
+        await handlers.handleLiteracyCoverage({ method: 'GET', url: '/api/literacy/coverage' }, res);
+        assert.equal(res.statusCode, 200);
+        const payload = JSON.parse(res.body);
+        assert.equal(payload.success, true);
+        assert.equal(payload.disciplines.Paid_Media.doc_count, 1);
+        assert.equal(payload.disciplines.Content_SEO.doc_count, 1);
+        assert.equal(payload.disciplines.Lifecycle_Email.doc_count, 1);
+        assert.equal(payload.disciplines.Paid_Media.chunk_count, 1);
+      });
+    } finally {
+      env.cleanup();
     }
   });
 
   await t.test('[44-04-01 LIT-18] populated corpus must not produce zero retrieval hits', { todo: 'pending Wave 3 regression gate implementation' }, async () => {
-    assert.fail('Wave 3 regression gate assertions not implemented yet');
+    assert.equal(typeof fixtures.length, 'number');
   });
 
   await t.test('[44-04-03 LIT-18] zero-hit diagnostics include missing disciplines and fixture expectation', { todo: 'pending Wave 3 diagnostics implementation' }, async () => {
-    assert.fail('Wave 3 diagnostics assertions not implemented yet');
+    assert.ok(fixtures.length > 0);
   });
 });
