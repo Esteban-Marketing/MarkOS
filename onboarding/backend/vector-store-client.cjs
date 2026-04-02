@@ -10,6 +10,13 @@ let _bootReport = null;
 const LEGACY_NAMESPACE_PREFIX = 'markos';
 const FUTURE_NAMESPACE_PREFIX = 'markos';
 const STANDARDS_NAMESPACE_PREFIX = 'markos-standards';
+const DEFAULT_COVERAGE_DISCIPLINES = Object.freeze([
+  'Paid_Media',
+  'Content_SEO',
+  'Lifecycle_Email',
+  'Social',
+  'Landing_Pages',
+]);
 
 function slugifyDiscipline(value) {
   return String(value || '')
@@ -410,6 +417,116 @@ async function getLiteracyContext(discipline, query = 'summary', filters = {}, t
   }
 }
 
+function createEmptyCoverageBucket() {
+  return {
+    doc_count: 0,
+    chunk_count: 0,
+    last_updated: null,
+    business_models: [],
+  };
+}
+
+function normalizeDisciplineLabel(value) {
+  const normalized = slugifyDiscipline(value);
+  if (!normalized) return '';
+  return normalized
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('_');
+}
+
+async function getLiteracyCoverageSummary() {
+  const health = await healthCheck();
+  const disciplines = Object.fromEntries(
+    DEFAULT_COVERAGE_DISCIPLINES.map((name) => [name, createEmptyCoverageBucket()])
+  );
+
+  if (!health.ok) {
+    return {
+      ok: false,
+      status: health.status || 'providers_unconfigured',
+      disciplines,
+      providers: health.providers || {},
+    };
+  }
+
+  const client = getSupabaseClient();
+  if (!client) {
+    return {
+      ok: false,
+      status: 'providers_unconfigured',
+      disciplines,
+      providers: health.providers || {},
+    };
+  }
+
+  const { data, error } = await client
+    .from('markos_literacy_chunks')
+    .select('discipline, doc_id, chunk_id, business_model, updated_at, last_validated, status')
+    .eq('status', 'canonical');
+
+  if (error) {
+    return {
+      ok: false,
+      status: 'providers_degraded',
+      disciplines,
+      providers: health.providers || {},
+      error: error.message,
+    };
+  }
+
+  const docsByDiscipline = new Map();
+  const modelsByDiscipline = new Map();
+
+  for (const row of data || []) {
+    const label = normalizeDisciplineLabel(row.discipline);
+    if (!label) continue;
+
+    if (!disciplines[label]) {
+      disciplines[label] = createEmptyCoverageBucket();
+    }
+
+    disciplines[label].chunk_count += 1;
+
+    const currentTimestamp = row.updated_at || row.last_validated || null;
+    if (currentTimestamp && (!disciplines[label].last_updated || currentTimestamp > disciplines[label].last_updated)) {
+      disciplines[label].last_updated = currentTimestamp;
+    }
+
+    if (!docsByDiscipline.has(label)) {
+      docsByDiscipline.set(label, new Set());
+    }
+    docsByDiscipline.get(label).add(String(row.doc_id || row.chunk_id || ''));
+
+    if (!modelsByDiscipline.has(label)) {
+      modelsByDiscipline.set(label, new Set());
+    }
+
+    if (Array.isArray(row.business_model)) {
+      for (const model of row.business_model) {
+        const normalizedModel = String(model || '').trim();
+        if (normalizedModel) {
+          modelsByDiscipline.get(label).add(normalizedModel);
+        }
+      }
+    }
+  }
+
+  for (const [discipline, bucket] of Object.entries(disciplines)) {
+    bucket.doc_count = docsByDiscipline.has(discipline) ? docsByDiscipline.get(discipline).size : 0;
+    bucket.business_models = modelsByDiscipline.has(discipline)
+      ? [...modelsByDiscipline.get(discipline)].sort()
+      : [];
+  }
+
+  return {
+    ok: true,
+    status: health.status || 'providers_ready',
+    disciplines,
+    providers: health.providers || {},
+  };
+}
+
 async function upsertLiteracyChunk(chunk) {
   const client = getSupabaseClient();
   const index = getUpstashIndex();
@@ -731,6 +848,7 @@ module.exports = {
   getWinningCampaignPatterns,
   buildStandardsNamespaceName,
   getLiteracyContext,
+  getLiteracyCoverageSummary,
   upsertLiteracyChunk,
   supersedeLiteracyDoc,
   buildLiteracyFilter,

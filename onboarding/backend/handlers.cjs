@@ -904,6 +904,36 @@ async function handleStatus(req, res) {
   });
 }
 
+async function handleLiteracyCoverage(req, res) {
+  const runtime = createRuntimeContext();
+  const coverageSecretCheck = validateRequiredSecrets({
+    runtimeMode: runtime.mode,
+    operation: 'status_read',
+    env: process.env,
+  });
+
+  if (!coverageSecretCheck.ok) {
+    return json(res, 503, {
+      success: false,
+      error: 'REQUIRED_SECRET_MISSING',
+      message: `Missing required runtime secret(s): ${coverageSecretCheck.missing.join(', ')}`,
+      operation: 'status_read',
+    });
+  }
+
+  const vectorStore = require('./vector-store-client.cjs');
+  vectorStore.configure(runtime.config);
+
+  const coverage = await vectorStore.getLiteracyCoverageSummary();
+  return json(res, 200, {
+    success: true,
+    status: coverage.status,
+    runtime_mode: runtime.mode,
+    disciplines: coverage.disciplines,
+    providers: coverage.providers || {},
+  });
+}
+
 async function handleMarkosdbMigration(req, res) {
   try {
     const runtime = createRuntimeContext();
@@ -1888,6 +1918,7 @@ async function handleLiteracyQuery(req, res) {
 module.exports = {
   handleConfig,
   handleStatus,
+  handleLiteracyCoverage,
   handleSubmit,
   handleRegenerate,
   handleApprove,
