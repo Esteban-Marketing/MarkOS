@@ -6,6 +6,7 @@ const path = require('node:path');
 
 const {
   applyPendingMigrations,
+  containsDestructiveSql,
   sha256,
 } = require('../onboarding/backend/provisioning/migration-runner.cjs');
 
@@ -129,4 +130,10 @@ test('42-03-03 stops on first failing migration and reports failing file', async
   } finally {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
+});
+
+test('42-05-03 blocks destructive SQL patterns in migration execution path', () => {
+  assert.equal(containsDestructiveSql('create table x(id int);'), false);
+  assert.equal(containsDestructiveSql('drop table if exists x;'), true);
+  assert.equal(containsDestructiveSql('truncate x;'), true);
 });
