@@ -33,7 +33,9 @@ Wave 4 integration is complete with consolidated provisioning health reporting, 
 - `a3bc323` feat(42-05): emit consolidated provisioning health snapshot
 - `85ed490` docs(42-05): document secure db setup runbook and command usage
 - `4bfd84f` test(42-05): add final migration safety regression guard
+- `a704904` fix(42-05): add Supabase RPC fallback for migration SQL execution
 
 ## Deviations from Plan
 
 - [Rule 2 - Missing critical functionality] Added shared `buildProvisioningHealthSnapshot` helper in vector store client to keep setup/runtime health logic aligned.
+- [Rule 1 - Bug] Replaced placeholder migration executor with Supabase RPC fallback probing to avoid guaranteed setup failure in default runtime path.
