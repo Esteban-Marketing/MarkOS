@@ -36,10 +36,12 @@ export type ProviderConfig = {
 
 export type LLMCallOptions = {
   provider?: ProviderName;
+  primaryProvider?: ProviderName;
   model?: string;
   maxTokens?: number;
   temperature?: number;
   timeoutMs?: number;
+  allowedProviders?: ProviderName[];
   fallbackChain?: ProviderName[];
   fallbackTemplate?: FallbackTemplate;
   noFallback?: boolean;

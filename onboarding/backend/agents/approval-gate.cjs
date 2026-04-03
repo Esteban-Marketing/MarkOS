@@ -1,7 +1,33 @@
 'use strict';
 
-const { canPerformAction } = require('../../../lib/markos/rbac/iam-v32.js');
 const { buildDenyEvent, emitDenyTelemetry } = require('../runtime-context.cjs');
+
+let cachedCanPerformAction = null;
+
+function resolveCanPerformAction() {
+  if (cachedCanPerformAction) {
+    return cachedCanPerformAction;
+  }
+
+  const candidates = [
+    '../../../lib/markos/rbac/iam-v32.js',
+    '../../lib/markos/rbac/iam-v32.js',
+  ];
+
+  for (const candidate of candidates) {
+    try {
+      ({ canPerformAction: cachedCanPerformAction } = require(candidate));
+      if (typeof cachedCanPerformAction === 'function') {
+        return cachedCanPerformAction;
+      }
+    } catch {
+      // Fall through to the next candidate.
+    }
+  }
+
+  cachedCanPerformAction = () => false;
+  return cachedCanPerformAction;
+}
 
 function ensureNonEmptyString(value, fieldName) {
   if (!value || String(value).trim().length === 0) {
@@ -26,6 +52,8 @@ function assertAwaitingApproval(input = {}) {
 }
 
 function defaultAuthorizationCheck(actorRole) {
+  const canPerformAction = resolveCanPerformAction();
+
   return {
     authorized: canPerformAction(actorRole, 'approve_task'),
     statusCode: canPerformAction(actorRole, 'approve_task') ? 200 : 403,

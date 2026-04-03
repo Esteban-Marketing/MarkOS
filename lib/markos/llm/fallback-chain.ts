@@ -1,4 +1,5 @@
 import { getDefaultModel } from "./provider-registry";
+import { buildProviderAttemptMetadata } from "./telemetry-adapter";
 import type { LLMCallOptions, LLMCallResult, LLMDecisionMode, ProviderName } from "./types";
 
 type ProviderCallers = Record<ProviderName, (
@@ -20,6 +21,7 @@ export type FallbackExecutionResult = {
   fallbackAttempts: number;
   fallbackReasons: string[];
   decisionMode: LLMDecisionMode;
+  providerAttempts: Record<string, unknown>[];
 };
 
 const PROVIDER_ORDER: ProviderName[] = ["anthropic", "openai", "gemini"];
@@ -33,9 +35,11 @@ function buildDefaultChain(primary: ProviderName): ProviderName[] {
 }
 
 function buildChain(options: LLMCallOptions, primary: ProviderName): ProviderName[] {
-  const candidates = options.fallbackChain && options.fallbackChain.length > 0
-    ? [primary, ...options.fallbackChain]
-    : buildDefaultChain(primary);
+  const candidates = options.allowedProviders && options.allowedProviders.length > 0
+    ? [primary, ...options.allowedProviders]
+    : options.fallbackChain && options.fallbackChain.length > 0
+      ? [primary, ...options.fallbackChain]
+      : buildDefaultChain(primary);
 
   return [...new Set(candidates)];
 }
@@ -52,12 +56,13 @@ export async function executeFallbackChain(
   callers: ProviderCallers,
   runtime: FallbackRuntime = {},
 ): Promise<FallbackExecutionResult> {
-  const primaryProvider = options.provider ?? "anthropic";
+  const primaryProvider = options.primaryProvider ?? options.provider ?? "anthropic";
   const chain = options.noFallback ? [primaryProvider] : buildChain(options, primaryProvider);
   const maxAttempts = Math.max(1, runtime.maxAttempts ?? 3);
   const allowedChain = chain.slice(0, maxAttempts);
   const sleep = runtime.sleep ?? createSleep;
   const fallbackReasons: string[] = [];
+  const providerAttempts: Record<string, unknown>[] = [];
   let totalLatencyMs = 0;
   let finalProvider = allowedChain[0];
   let lastError: LLMCallResult["error"];
@@ -73,6 +78,21 @@ export async function executeFallbackChain(
     });
 
     totalLatencyMs += providerResult.latencyMs;
+    providerAttempts.push(
+      buildProviderAttemptMetadata({
+        provider,
+        model: providerResult.model,
+        attemptNumber: index + 1,
+        primaryProvider,
+        latencyMs: providerResult.latencyMs,
+        fallbackReason: index > 0 ? fallbackReasons[index - 1] : undefined,
+        errorCode: providerResult.error?.code,
+        estimatedCostUsd: 0,
+        metadata: {
+          totalTokens: providerResult.usage.totalTokens,
+        },
+      }),
+    );
 
     if (providerResult.ok) {
       const decisionMode: LLMDecisionMode =
@@ -90,6 +110,7 @@ export async function executeFallbackChain(
         fallbackAttempts: index,
         fallbackReasons,
         decisionMode,
+        providerAttempts,
       };
     }
 
@@ -130,5 +151,6 @@ export async function executeFallbackChain(
     fallbackAttempts: Math.max(0, allowedChain.length - 1),
     fallbackReasons,
     decisionMode: options.provider ? "explicit" : "default",
+    providerAttempts,
   };
 }

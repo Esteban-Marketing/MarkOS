@@ -7,15 +7,15 @@ const { execFileSync } = require('node:child_process');
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const TSC_BIN = path.join(REPO_ROOT, 'node_modules', 'typescript', 'bin', 'tsc');
 const OUT_DIR = path.join(REPO_ROOT, 'tmp', 'llm-dist-test');
-const COMPILED_MARKER = path.join(OUT_DIR, '.compiled');
 
 let isCompiled = false;
 
 function compileOnce() {
-  if (fs.existsSync(COMPILED_MARKER)) {
+  if (isCompiled) {
     return;
   }
 
+  fs.rmSync(OUT_DIR, { recursive: true, force: true });
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
   execFileSync(process.execPath, [TSC_BIN, '-p', 'tsconfig.llm.json', '--outDir', OUT_DIR], {
@@ -23,15 +23,11 @@ function compileOnce() {
     stdio: 'pipe',
   });
 
-  fs.writeFileSync(COMPILED_MARKER, 'ok', 'utf8');
-
   isCompiled = true;
 }
 
 function compileLlmModules() {
-  if (!isCompiled) {
-    compileOnce();
-  }
+  compileOnce();
 
   return {
     outDir: OUT_DIR,

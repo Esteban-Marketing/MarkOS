@@ -74,6 +74,7 @@ const PARENT_KEYWORDS = {
 const runRegistry = new Map();
 const runEventStore = createInMemoryEventStore();
 const sideEffectLedger = createInMemorySideEffectLedger();
+const ESTIMATED_COST_PER_TOKEN_USD = 0.000001;
 
 function getMaxContextChunks() {
   try {
@@ -320,6 +321,65 @@ function recordOrchestratorSideEffect(runEnvelope, section, content) {
   });
 }
 
+function getTokenUsage(result) {
+  const usage = result && result.usage ? result.usage : {};
+  const totalTokens = Number(usage.totalTokens ?? ((usage.promptTokens || 0) + (usage.completionTokens || 0)));
+
+  return {
+    promptTokens: Number(usage.promptTokens || 0),
+    completionTokens: Number(usage.completionTokens || 0),
+    totalTokens: Number.isFinite(totalTokens) ? totalTokens : 0,
+  };
+}
+
+function estimateCostUsd(tokenUsage) {
+  return Number((Math.max(0, Number(tokenUsage.totalTokens || 0)) * ESTIMATED_COST_PER_TOKEN_USD).toFixed(6));
+}
+
+function finalizeRunClose({ slug, runEnvelope, resolvedExecutionContext, agentResults, errors }) {
+  const providerPrimary = resolvedExecutionContext.provider_policy.primary_provider;
+  const providerAttempts = Object.entries(agentResults || {}).map(([agentName, result], index) => {
+    const tokenUsage = getTokenUsage(result);
+    return telemetry.captureProviderAttempt({
+      run_id: runEnvelope.run_id,
+      tenant_id: runEnvelope.tenant_id,
+      project_slug: slug,
+      agent_name: agentName,
+      attempt_number: index + 1,
+      provider: result && result.provider ? result.provider : providerPrimary,
+      provider_policy_primary: providerPrimary,
+      model: result && result.model ? result.model : providerPrimary,
+      outcome_state: result && result.ok ? 'success' : 'error',
+      reason_code: result && result.error ? result.error.code : null,
+      fallback_reason: result && result.error ? result.error.code : null,
+      latency_ms: Number(result && (result.generationTimeMs || result.latencyMs || 0)),
+      cost_usd: estimateCostUsd(tokenUsage),
+      token_usage: tokenUsage,
+    });
+  });
+
+  const uniqueModels = [...new Set(providerAttempts.map((attempt) => attempt.model).filter(Boolean))];
+  const model = uniqueModels.join(', ');
+  const latencyMs = providerAttempts.reduce((sum, attempt) => sum + Number(attempt.latency_ms || 0), 0);
+  const costUsd = Number(providerAttempts.reduce((sum, attempt) => sum + Number(attempt.cost_usd || 0), 0).toFixed(6));
+
+  const runClose = telemetry.captureRunClose({
+    run_id: runEnvelope.run_id,
+    tenant_id: runEnvelope.tenant_id,
+    project_slug: slug,
+    model,
+    prompt_version: resolvedExecutionContext.prompt_version || 'legacy',
+    tool_events: providerAttempts,
+    latency_ms: latencyMs,
+    cost_usd: costUsd,
+    outcome: 'completed',
+    error_count: Array.isArray(errors) ? errors.length : 0,
+  });
+
+  runEnvelope.run_close = runClose;
+  return runClose;
+}
+
 async function orchestrate(seed, slug, executionContext) {
   const resolvedExecutionContext = resolveExecutionContext(slug, executionContext);
   const lifecycle = bootstrapRunLifecycle(slug, resolvedExecutionContext);
@@ -502,6 +562,14 @@ async function orchestrate(seed, slug, executionContext) {
     }
   }
 
+  finalizeRunClose({
+    slug,
+    runEnvelope,
+    resolvedExecutionContext,
+    agentResults,
+    errors,
+  });
+
   transitionRunState(runEnvelope, 'completed', 'orchestrator_execution_complete');
 
   console.log(`[orchestrator] Done. Errors: ${errors.length}`);
@@ -517,6 +585,7 @@ async function orchestrate(seed, slug, executionContext) {
     drafts,
     vectorStoreResults,
     errors,
+    run_close: runEnvelope.run_close,
   };
 
   return outcome;
@@ -527,6 +596,7 @@ module.exports = {
   resolveExecutionContext,
   __testing: {
     bootstrapRunLifecycle,
+    finalizeRunClose,
     recordOrchestratorSideEffect,
     getRunEngineState() {
       return {

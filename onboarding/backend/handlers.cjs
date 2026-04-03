@@ -80,6 +80,12 @@ function loadIamModule() {
 function checkActionAuthorization(action, req) {
   const iamMod = loadIamModule();
   const principal = req && req.markosAuth ? req.markosAuth : null;
+  const runtime = createRuntimeContext(process.env);
+
+  if (!principal && runtime.mode !== 'hosted') {
+    return { authorized: true, reason: null, statusCode: 200 };
+  }
+
   const fallbackContext = buildExecutionContext(req, 'authorization');
   const iamRole = (principal && principal.iamRole) || (principal && principal.role) || 'unknown';
 

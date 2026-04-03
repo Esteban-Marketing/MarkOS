@@ -23,7 +23,10 @@ export type MarkOSTelemetryEvent = {
     | "plugin_campaign_published"
     | "plugin_draft_read"
     | "plugin_approval_granted"
-    | "plugin_dashboard_view";
+    | "plugin_dashboard_view"
+    | "markos_agent_run_provider_attempt"
+    | "markos_agent_run_close_completed"
+    | "markos_agent_run_close_incomplete";
   workspaceId: string;
   role: string;
   requestId: string;

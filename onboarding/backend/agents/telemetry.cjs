@@ -6,7 +6,7 @@ try {
 } catch (error) {
   PostHog = null;
 }
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const { redactSensitive } = require('../runtime-context.cjs');
 
 let client = null;
@@ -96,6 +96,93 @@ function captureRolloutEndpointEvent(endpoint, properties = {}) {
   });
 }
 
+function normalizeNumeric(value, fallback = 0) {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function captureProviderAttempt(properties = {}) {
+  const event = {
+    run_id: properties.run_id || null,
+    tenant_id: properties.tenant_id || null,
+    project_slug: properties.project_slug || null,
+    agent_name: properties.agent_name || null,
+    attempt_number: Math.max(1, Math.trunc(normalizeNumeric(properties.attempt_number, 1))),
+    provider: String(properties.provider || 'unknown'),
+    provider_policy_primary: properties.provider_policy_primary || null,
+    model: String(properties.model || 'unknown'),
+    outcome_state: properties.outcome_state || 'unknown',
+    reason_code: properties.reason_code || null,
+    fallback_reason: properties.fallback_reason || null,
+    latency_ms: Math.max(0, normalizeNumeric(properties.latency_ms, 0)),
+    cost_usd: Math.max(0, normalizeNumeric(properties.cost_usd, 0)),
+    token_usage: redactSensitive(properties.token_usage || {}),
+  };
+
+  capture('agent_run_provider_attempt', event);
+  return redactSensitive(event);
+}
+
+function getMissingRunCloseFields(properties = {}) {
+  const missing = [];
+
+  if (!String(properties.model || '').trim()) {
+    missing.push('model');
+  }
+
+  if (!String(properties.prompt_version || '').trim()) {
+    missing.push('prompt_version');
+  }
+
+  if (!Array.isArray(properties.tool_events) || properties.tool_events.length === 0) {
+    missing.push('tool_events');
+  }
+
+  if (!Number.isFinite(Number(properties.latency_ms))) {
+    missing.push('latency_ms');
+  }
+
+  if (!Number.isFinite(Number(properties.cost_usd))) {
+    missing.push('cost_usd');
+  }
+
+  if (!String(properties.outcome || '').trim()) {
+    missing.push('outcome');
+  }
+
+  return missing;
+}
+
+function captureRunClose(properties = {}) {
+  const missing = getMissingRunCloseFields(properties);
+  if (missing.length > 0) {
+    capture('agent_run_close_incomplete', {
+      run_id: properties.run_id || null,
+      tenant_id: properties.tenant_id || null,
+      project_slug: properties.project_slug || null,
+      missing_fields: missing,
+      outcome: properties.outcome || null,
+    });
+    throw new Error(`RUN_CLOSE_INCOMPLETE:${missing.join(',')}`);
+  }
+
+  const event = {
+    run_id: properties.run_id || null,
+    tenant_id: properties.tenant_id || null,
+    project_slug: properties.project_slug || null,
+    model: String(properties.model).trim(),
+    prompt_version: String(properties.prompt_version).trim(),
+    tool_events: redactSensitive(properties.tool_events),
+    latency_ms: Math.max(0, normalizeNumeric(properties.latency_ms, 0)),
+    cost_usd: Math.max(0, normalizeNumeric(properties.cost_usd, 0)),
+    outcome: String(properties.outcome).trim(),
+    error_count: Math.max(0, Math.trunc(normalizeNumeric(properties.error_count, 0))),
+  };
+
+  capture('agent_run_close_completed', event);
+  return redactSensitive(event);
+}
+
 async function shutdown() {
   if (client) {
     await client.shutdown();
@@ -105,7 +192,10 @@ async function shutdown() {
 module.exports = {
   capture,
   captureExecutionCheckpoint,
+  captureProviderAttempt,
+  captureRunClose,
   captureRolloutEndpointEvent,
+  getMissingRunCloseFields,
   getTelemetryPreference,
   ROLLOUT_ENDPOINT_SLOS,
   shutdown,
