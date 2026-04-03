@@ -477,14 +477,75 @@ function requireHostedSupabaseAuth({ req, runtimeContext, operation, requiredPro
     };
   }
 
+  // =========================================================================
+  // TENANT CONTEXT RESOLUTION (Task 51-02-01)
+  // =========================================================================
+  // Resolve tenant_id from trusted JWT claims and detect ambiguous context
+  
+  // Extract tenant_id from multiple possible sources (in priority order)
+  const tenantIdFromPayload = String(payload.active_tenant_id || payload.tenant_id || '').trim();
+  const tenantIdFromHeader = String(readHeader(req, 'x-tenant-id') || '').trim();
+  const tenantIdFromQuery = (() => {
+    try {
+      const parsed = new URL(`http://localhost${req.url || '/'}`);
+      return String(parsed.searchParams.get('tenant_id') || '').trim();
+    } catch {
+      return '';
+    }
+  })();
+
+  // Detect tenant context: canonical tenant_id is from JWT claims
+  const canonicalTenantId = tenantIdFromPayload;
+  
+  // Validate: fail closed if tenant is missing or ambiguous
+  if (!canonicalTenantId) {
+    return {
+      ok: false,
+      status: 401,
+      error: 'TENANT_CONTEXT_MISSING',
+      message: 'Request requires active_tenant_id in verified JWT token.',
+      operation,
+      tenant_id: null,
+    };
+  }
+
+  // Validate: fail closed if different tenant sources conflict
+  const conflictingTenant = (tenantIdFromHeader && tenantIdFromHeader !== canonicalTenantId) ||
+                            (tenantIdFromQuery && tenantIdFromQuery !== canonicalTenantId);
+  if (conflictingTenant) {
+    return {
+      ok: false,
+      status: 403,
+      error: 'TENANT_CONTEXT_AMBIGUOUS',
+      message: 'Tenant context from headers/query conflicts with verified token claims.',
+      operation,
+      tenant_id: canonicalTenantId,
+      expected: canonicalTenantId,
+      conflict_sources: {
+        header: tenantIdFromHeader || null,
+        query: tenantIdFromQuery || null,
+        token: canonicalTenantId,
+      },
+    };
+  }
+
+  // Extract tenant memberships and role from payload metadata
+  // This is a placeholder for future tenant membership resolution
+  const tenantMemberships = payload.app_metadata?.tenant_memberships || [];
+  const tenantRole = payload.app_metadata?.tenant_role || 'member';
+
   return {
     ok: true,
     status: 200,
     operation,
     token_payload: payload,
+    tenant_id: canonicalTenantId,
     principal: {
       type: serviceRole ? 'supabase_service_role' : 'supabase_user',
       id: payload.sub,
+      tenant_id: canonicalTenantId,
+      tenant_role: tenantRole,
+      tenant_memberships: tenantMemberships,
       scopes,
     },
   };
