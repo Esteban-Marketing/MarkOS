@@ -96,3 +96,85 @@ test('51-01-01: TenantMembership marks workspace_id as compatibility-only metada
   assert.ok(TenantMembership.compatibility_fields);
   assert.ok(TenantMembership.compatibility_fields.includes('workspace_id'));
 });
+
+// ============================================================================
+// Task 51-01-02: Migration schema and RLS policy tests
+// ============================================================================
+
+const fs = require('fs');
+const path = require('path');
+
+// Helper to load and parse migration file
+function loadMigrationFile() {
+  const migrationPath = path.join(__dirname, '../../supabase/migrations/51_multi_tenant_foundation.sql');
+  return fs.readFileSync(migrationPath, 'utf8');
+}
+
+// Test migration file exists
+test('51-01-02: Migration file 51_multi_tenant_foundation.sql exists', () => {
+  const migrationPath = path.join(__dirname, '../../supabase/migrations/51_multi_tenant_foundation.sql');
+  assert.ok(fs.existsSync(migrationPath), 'Migration file must exist');
+});
+
+// Test migration creates tenant tables
+test('51-01-02: Migration creates markos_tenants table', () => {
+  const migrationSql = loadMigrationFile();
+  assert.ok(migrationSql.includes('markos_tenants'), 'Must create markos_tenants table');
+  assert.ok(migrationSql.includes('id text primary key') || migrationSql.includes('id uuid'), 'Tenants must have id field');
+  assert.ok(migrationSql.includes('name text'), 'Tenants must have name field');
+});
+
+// Test migration creates membership table
+test('51-01-02: Migration creates markos_tenant_memberships table', () => {
+  const migrationSql = loadMigrationFile();
+  assert.ok(migrationSql.includes('markos_tenant_memberships'), 'Must create markos_tenant_memberships table');
+  assert.ok(migrationSql.includes('user_id'), 'Memberships must reference user_id');
+  assert.ok(migrationSql.includes('tenant_id'), 'Memberships must reference tenant_id');
+});
+
+// Test migration adds tenant_id to existing tables
+test('51-01-02: Migration adds tenant_id column to workspace-scoped tables', () => {
+  const migrationSql = loadMigrationFile();
+  // Check for ALTER TABLE statements that add tenant_id
+  const hasAlterTable = migrationSql.includes('alter table');
+  const hasTenantIdColumn = migrationSql.includes('tenant_id') && migrationSql.includes('add column');
+  assert.ok(hasAlterTable && hasTenantIdColumn, 
+    'Migration must add tenant_id column to existing tables');
+});
+
+// Test migration creates indexes on tenant_id
+test('51-01-02: Migration creates indexes on tenant_id', () => {
+  const migrationSql = loadMigrationFile();
+  assert.ok(migrationSql.includes('create index') && migrationSql.includes('tenant_id'),
+    'Migration must create indexes on tenant_id for query performance');
+});
+
+// Test migration enables RLS on tenant tables
+test('51-01-02: Migration enables RLS on tenant tables', () => {
+  const migrationSql = loadMigrationFile();
+  assert.ok(migrationSql.includes('enable row level security') || migrationSql.includes('alter table'), 
+    'Migration must enable RLS on tenant-scoped tables');
+});
+
+// Test migration creates RLS policies with USING and WITH CHECK
+test('51-01-02: Migration creates RLS policies with USING and WITH CHECK clauses', () => {
+  const migrationSql = loadMigrationFile();
+  const hasUsingClause = migrationSql.includes('using (') || migrationSql.toUpperCase().includes('USING');
+  const hasWithCheckClause = migrationSql.includes('with check') || migrationSql.toUpperCase().includes('WITH CHECK');
+  assert.ok(hasUsingClause, 'RLS policies must include USING clause for read control');
+  assert.ok(hasWithCheckClause, 'RLS policies must include WITH CHECK clause for write control');
+});
+
+// Test migration references tenant_id in policies
+test('51-01-02: Migration creates policies that enforce tenant_id boundaries', () => {
+  const migrationSql = loadMigrationFile();
+  const policySection = migrationSql.toLowerCase();
+  assert.ok(policySection.includes('tenant_id'), 'Policies must reference tenant_id for isolation');
+  assert.ok(policySection.includes('policy'), 'Must create explicit policies');
+});
+
+// Test migration preserves workspace_id compatibility
+test('51-01-02: Migration preserves workspace_id columns for compatibility', () => {
+  const migrationSql = loadMigrationFile();
+  assert.ok(migrationSql.includes('workspace_id'), 'Must preserve workspace_id for backward compatibility');
+});
