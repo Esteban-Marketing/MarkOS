@@ -46,6 +46,14 @@ const vectorStore = require('../vector-store-client.cjs');
 const telemetry  = require('./telemetry.cjs');
 const llm        = require('./llm-adapter.cjs');
 const disciplineRouter = require('./discipline-router.cjs');
+const runtimeContext = require('../runtime-context.cjs');
+const {
+  createRunEnvelope,
+  assertTransitionAllowed,
+  createInMemoryEventStore,
+  createInMemorySideEffectLedger,
+  recordSideEffect,
+} = require('./run-engine.cjs');
 const fs         = require('fs');
 const path       = require('path');
 const crypto     = require('crypto');
@@ -62,6 +70,10 @@ const PARENT_KEYWORDS = {
   pipeline_velocity: ['stalled leads', 'pipeline', 'follow-up', 'nurture', 'mid funnel', 'velocity'],
   content_engagement: ['engagement', 'shares', 'comments', 'reach', 'awareness'],
 };
+
+const runRegistry = new Map();
+const runEventStore = createInMemoryEventStore();
+const sideEffectLedger = createInMemorySideEffectLedger();
 
 function getMaxContextChunks() {
   try {
@@ -211,15 +223,116 @@ function resolveExecutionContext(slug, executionContext) {
         correlation_id: null,
       };
 
-  if (!context || !context.tenant_id) {
+  const principal = context.principal && typeof context.principal === 'object' ? context.principal : null;
+  const actorId = context.actor_id || (principal && principal.id) || null;
+  const correlationId = context.correlation_id || context.request_id || null;
+  const policyMetadata = runtimeContext.buildRunPolicyMetadata(context);
+
+  const normalized = {
+    ...context,
+    actor_id: actorId,
+    correlation_id: correlationId,
+    provider_policy: context.provider_policy || policyMetadata.provider_policy,
+    tool_policy: context.tool_policy || policyMetadata.tool_policy,
+    request_id: context.request_id || correlationId || `legacy-${Date.now()}`,
+  };
+
+  if (!normalized || !normalized.tenant_id) {
     throw new Error('executionContext missing tenant_id; tenant context is required for orchestrator execution.');
   }
+  if (!normalized.actor_id) {
+    throw new Error('executionContext missing actor_id; tenant-scoped principal is required for orchestrator execution.');
+  }
+  if (!normalized.correlation_id) {
+    throw new Error('executionContext missing correlation_id; deterministic run tracking requires a correlation id.');
+  }
+  if (!normalized.provider_policy || !normalized.tool_policy) {
+    throw new Error('executionContext missing provider_policy/tool_policy metadata; policy-routed execution is required.');
+  }
 
-  return context;
+  return normalized;
+}
+
+function transitionRunState(run, toState, reason) {
+  const result = assertTransitionAllowed({
+    run_id: run.run_id,
+    tenant_id: run.tenant_id,
+    from_state: run.state,
+    to_state: toState,
+    actor_id: run.actor_id,
+    correlation_id: run.correlation_id,
+    reason,
+    eventStore: runEventStore,
+  });
+
+  if (!result.allowed) {
+    throw new Error(`AGENT_RUN_INVALID_TRANSITION:${run.state}->${toState}`);
+  }
+
+  run.state = toState;
+  run.updated_at = new Date().toISOString();
+  if (toState === 'completed' || toState === 'failed' || toState === 'archived') {
+    run.closed_at = run.updated_at;
+  }
+
+  return result;
+}
+
+function bootstrapRunLifecycle(slug, resolvedExecutionContext) {
+  const envelope = createRunEnvelope({
+    tenant_id: resolvedExecutionContext.tenant_id,
+    actor_id: resolvedExecutionContext.actor_id,
+    correlation_id: resolvedExecutionContext.correlation_id,
+    provider_policy: resolvedExecutionContext.provider_policy,
+    tool_policy: resolvedExecutionContext.tool_policy,
+    idempotency_key: resolvedExecutionContext.idempotency_key || resolvedExecutionContext.request_id,
+    project_slug: slug,
+    prompt_version: resolvedExecutionContext.prompt_version || 'legacy',
+    registry: runRegistry,
+  });
+
+  if (envelope.created) {
+    transitionRunState(envelope.run, 'accepted', 'orchestrator_bootstrap');
+    transitionRunState(envelope.run, 'context_loaded', 'orchestrator_context_loaded');
+    transitionRunState(envelope.run, 'executing', 'orchestrator_execution_started');
+  }
+
+  return envelope;
+}
+
+function recordOrchestratorSideEffect(runEnvelope, section, content) {
+  const effectHash = crypto
+    .createHash('sha256')
+    .update(`${section}:${String(content || '')}`, 'utf8')
+    .digest('hex');
+
+  return recordSideEffect({
+    ledger: sideEffectLedger,
+    run_id: runEnvelope.run_id,
+    tenant_id: runEnvelope.tenant_id,
+    step_key: `store_draft:${section}`,
+    effect_hash: effectHash,
+    effect_type: 'draft_store',
+    payload: {
+      section,
+      content_length: Buffer.byteLength(String(content || ''), 'utf8'),
+    },
+  });
 }
 
 async function orchestrate(seed, slug, executionContext) {
   const resolvedExecutionContext = resolveExecutionContext(slug, executionContext);
+  const lifecycle = bootstrapRunLifecycle(slug, resolvedExecutionContext);
+  const runEnvelope = lifecycle.run;
+
+  if (!lifecycle.created && runEnvelope.cached_outcome) {
+    return {
+      ...runEnvelope.cached_outcome,
+      run: runEnvelope,
+      idempotent_replay: true,
+    };
+  }
+
   console.log(`[orchestrator] Starting draft generation for: ${slug}`);
 
   const errors = [];
@@ -373,6 +486,11 @@ async function orchestrate(seed, slug, executionContext) {
   // ── 5. Store drafts in vector memory ──────────────────────────────────────
   for (const [section, content] of Object.entries(drafts)) {
     try {
+      const effect = recordOrchestratorSideEffect(runEnvelope, section, content);
+      if (!effect.applied) {
+        continue;
+      }
+
       const storeResult = await vectorStore.storeDraft(slug, section, content);
       if (storeResult && storeResult.ok === false) {
         warnOnce(`vector-store-${section}`, `[orchestrator] Failed to store ${section}: ${storeResult.error || 'Unknown vector persistence error'}`);
@@ -384,8 +502,43 @@ async function orchestrate(seed, slug, executionContext) {
     }
   }
 
+  transitionRunState(runEnvelope, 'completed', 'orchestrator_execution_complete');
+
   console.log(`[orchestrator] Done. Errors: ${errors.length}`);
-  return { drafts, vectorStoreResults, errors };
+  const outcome = {
+    drafts,
+    vectorStoreResults,
+    errors,
+    run: runEnvelope,
+    idempotent_replay: !lifecycle.created,
+  };
+
+  runEnvelope.cached_outcome = {
+    drafts,
+    vectorStoreResults,
+    errors,
+  };
+
+  return outcome;
 }
 
-module.exports = { orchestrate };
+module.exports = {
+  orchestrate,
+  resolveExecutionContext,
+  __testing: {
+    bootstrapRunLifecycle,
+    recordOrchestratorSideEffect,
+    getRunEngineState() {
+      return {
+        runRegistry,
+        runEventStore,
+        sideEffectLedger,
+      };
+    },
+    resetRunEngineState() {
+      runRegistry.clear();
+      runEventStore.clear();
+      sideEffectLedger.clear();
+    },
+  },
+};

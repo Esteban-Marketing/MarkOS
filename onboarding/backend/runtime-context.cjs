@@ -654,6 +654,28 @@ function resolveTenantFromDomain(hostname, domainMap) {
   return domainMap.get(normalised) || domainMap.get(hostname) || null;
 }
 
+function buildRunPolicyMetadata(input = {}, env = process.env) {
+  const providerPolicy = input.provider_policy && typeof input.provider_policy === 'object'
+    ? input.provider_policy
+    : {
+        primary_provider: String(env.MARKOS_PRIMARY_PROVIDER || 'openai').trim() || 'openai',
+        allow_fallback: String(env.MARKOS_ALLOW_FALLBACK || 'true').toLowerCase() !== 'false',
+        max_fallback_attempts: Number.parseInt(env.MARKOS_MAX_FALLBACK_ATTEMPTS || '3', 10) || 3,
+      };
+
+  const toolPolicy = input.tool_policy && typeof input.tool_policy === 'object'
+    ? input.tool_policy
+    : {
+        profile: String(input.tool_profile || env.MARKOS_TOOL_POLICY_PROFILE || 'default'),
+        allow_external_mutations: String(env.MARKOS_ALLOW_EXTERNAL_MUTATIONS || 'false').toLowerCase() === 'true',
+      };
+
+  return {
+    provider_policy: providerPolicy,
+    tool_policy: toolPolicy,
+  };
+}
+
 module.exports = {
   ROLLOUT_MODES,
   REQUIRED_SECRET_MATRIX,
@@ -684,6 +706,7 @@ module.exports = {
   resolveProjectSlug,
   resolveRequestedProjectSlug,
   resolveSeedOutputPath,
+  buildRunPolicyMetadata,
 };
 
 // named export appended after object literal to avoid disturbing existing ordering

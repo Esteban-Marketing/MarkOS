@@ -54,6 +54,9 @@ function createInMemoryEventStore(seed = []) {
     listEvents() {
       return [...events];
     },
+    clear() {
+      events.length = 0;
+    },
   };
 }
 
@@ -75,8 +78,14 @@ function createInMemorySideEffectLedger(seed = []) {
     has(key) {
       return entries.has(key);
     },
+    delete(key) {
+      return entries.delete(key);
+    },
     listEffects() {
       return Array.from(entries.values());
+    },
+    clear() {
+      entries.clear();
     },
   };
 }
