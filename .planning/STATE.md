@@ -1,14 +1,30 @@
+---
+gsd_state_version: 1.0
+milestone: v2.4
+milestone_name: Beta Client Onboarding
+status: executing
+last_updated: "2026-04-03T17:51:30.814Z"
+progress:
+  total_phases: 22
+  completed_phases: 11
+  total_plans: 51
+  completed_plans: 39
+---
+
 - 2026-04-03: Phase 47 completed with multi-provider BYOK abstraction, legacy wrapper bridge integration, dual-path/e2e verification, and operator/architecture documentation closure.
 - 2026-04-03: v3.2.0 milestone initiated with Digital Agency expansion as first plugin; Phase 51 planned with 10 locked decisions (multi-tenant foundation and authorization).
 - 2026-04-03: Phase 51 fully executed with 4 atomic plans (51-01 tenant schema + RLS, 51-02 wrapper auth + UI propagation, 51-04 background jobs + orchestrator, 51-03 IAM v3.2 enforcement); 119/119 tests passing across all suites.
 - 2026-04-03: Phase 51 verification re-run completed with PASS status (107/107 tests = 100.0%); task 51-04-02 executionContext propagation gap resolved in handlers/orchestrator/migrate flow.
 - 2026-04-03: Phase 52 research completed with HIGH confidence findings on plugin architecture, Digital Agency MVP, tenant-plugin enablement, and telemetry schema.
 - 2026-04-03: Phase 52 discuss-phase completed with 7 design decisions locked (D-01 through D-07) and context artifact created at `.planning/phases/52-plugin-runtime-and-digital-agency-plugin-v1/52-CONTEXT.md`.
+
 gsd_state_version: 1.0
 milestone: v3.2.0
 milestone_name: Post-Unification Execution & Adoption
-status: planning
-last_updated: "2026-04-03T05:10:00.000Z"
+status: Executing Phase 52
+status: Phase 52 complete
+last_updated: "2026-04-03T09:00:00.000Z"
+- 2026-04-03: Phase 52 fully executed with 4 atomic plans (52-01 plugin contracts/registry/loader, 52-02 Digital Agency plugin routes/migration, 52-03 plugin settings API/brand-context/domain routing/UI, 52-04 plugin telemetry + brand-version audit trail); 73/73 tests passing, Nyquist-compliant.
 progress:
   total_phases: 48
   completed_phases: 48
