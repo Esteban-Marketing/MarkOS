@@ -13,15 +13,28 @@
 - ✅ **v2.5 Enhancement & Optimization Process** — Phase 35 completed (2026-04-01) → **ARCHIVED**
 - 🟢 **v2.6 Post-Deployment Operations & Beta Activation** — Active milestone; Phase 38 shipped (2026-04-01)
 - � **v3.0 MarkOS Literacy System** — Phases 39-44 in execution; Phases 43-44 completed (roadmap at `.planning/milestones/v3.0-LITERACY-SYSTEM-ROADMAP.md`)
+- ✅ **v3.1.0 Operator Surface Unification** — Phases 45-50 completed (2026-04-03) → **ARCHIVED** (`.planning/milestones/v3.1.0-phases/`)
+- 🟢 **v3.2.0 Post-Unification Execution & Adoption** — Active milestone; planning in progress
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
-- 31-01: Tiered endpoint SLO telemetry for `/submit`, `/approve`, `/linear/sync`, `/campaign/result`
-- 31-02: Migration promotion controls (`dry-run -> dual-write -> cloud-primary`) with checkpoint records
-- 31-03: Secret enforcement, centralized redaction, and fixed retention bounds (14/30/90 days)
-- 31-04: Operator-driven compatibility retirement policy with optional evidence references
+### Phase 31: Rollout Hardening (P2)
+**Goal:** Gate agency-wide rollout with reliability SLOs, migration safety controls, security/compliance guardrails, and explicit compatibility deprecation criteria.
+**Requirements Mapped:** RLH-01, RLH-02, RLH-03, RLH-04
+**Depends on:** Phase 30
+**Status:** Complete (2026-03-28)
+**Artifacts:** .planning/phases/31-rollout-hardening/31-CONTEXT.md, .planning/phases/31-rollout-hardening/31-REQUIREMENTS.md, .planning/phases/31-rollout-hardening/31-RESEARCH.md, .planning/phases/31-rollout-hardening/31-VERIFICATION.md, .planning/phases/31-rollout-hardening/31-UAT.md
+**Plans:** 4 plans
+Plans:
+- [x] 31-01: Tiered endpoint SLO telemetry and docs parity
+- [x] 31-02: Migration promotion controls and rollback checkpoints
+- [x] 31-03: Secret validation, redaction, and retention enforcement
+- [x] 31-04: Operator-driven compatibility retirement policy
 
-Compatibility retirement in Phase 31 is a manual operator decision recorded in `.planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json`. Recommended evidence remains listed, but there is no hard minimum evidence threshold before retirement.
+**Compatibility Retirement Policy (Operational):**
+1. Compatibility retirement remains a manual operator decision recorded in .planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json.
+2. Protocol tests, hosted auth boundaries, migration determinism, and downstream cloud-readiness remain recommended evidence inputs, but no hard minimum evidence count is required before retirement.
+3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 ## Phase 32: Marketing Literacy Base
 
@@ -30,11 +43,6 @@ Compatibility retirement in Phase 31 is a manual operator decision recorded in `
 **Depends on:** Phase 31
 **Status:** ✅ Complete (2026-03-31)
 **Artifacts:** `.planning/phases/32-marketing-literacy-base/32-RESEARCH.md`, `.planning/phases/32-marketing-literacy-base/32-LITERACY-SUPABASE.sql`, `.planning/phases/32-marketing-literacy-base/32-OPERATIONS.md`, `.planning/phases/32-marketing-literacy-base/32-VERIFICATION.md`
-
-- 32-01: Literacy storage contract and standards namespace primitives
-- 32-02: Ingestion and admin CLI tooling for literacy chunks
-- 32-03: Runtime/admin wiring for literacy retrieval and operations
-- 32-04: Documentation, runbook, and verification coverage for literacy primitives
 
 Phase 32 delivered the shared standards-layer infrastructure that lets MarkOS retrieve grounded marketing tactics alongside client-specific MIR context.
 
@@ -46,14 +54,7 @@ Phase 32 delivered the shared standards-layer infrastructure that lets MarkOS re
 **Status:** ✅ Complete (2026-03-31)
 **Artifacts:** `.planning/phases/33-codebase-documentation-mapping/33-RESEARCH.md`, `.planning/phases/33-codebase-documentation-mapping/33-REQUIREMENTS.md`, `.planning/phases/33-codebase-documentation-mapping/33-VERIFICATION.md`, `.planning/codebase/`
 
-- 33-01: Bootstrap canonical `.planning/codebase/` mapping docs, coverage matrix, and freshness contract
-- 33-02: Document runtime surfaces route by route across onboarding HTTP endpoints, API wrappers, and CLI entrypoints
-- 33-03: Document the repository folder by folder and file by file, with ownership, purpose, and integration links
-- 33-04: Sync protocol-facing docs (`.protocol-lore/CODEBASE-MAP.md`, `TECH-MAP.md`, `README.md`) to the canonical GSD map and add verification guardrails
-
 Phase 33 completed the documentation follow-on for making the repository navigable through the GSD framework. The canonical output target is `.planning/codebase/`, with protocol and human-facing docs linking back to that map rather than duplicating its source of truth.
-
----
 
 ## v2.4 Beta Client Onboarding
 
@@ -112,15 +113,15 @@ Phase 35 completed the installer/readiness hardening needed to make `npx markos`
 **Goal:** Author and ingest the foundational marketing literacy corpus organized by pain-point taxonomy, covering all five MSP disciplines with business-model-aware metadata so the two-layer retrieval system has real content to serve.
 **Requirements Mapped:** LIT-01 (corpus coverage), LIT-02 (pain-point taxonomy), LIT-03 (business-model annotations)
 **Depends on:** Phase 32 literacy infrastructure (vector store client, ingestion CLI, chunker, Supabase table)
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-03)
 **Milestone:** v3.0 MarkOS Literacy System
 
 **Plans:** 3 plans
 
 Plans:
-- [ ] 39-01-PLAN.md — Wave 1 infrastructure: test scaffolding, taxonomy.json, Supabase migration, ingest-literacy.cjs + vector-store-client.cjs pain_point_tags extension
-- [ ] 39-02-PLAN.md — Wave 2 corpus authoring: 15 production-complete documents across Paid_Media, Content_SEO, Lifecycle_Email, Social, Landing_Pages
-- [ ] 39-03-PLAN.md — Wave 3 ingestion + verification: apply migration, live ingest all 15 docs, round-trip retrieval verification
+- [x] 39-01-PLAN.md — Wave 1 infrastructure: test scaffolding, taxonomy.json, Supabase migration, ingest-literacy.cjs + vector-store-client.cjs pain_point_tags extension
+- [x] 39-02-PLAN.md — Wave 2 corpus authoring: 15 production-complete documents across Paid_Media, Content_SEO, Lifecycle_Email, Social, Landing_Pages
+- [x] 39-03-PLAN.md — Wave 3 ingestion + verification: apply migration, live ingest all 15 docs, round-trip retrieval verification
 
 ## Phase 40: Multi-Discipline Orchestrator Retrieval
 
@@ -208,152 +209,76 @@ Plans:
 
 ---
 
-## 🟢 v3.1.0 — Operator Surface Unification
+<details>
+<summary>v3.1.0 — Operator Surface Unification (Completed 2026-04-03)</summary>
 
-> **6 phases (45–50) · ~35 plans · In planning phase · Roadmap locked 2026-04-02**
+> **6 phases (45–50) · 48/48 roadmap phases complete and verified at closeout**
 >
 > **Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.
 >
-> **Scope:** Integrated task UI flow (non-technical operators), complete API coverage (all MarkOS flows), platform hardening (upgrade safety, RBAC, diagnostics), guided operator onboarding, and measured KPI improvement (v3.0 baseline → v3.1.0 target).
->
-> **Status:** Requirements definition complete. Ready for Phase 45 planning and kickoff.
->
-> **Roadmap:** [`.planning/ROADMAP.md#v310---operator-surface-unification`](.planning/ROADMAP.md)
+> **Closeout Artifacts:** `.planning/milestones/v3.1-NORMALIZATION-REPORT.md`, `.planning/milestones/v3.1.0-REPORT.md`, `.planning/milestones/v3.1.0-phases/`
 
 ### Phase 45: Operations Flow Inventory & Canonical Contract Map
-
-**Goal:** Audit all production MarkOS flows, create canonical flow registry, and establish API contract mapping foundation.
-**Requirements Mapped:** API-01, partial API-02
-**Depends on:** Nothing (first phase of v3.1.0)
-**Status:** 📋 Planned (ready for launch)
-**Success Criteria:**
-  1. Operator can browse canonical flow inventory UI mockup showing ≥10 active flows with descriptions
-  2. All production flows are mapped to ≥1 contract; FLOW-VERIFICATION.md shows 100% coverage
-  3. Contract schema `contracts/schema.json` validates all existing flow contracts
-  4. FLOW-VERIFICATION.md is reviewed and approved (zero open checklist items)
-  5. Baseline T0 KPI metrics captured and stored for Phase 50 comparison
-**Plans:** 5 plans
-
+**Status:** ✅ Complete (2026-04-03)
 Plans:
-- [ ] 45-01-PLAN.md — Read-only flow extraction CLI + locked taxonomy classification
-- [ ] 45-02-PLAN.md — Canonical FLOW-INVENTORY and operator-browsable mockup contract
-- [ ] 45-03-PLAN.md — contracts/schema.json + subset validator + first-batch stubs (F-01..F-08)
-- [ ] 45-06-PLAN.md — second-batch contract stubs (F-09..F-17) + FLOW-CONTRACTS closure
-- [ ] 45-04-PLAN.md — Automated flow coverage tests + FLOW-VERIFICATION reviewer gate
-- [ ] 45-05-PLAN.md — T0 KPI baseline capture + freeze sign-off metadata
-
----
+- [x] 45-01-PLAN.md
+- [x] 45-02-PLAN.md
+- [x] 45-03-PLAN.md
+- [x] 45-04-PLAN.md
+- [x] 45-05-PLAN.md
+- [x] 45-06-PLAN.md
 
 ### Phase 46: Operator Task Graph UI (MVP)
-
-**Goal:** Ship functional task graph UI with step-by-step execution, approval checkpoints, and evidence panel.
-**Requirements Mapped:** OPS-01, OPS-02, OPS-03, OPS-04, OPS-05
-**Depends on:** Phase 45 (flow inventory and contract mapping)
-**Status:** 📋 Planned
-**Success Criteria:**
-  1. Task graph UI renders without error for all 5 task states; Storybook stories live and accessible
-  2. Step state transitions (start → in-progress → complete) are atomic and logged with timestamps
-  3. Approval checkpoint blocks task execution until human approves or rejects
-  4. Failed task steps can be retried with input preview/edit; retry attempts logged separately
-  5. Evidence panel displays for ≥95% of executed steps; evidence is immutable post-execution
-**Plans:** 8 plans
-
+**Status:** ✅ Complete (2026-04-03)
 Plans:
-- [ ] 46-01-PLAN.md — operations route shell + nav/RBAC wiring (owner/operator only)
-- [ ] 46-02-PLAN.md — task types, typed fixtures, reducer, and in-memory store architecture
-- [ ] 46-03-PLAN.md — linear task graph + sequential step runner UI composition
-- [ ] 46-04-PLAN.md — blocking approval gate + failed-step retry flow with attempt logs
-- [ ] 46-05-PLAN.md — evidence drawer + UI immutability contract wiring
-- [ ] 46-06-PLAN.md — telemetry integration for executed/approved/rejected/retried events
-- [ ] 46-07-PLAN.md — Storybook five-state coverage for operations tasks
-- [ ] 46-08-PLAN.md — node:test coverage + phase verification artifact
+- [x] 46-01-PLAN.md
+- [x] 46-02-PLAN.md
+- [x] 46-03-PLAN.md
+- [x] 46-04-PLAN.md
+- [x] 46-05-PLAN.md
+- [x] 46-06-PLAN.md
+- [x] 46-07-PLAN.md
+- [x] 46-08-PLAN.md
 
----
-
-### Phase 47: OpenAPI Generation Pipeline & Versioning Policy
-
-**Goal:** Auto-generate authoritative OpenAPI spec from contract files; lock versioning policy.
-**Requirements Mapped:** API-02 (complete), API-03, CONTRACT-01
-**Depends on:** Phase 45 (contracts exist) and Phase 46 (UI context for API design)
-**Status:** 📋 Planned
-**Success Criteria:**
-  1. OpenAPI spec (`api/openapi.yaml`) is valid against OpenAPI 3.0 schema; CI validation passes
-  2. 100% of contract endpoints documented in OpenAPI spec; endpoint count matches contract count
-  3. API versioning policy documented in `.planning/codebase/API-VERSIONING-POLICY.md` and reviewed
-  4. All per-flow contracts follow canonical schema from Phase 45; validation passes
-  5. CI enforces spec ↔ implementation parity: `npm run generate-openapi` passes before each commit
-**Plans:** 5 plans
-
+### Phase 47: Multi-Provider LLM BYOK Abstraction Layer
+**Status:** ✅ Complete (2026-04-03)
 Plans:
-- [ ] 45-01-PLAN.md — Read-only flow extraction CLI + locked taxonomy classification
-- [ ] 45-02-PLAN.md — Canonical FLOW-INVENTORY and operator-browsable mockup contract
-- [ ] 45-03-PLAN.md — contracts/schema.json + 17 contract stubs + FLOW-CONTRACTS mapping
-- [ ] 45-04-PLAN.md — Automated flow coverage tests + FLOW-VERIFICATION reviewer gate
-- [ ] 45-05-PLAN.md — T0 KPI baseline capture + freeze sign-off metadata
-
----
+- [x] 47-01-PLAN.md
+- [x] 47-02-PLAN.md
+- [x] 47-03-PLAN.md
+- [x] 47-04-PLAN.md
+- [x] 47-05-PLAN.md
+- [x] 47-06-PLAN.md
+- [x] 47-07-PLAN.md
+- [x] 47-08-PLAN.md
+- [x] 47-09-PLAN.md
+- [x] 47-10-PLAN.md
 
 ### Phase 48: Contract Testing Framework & CI Compatibility Gates
-
-**Goal:** Ship contract test suite enforcing backward compatibility; prevent unapproved breaking changes in CI.
-**Requirements Mapped:** API-04, CONTRACT-02
-**Depends on:** Phase 47 (contracts and versioning policy stable)
-**Status:** 📋 Planned
-**Success Criteria:**
-  1. Contract test suite is a required CI gate: no merge without passing contract-tests
-  2. ≥1 test per contract covering happy path and ≥2 error scenarios
-  3. Version compatibility test (v1 client requests) successfully calls v2 endpoints
-  4. CI reports breaking changes clearly and blocks unapproved changes
-  5. Contract fixtures cover ≥90% of endpoint parameter variations
-**Plans:** 5–6 plans
-
----
+**Status:** ✅ Complete (2026-04-03)
 
 ### Phase 49: Hardening Layer (RBAC, Diagnostics, Preflight Checks, Rollback Safety)
-
-**Goal:** Harden operations surface with role-based access control, health diagnostics, migration safety, and rollback mechanisms.
-**Requirements Mapped:** OPS-06, RBAC-01, RBAC-02, HARD-01, HARD-02, HARD-03
-**Depends on:** Phase 46 (UI exists) and Phase 48 (APIs tested and stable)
-**Status:** 📋 Planned
-**Success Criteria:**
-  1. 100% of protected operations routes guarded by RBAC middleware; unauthorized role attempts return 403
-  2. Operator can view assigned role and full permission list in settings page
-  3. Preflight check executes before migration; blocks if unsafe; shows clear reason and remediation
-  4. Rollback endpoint (POST `/api/rollback/{tx_id}`) restores pre-operation state; idempotent
-  5. Health dashboard displays component status; updates ≥1x per 30s; alerts on degradation
-**Plans:** 7–8 plans
-
----
+**Status:** ✅ Complete (2026-04-03)
 
 ### Phase 50: Guided Operator Onboarding + End-to-End Activation Verification
+**Status:** ✅ Complete (2026-04-03)
 
-**Goal:** Ship operator onboarding path and measure v3.1.0 activation KPI improvement (T0 → T1).
-**Requirements Mapped:** ONBOARD-01, ONBOARD-02
-**Depends on:** Phase 46 (UI exists) and Phase 49 (RBAC and health stable)
-**Status:** 📋 Planned
-**Success Criteria:**
-  1. Operator onboarding wizard completes error-free; operator assigned role and first task queued
-  2. New operator can execute first task without manual engineering support
-  3. E2E test passes consistently in CI
-  4. T1 metrics show ≥70% improvement vs T0 baseline (time ≤5 min, evidence ≥95%, self-service ≥85%)
-  5. All flows from FLOW-INVENTORY accessible from operator UI task selector; 100% coverage
-**Plans:** 5–6 plans
+### v3.1.0 Milestone Acceptance Criteria
+1. All v3.1 requirements mapped to phases and phases closed
+2. Roadmap parser status at closeout: complete and verified with zero incomplete plans
+3. Archive, reporting, and state transition artifacts recorded
+
+</details>
 
 ---
 
-### v3.1.0 Milestone Acceptance Criteria
+## 🟢 v3.2.0 — Post-Unification Execution & Adoption
 
-**Milestone complete when ALL of the following are TRUE:**
-
-1. All 19 requirements mapped to phases and all phases complete
-2. Flow contract coverage: 100% of active flows documented and mapped
-3. OpenAPI coverage: 100% of contract endpoints documented and valid
-4. Contract tests required CI gate: zero unapproved breaking changes allowed
-5. Task evidence completeness: ≥95% of executed steps contain evidence
-6. RBAC enforcement: 100% of protected routes guarded; unauthorized attempts blocked
-7. Hardening & safety: Preflight checks, rollback endpoint, health dashboard operational
-8. Operator activation: T1 metrics show ≥70% improvement vs T0 baseline
-9. All Phase 45–50 plans complete (100% CI green)
+> **Status:** Planning
+>
+> **Goal:** Convert v3.1 platform surfaces into repeatable operator adoption, measurable execution throughput, and sustained KPI improvements.
+>
+> **Next Step:** Define phase breakdown and acceptance criteria via `/markos-new-milestone`.
 
 ---
 <details>
@@ -659,7 +584,7 @@ Plans:
 **Goal:** Migrate the npm package identity, CLI bin entries, and install/update scripts from `markos`/`markos` to `markos`. Publish a deprecation bridge on the old package name.
 **Requirements Mapped:** RBD-01, RBD-02
 **Depends on:** Phase 16
-**Status:** ⬚ Not Started
+**Status:** ✅ Complete (2026-04-03)
 **Success Criteria:**
 1. `package.json` name changed to `markos`, bin entry `markos` → `./bin/install.cjs`.
 2. Legacy bin alias `markos` retained for one major version as backward compat.
@@ -669,10 +594,10 @@ Plans:
 6. `VERSION` bumped to `2.0.0`.
 
 **Plans:**
-- [ ] 17-01: Verify npm name availability (`npm view markos`) + reserve fallback
-- [ ] 17-02: Update package.json identity (name, bin, keywords, homepage, description, scripts)
-- [ ] 17-03: Update bin/install.cjs and bin/update.cjs display text, banner, and npx commands
-- [ ] 17-04: Publish deprecation bridge on old `markos` package
+- [x] 17-01: Verify npm name availability (`npm view markos`) + reserve fallback
+- [x] 17-02: Update package.json identity (name, bin, keywords, homepage, description, scripts)
+- [x] 17-03: Update bin/install.cjs and bin/update.cjs display text, banner, and npx commands
+- [x] 17-04: Publish deprecation bridge on old `markos` package
 
 ---
 
@@ -680,7 +605,7 @@ Plans:
 **Goal:** Rename all MARKOS-branded directories and files to MarkOS equivalents using atomic `git mv` operations. This is the largest single change: 383+ files.
 **Requirements Mapped:** RBD-03, RBD-04
 **Depends on:** Phase 17
-**Status:** ⬚ Not Started
+**Status:** ✅ Complete (2026-04-03)
 **Success Criteria:**
 1. `.agent/markos/` → `.agent/markos/` (317 files).
 2. All 39 agent files renamed: `markos-*.md` → `markos-*.md`.
@@ -694,11 +619,11 @@ Plans:
 10. Git history preserved via `git mv`.
 
 **Plans:**
-- [ ] 18-01: Rename `.agent/markos/` → `.agent/markos/` (top-level git mv)
-- [ ] 18-02: Rename all 39 agent files (`markos-*.md` → `markos-*.md`)
-- [ ] 18-03: Rename all 25 skill directories (`markos-*/` → `markos-*/`)
-- [ ] 18-04: Rename ITM templates, workflow file, bin tool, and index
-- [ ] 18-05: Rename root config files (`.markos-project.json`, `.markos-install-manifest.json`)
+- [x] 18-01: Rename `.agent/markos/` → `.agent/markos/` (top-level git mv)
+- [x] 18-02: Rename all 39 agent files (`markos-*.md` → `markos-*.md`)
+- [x] 18-03: Rename all 25 skill directories (`markos-*/` → `markos-*/`)
+- [x] 18-04: Rename ITM templates, workflow file, bin tool, and index
+- [x] 18-05: Rename root config files (`.markos-project.json`, `.markos-install-manifest.json`)
 
 ---
 
@@ -706,7 +631,7 @@ Plans:
 **Goal:** Migrate all 100+ internal token IDs from `MARKOS-*` prefix to `MARKOS-*` and update the master registry (MARKOS-INDEX.md). Update all agent/skill/hook/workflow frontmatter `name:` fields.
 **Requirements Mapped:** RBD-05, RBD-06
 **Depends on:** Phase 18
-**Status:** ⬚ Not Started
+**Status:** ✅ Complete (2026-04-03)
 **Success Criteria:**
 1. `MARKOS-INDEX.md` fully regenerated with all `MARKOS-AGT-*`, `MARKOS-SKL-*`, `MARKOS-ITM-*`, `MARKOS-HKP-*`, `MARKOS-WFL-*`, `MARKOS-PRM-*`, `MARKOS-REF-*`, `MARKOS-TPL-*` token IDs.
 2. All 39 agent files have `name: markos-*` in frontmatter.
@@ -717,11 +642,11 @@ Plans:
 7. Validation: `grep -r "MARKOS-" .agent/markos/` returns zero results.
 
 **Plans:**
-- [ ] 19-01: Scripted find-replace of all `MARKOS-` → `MARKOS-` token prefixes across `.agent/markos/`
-- [ ] 19-02: Update all agent frontmatter `name:` fields (`markos-*` → `markos-*`)
-- [ ] 19-03: Update all skill SKILL.md frontmatter `name:` fields
-- [ ] 19-04: Regenerate MARKOS-INDEX.md master registry
-- [ ] 19-05: Cross-reference validation scan (zero MARKOS- tokens remaining)
+- [x] 19-01: Scripted find-replace of all `MARKOS-` → `MARKOS-` token prefixes across `.agent/markos/`
+- [x] 19-02: Update all agent frontmatter `name:` fields (`markos-*` → `markos-*`)
+- [x] 19-03: Update all skill SKILL.md frontmatter `name:` fields
+- [x] 19-04: Regenerate MARKOS-INDEX.md master registry
+- [x] 19-05: Cross-reference validation scan (zero MARKOS- tokens remaining)
 
 ---
 
@@ -729,7 +654,7 @@ Plans:
 **Goal:** Update all hardcoded paths in backend .cjs files, onboarding config, Supabase + Upstash Vector namespace patterns, telemetry identifiers, and localStorage keys to use MarkOS naming.
 **Requirements Mapped:** RBD-07, RBD-08, RBD-09
 **Depends on:** Phase 18
-**Status:** ⬚ Not Started
+**Status:** ✅ Complete (2026-04-03)
 **Success Criteria:**
 1. All 15+ backend `.cjs` files updated: path constants, string literals, comments referencing `markos`/`markos`.
 2. `onboarding-config.json` updated: `project_slug`, `mir_output_path`, `msp_output_path`.
@@ -741,13 +666,13 @@ Plans:
 8. All tests pass after changes.
 
 **Plans:**
-- [ ] 20-01: Update path-constants.cjs and all backend path references
-- [ ] 20-02: Update onboarding-config.json and handlers.cjs defaults
-- [ ] 20-03: Update vector-store-client.cjs namespace pattern (with backward-compat detection)
-- [ ] 20-04: Update telemetry.cjs (dual env var support)
-- [ ] 20-05: Update onboarding.js localStorage keys (with migration)
-- [ ] 20-06: Update write-mir.cjs generated content stamps
-- [ ] 20-07: Run full test suite and fix breakages
+- [x] 20-01: Update path-constants.cjs and all backend path references
+- [x] 20-02: Update onboarding-config.json and handlers.cjs defaults
+- [x] 20-03: Update vector-store-client.cjs namespace pattern (with backward-compat detection)
+- [x] 20-04: Update telemetry.cjs (dual env var support)
+- [x] 20-05: Update onboarding.js localStorage keys (with migration)
+- [x] 20-06: Update write-mir.cjs generated content stamps
+- [x] 20-07: Run full test suite and fix breakages
 
 ---
 
@@ -755,7 +680,7 @@ Plans:
 **Goal:** Update all documentation, architecture diagrams, protocol-lore, onboarding UI, and public-facing content to reflect the MarkOS brand. Zero mentions of "MARKOS" or "markos" remain outside of historical milestone records.
 **Requirements Mapped:** RBD-10, RBD-11
 **Depends on:** Phase 20
-**Status:** ⬚ Not Started
+**Status:** ✅ Complete (2026-04-03)
 **Success Criteria:**
 1. `README.md` fully MarkOS-branded: install commands, agent names, architecture, badge URLs.
 2. `CHANGELOG.md` updated with MarkOS header + v2.0.0 rebrand entry.
@@ -769,13 +694,13 @@ Plans:
 10. Validation: `grep -r "markos\|markos" --include="*.md" --include="*.json" --include="*.js" --include="*.cjs" --include="*.html" --include="*.css"` returns only historical milestone files.
 
 **Plans:**
-- [ ] 21-01: Update README.md, CHANGELOG.md, VERSION
-- [ ] 21-02: Update ARCH-DIAGRAM.md and TECH-MAP.md
-- [ ] 21-03: Update all .protocol-lore/ files
-- [ ] 21-04: Scripted update of 60+ MIR/MSP template override path notes
-- [ ] 21-05: Update RESEARCH/ files and .markos-local/ client content (now .markos-local/)
-- [ ] 21-06: Update onboarding UI (index.html title, CSS if needed)
-- [ ] 21-07: Update .planning/ files (ROADMAP title, REQUIREMENTS)
+- [x] 21-01: Update README.md, CHANGELOG.md, VERSION
+- [x] 21-02: Update ARCH-DIAGRAM.md and TECH-MAP.md
+- [x] 21-03: Update all .protocol-lore/ files
+- [x] 21-04: Scripted update of 60+ MIR/MSP template override path notes
+- [x] 21-05: Update RESEARCH/ files and .markos-local/ client content (now .markos-local/)
+- [x] 21-06: Update onboarding UI (index.html title, CSS if needed)
+- [x] 21-07: Update .planning/ files (ROADMAP title, REQUIREMENTS)
 
 ---
 
@@ -783,7 +708,7 @@ Plans:
 **Goal:** Implement migration paths in install.cjs and update.cjs so existing MARKOS installs seamlessly upgrade to MarkOS. Handle Supabase + Upstash Vector collection migration, `.markos-local/` → `.markos-local/` auto-migration, manifest migration, and .gitignore updates.
 **Requirements Mapped:** RBD-12, RBD-13, RBD-14
 **Depends on:** Phase 20, Phase 21
-**Status:** ⬚ Not Started
+**Status:** ✅ Complete (2026-04-03)
 **Success Criteria:**
 1. `bin/install.cjs` detects existing `.agent/markos/` and auto-migrates to `.agent/markos/`.
 2. `bin/update.cjs` detects old `.markos-install-manifest.json` and migrates to `.markos-install-manifest.json`.
@@ -796,13 +721,13 @@ Plans:
 9. End-to-end test: old install → new update → verify everything migrated.
 
 **Plans:**
-- [ ] 22-01: install.cjs migration detection (old → new directory auto-rename)
-- [ ] 22-02: update.cjs manifest migration logic
-- [ ] 22-03: .markos-local/ → .markos-local/ auto-migration
-- [ ] 22-04: .markos-project.json → .markos-project.json migration
-- [ ] 22-05: Supabase + Upstash Vector collection migration function
-- [ ] 22-06: .gitignore dual-pattern support
-- [ ] 22-07: End-to-end migration test (old install → new update)
+- [x] 22-01: install.cjs migration detection (old → new directory auto-rename)
+- [x] 22-02: update.cjs manifest migration logic
+- [x] 22-03: .markos-local/ → .markos-local/ auto-migration
+- [x] 22-04: .markos-project.json → .markos-project.json migration
+- [x] 22-05: Supabase + Upstash Vector collection migration function
+- [x] 22-06: .gitignore dual-pattern support
+- [x] 22-07: End-to-end migration test (old install → new update)
 
 ---
 
@@ -973,25 +898,12 @@ Plans:
 
 ---
 
-### Phase 31: Rollout Hardening (P2)
-**Goal:** Gate agency-wide rollout with reliability SLOs, migration safety controls, security/compliance guardrails, and explicit compatibility deprecation criteria.
-**Requirements Mapped:** RLH-01, RLH-02, RLH-03, RLH-04
-**Depends on:** Phase 30
-**Status:** Complete (2026-03-28)
-**Artifacts:** .planning/phases/31-rollout-hardening/31-CONTEXT.md, .planning/phases/31-rollout-hardening/31-REQUIREMENTS.md, .planning/phases/31-rollout-hardening/31-RESEARCH.md, .planning/phases/31-rollout-hardening/31-VERIFICATION.md, .planning/phases/31-rollout-hardening/31-UAT.md
-**Plans:** 4 plans
-Plans:
-- [x] 31-01: Tiered endpoint SLO telemetry and docs parity
-- [x] 31-02: Migration promotion controls and rollback checkpoints
-- [x] 31-03: Secret validation, redaction, and retention enforcement
-- [x] 31-04: Operator-driven compatibility retirement policy
-
-**Compatibility Retirement Policy (Operational):**
 1. Compatibility retirement remains a manual operator decision recorded in .planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json.
+
 2. Protocol tests, hosted auth boundaries, migration determinism, and downstream cloud-readiness remain recommended evidence inputs, but no hard minimum evidence count is required before retirement.
+
 3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 <!-- EOF -->
 
-
-
+<!-- EOF -->

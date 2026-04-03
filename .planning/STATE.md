@@ -1,38 +1,43 @@
----
 gsd_state_version: 1.0
-milestone: v2.4
-milestone_name: Beta Client Onboarding
-status: complete
-last_updated: "2026-04-02"
+milestone: v3.2.0
+milestone_name: Post-Unification Execution & Adoption
+status: planning
+last_updated: "2026-04-03T05:10:00.000Z"
 progress:
-  total_phases: 25
-  completed_phases: 9
-  total_plans: 45
-  completed_plans: 34
+  total_phases: 48
+  completed_phases: 48
+  active_phases: 0
+  total_plans: 135
+  completed_plans: 135
+  planned_plans: 0
 ---
 
 Current Position
 ----------------
 
-Milestone: v3.1.0 — Operator Surface Unification
-Phase: 45 — Operations Flow Inventory & Canonical Contract Map (COMPLETE)
-Status: All 6 plans executed and verified. 17 flows registered, 17 contracts validated, test suite 19/19. Baseline approved.
-Next Phase: Phase 46 — (next in v3.1.0 milestone)
+Milestone: v3.2.0 — Post-Unification Execution & Adoption
+Phase: Milestone planning kickoff
+Status: v3.1.0 closeout completed; archive/report/state transition recorded.
+Previous Milestone: v3.1.0 — Operator Surface Unification (COMPLETE ✅)
+Next Step: Define v3.2 phase map and acceptance criteria.
 
 Tooling Snapshot
 ----------------
 
-- Active milestone (v3.0) progress: Phases 39 through 44 complete and verified; literacy lifecycle is now regression-gated.
-- Global disk snapshot (all non-archived phase dirs): latest execution artifacts include 43 and 44 validation/verification bundles.
-- Deferred roadmap track: v2.0 rebrand phases (17-22) remain intentionally unexecuted.
+- Roadmap parser snapshot at closeout: total=48, completed=48, pending=0, verification_passed=48.
+- Incomplete-plan check at closeout: 0 phases with incomplete plans.
+- v3.1 closeout artifacts:
+  - `.planning/milestones/v3.1-NORMALIZATION-REPORT.md`
+  - `.planning/milestones/v3.1.0-REPORT.md`
+  - `.planning/milestones/v3.1.0-phases/`
 
-Milestone v3.0 Focus
+Milestone v3.2 Focus
 --------------------
 
-🎯 Maintain stable literacy activation readiness from onboarding submit/status through draft generation
-🎯 Preserve deterministic coverage telemetry and parity across local and hosted routes
-🎯 Keep zero-hit regression checks enforced in focused and CI execution paths
-🎯 Define the v3.0 follow-on scope after full lifecycle hardening
+🎯 Define v3.2 roadmap phases with clear operator adoption KPIs and verification gates
+🎯 Preserve v3.1 reliability guarantees while expanding production usage
+🎯 Keep parser/state/roadmap ledgers in lockstep through milestone planning and execution
+🎯 Establish measurable execution throughput targets for new operator cohorts
 
 MIR Gate Status
 ---------------
@@ -104,3 +109,4 @@ Roadmap Evolution
 - 2026-04-02: Phase 40 completed with deterministic discipline routing, pain-point OR filter support, top-3 dual-query literacy retrieval, doc_id-first dedupe, fixed context-budget enforcement, and literacy retrieval telemetry.
 - 2026-04-02: Phase 43 completed with post-submit literacy activation readiness evaluation, submit/status readiness parity, and activation telemetry contracts.
 - 2026-04-02: Phase 44 completed with lifecycle E2E verification, literacy coverage API contract enforcement, populated-corpus zero-hit regression gating, and CI integration.
+- 2026-04-03: Phase 47 completed with multi-provider BYOK abstraction, legacy wrapper bridge integration, dual-path/e2e verification, and operator/architecture documentation closure.
