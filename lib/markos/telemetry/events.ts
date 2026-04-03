@@ -16,7 +16,14 @@ export type MarkOSTelemetryEvent = {
     | "markos_task_step_retried"
     | "markos_llm_call_completed"
     | "markos_llm_budget_80_percent"
-    | "markos_llm_budget_100_percent";
+    | "markos_llm_budget_100_percent"
+    // Phase 52 — Plugin runtime telemetry (D-06)
+    | "plugin_operation"
+    | "plugin_access_denied"
+    | "plugin_campaign_published"
+    | "plugin_draft_read"
+    | "plugin_approval_granted"
+    | "plugin_dashboard_view";
   workspaceId: string;
   role: string;
   requestId: string;
