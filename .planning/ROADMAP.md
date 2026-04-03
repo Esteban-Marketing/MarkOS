@@ -274,11 +274,27 @@ Plans:
 
 ## 🟢 v3.2.0 — Post-Unification Execution & Adoption
 
-> **Status:** Planning
+> **Status:** Active — Phase 51 execution in progress
 >
-> **Goal:** Convert v3.1 platform surfaces into repeatable operator adoption, measurable execution throughput, and sustained KPI improvements.
+> **Goal:** Establish strict tenant boundaries, deterministic tenant context propagation, and enforceable role boundaries to enable multi-tenant operator execution with measurable security and isolation guarantees.
 >
-> **Next Step:** Define phase breakdown and acceptance criteria via `/markos-new-milestone`.
+> **Requirements:** TEN-01, TEN-02, TEN-03, IAM-01, IAM-02
+>
+> ### Phase 51: Multi-Tenant Foundation and Authorization
+> **Goal:** Deliver the core multi-tenant and authorization foundation for MarkOS by enforcing strict tenant isolation and deterministic tenant context propagation across UI, API, jobs, and agent runtime entrypoints, while upgrading role boundaries from v3.1 RBAC baseline to v3.2 IAM model.
+> **Requirements Mapped:** TEN-01, TEN-02, TEN-03, IAM-01, IAM-02
+> **Status:** 🟢 In Progress (4 plans)
+> **Plans:**
+> - [x] 51-01-PLAN.md — Tenant schema + membership contracts + tenant_id RLS baseline
+> - [x] 51-02-PLAN.md — Wrapper tenant auth boundary + protected UI propagation fail-closed contract
+> - [x] 51-03-PLAN.md — Concise IAM v3.2 action matrix enforcement across API and UI with compatibility gates
+> - [x] 51-04-PLAN.md — Background-job + handler/orchestrator tenant propagation and denial telemetry
+>
+> **Phase 51 Milestones:**
+> - ✅ 51-01: Tenant schema + RLS (DELIVERED 2026-04-03)
+> - ✅ 51-02: Wrapper tenant auth boundary (DELIVERED 2026-04-03)
+> - ✅ 51-03: IAM v3.2 action-scoped authorization (DELIVERED 2026-04-03)
+> - ✅ 51-04: Background job + denial telemetry (DELIVERED 2026-04-03)
 
 ---
 <details>
