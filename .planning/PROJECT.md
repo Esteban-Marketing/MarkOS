@@ -1,15 +1,17 @@
 # MarkOS (MarkOS Protocol)
 
-## Current Milestone: v3.1.0 — Operator Surface Unification
+## Current Milestone: v3.2.0 — Multi-Tenant Agency Runtime and Enterprise Governance
 
-**Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.
+**Goal:** Enable agencies and in-house marketing teams to run hybrid human + AI operations across multiple tenant brands with strict isolation, approval-governed automation, white-label delivery, and enterprise-grade billing/compliance controls.
 
 **Target features:**
-- Integrated task UI with live task graph, step-by-step execution, approval points, retries, and evidence capture
-- Complete API contract coverage for all MarkOS flows with versioning, OpenAPI generation, and compatibility guarantees
-- Platform hardening with role-based operations UI, migration safety, health diagnostics, and guided operator onboarding
+- Multi-tenant foundation with deterministic tenant context propagation, RLS isolation, and enforceable RBAC across UI/API/jobs/agent runs
+- Plugin-first expansion model with the first production plugin: MarkOS Digital Agency
+- White-label and custom-domain controls that remain versioned, rollback-safe, and tenant-isolated
+- Tenant-bound agent orchestration with approval gates, append-only lineage, and full telemetry for model/prompt/tool/cost outcomes
+- Billing and metering controls that reconcile to invoices and support enterprise trust gates
 
-**Status:** v3.1.0 initiated 2026-04-02. v3.0 (Phases 39-44) shipped 2026-04-02 with pain-points-first literacy system verified end-to-end.
+**Status:** v3.1.0 archived 2026-04-03 (Phases 45-50 complete). v3.2.0 started 2026-04-03 through new-milestone kickoff.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -20,7 +22,7 @@ A protocol for agentic marketing execution, built as a parallel system to the de
 Standardization and automation of marketing ideation, planning, and execution via robust agentic workflows and Linear issue tracking.
 
 ## Context
-This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. The system is production-grade with literacy lifecycle verified (v3.0). The v3.1.0 milestone focuses on **operator surface unification**: consolidating all MarkOS flows into a single auditable operational UI with complete API contracts, clear versioning/compatibility policies, and hardening for enterprise rollout. The shift is from framework-building to operational excellence — putting non-technical operators in control of execution with evidence trails, approval workflows, and built-in safeguards.
+This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. The system is production-grade with literacy lifecycle and operator-surface unification complete through v3.1.0. The v3.2.0 milestone focuses on **agency-scale multi-tenancy and pluginized expansion**, starting with the first MarkOS plugin: **Digital Agency**. The shift is from operational unification to extensible domain packaging: a plugin architecture that lets MarkOS ship vertical operating systems safely under tenant isolation, governance, and enterprise billing/compliance controls.
 
 The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. Phase 34 delivered the intake automation backbone for beta onboarding. Phase 35 delivered installer/readiness optimization and is archived under v2.5. Phase 36 delivered the v2.4 beta-operations baseline with lifecycle ownership, weekly cadence, KPI scorecard, and PLG evidence-loop contracts. Phase 37 then delivered the MarkOS app/control-plane scaffolding with governance and data-model foundations, formally closing v2.4. Phase 38 established the Storybook, Chromatic, accessibility, and UI security baseline that now anchors v2.6 execution.
 
@@ -63,15 +65,39 @@ Execution work must pause when readiness is blocked; operators should resolve mi
 
 ## Requirements
 
-### Active (v3.1.0)
-- [ ] OPS-01: Operator can execute a complete task chain from UI with explicit state transitions, approval checkpoints, retries, and timestamped evidence per step.
-- [ ] API-01: Every active MarkOS flow (onboarding, execution, reporting) is represented in a versioned OpenAPI contract stored in the codebase.
-- [ ] API-02: Contract test suite enforces backward compatibility and prevents unapproved breaking changes in CI.
-- [ ] CONTRACT-01: API versioning policy is documented (SemVer, deprecation windows, compatibility guarantees, migration path).
-- [ ] RBAC-01: Operations UI enforces role-based access control; unauthorized actions are blocked and logged; permissions are visible in-product.
-- [ ] HARD-01: Preflight checks prevent unsafe migrations; rollback paths exist for all data-altering flows.
-- [ ] HARD-02: Health diagnostics surface operator/admin health status (DB connectivity, vector store status, provider health, data consistency).
-- [ ] ONBOARD-01: Operator onboarding path (first-run, training, role assignment) is documented and executable without direct engineering support.
+### Active (v3.2.0)
+- [ ] TEN-01: Every tenant-scoped record includes tenant_id and is protected by RLS policies.
+- [ ] TEN-02: Tenant context propagates through UI, API, background jobs, and agent runs.
+- [ ] TEN-03: Cross-tenant access attempts are denied and logged as security events.
+- [ ] TEN-04: Tenant-level quotas and rate limits are enforceable per plan tier.
+- [ ] IAM-01: Users can belong to one or more tenants with explicit role assignment.
+- [ ] IAM-02: Roles enforce permission boundaries for owner, tenant-admin, manager, contributor, reviewer, billing-admin, and readonly.
+- [ ] IAM-03: Approval actions for MarkOS plans require authorized reviewer roles and immutable decision logs.
+- [ ] IAM-04: Enterprise tenants can enable SSO/SAML readiness path without breaking local-auth tenants.
+- [ ] WL-01: Tenants can configure logo, color tokens, and brand metadata for customer-facing surfaces.
+- [ ] WL-02: Tenant notifications and transactional templates render with tenant branding.
+- [ ] WL-03: Tenant custom domain onboarding supports verification and safe fallback routing.
+- [ ] WL-04: White-label settings are versioned and rollback-capable.
+- [ ] AGT-01: Agent runs are tenant-bound and consume tenant-approved context only.
+- [ ] AGT-02: Agent workflows support deterministic state transitions, retries, and timeout handling.
+- [ ] AGT-03: Human approval gates exist before externally visible high-impact actions.
+- [ ] AGT-04: Agent run artifacts include model, prompt version, tool events, latency, cost, and outcome.
+- [ ] MIR-01: MIR Gate 1 entities initialize per project from onboarding and order context.
+- [ ] MIR-02: MSP discipline activation derives from MIR and purchased service context.
+- [ ] MIR-03: Critical client edits produce update reports and versioned regeneration records.
+- [ ] MIR-04: Historical plan versions remain append-only and queryable.
+- [ ] BIL-01: Subscriptions support monthly and annual plans with tenant entitlements.
+- [ ] BIL-02: Usage metering tracks token usage, agent runs, storage, and overage units per tenant.
+- [ ] BIL-03: Invoice generation and reconciliation map metering events to billable line items.
+- [ ] BIL-04: Billing failures trigger dunning workflow and entitlement-safe degradation.
+- [ ] SEC-01: Audit logs capture authentication, authorization, approvals, billing, and tenant configuration changes.
+- [ ] SEC-02: Data retention and deletion policies support GDPR-aligned deletion requests.
+- [ ] SEC-03: Encryption in transit and at rest is enforced for tenant data paths.
+- [ ] OPS-01: Platform exposes SLO-backed monitoring for API, queue, agent, and billing subsystems.
+- [ ] OPS-02: Incident response runbooks include tenant-aware triage and communication workflows.
+- [ ] PLG-DA-01: MarkOS plugin runtime supports plugin registration, capability contracts, and tenant-level enablement controls.
+- [ ] PLG-DA-02: Digital Agency plugin ships as the first plugin package with scoped routes, workflows, and role policy overlays.
+- [ ] PLG-DA-03: Plugin execution and telemetry remain isolated per tenant and auditable without breaking core MarkOS contracts.
 
 ### Validated & Delivered (v2.1)
 - [x] RLH-01: Reliability/observability SLOs for core onboarding endpoints.
@@ -156,4 +182,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-02 after Phase 44 completion and v3.1.0 initiated.
+Last updated: 2026-04-03 after v3.1.0 archive and v3.2.0 kickoff.

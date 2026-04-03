@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * llm-adapter.cjs — Unified Multi-Model LLM Call Wrapper
+ * llm-adapter.cjs — Legacy Compatibility Wrapper
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
- *   Single entry point for all LLM calls in the MARKOS onboarding pipeline.
- *   Abstracts away provider-specific APIs so all agents use the same interface.
+ *   Backward-compatible CommonJS wrapper for onboarding flows.
+ *   New code should use `lib/markos/llm/adapter.ts` directly.
  *
  * PROVIDER PRIORITY (auto-detected from .env):
  *   1. `options.provider`   — explicit override per call
@@ -12,7 +12,7 @@
  *   3. OPENAI_API_KEY       — GPT-4o-mini (uses `openai` npm package)
  *   4. GEMINI_API_KEY       — Gemini 2.5 Flash (native fetch)
  *
- * EXPORTS:
+ * EXPORTS (legacy):
  *   call(systemPrompt, userPrompt, options) → Promise<{ ok, text, provider, error? }>
  *
  * OPTIONS:
@@ -22,11 +22,14 @@
  *   temperature {number}  — sampling temperature (default: 0.4)
  *
  * RELATED FILES:
+ *   lib/markos/llm/adapter.ts                (preferred Phase 47+ entrypoint)
  *   onboarding/backend/agents/mir-filler.cjs    (calls this for MIR generation)
  *   onboarding/backend/agents/msp-filler.cjs    (calls this for MSP generation)
  *   onboarding/backend/agents/orchestrator.cjs   (drives all agent calls)
  *   .env                                         (API key source)
  * ═══════════════════════════════════════════════════════════════════════════════
+ * @deprecated Compatibility surface retained for existing onboarding consumers.
+ *             New integrations should import from `lib/markos/llm/adapter.ts`.
  */
 'use strict';
 
@@ -44,6 +47,7 @@ try {
 const { OpenAI } = require('openai');
 
 let _openai = null;
+let _modernAdapter = null;
 
 /**
  * Returns a singleton OpenAI client, initialized on first call.
@@ -56,6 +60,79 @@ function getOpenAI() {
     _openai = new OpenAI({ apiKey });
   }
   return _openai;
+}
+
+function resolveModernAdapter() {
+  if (_modernAdapter !== null) {
+    return _modernAdapter;
+  }
+
+  const explicitPath = process.env.MARKOS_LLM_ADAPTER_PATH;
+  const candidates = [
+    explicitPath,
+    path.resolve(__dirname, '../../../lib/markos/llm/adapter.js'),
+    path.resolve(__dirname, '../../../dist/lib/markos/llm/adapter.js'),
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    try {
+      if (!require('node:fs').existsSync(candidate)) {
+        continue;
+      }
+
+      const loaded = require(candidate);
+      if (loaded && typeof loaded.call === 'function') {
+        _modernAdapter = loaded;
+        return _modernAdapter;
+      }
+    } catch {
+      // Ignore failed candidates and continue to compatibility fallback.
+    }
+  }
+
+  _modernAdapter = false;
+  return _modernAdapter;
+}
+
+function mapLegacyOptionsToModern(options) {
+  return {
+    provider: options.provider,
+    model: options.model,
+    maxTokens: options.max_tokens,
+    temperature: options.temperature,
+    timeoutMs: options.timeout_ms,
+    noFallback: options.no_fallback,
+    metadata: options.metadata,
+    requestId: options.request_id,
+    workspaceId: options.workspace_id,
+    role: options.role,
+  };
+}
+
+function mapModernResultToLegacy(result) {
+  return {
+    ok: Boolean(result.ok),
+    text: result.text || '',
+    provider: result.provider,
+    model: result.model,
+    usage: {
+      promptTokens: result.usage?.inputTokens || 0,
+      completionTokens: result.usage?.outputTokens || 0,
+      totalTokens: result.usage?.totalTokens || 0,
+    },
+    telemetryEventId: result.telemetryEventId,
+    error: result.error,
+  };
+}
+
+async function tryModernAdapter(systemPrompt, userPrompt, options) {
+  const modern = resolveModernAdapter();
+  if (!modern || modern === false) {
+    return null;
+  }
+
+  const result = await modern.call(systemPrompt, userPrompt, mapLegacyOptionsToModern(options));
+  return mapModernResultToLegacy(result);
 }
 
 // ── Native Fetch Adapters ───────────────────────────────────────────────────
@@ -223,6 +300,11 @@ async function callOllama(systemPrompt, userPrompt, options) {
  */
 async function call(systemPrompt, userPrompt, options = {}) {
   try {
+    const modernResult = await tryModernAdapter(systemPrompt, userPrompt, options);
+    if (modernResult) {
+      return modernResult;
+    }
+
     const start = Date.now();
     let result = { text: '', usage: {} };
     /**

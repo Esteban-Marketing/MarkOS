@@ -361,6 +361,20 @@ async function run() {
     return;
   }
 
+  if (cli.command === 'llm:config') {
+    rl.close();
+    const { runLLMConfigCLI } = require('./llm-config.cjs');
+    await runLLMConfigCLI({ cli });
+    return;
+  }
+
+  if (cli.command === 'llm:status' || cli.command === 'llm:providers') {
+    rl.close();
+    const { runLLMStatusCLI } = require('./llm-status.cjs');
+    await runLLMStatusCLI({ cli });
+    return;
+  }
+
   loadProjectEnv(CWD);
 
   banner(`MarkOS Installer v${VERSION} — Marketing Operating System`);

@@ -19,6 +19,15 @@
 
 ## Unreleased
 
+### Phase 47 Wave 5 (Integration and Verification)
+- Added legacy compatibility bridge in `onboarding/backend/agents/llm-adapter.cjs` that prefers the modern adapter path when available while preserving fallback-safe onboarding behavior.
+- Added dual-path verification coverage in `test/llm-adapter/backward-compat.test.js`.
+- Added e2e verification for config-to-status flow in `test/llm-adapter/e2e.test.js`.
+- Added final documentation:
+	- `docs/LLM-BYOK-ARCHITECTURE.md`
+	- `docs/OPERATOR-LLM-SETUP.md`
+- README now includes LLM BYOK command references (`llm:config`, `llm:status`, `llm:providers`).
+
 ### Documentation / protocol lore
 - Canonical mission state is **`.planning/STATE.md`**; `.protocol-lore/STATE.md` is a routing pointer only.
 - Unified agent boot across `CLAUDE.md`, `GEMINI.md`, `.cursorrules`, and `.cursor/rules/markos.mdc` (read order: QUICKSTART → INDEX → `.planning/STATE.md` → `MARKOS-INDEX.md`).

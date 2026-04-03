@@ -1,5 +1,17 @@
 # Milestones
 
+## v3.2.0 Multi-Tenant Agency Runtime and Enterprise Governance (Started: 2026-04-03)
+
+**Status:** Active
+
+**Kickoff decisions:**
+
+1. v3.2.0 focuses on agency-scale multi-tenancy, enterprise governance, and pluginized expansion.
+2. Digital Agency is the first production plugin for MarkOS and the lead expansion track for this milestone.
+3. Phase planning starts at Phase 51 with tenant foundations, then plugin runtime + Digital Agency, then orchestration governance, then billing/compliance operations.
+
+---
+
 ## v2.4 Beta Client Onboarding (Shipped: 2026-04-01)
 
 **Phases completed:** 5 phases, 11 plans, 0 tasks

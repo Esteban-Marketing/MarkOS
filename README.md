@@ -201,6 +201,29 @@ Tests use Node's built-in test runner. Zero external test framework dependencies
 
 ---
 
+## LLM BYOK (Phase 47)
+
+MarkOS now includes a unified multi-provider LLM adapter layer with BYOK support for Anthropic, OpenAI, and Gemini.
+
+Quick commands:
+
+```bash
+# Configure providers, encrypted keys, and preferences
+npx markos llm:config
+
+# Show provider usage and monthly budget status
+npx markos llm:status --month 2026-04
+
+# Show configured provider status
+npx markos llm:providers
+```
+
+Architecture and operator setup guides:
+- `docs/LLM-BYOK-ARCHITECTURE.md`
+- `docs/OPERATOR-LLM-SETUP.md`
+
+---
+
 ## Marketing Literacy Base (Phase 32)
 
 MarkOS now supports a standards literacy layer for reusable marketing tactics and benchmarks.

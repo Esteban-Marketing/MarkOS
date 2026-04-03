@@ -30,6 +30,13 @@
   ],
   "scripts": {
     "test": "node --test test/**/*.test.js",
+    "build:llm": "tsc -p tsconfig.llm.json --noEmit",
+    "test:llm": "node --test test/llm-adapter/**/*.test.js",
+    "test:llm:coverage:core": "node --test --test-concurrency=1 --experimental-test-coverage test/llm-adapter/adapter-init.test.js test/llm-adapter/claude.test.js test/llm-adapter/openai.test.js test/llm-adapter/gemini.test.js test/llm-adapter/cost-calculator.test.js test/llm-adapter/fallback-chain.test.js test/llm-adapter/settings.test.js test/llm-adapter/telemetry.test.js",
+    "verify:phase47:live": "node scripts/phase47-live-verification.cjs",
+    "verify:phase47:mock": "node scripts/phase47-live-verification.cjs --mock-byok",
+    "markos:llm:config": "node bin/llm-config.cjs",
+    "markos:llm:status": "node bin/llm-status.cjs",
     "test:install": "node --test test/install.test.js",
     "test:patch": "node --test test/update.test.js",
     "test:onboarding": "node --test test/onboarding-server.test.js",
@@ -43,6 +50,8 @@
     "prepublishOnly": "node -e \"console.log('Publishing markos v' + require('./package.json').version)\""
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.82.0",
+    "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.58.0",
     "@upstash/vector": "^1.2.3",
     "csv-parse": "^6.2.1",
