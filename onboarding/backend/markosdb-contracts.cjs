@@ -31,8 +31,39 @@ const SUPABASE_RELATIONAL_CONTRACT = Object.freeze({
       indexes: ['project_slug', 'job_name', 'completed_at'],
       rls: 'project_scoped',
     },
+    {
+      name: 'markos_mir_gate1_initializations',
+      primary_key: 'initialization_id',
+      indexes: ['tenant_id', 'project_slug', 'initialized_at'],
+      rls: 'tenant_scoped_append_only',
+    },
+    {
+      name: 'markos_discipline_activation_evidence',
+      primary_key: 'activation_id',
+      indexes: ['tenant_id', 'project_slug', 'discipline', 'recorded_at'],
+      rls: 'tenant_scoped_append_only',
+    },
+    {
+      name: 'markos_mir_versions',
+      primary_key: 'version_id',
+      indexes: ['tenant_id', 'project_slug', 'entity_key', 'effective_at'],
+      rls: 'tenant_scoped_append_only',
+    },
+    {
+      name: 'markos_mir_regenerations',
+      primary_key: 'regeneration_id',
+      indexes: ['tenant_id', 'project_slug', 'entity_key', 'recorded_at'],
+      rls: 'tenant_scoped_append_only',
+    },
   ],
 });
+
+const IMMUTABLE_APPEND_ONLY_TABLES = Object.freeze([
+  'markos_mir_gate1_initializations',
+  'markos_discipline_activation_evidence',
+  'markos_mir_versions',
+  'markos_mir_regenerations',
+]);
 
 // Canonical vector metadata expected by Upstash vector retrieval paths.
 const UPSTASH_VECTOR_METADATA_FIELDS = Object.freeze([
@@ -116,7 +147,12 @@ function normalizeRelativeArtifactPath(baseRoot, absolutePath) {
   return path.relative(baseRoot, absolutePath).replace(/\\/g, '/');
 }
 
+function isAppendOnlyRelationalTable(tableName) {
+  return IMMUTABLE_APPEND_ONLY_TABLES.includes(tableName);
+}
+
 module.exports = {
+  IMMUTABLE_APPEND_ONLY_TABLES,
   MARKOSDB_SCHEMA_VERSION,
   SUPABASE_RELATIONAL_CONTRACT,
   UPSTASH_VECTOR_METADATA_FIELDS,
@@ -124,5 +160,6 @@ module.exports = {
   buildNamespaceReadOrder,
   buildVectorMetadata,
   buildRelationalRecord,
+  isAppendOnlyRelationalTable,
   normalizeRelativeArtifactPath,
 };

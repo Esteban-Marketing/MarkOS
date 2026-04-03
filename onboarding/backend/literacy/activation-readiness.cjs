@@ -1,9 +1,39 @@
 'use strict';
 
 const { resolveRequiredDisciplines } = require('./discipline-selection.cjs');
+const {
+  computeMissingGate1Entities,
+  recordGate1Initialization,
+} = require('../mir-lineage.cjs');
 
 const DEFAULT_TOP_K_PROBE = 1;
 const DEFAULT_MAX_DISCIPLINES = 3;
+
+function evaluateActivationReadiness({ seed, gate1Snapshot, persistence, runId } = {}) {
+  const snapshot = gate1Snapshot || {};
+  const entityStatus = snapshot.entity_status || {};
+  const initializationSnapshot = recordGate1Initialization({
+    tenantId: snapshot.tenant_id,
+    projectSlug: snapshot.project_slug,
+    entityStatus,
+    sourceReferences: snapshot.source_references,
+    initializedAt: snapshot.initialized_at,
+    runId,
+    persistence,
+  });
+  const missingEntities = computeMissingGate1Entities(entityStatus);
+
+  return {
+    readiness: missingEntities.length === 0 ? 'ready' : 'blocked',
+    gate1_status: missingEntities.length === 0 ? 'ready' : 'blocked',
+    missing_entities: missingEntities,
+    initialization_snapshot: initializationSnapshot,
+    reason: missingEntities.length === 0
+      ? 'MIR Gate 1 ready for MSP activation.'
+      : `MIR Gate 1 blocked until required entities are complete: ${missingEntities.join(', ')}`,
+    seed: seed || null,
+  };
+}
 
 /**
  * Evaluates literacy readiness for the given seed against live vector-store
@@ -25,6 +55,28 @@ const DEFAULT_MAX_DISCIPLINES = 3;
  */
 async function evaluateLiteracyReadiness(seed, runtimeConfig, options = {}) {
   try {
+    if (options.gate1Snapshot) {
+      const activationReadiness = evaluateActivationReadiness({
+        seed,
+        gate1Snapshot: options.gate1Snapshot,
+        persistence: options.persistence,
+        runId: options.runId,
+      });
+
+      if (activationReadiness.readiness === 'blocked') {
+        return {
+          readiness: 'blocked',
+          disciplines_available: [],
+          gaps: [],
+          required_disciplines: [],
+          gate1_status: activationReadiness.gate1_status,
+          missing_entities: activationReadiness.missing_entities,
+          initialization_snapshot: activationReadiness.initialization_snapshot,
+          reason: activationReadiness.reason,
+        };
+      }
+    }
+
     // Inline require so that withMockedModule patches are visible at call time.
     const vectorStore = require('../vector-store-client.cjs');
 
@@ -74,4 +126,7 @@ async function evaluateLiteracyReadiness(seed, runtimeConfig, options = {}) {
   }
 }
 
-module.exports = { evaluateLiteracyReadiness };
+module.exports = {
+  evaluateActivationReadiness,
+  evaluateLiteracyReadiness,
+};

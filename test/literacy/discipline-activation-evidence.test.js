@@ -19,6 +19,9 @@ test('activation evidence includes MIR inputs and purchased-service rationale fo
     serviceContext: {
       purchased_disciplines: ['Paid_Media', 'Lifecycle_Email'],
       previous_disciplines: ['Content_SEO'],
+      deactivation_rationale_by_discipline: {
+        Content_SEO: 'SEO remains inactive because the current purchased service scope excludes it.',
+      },
     },
   });
 

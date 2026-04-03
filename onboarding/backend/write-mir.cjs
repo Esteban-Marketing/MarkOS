@@ -32,6 +32,7 @@
 
 const fs   = require('fs');
 const path = require('path');
+const { appendRegenerationRecord } = require('./mir-lineage.cjs');
 
 // ── Section → MIR/MSP File Mapping ───────────────────────────────────────────
 // These paths are relative to the project root or the provided LOCAL_MIR_PATH.
@@ -214,7 +215,35 @@ function updateStateFile(statePath, baseStatePath, writtenFiles) {
  * @param {object} approvedDrafts — { section_key: "content" }
  * @returns {object} { written, stateUpdated, errors }
  */
-function applyDrafts(mirPath, baseMirPath, approvedDrafts) {
+function applyCriticalEdit({
+  tenantId,
+  projectSlug,
+  entityKey,
+  rationale,
+  parentVersionId,
+  dependencyImpact,
+  contentSnapshot,
+  persistence,
+  runId,
+  effectiveAt,
+  actorId,
+}) {
+  return appendRegenerationRecord({
+    tenantId,
+    projectSlug,
+    entityKey,
+    parentVersionId,
+    rationale,
+    dependencyImpact,
+    contentSnapshot,
+    persistence,
+    runId,
+    effectiveAt,
+    actorId,
+  });
+}
+
+function applyDrafts(mirPath, baseMirPath, approvedDrafts, options = {}) {
   const { written, errors, mergeEvents } = writeDrafts(mirPath, baseMirPath, approvedDrafts);
 
   const statePath = path.join(mirPath, 'STATE.md');
@@ -228,7 +257,24 @@ function applyDrafts(mirPath, baseMirPath, approvedDrafts) {
     errors.push(`STATE.md update failed: ${err.message}`);
   }
 
-  return { written, stateUpdated, errors, mergeEvents };
+  let regenerationRecord = null;
+  if (options && options.criticalEdit) {
+    regenerationRecord = applyCriticalEdit({
+      tenantId: options.criticalEdit.tenantId,
+      projectSlug: options.criticalEdit.projectSlug,
+      entityKey: options.criticalEdit.entityKey,
+      rationale: options.criticalEdit.rationale,
+      parentVersionId: options.criticalEdit.parentVersionId,
+      dependencyImpact: options.criticalEdit.dependencyImpact,
+      contentSnapshot: options.criticalEdit.contentSnapshot || approvedDrafts,
+      persistence: options.persistence,
+      runId: options.criticalEdit.runId,
+      effectiveAt: options.criticalEdit.effectiveAt,
+      actorId: options.criticalEdit.actorId,
+    });
+  }
+
+  return { written, stateUpdated, errors, mergeEvents, regenerationRecord };
 }
 
-module.exports = { applyDrafts, writeDrafts, updateStateFile };
+module.exports = { applyCriticalEdit, applyDrafts, writeDrafts, updateStateFile };
