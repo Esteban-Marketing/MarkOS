@@ -8,7 +8,11 @@ export type MarkOSTelemetryEvent = {
     | "markos_theme_changed"
     | "markos_access_denied"
     | "markos_ai_snapshot_generated"
-    | "markos_ai_snapshot_read";
+    | "markos_ai_snapshot_read"
+    | "markos_task_step_executed"
+    | "markos_task_step_approved"
+    | "markos_task_step_rejected"
+    | "markos_task_step_retried";
   workspaceId: string;
   role: string;
   requestId: string;

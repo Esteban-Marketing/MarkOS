@@ -19,6 +19,7 @@ import React, {
   ReactNode,
   useCallback,
   useMemo,
+  useEffect,
 } from "react";
 
 import {
@@ -30,6 +31,7 @@ import {
 } from "./task-types";
 import { taskReducer, taskActionCreators } from "./task-machine";
 import { initialTaskStoreState } from "./task-fixtures";
+import { buildEvent } from "../../../lib/markos/telemetry/events";
 
 /**
  * Context definition (internal, exported for module structure only)
@@ -46,6 +48,13 @@ const TaskStoreContext = createContext<TaskStoreContextType | undefined>(
 /**
  * Provider component: wraps task graph UI, initializes store with fixtures
  */
+function TaskStoreContent({ children }: { children: ReactNode }) {
+  // Subscribe to telemetry events automatically
+  useTaskEventTelemetry();
+
+  return <>{children}</>;
+}
+
 export function TaskStoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(
     taskReducer,
@@ -55,7 +64,7 @@ export function TaskStoreProvider({ children }: { children: ReactNode }) {
 
   return (
     <TaskStoreContext.Provider value={{ state, dispatch }}>
-      {children}
+      <TaskStoreContent>{children}</TaskStoreContent>
     </TaskStoreContext.Provider>
   );
 }
@@ -332,4 +341,51 @@ export function useTaskContext() {
       actions,
     ]
   );
+}
+
+/**
+ * Telemetry emission hook
+ * Watches task events and emits sanitized telemetry via buildEvent
+ * Locked decision (D-14, D-15): all transition events are sanitized
+ */
+export function useTaskEventTelemetry() {
+  const taskEvents = useTaskEvents();
+
+  useEffect(() => {
+    if (taskEvents.length === 0) return;
+
+    const lastEvent = taskEvents[taskEvents.length - 1];
+
+    // Map internal event_name to telemetry event name
+    const telemetryEventNameMap: Record<string, string> = {
+      step_executed: "markos_task_step_executed",
+      step_approved: "markos_task_step_approved",
+      step_rejected: "markos_task_step_rejected",
+      step_retried: "markos_task_step_retried",
+    };
+
+    const telemetryEventName = telemetryEventNameMap[lastEvent.event_name];
+
+    if (!telemetryEventName) {
+      return; // Not a telemetry-relevant event (e.g., step_started, task_completed)
+    }
+
+    // Emit sanitized telemetry event
+    try {
+      const telemetryEvent = buildEvent({
+        name: telemetryEventName as any, // Cast to match telemetry event union
+        workspaceId: "workspace-default", // Mock; would come from app context
+        role: "operator", // Mock; would come from auth context
+        requestId: lastEvent.event_id,
+        payload: lastEvent.payload,
+      });
+
+      // Log to console in development; in production, would send to telemetry service
+      if (process.env.NODE_ENV === "development") {
+        console.debug("[Telemetry]", telemetryEvent.name, telemetryEvent.payload);
+      }
+    } catch (error) {
+      console.error("[Telemetry Error]", error);
+    }
+  }, [taskEvents]);
 }

@@ -22,8 +22,10 @@ import {
   useSelectedTask,
   useCurrentStep,
   useTaskActions,
+  useModalState,
 } from "./task-store";
 import { TaskStepState } from "./task-types";
+import { ApprovalGate } from "./approval-gate";
 
 /**
  * Action button styling
@@ -52,6 +54,7 @@ export function StepRunner() {
     retryStep,
     openApprovalModal,
   } = useTaskActions();
+  const modalState = useModalState();
 
   // Mock actor ID for demo (would come from auth context in real app)
   const currentActorId = "operator-id-123";
@@ -350,6 +353,11 @@ export function StepRunner() {
           Only the current actionable step displays controls. Future steps become available after all prior steps complete.
         </p>
       </div>
+
+      {/* Approval gate modal (renders only when modal state is active) */}
+      {modalState.type === "approval" && modalState.stepId && (
+        <ApprovalGate stepId={modalState.stepId} />
+      )}
     </div>
   );
 }

@@ -21,6 +21,7 @@ import React, { Suspense } from "react";
 import { TaskStoreProvider } from "./task-store";
 import { TaskGraph } from "./task-graph";
 import { StepRunner } from "./step-runner";
+import { EvidencePanel } from "./evidence-panel";
 
 /**
  * Main route component for /markos/operations/tasks
@@ -59,8 +60,14 @@ export default function OperationsTasksPage() {
         {/* Right Region: Evidence Drawer (25% desktop, hidden on mobile, overlay on tablet) */}
         <aside className="hidden lg:block w-full lg:w-[25%] bg-white rounded-lg border border-gray-200 shadow-sm p-4 max-h-[800px] lg:max-h-screen overflow-y-auto order-3">
           <div className="text-sm text-[#475569]">
-            <p className="font-medium text-[#0f172a] mb-2">Evidence Panel</p>
-            <p>Click on a step to view evidence details</p>
+            <p className="font-medium text-[#0f172a] mb-4">Evidence Panel</p>
+            <Suspense
+              fallback={
+                <div className="text-xs text-[#7c8192]">Loading evidence...</div>
+              }
+            >
+              <EvidencePanel />
+            </Suspense>
           </div>
         </aside>
       </div>
