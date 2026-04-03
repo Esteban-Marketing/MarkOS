@@ -15,6 +15,14 @@
  * - TaskStoreProvider seeded with fixtures enables immediate operator interaction
  * - Three-region layout maintains audit path: task list → runner → evidence
  * - Mobile responsive behavior: drawer becomes overlay, list/runner stack vertically
+ *
+ * Task 51-02-02: Tenant Context Propagation Contract
+ * ===================================================
+ * Protected MarkOS surfaces require deterministic tenant context for all API interactions:
+ * - TaskStoreProvider sources tenant from authenticated context only
+ * - Protected API requests to update tasks include x-tenant-id header from JWT claims
+ * - Fail-closed: Request dispatch is blocked if tenant context is null/ambiguous
+ * - Denial state is visible to user when tenant context mismatch occurs
  */
 
 import React, { Suspense } from "react";
