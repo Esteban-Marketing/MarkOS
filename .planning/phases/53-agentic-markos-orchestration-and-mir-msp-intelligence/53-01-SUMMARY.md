@@ -83,7 +83,9 @@ None - plan executed exactly as written.
 
 ## Issues Encountered
 
-None.
+- `gsd-tools state advance-plan`, `state record-metric`, `state add-decision`, and `state record-session` returned non-fatal "section not found"/parse errors because `.planning/STATE.md` currently lacks the expected canonical sections.
+- `gsd-tools requirements mark-complete AGT-01 AGT-02` returned `not_found` for both IDs in the current `.planning/REQUIREMENTS.md` structure.
+- `gsd-tools state update-progress` and `roadmap update-plan-progress 53` succeeded and were kept.
 
 ## User Setup Required
 
