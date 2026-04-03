@@ -55,6 +55,36 @@ const SUPABASE_RELATIONAL_CONTRACT = Object.freeze({
       indexes: ['tenant_id', 'project_slug', 'entity_key', 'recorded_at'],
       rls: 'tenant_scoped_append_only',
     },
+    {
+      name: 'billing_periods',
+      primary_key: 'billing_period_id',
+      indexes: ['tenant_id', 'period_start', 'period_end'],
+      rls: 'tenant_scoped_system_write',
+    },
+    {
+      name: 'billing_pricing_snapshots',
+      primary_key: 'pricing_snapshot_id',
+      indexes: ['tenant_id', 'billing_period_id', 'effective_at'],
+      rls: 'tenant_scoped_append_only',
+    },
+    {
+      name: 'billing_usage_events',
+      primary_key: 'usage_event_id',
+      indexes: ['tenant_id', 'billing_period_id', 'source_event_key', 'measured_at'],
+      rls: 'tenant_scoped_append_only',
+    },
+    {
+      name: 'billing_usage_ledger_rows',
+      primary_key: 'ledger_row_id',
+      indexes: ['tenant_id', 'billing_period_id', 'pricing_snapshot_id', 'materialized_at'],
+      rls: 'tenant_scoped_append_only',
+    },
+    {
+      name: 'billing_usage_ledger_lineage',
+      primary_key: 'ledger_lineage_id',
+      indexes: ['tenant_id', 'ledger_row_id', 'usage_event_id'],
+      rls: 'tenant_scoped_append_only',
+    },
   ],
 });
 
@@ -63,6 +93,10 @@ const IMMUTABLE_APPEND_ONLY_TABLES = Object.freeze([
   'markos_discipline_activation_evidence',
   'markos_mir_versions',
   'markos_mir_regenerations',
+  'billing_pricing_snapshots',
+  'billing_usage_events',
+  'billing_usage_ledger_rows',
+  'billing_usage_ledger_lineage',
 ]);
 
 // Canonical vector metadata expected by Upstash vector retrieval paths.
