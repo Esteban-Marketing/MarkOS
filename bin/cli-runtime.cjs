@@ -72,6 +72,11 @@ function parseCliArgs(argv = process.argv.slice(2)) {
     projectName: null,
     scope: null,
     help: false,
+    provider: null,
+    test: false,
+    month: null,
+    exportFormat: null,
+    providers: false,
   };
 
   const tokens = [...argv];
@@ -82,6 +87,16 @@ function parseCliArgs(argv = process.argv.slice(2)) {
     tokens.shift();
   } else if (tokens[0] === 'db:setup') {
     parsed.command = 'db:setup';
+    tokens.shift();
+  } else if (tokens[0] === 'llm:config') {
+    parsed.command = 'llm:config';
+    tokens.shift();
+  } else if (tokens[0] === 'llm:status') {
+    parsed.command = 'llm:status';
+    tokens.shift();
+  } else if (tokens[0] === 'llm:providers') {
+    parsed.command = 'llm:providers';
+    parsed.providers = true;
     tokens.shift();
   }
 
@@ -100,6 +115,25 @@ function parseCliArgs(argv = process.argv.slice(2)) {
       parsed.scope = 'global';
     } else if (token === '--help' || token === '-h') {
       parsed.help = true;
+    } else if (token === '--test') {
+      parsed.test = true;
+    } else if (token === '--providers') {
+      parsed.providers = true;
+    } else if (token.startsWith('--provider=')) {
+      parsed.provider = token.slice('--provider='.length) || null;
+    } else if (token === '--provider') {
+      parsed.provider = tokens[index + 1] || null;
+      index += 1;
+    } else if (token.startsWith('--month=')) {
+      parsed.month = token.slice('--month='.length) || null;
+    } else if (token === '--month') {
+      parsed.month = tokens[index + 1] || null;
+      index += 1;
+    } else if (token.startsWith('--export=')) {
+      parsed.exportFormat = token.slice('--export='.length) || null;
+    } else if (token === '--export') {
+      parsed.exportFormat = tokens[index + 1] || null;
+      index += 1;
     }
   }
 
@@ -110,6 +144,9 @@ function printInstallUsage() {
   console.log('Usage: npx markos [install] [--yes] [--project-name <name>] [--no-onboarding] [--project|--global]');
   console.log('       npx markos update');
   console.log('       npx markos db:setup');
+  console.log('       npx markos llm:config [--provider <anthropic|openai|gemini>] [--test]');
+  console.log('       npx markos llm:status [--month <YYYY-MM>] [--export <csv>] [--providers]');
+  console.log('       npx markos llm:providers');
 }
 
 function detectGSD(targetDir) {
@@ -180,6 +217,34 @@ function resolveScopeTarget(cwd, scope) {
   return scope === 'global' ? os.homedir() : cwd;
 }
 
+// ---------------------------------------------------------------------------
+// Plugin Runtime Boot (Phase 52 — PLG-DA-01, D-01)
+// ---------------------------------------------------------------------------
+
+/**
+ * bootPluginRuntime(manifests) → { registry, failures }
+ *
+ * Loads first-party plugin manifests at server boot using fail-closed error
+ * boundaries from lib/markos/plugins/loader.js. Invalid plugins are recorded
+ * but do not block startup.
+ *
+ * @param {object[]} manifests - Array of plugin manifest objects to load
+ * @returns {{ registry: object, failures: Array<{manifest: object, error: Error}> }}
+ */
+function bootPluginRuntime(manifests = []) {
+  const { loadPlugins } = require('../lib/markos/plugins/loader.js');
+  const result = loadPlugins(manifests);
+
+  if (result.failures.length > 0) {
+    for (const { manifest, error } of result.failures) {
+      const pluginId = manifest && manifest.id ? manifest.id : '(unknown)';
+      console.warn(`[plugin-boot] Plugin "${pluginId}" failed to load: ${error.message}`);
+    }
+  }
+
+  return result;
+}
+
 module.exports = {
   MIN_NODE_VERSION,
   assertSupportedNodeVersion,
@@ -199,4 +264,5 @@ module.exports = {
   printInstallUsage,
   resolveScopeTarget,
   slugify,
+  bootPluginRuntime,
 };
