@@ -53,7 +53,8 @@ function loadIamModule() {
       console.warn('IAM v3.2 module not available, authorization checks disabled:', err.message);
       iamModule = { canPerformAction: () => true }; // Fallback: allow all
     }
-  }
+      handleLiteracyQuery,
+      handlePluginRoute,
   return iamModule;
 }
 
@@ -70,10 +71,39 @@ function loadIamModule() {
  */
 function checkActionAuthorization(action, req) {
   const iamMod = loadIamModule();
-  const iamRole = req.markosAuth?.iamRole || 'readonly'; // Default to least privilege
-  
-  const authorized = iamMod.canPerformAction(iamRole, action);
-  if (!authorized) {
+}
+
+// Phase 52: Digital Agency plugin lazy-loader
+let _daPlugin = null;
+function _loadDAPlugin() {
+  if (!_daPlugin) {
+    try {
+      _daPlugin = require('../markos/plugins/digital-agency/index.js');
+    } catch (err) {
+      console.warn('Digital Agency plugin not available:', err.message);
+      _daPlugin = { digitalAgencyPlugin: null };
+    }
+  }
+  return _daPlugin;
+}
+async function handlePluginRoute(req, res) {
+  const { digitalAgencyPlugin } = _loadDAPlugin();
+  if (!digitalAgencyPlugin) {
+    return json(res, 503, { success: false, error: 'PLUGIN_RUNTIME_UNAVAILABLE' });
+  }
+  const requestPath = String(req.url || '').split('?')[0].replace(/\/+$/, '');
+  const requestMethod = String(req.method || 'GET').toUpperCase();
+  for (const route of digitalAgencyPlugin.routes) {
+    const routeRegex = new RegExp(`^${route.path.replace(/:([^/]+)/g, '[^/]+')}$`);
+    if (routeRegex.test(requestPath) && route.method === requestMethod) {
+      return route.handler(req, res);
+    }
+  }
+  return json(res, 404, { success: false, error: 'PLUGIN_ROUTE_NOT_FOUND' });
+}
+
+module.exports = {
+  handleConfig,
     return {
       authorized: false,
       reason: `Action '${action}' not permitted for role '${iamRole}'`,
