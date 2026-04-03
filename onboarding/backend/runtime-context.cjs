@@ -636,6 +636,24 @@ function emitDenyTelemetry(denyEvent) {
   };
 }
 
+/**
+ * Resolve a tenantId from an inbound hostname using a domain→tenant map.
+ * Supports both shared-domain subdomains (e.g. acme.markos.io) and custom
+ * domains (e.g. mycustomdomain.com) as long as they appear in domainMap.
+ * Returns null for unknown or empty hostnames — fail-closed.
+ *
+ * @param {string} hostname
+ * @param {Map<string,string>} domainMap  hostname → tenantId
+ * @returns {string|null}
+ */
+function resolveTenantFromDomain(hostname, domainMap) {
+  if (!hostname || typeof hostname !== 'string') return null;
+  const normalised = hostname.trim().toLowerCase();
+  if (!normalised) return null;
+  // Try normalised first, then original (preserves case-exact keys if needed)
+  return domainMap.get(normalised) || domainMap.get(hostname) || null;
+}
+
 module.exports = {
   ROLLOUT_MODES,
   REQUIRED_SECRET_MATRIX,
@@ -667,3 +685,6 @@ module.exports = {
   resolveRequestedProjectSlug,
   resolveSeedOutputPath,
 };
+
+// named export appended after object literal to avoid disturbing existing ordering
+module.exports.resolveTenantFromDomain = resolveTenantFromDomain;
