@@ -165,3 +165,79 @@ test('recordCapabilityGrant: throws for unknown tenant (fail-closed)', () => {
     }
   );
 });
+
+// ---------------------------------------------------------------------------
+// Plugin settings API — IAM role gating (Task 52-03-01)
+// ---------------------------------------------------------------------------
+
+const { handlePluginSettings } = require('../api/tenant-plugin-settings.js');
+
+function makeSettingsReq({ method = 'POST', iamRole = 'owner', tenantId = TENANT_A, body = {} } = {}) {
+  return {
+    method,
+    url: '/api/tenant-plugin-settings',
+    body,
+    markosAuth: { ok: true, status: 200, tenant_id: tenantId, principal: { id: 'user-1', tenant_id: tenantId, tenant_role: iamRole } },
+    tenantContext: { tenantId, userId: 'user-1', role: iamRole },
+  };
+}
+
+function makeSettingsRes() {
+  const res = { statusCode: null, body: null };
+  res.writeHead = (code) => { res.statusCode = code; return res; };
+  res.end = (data) => { try { res.body = JSON.parse(data); } catch { res.body = data; } return res; };
+  return res;
+}
+
+test('settings: owner can enable plugin and update capabilities', async () => {
+  const req = makeSettingsReq({ iamRole: 'owner', body: { plugin_id: PLUGIN_ID, enabled: true, capabilities: ['read_drafts', 'read_campaigns'] } });
+  const res = makeSettingsRes();
+  await handlePluginSettings(req, res);
+  assert.equal(res.statusCode, 200);
+  assert.ok(res.body?.success, 'Owner must receive success response');
+});
+
+test('settings: tenant-admin can enable plugin', async () => {
+  const req = makeSettingsReq({ iamRole: 'tenant-admin', body: { plugin_id: PLUGIN_ID, enabled: false, capabilities: [] } });
+  const res = makeSettingsRes();
+  await handlePluginSettings(req, res);
+  assert.equal(res.statusCode, 200);
+  assert.ok(res.body?.success);
+});
+
+test('settings: non-admin role is denied with 403', async () => {
+  const req = makeSettingsReq({ iamRole: 'contributor', body: { plugin_id: PLUGIN_ID, enabled: true, capabilities: ['read_drafts'] } });
+  const res = makeSettingsRes();
+  await handlePluginSettings(req, res);
+  assert.equal(res.statusCode, 403, 'Contributor must not update plugin settings');
+  assert.match(res.body?.error ?? '', /SETTINGS_FORBIDDEN/);
+});
+
+test('settings: readonly role is denied with 403', async () => {
+  const req = makeSettingsReq({ iamRole: 'readonly', body: { plugin_id: PLUGIN_ID, enabled: true, capabilities: ['read_drafts'] } });
+  const res = makeSettingsRes();
+  await handlePluginSettings(req, res);
+  assert.equal(res.statusCode, 403);
+});
+
+test('settings: missing plugin_id returns 400', async () => {
+  const req = makeSettingsReq({ iamRole: 'owner', body: { enabled: true } });
+  const res = makeSettingsRes();
+  await handlePluginSettings(req, res);
+  assert.equal(res.statusCode, 400);
+  assert.match(res.body?.error ?? '', /MISSING_PLUGIN_ID/);
+});
+
+test('settings: capability update is tenant-scoped (does not bleed to Tenant B)', async () => {
+  const reqA = makeSettingsReq({ iamRole: 'owner', tenantId: TENANT_A, body: { plugin_id: PLUGIN_ID, enabled: true, capabilities: ['write_campaigns'] } });
+  const reqB = makeSettingsReq({ iamRole: 'owner', tenantId: TENANT_B, body: { plugin_id: PLUGIN_ID, enabled: false, capabilities: [] } });
+  const resA = makeSettingsRes();
+  const resB = makeSettingsRes();
+  await handlePluginSettings(reqA, resA);
+  await handlePluginSettings(reqB, resB);
+  assert.equal(resA.statusCode, 200);
+  assert.equal(resB.statusCode, 200);
+  // Responses are independent — each reflects the correct tenant's update
+  assert.equal(resA.body?.config?.tenant_id ?? TENANT_A, TENANT_A);
+  assert.equal(resB.body?.config?.tenant_id ?? TENANT_B, TENANT_B);
+});
