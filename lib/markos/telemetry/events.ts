@@ -7,12 +7,16 @@ export type MarkOSTelemetryEvent = {
     | "markos_entity_published"
     | "markos_theme_changed"
     | "markos_access_denied"
+    | "markos_tenant_access_denied"
     | "markos_ai_snapshot_generated"
     | "markos_ai_snapshot_read"
     | "markos_task_step_executed"
     | "markos_task_step_approved"
     | "markos_task_step_rejected"
-    | "markos_task_step_retried";
+    | "markos_task_step_retried"
+    | "markos_llm_call_completed"
+    | "markos_llm_budget_80_percent"
+    | "markos_llm_budget_100_percent";
   workspaceId: string;
   role: string;
   requestId: string;

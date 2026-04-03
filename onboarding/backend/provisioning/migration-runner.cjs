@@ -40,13 +40,34 @@ async function applyPendingMigrations(options = {}) {
   const migrationsDir = options.migrationsDir || path.resolve(process.cwd(), 'supabase', 'migrations');
   const executeSql = options.executeSql;
   const fsApi = options.fsApi || fs;
+  
+  // Task 51-04-01: Enforce tenant principal for background execution
+  // Background migration jobs require explicit tenant context to proceed
+  const tenantPrincipal = options.tenantPrincipal;
+  
+  if (!tenantPrincipal || !tenantPrincipal.tenant_id) {
+    const error = new Error('Background migration execution requires tenant principal context.');
+    error.code = 'TENANT_CONTEXT_REQUIRED';
+    error.status = 401;
+    throw error;
+  }
+  
+  // Verify tenant principal has expected shape and is not mismatched
+  if (!tenantPrincipal.id || !tenantPrincipal.role) {
+    const error = new Error('Tenant principal is missing required fields: id, role.');
+    error.code = 'INVALID_TENANT_PRINCIPAL';
+    error.status = 400;
+    error.tenant_id = tenantPrincipal.tenant_id;
+    throw error;
+  }
 
   if (typeof executeSql !== 'function') {
     throw new Error('applyPendingMigrations requires an executeSql(sql, meta) function.');
   }
 
   const files = listMigrationFiles(migrationsDir, fsApi);
-  await executeSql(LEDGER_TABLE_SQL, { kind: 'ledger-ensure' });
+  await executeSql(LEDGER_TABLE_SQL, { kind: 'ledger-ensure', tenant_id: tenantPrincipal.tenant_id });
+
 
   const appliedResult = await executeSql(
     'select filename, checksum from markos_migrations order by filename;',

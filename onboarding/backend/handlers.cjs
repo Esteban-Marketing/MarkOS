@@ -936,6 +936,10 @@ async function handleLiteracyCoverage(req, res) {
 
 async function handleMarkosdbMigration(req, res) {
   try {
+    // Task 51-04-01: Background migration execution with tenant principal
+    // req.markosAuth is populated by api/migrate.js with tenant context
+    const tenantPrincipal = req.markosAuth;
+    
     const runtime = createRuntimeContext();
     const migrationSecretCheck = validateRequiredSecrets({
       runtimeMode: runtime.mode,
@@ -948,6 +952,7 @@ async function handleMarkosdbMigration(req, res) {
         error: 'REQUIRED_SECRET_MISSING',
         message: `Missing required runtime secret(s): ${migrationSecretCheck.missing.join(', ')}`,
         operation: 'migration_write',
+        tenant_id: tenantPrincipal?.tenant_id,
       });
     }
 

@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const {
   CONFIG_PATH,
@@ -551,12 +552,47 @@ function requireHostedSupabaseAuth({ req, runtimeContext, operation, requiredPro
   };
 }
 
+// =========================================================================
+// DENY HELPER FOR TELEMETRY (Task 51-04-03)
+// =========================================================================
+// Emit immutable denial events for cross-tenant access attempts
+
+function buildDenyEvent({ actor_id, tenant_id, action, reason, request_id }) {
+  const timestamp = new Date().toISOString();
+  
+  // Immutable event structure with correlation ID for audit tracing
+  const event = Object.freeze({
+    event_type: 'markos_tenant_access_denied',
+    timestamp,
+    correlation_id: request_id || crypto.randomUUID?.() || `${Date.now()}`,
+    actor_id: String(actor_id || 'unknown'),
+    tenant_id: String(tenant_id || 'unknown'),
+    action: String(action || 'unknown'),
+    reason: String(reason || 'cross_tenant_access_attempt'),
+  });
+  
+  return event;
+}
+
+function emitDenyTelemetry(denyEvent) {
+  // Task 51-04-03: Emit to telemetry layer (sanitization happens in events.ts)
+  // This is a placeholder for actual telemetry emission
+  // The actual implementation will call events.ts buildEvent with sanitization
+  return {
+    ok: true,
+    event_id: denyEvent.correlation_id,
+    recorded_at: denyEvent.timestamp,
+  };
+}
+
 module.exports = {
   ROLLOUT_MODES,
   REQUIRED_SECRET_MATRIX,
   RETENTION_POLICY,
   assertRolloutPromotionAllowed,
+  buildDenyEvent,
   createRuntimeContext,
+  emitDenyTelemetry,
   getRolloutMode,
   getMarkosdbAccessMatrix,
   getDefaultProjectSlug,
