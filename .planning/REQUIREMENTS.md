@@ -368,5 +368,95 @@ Current state (v3.0 end):
 
 **Requirements Version:** 1.0  
 **Created:** 2026-04-02  
-**Last Updated:** 2026-04-02  
+**Last Updated:** 2026-04-03
 **Status:** Locked for v3.1.0. Ready for phase planning and roadmap generation.
+
+---
+
+## 8. Milestone v3.2.0 Requirements — Plugin-First Architecture & Digital Agency v1
+
+**Milestone:** v3.2.0 — Post-Unification Execution & Adoption
+**Goal:** Deliver plugin-first architecture with the Digital Agency plugin as the first packaged plugin, enabling multi-tenant plugin enablement, capability-based access control, and white-label plugin rendering.
+**Status:** Active. Unlocked 2026-04-03.
+
+---
+
+### Foundation Requirements (Phase 51 — Multi-Tenant Foundation and Authorization)
+
+**TEN-01:** Tenant isolation is fully enforced at database layer (RLS) with no cross-tenant data leakage under any execution path.
+- Phase: 51
+- Success: Zero cross-tenant queries succeed in any test scenario
+
+**TEN-02:** Tenant context is propagated deterministically from API entry to all downstream handlers, jobs, and agent runtimes.
+- Phase: 51
+- Success: Every request has a verifiable tenant_id in context throughout its lifecycle
+
+**TEN-03:** Tenant membership and permission changes are effective immediately without cache race conditions.
+- Phase: 51
+- Success: Role changes propagate within 100ms; stale sessions are invalidated
+
+**IAM-01:** IAM v3.2 role matrix (owner, tenant-admin, manager, contributor, viewer) is enforced at every API and UI mutation endpoint.
+- Phase: 51
+- Success: Unauthorized role attempts return 403; all roles are tested at boundaries
+
+**IAM-02:** IAM role enforcement is backward-compatible with v3.1 RBAC baseline; no regression on Phase 45–50 behaviors.
+- Phase: 51
+- Success: All Phase 45–50 test contracts still pass with IAM v3.2 active
+
+---
+
+### Plugin Architecture Requirements (Phase 52 — Plugin Runtime and Digital Agency Plugin v1)
+
+**PLG-DA-01:** MarkOS plugin runtime supports plugin registration, capability contracts, and tenant-level enablement controls.
+- Input: Plugin manifest (PluginContract) with id, version, routes, capabilities, and hooks
+- Output: Plugin routes registered in Express; capability enforcement middleware active; tenant config persisted in Supabase
+- Success: Plugin disabled → routes return 404; plugin enabled → routes return 200 for authorized tenants
+- Phase: 52
+
+**PLG-DA-02:** Digital Agency plugin ships as the first plugin package with scoped routes, team workflows, approvals, campaign scheduling, and role policy overlays.
+- Input: PLG-DA-01 plugin runtime active; Phase 51 tenant context + IAM v3.2 in place
+- Output: Four DA routes (dashboard, drafts, campaign assemble, campaign publish) live under `/plugins/digital-agency/`
+- Success: Full DA workflow (draft → approve → campaign assemble → publish → telemetry) completes end-to-end for authorized tenant
+- Phase: 52
+
+**WL-01:** Tenants can configure logo, color tokens, and brand metadata for customer-facing surfaces.
+- Input: Phase 37 brand-pack system
+- Output: Plugin UI surfaces render with tenant's configured brand overrides
+- Success: Plugin dashboard respects tenant brand-pack token overrides; changes visible within one request cycle
+- Phase: 52 (plugin surface extension; Phase 37 delivered base system)
+
+**WL-02:** Tenant notifications and transactional templates render with tenant branding.
+- Input: Tenant context with brand-pack metadata (Phase 51 + Phase 37)
+- Output: Plugin notification handlers apply brand overrides to templated responses
+- Success: Plugin-triggered notifications display tenant logo, colors, and label
+- Phase: 52
+
+**WL-03:** Tenant custom domain onboarding supports verification and safe fallback routing.
+- Input: Phase 51 tenant context (domain routing resolved to tenant_id via reverse proxy)
+- Output: Plugin routes accessible from both shared domain and tenant custom domain
+- Success: Plugin routes are domain-agnostic; tenant_id resolved regardless of request origin domain
+- Phase: 52
+
+**WL-04:** White-label settings are versioned and rollback-capable.
+- Input: Phase 37 brand-pack version history
+- Output: Plugin telemetry captures branding snapshot with each execution; rollback restores prior brand-pack automatically
+- Success: Plugin telemetry audit trail includes brand-pack version used per execution
+- Phase: 52
+
+---
+
+### Coverage Verification
+
+| Req ID | Phase | Domain | Status |
+|--------|-------|--------|--------|
+| TEN-01 | 51 | Multi-Tenancy | ✅ Delivered 2026-04-03 |
+| TEN-02 | 51 | Multi-Tenancy | ✅ Delivered 2026-04-03 |
+| TEN-03 | 51 | Multi-Tenancy | ✅ Delivered 2026-04-03 |
+| IAM-01 | 51 | Authorization | ✅ Delivered 2026-04-03 |
+| IAM-02 | 51 | Authorization | ✅ Delivered 2026-04-03 |
+| PLG-DA-01 | 52 | Plugin Runtime | 🟡 Planning |
+| PLG-DA-02 | 52 | Plugin Runtime | 🟡 Planning |
+| WL-01 | 52 | White-Label | 🟡 Planning (base: Phase 37) |
+| WL-02 | 52 | White-Label | 🟡 Planning |
+| WL-03 | 52 | White-Label | 🟡 Planning |
+| WL-04 | 52 | White-Label | 🟡 Planning |
