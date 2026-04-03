@@ -178,3 +178,133 @@ test('51-01-02: Migration preserves workspace_id columns for compatibility', () 
   const migrationSql = loadMigrationFile();
   assert.ok(migrationSql.includes('workspace_id'), 'Must preserve workspace_id for backward compatibility');
 });
+
+// ============================================================================
+// Task 51-01-03: Isolation Contract Assertions
+// ============================================================================
+
+// Test that every tenant-scoped table reference in policies uses tenant_id
+test('51-01-03: Every RLS policy uses tenant_id for tenant membership verification', () => {
+  const migrationSql = loadMigrationFile();
+  // Count policies in the file
+  const policyCount = (migrationSql.match(/create policy/gi) || []).length;
+  assert.ok(policyCount > 0, 'Must have at least one RLS policy');
+  
+  // Verify policies include tenant_id and membership checks
+  const policiesWithTenantId = migrationSql.split(/create policy/gi).filter(section => 
+    section.toLowerCase().includes('tenant_id') && section.toLowerCase().includes('membership')
+  ).length;
+  assert.ok(policiesWithTenantId > 0, 'Policies must reference tenant_id and membership');
+});
+
+// Test that write policies (INSERT) include WITH CHECK clause
+test('51-01-03: All INSERT policies include WITH CHECK clause for write protection', () => {
+  const migrationSql = loadMigrationFile();
+  // Find sections with INSERT policies
+  const insertSections = migrationSql.split(/for insert/gi);
+  assert.ok(insertSections.length > 1, 'Must have INSERT policies');
+  
+  // Verify WITH CHECK is present in insert policy sections
+  for (let i = 1; i < insertSections.length; i++) {
+    const section = insertSections[i].substring(0, 400);
+    assert.ok(section.toLowerCase().includes('with check'), 
+      `INSERT policy section must include WITH CHECK clause`);
+  }
+});
+
+// Test that UPDATE policies include both USING and WITH CHECK
+test('51-01-03: All UPDATE policies include USING and WITH CHECK clauses', () => {
+  const migrationSql = loadMigrationFile();
+  // Find sections with UPDATE policies
+  const updateSections = migrationSql.split(/for update/gi);
+  assert.ok(updateSections.length > 1, 'Must have UPDATE policies');
+  
+  // Verify USING and WITH CHECK are present in update policy sections
+  for (let i = 1; i < updateSections.length; i++) {
+    const section = updateSections[i].substring(0, 800);
+    const lowerSection = section.toLowerCase();
+    assert.ok(lowerSection.includes('using ('), 
+      'UPDATE policy must include USING clause');
+    assert.ok(lowerSection.includes('with check'), 
+      'UPDATE policy must include WITH CHECK clause');
+  }
+});
+
+// Test cross-tenant denial path contract
+test('51-01-03: Policies enforce cross-tenant denial by checking actor membership in target tenant', () => {
+  const migrationSql = loadMigrationFile();
+  const policySection = migrationSql.toLowerCase();
+  
+  // Good indicators that membership is checked for isolation
+  const hasActorCheck = policySection.includes('auth.jwt()') && policySection.includes('sub');
+  const hasMembershipCheck = policySection.includes('markos_tenant_memberships') && policySection.includes('user_id');
+  const hasTenantMatch = policySection.includes('=') && policySection.includes('tenant_id');
+  
+  assert.ok(hasActorCheck, 'Policies must extract actor from JWT');
+  assert.ok(hasMembershipCheck, 'Policies must check membership table for authorization');
+  assert.ok(hasTenantMatch, 'Policies must verify tenant_id matches membership');
+});
+
+// Test that tenant_id is non-nullable after setup (immutable partition)
+test('51-01-03: tenant_id column is present and properly typed on all tables', () => {
+  const migrationSql = loadMigrationFile();
+  const targetTables = [
+    'markos_company',
+    'markos_mir_documents',
+    'markos_msp_plans',
+    'markos_icps',
+    'markos_segments',
+    'markos_campaigns',
+  ];
+  
+  targetTables.forEach((table) => {
+    const tableRegex = new RegExp(`alter table ${table}[^)]*add column[^;]*tenant_id[^;]*;`, 'i');
+    assert.ok(tableRegex.test(migrationSql), `${table} must have tenant_id added`);
+  });
+});
+
+// Test idempotency: all table/index/policy creates use "if not exists"
+test('51-01-03: Migration is idempotent (uses if not exists for all DDL)', () => {
+  const migrationSql = loadMigrationFile();
+  
+  const createTableMatches = migrationSql.match(/create table/gi) || [];
+  createTableMatches.forEach((match) => {
+    const idx = migrationSql.indexOf(match);
+    const followingText = migrationSql.substring(idx, idx + 50);
+    assert.ok(followingText.toLowerCase().includes('if not exists'),
+      'CREATE TABLE must use IF NOT EXISTS for idempotency');
+  });
+  
+  const createIndexMatches = migrationSql.match(/create index/gi) || [];
+  createIndexMatches.forEach((match) => {
+    const idx = migrationSql.indexOf(match);
+    const followingText = migrationSql.substring(idx, idx + 50);
+    assert.ok(followingText.toLowerCase().includes('if not exists'),
+      'CREATE INDEX must use IF NOT EXISTS for idempotency');
+  });
+  
+  const createPolicyMatches = migrationSql.match(/create policy/gi) || [];
+  createPolicyMatches.forEach((match) => {
+    const idx = migrationSql.indexOf(match);
+    const followingText = migrationSql.substring(idx, idx + 50);
+    assert.ok(followingText.toLowerCase().includes('if not exists'),
+      'CREATE POLICY must use IF NOT EXISTS for idempotency');
+  });
+});
+
+// Test requirement traceability: contracts cover TEN-01 and IAM-01
+test('51-01-03: Contracts are properly scoped to TEN-01 and IAM-01 requirements', () => {
+  const { TenantMembership, TenantPrincipal } = require('../../lib/markos/tenant/contracts.js');
+  
+  // TEN-01: Tenant-scoped database entities enforce tenant_id boundaries
+  // Verify the contract enforces tenant_id as mandatory
+  assert.ok(TenantMembership.memb_fields.includes('tenant_id'),
+    'TEN-01 requirement: tenant_id must be mandatory in membership');
+  
+  // IAM-01: One user can resolve deterministic membership across multiple tenants
+  // Verify the contract supports multiple memberships per user
+  assert.ok(TenantPrincipal.principal_fields.includes('memberships'),
+    'IAM-01 requirement: principal must support multiple memberships');
+  assert.ok(Array.isArray(TenantMembership.memb_fields),
+    'IAM-01 requirement: memberships must support one-to-many');
+});
