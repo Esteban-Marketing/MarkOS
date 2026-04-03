@@ -274,52 +274,52 @@ Plans:
 
 ## 🟢 v3.2.0 — Post-Unification Execution & Adoption
 
-> **Status:** 🟢 In Progress — Phase 52 verified (human_needed); Phase 53 pending
->
-> **Goal:** Establish strict tenant boundaries, deterministic tenant context propagation, and enforceable role boundaries to enable multi-tenant operator execution with measurable security and isolation guarantees.
->
-> **Requirements:** TEN-01, TEN-02, TEN-03, IAM-01, IAM-02
->
-> ### Phase 51: Multi-Tenant Foundation and Authorization
-> **Goal:** Deliver the core multi-tenant and authorization foundation for MarkOS by enforcing strict tenant isolation and deterministic tenant context propagation across UI, API, jobs, and agent runtime entrypoints, while upgrading role boundaries from v3.1 RBAC baseline to v3.2 IAM model.
-> **Requirements Mapped:** TEN-01, TEN-02, TEN-03, IAM-01, IAM-02
-> **Status:** ✅ Complete (4/4 plans, verification PASS 107/107)
-> **Plans:**
-> - [x] 51-01-PLAN.md — Tenant schema + membership contracts + tenant_id RLS baseline
-> - [x] 51-02-PLAN.md — Wrapper tenant auth boundary + protected UI propagation fail-closed contract
-> - [x] 51-03-PLAN.md — Concise IAM v3.2 action matrix enforcement across API and UI with compatibility gates
-> - [x] 51-04-PLAN.md — Background-job + handler/orchestrator tenant propagation and denial telemetry
->
-> **Phase 51 Milestones:**
-> - ✅ 51-01: Tenant schema + RLS (DELIVERED 2026-04-03)
-> - ✅ 51-02: Wrapper tenant auth boundary (DELIVERED 2026-04-03)
-> - ✅ 51-03: IAM v3.2 action-scoped authorization (DELIVERED 2026-04-03)
-> - ✅ 51-04: Background job + denial telemetry (DELIVERED 2026-04-03)
->
-> ### Phase 52: Plugin Runtime and Digital Agency Plugin v1
-> **Goal:** Deliver the core plugin infrastructure for MarkOS v3.2: in-process plugin registry/loader, capability-based access control layered on IAM v3.2, Digital Agency plugin (agency workflows, approvals, campaign scheduling), per-tenant plugin enablement with plan-tier gating foundations, and plugin telemetry ready for Phase 54 metering.
-> **Requirements Mapped:** PLG-DA-01, PLG-DA-02, WL-01, WL-02, WL-03, WL-04
-> **Depends on:** Phase 51 (Multi-Tenant Foundation and Authorization)
-> **Status:** ✅ Verified (human_needed) — 12/12 truths, 73/73 tests, 2 live-environment checks pending
-> **Plans:**
-> - [x] 52-01-PLAN.md — Plugin runtime foundation: contracts, registry/loader, tenant enablement + capability grants (Wave 1)
-> - [x] 52-02-PLAN.md — Digital Agency plugin: routes, campaign workflow persistence, approval lifecycle (Wave 2)
-> - [x] 52-03-PLAN.md — Tenant plugin management + white-label: settings API/UI, brand-pack inheritance, domain routing (Wave 3)
-> - [x] 52-04-PLAN.md — Plugin telemetry, brand-version audit trail, integration gate + VALIDATION close-out (Wave 4)
->
-> **Phase 52 Milestones:**
-> - ✅ 52-01: Plugin runtime foundation (DELIVERED 2026-04-03)
-> - ✅ 52-02: Digital Agency plugin core (DELIVERED 2026-04-03)
-> - ✅ 52-03: Tenant plugin management + white-label (DELIVERED 2026-04-03)
-> - ✅ 52-04: Plugin telemetry + brand-version audit trail (DELIVERED 2026-04-03)
-> - 🔲 HV1: Plugin settings UI visual verification (pending live environment)
-> - 🔲 HV2: Live plugin-disable gate E2E (pending live environment)
->
-> ### Phase 53: Agentic MarkOS Orchestration and MIR/MSP Intelligence
-> **Goal:** Deliver tenant-bound AI orchestration infrastructure for MarkOS: deterministic agent run lifecycle engine (envelope, state machine, idempotency), policy-based provider abstraction with failover, MIR Gate 1 hardening and MSP discipline activation contracts, human approval gates for high-impact agent actions, and full run telemetry capturing model/prompt/cost/outcome per tenant.
-> **Requirements Mapped:** AGT-01, AGT-02, AGT-03, AGT-04, MIR-01, MIR-02, MIR-03, MIR-04, IAM-03
-> **Depends on:** Phase 51 (Multi-Tenant Foundation), Phase 52 (Plugin Runtime — telemetry hooks)
-> **Status:** 🟡 Planning — discuss-phase in progress
+**Status:** 🟢 In Progress — Phase 52 verified (human_needed); Phase 53 pending
+
+**Goal:** Establish strict tenant boundaries, deterministic tenant context propagation, and enforceable role boundaries to enable multi-tenant operator execution with measurable security and isolation guarantees.
+
+**Requirements:** TEN-01, TEN-02, TEN-03, IAM-01, IAM-02
+
+## Phase 51: Multi-Tenant Foundation and Authorization
+**Goal:** Deliver the core multi-tenant and authorization foundation for MarkOS by enforcing strict tenant isolation and deterministic tenant context propagation across UI, API, jobs, and agent runtime entrypoints, while upgrading role boundaries from v3.1 RBAC baseline to v3.2 IAM model.
+**Requirements Mapped:** TEN-01, TEN-02, TEN-03, IAM-01, IAM-02
+**Status:** ✅ Complete (4/4 plans, verification PASS 107/107)
+**Plans:**
+- [x] 51-01-PLAN.md — Tenant schema + membership contracts + tenant_id RLS baseline
+- [x] 51-02-PLAN.md — Wrapper tenant auth boundary + protected UI propagation fail-closed contract
+- [x] 51-03-PLAN.md — Concise IAM v3.2 action matrix enforcement across API and UI with compatibility gates
+- [x] 51-04-PLAN.md — Background-job + handler/orchestrator tenant propagation and denial telemetry
+
+**Phase 51 Milestones:**
+- ✅ 51-01: Tenant schema + RLS (DELIVERED 2026-04-03)
+- ✅ 51-02: Wrapper tenant auth boundary (DELIVERED 2026-04-03)
+- ✅ 51-03: IAM v3.2 action-scoped authorization (DELIVERED 2026-04-03)
+- ✅ 51-04: Background job + denial telemetry (DELIVERED 2026-04-03)
+
+## Phase 52: Plugin Runtime and Digital Agency Plugin v1
+**Goal:** Deliver the core plugin infrastructure for MarkOS v3.2: in-process plugin registry/loader, capability-based access control layered on IAM v3.2, Digital Agency plugin (agency workflows, approvals, campaign scheduling), per-tenant plugin enablement with plan-tier gating foundations, and plugin telemetry ready for Phase 54 metering.
+**Requirements Mapped:** PLG-DA-01, PLG-DA-02, WL-01, WL-02, WL-03, WL-04
+**Depends on:** Phase 51 (Multi-Tenant Foundation and Authorization)
+**Status:** ✅ Verified (human_needed) — 12/12 truths, 73/73 tests, 2 live-environment checks pending
+**Plans:**
+- [x] 52-01-PLAN.md — Plugin runtime foundation: contracts, registry/loader, tenant enablement + capability grants (Wave 1)
+- [x] 52-02-PLAN.md — Digital Agency plugin: routes, campaign workflow persistence, approval lifecycle (Wave 2)
+- [x] 52-03-PLAN.md — Tenant plugin management + white-label: settings API/UI, brand-pack inheritance, domain routing (Wave 3)
+- [x] 52-04-PLAN.md — Plugin telemetry, brand-version audit trail, integration gate + VALIDATION close-out (Wave 4)
+
+**Phase 52 Milestones:**
+- ✅ 52-01: Plugin runtime foundation (DELIVERED 2026-04-03)
+- ✅ 52-02: Digital Agency plugin core (DELIVERED 2026-04-03)
+- ✅ 52-03: Tenant plugin management + white-label (DELIVERED 2026-04-03)
+- ✅ 52-04: Plugin telemetry + brand-version audit trail (DELIVERED 2026-04-03)
+- 🔲 HV1: Plugin settings UI visual verification (pending live environment)
+- 🔲 HV2: Live plugin-disable gate E2E (pending live environment)
+
+## Phase 53: Agentic MarkOS Orchestration and MIR/MSP Intelligence
+**Goal:** Deliver tenant-bound AI orchestration infrastructure for MarkOS: deterministic agent run lifecycle engine (envelope, state machine, idempotency), policy-based provider abstraction with failover, MIR Gate 1 hardening and MSP discipline activation contracts, human approval gates for high-impact agent actions, and full run telemetry capturing model/prompt/cost/outcome per tenant.
+**Requirements Mapped:** AGT-01, AGT-02, AGT-03, AGT-04, MIR-01, MIR-02, MIR-03, MIR-04, IAM-03
+**Depends on:** Phase 51 (Multi-Tenant Foundation), Phase 52 (Plugin Runtime — telemetry hooks)
+**Status:** 🟡 Planning — discuss-phase in progress
 
 ---
 <details>
