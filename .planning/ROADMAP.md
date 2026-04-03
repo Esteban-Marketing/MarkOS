@@ -274,7 +274,7 @@ Plans:
 
 ## 🟢 v3.2.0 — Post-Unification Execution & Adoption
 
-> **Status:** Active — Phase 51 execution in progress
+> **Status:** ✅ Complete — Phase 51 execution and re-verification closed
 >
 > **Goal:** Establish strict tenant boundaries, deterministic tenant context propagation, and enforceable role boundaries to enable multi-tenant operator execution with measurable security and isolation guarantees.
 >
@@ -283,7 +283,7 @@ Plans:
 > ### Phase 51: Multi-Tenant Foundation and Authorization
 > **Goal:** Deliver the core multi-tenant and authorization foundation for MarkOS by enforcing strict tenant isolation and deterministic tenant context propagation across UI, API, jobs, and agent runtime entrypoints, while upgrading role boundaries from v3.1 RBAC baseline to v3.2 IAM model.
 > **Requirements Mapped:** TEN-01, TEN-02, TEN-03, IAM-01, IAM-02
-> **Status:** 🟢 In Progress (4 plans)
+> **Status:** ✅ Complete (4/4 plans, verification PASS 107/107)
 > **Plans:**
 > - [x] 51-01-PLAN.md — Tenant schema + membership contracts + tenant_id RLS baseline
 > - [x] 51-02-PLAN.md — Wrapper tenant auth boundary + protected UI propagation fail-closed contract

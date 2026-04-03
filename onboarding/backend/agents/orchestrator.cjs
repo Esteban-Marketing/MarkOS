@@ -23,7 +23,7 @@
  *   - Returns { ok: false, text: "[DRAFT UNAVAILABLE...]" } on all retries exhausted
  *
  * EXPORTS:
- *   orchestrate(seed, slug) → Promise<{ drafts, vectorStoreResults, errors }>
+ *   orchestrate(seed, slug, executionContext) → Promise<{ drafts, vectorStoreResults, errors }>
  *     drafts          — { company_profile, mission_values, audience, competitive, brand_voice, channel_strategy }
  *     vectorStoreResults — array of vector store operation results
  *     errors          — array of { phase, error } objects for failed steps
@@ -200,7 +200,26 @@ async function executeWithRetry(fn, name, slug, retries = 3, baseDelay = 1500) {
  * - Individual generator failure becomes section-local placeholder text; other sections continue.
  * - The function always returns a structured result object with drafts and error metadata.
  */
-async function orchestrate(seed, slug) {
+function resolveExecutionContext(slug, executionContext) {
+  const context = executionContext && typeof executionContext === 'object'
+    ? executionContext
+    : {
+        tenant_id: `local-${slug || 'default'}`,
+        actor_id: 'local-operator',
+        role: 'local_runtime',
+        request_id: `legacy-${Date.now()}`,
+        correlation_id: null,
+      };
+
+  if (!context || !context.tenant_id) {
+    throw new Error('executionContext missing tenant_id; tenant context is required for orchestrator execution.');
+  }
+
+  return context;
+}
+
+async function orchestrate(seed, slug, executionContext) {
+  const resolvedExecutionContext = resolveExecutionContext(slug, executionContext);
   console.log(`[orchestrator] Starting draft generation for: ${slug}`);
 
   const errors = [];
@@ -261,6 +280,7 @@ async function orchestrate(seed, slug) {
 
     telemetry.capture('literacy_retrieval_observed', {
       project_slug: slug,
+      tenant_id: resolvedExecutionContext.tenant_id,
       disciplines_queried: disciplines,
       total_hits: totalHits,
       pain_point_match_count: painPointMatchCount,

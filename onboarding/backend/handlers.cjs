@@ -319,6 +319,25 @@ function createChecksum(content) {
   return crypto.createHash('sha256').update(content, 'utf8').digest('hex');
 }
 
+function buildExecutionContext(req, slug) {
+  const principal = req && req.markosAuth ? req.markosAuth : null;
+  const headers = (req && req.headers) || {};
+
+  return {
+    tenant_id: principal && principal.tenant_id ? principal.tenant_id : `local-${slug}`,
+    actor_id: (principal && principal.principal && principal.principal.id)
+      || (principal && principal.id)
+      || 'local-operator',
+    role: (principal && principal.iamRole) || (principal && principal.role) || 'local_runtime',
+    request_id: (principal && principal.request_id)
+      || headers['x-request-id']
+      || crypto.randomUUID(),
+    correlation_id: (principal && principal.correlation_id)
+      || headers['x-correlation-id']
+      || null,
+  };
+}
+
 function buildMigrationArtifactRecord(projectSlug, artifactFile, ingestedAt) {
   const content = fs.readFileSync(artifactFile.absolutePath, 'utf8');
   const checksumSha256 = createChecksum(content);
@@ -1233,7 +1252,8 @@ async function handleSubmit(req, res) {
 
     console.log('\n🤖 Running MarkOS AI draft generation for:', slug);
     const orchestrator = require('./agents/orchestrator.cjs');
-    const { drafts, vectorStoreResults, errors } = await orchestrator.orchestrate(seed, slug);
+    const executionContext = buildExecutionContext(req, slug);
+    const { drafts, vectorStoreResults, errors } = await orchestrator.orchestrate(seed, slug, executionContext);
 
     emitRolloutEndpointTelemetry({
       endpoint,

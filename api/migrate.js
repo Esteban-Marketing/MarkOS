@@ -34,8 +34,9 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  // Attach tenant principal to request context for downstream handlers
-  req.markosAuth = auth;
+  // Explicit migration tenant principal handoff for migration-runner provisioning execution.
+  const migrationTenantPrincipal = auth;
+  req.markosAuth = migrationTenantPrincipal;
   // req.markosAuth now contains tenant_id from verified JWT active_tenant_id claim
   await handleMarkosdbMigration(req, res);
 };
