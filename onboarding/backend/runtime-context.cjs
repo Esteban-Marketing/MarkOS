@@ -557,6 +557,57 @@ function requireHostedSupabaseAuth({ req, runtimeContext, operation, requiredPro
 // =========================================================================
 // Emit immutable denial events for cross-tenant access attempts
 
+// =========================================================================
+// PLUGIN CONTROL HELPERS — Phase 52 PLG-DA-01
+// =========================================================================
+// All helpers operate against an in-memory Map store keyed by
+// "${tenantId}::${pluginId}". In production the store is hydrated from
+// the plugin_tenant_config table by the request handler before calling
+// these utilities. Unit tests supply a synthetic Map directly.
+
+function _pluginStoreKey(tenantId, pluginId) {
+  return `${tenantId}::${pluginId}`;
+}
+
+function isTenantPluginEnabled(store, tenantId, pluginId) {
+  const entry = store.get(_pluginStoreKey(tenantId, pluginId));
+  return !!(entry && entry.enabled === true);
+}
+
+function getGrantedCapabilities(store, tenantId, pluginId) {
+  const entry = store.get(_pluginStoreKey(tenantId, pluginId));
+  if (!entry || !Array.isArray(entry.granted_capabilities)) return [];
+  return entry.granted_capabilities.slice();
+}
+
+function assertPluginCapability(store, tenantId, pluginId, capability) {
+  const entry = store.get(_pluginStoreKey(tenantId, pluginId));
+  if (!entry || entry.enabled !== true) {
+    const err = new Error(`PLUGIN_DISABLED: plugin '${pluginId}' is not enabled for tenant '${tenantId}'`);
+    err.statusCode = 404;
+    throw err;
+  }
+  const caps = Array.isArray(entry.granted_capabilities) ? entry.granted_capabilities : [];
+  if (!caps.includes(capability)) {
+    const err = new Error(`CAPABILITY_NOT_GRANTED: capability '${capability}' not granted for plugin '${pluginId}' on tenant '${tenantId}'`);
+    err.statusCode = 403;
+    throw err;
+  }
+}
+
+function recordCapabilityGrant(store, tenantId, pluginId, capability) {
+  const key = _pluginStoreKey(tenantId, pluginId);
+  const entry = store.get(key);
+  if (!entry) {
+    throw new Error(`TENANT_NOT_FOUND: no plugin config entry for tenant '${tenantId}' plugin '${pluginId}'`);
+  }
+  const caps = Array.isArray(entry.granted_capabilities) ? entry.granted_capabilities : [];
+  if (!caps.includes(capability)) {
+    store.set(key, { ...entry, granted_capabilities: [...caps, capability] });
+  }
+  return store;
+}
+
 function buildDenyEvent({ actor_id, tenant_id, action, reason, request_id }) {
   const timestamp = new Date().toISOString();
   
@@ -590,17 +641,21 @@ module.exports = {
   REQUIRED_SECRET_MATRIX,
   RETENTION_POLICY,
   assertRolloutPromotionAllowed,
+  assertPluginCapability,
   buildDenyEvent,
   createRuntimeContext,
   emitDenyTelemetry,
   getRolloutMode,
+  getGrantedCapabilities,
   getMarkosdbAccessMatrix,
   getDefaultProjectSlug,
   getTelemetryPreference,
   isHostedRuntime,
+  isTenantPluginEnabled,
   loadMigrationCheckpoints,
   loadRuntimeConfig,
   persistProjectSlug,
+  recordCapabilityGrant,
   redactSensitive,
   requireHostedSupabaseAuth,
   readPersistedProjectSlug,
