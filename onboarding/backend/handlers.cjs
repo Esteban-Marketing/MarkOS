@@ -43,6 +43,47 @@ const {
 
 const { readBody, json } = require('./utils.cjs');
 
+// Phase 51-03: IAM v3.2 authorization integration
+let iamModule = null;
+function loadIamModule() {
+  if (!iamModule) {
+    try {
+      iamModule = require('../markos/rbac/iam-v32.js');
+    } catch (err) {
+      console.warn('IAM v3.2 module not available, authorization checks disabled:', err.message);
+      iamModule = { canPerformAction: () => true }; // Fallback: allow all
+    }
+  }
+  return iamModule;
+}
+
+/**
+ * checkActionAuthorization(action: string, req: object): {authorized: boolean, reason?: string}
+ * 
+ * Checks if the request actor is authorized for the given action.
+ * Uses tenant role from req.markosAuth.iamRole (set by hosted auth wrapper).
+ * Returns deterministic denial reason if unauthorized (fail-closed).
+ * 
+ * @param {string} action - The IAM action to authorize
+ * @param {object} req - Express request object with req.markosAuth.iamRole
+ * @returns {object} {authorized: boolean, reason: string|null, statusCode: number}
+ */
+function checkActionAuthorization(action, req) {
+  const iamMod = loadIamModule();
+  const iamRole = req.markosAuth?.iamRole || 'readonly'; // Default to least privilege
+  
+  const authorized = iamMod.canPerformAction(iamRole, action);
+  if (!authorized) {
+    return {
+      authorized: false,
+      reason: `Action '${action}' not permitted for role '${iamRole}'`,
+      statusCode: 403,
+    };
+  }
+  
+  return { authorized: true, reason: null, statusCode: 200 };
+}
+
 const INTERVIEW_MAX_QUESTIONS = 5;
 
 const DISCIPLINE_ALIASES = Object.freeze({
@@ -1080,6 +1121,29 @@ async function handleSubmit(req, res) {
   const endpoint = '/submit';
   let slug = null;
   try {
+    // Phase 51-03: Action-level IAM authorization check
+    const authCheck = checkActionAuthorization('execute_task', req);
+    if (!authCheck.authorized) {
+      emitRolloutEndpointTelemetry({
+        endpoint,
+        startedAt,
+        outcomeState: 'failure',
+        statusCode: authCheck.statusCode,
+        runtimeMode: runtime.mode,
+        projectSlug: slug,
+      });
+      return json(res, authCheck.statusCode, {
+        success: false,
+        error: 'AUTHORIZATION_DENIED',
+        message: authCheck.reason,
+        outcome: {
+          state: 'failure',
+          code: 'AUTHORIZATION_DENIED',
+          message: authCheck.reason,
+        },
+      });
+    }
+
     const secretCheck = validateRequiredSecrets({
       runtimeMode: runtime.mode,
       operation: 'submit_write',
@@ -1234,6 +1298,21 @@ async function handleSubmit(req, res) {
 
 async function handleRegenerate(req, res) {
   try {
+    // Phase 51-03: Action-level IAM authorization check
+    const authCheck = checkActionAuthorization('execute_task', req);
+    if (!authCheck.authorized) {
+      return json(res, authCheck.statusCode, {
+        success: false,
+        error: 'AUTHORIZATION_DENIED',
+        message: authCheck.reason,
+        outcome: {
+          state: 'failure',
+          code: 'AUTHORIZATION_DENIED',
+          message: authCheck.reason,
+        },
+      });
+    }
+
     const runtime = createRuntimeContext();
     const vectorStore = require('./vector-store-client.cjs');
     vectorStore.configure(runtime.config);
@@ -1343,6 +1422,29 @@ async function handleApprove(req, res) {
   let projectSlug = null;
   let runtimeMode = 'unknown';
   try {
+    // Phase 51-03: Action-level IAM authorization check
+    const authCheck = checkActionAuthorization('approve_task', req);
+    if (!authCheck.authorized) {
+      emitRolloutEndpointTelemetry({
+        endpoint,
+        startedAt,
+        outcomeState: 'failure',
+        statusCode: authCheck.statusCode,
+        runtimeMode: 'unauthorized',
+        projectSlug,
+      });
+      return json(res, authCheck.statusCode, {
+        success: false,
+        error: 'AUTHORIZATION_DENIED',
+        message: authCheck.reason,
+        outcome: {
+          state: 'failure',
+          code: 'AUTHORIZATION_DENIED',
+          message: authCheck.reason,
+        },
+      });
+    }
+
     const runtime = createRuntimeContext();
     runtimeMode = runtime.mode;
     const secretCheck = validateRequiredSecrets({
