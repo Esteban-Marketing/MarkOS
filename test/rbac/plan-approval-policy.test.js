@@ -14,6 +14,16 @@ test('53-02-01: approve_task allows reviewer-authorized IAM roles only', () => {
   for (const role of deniedRoles) {
     assert.equal(canPerformAction(role, 'approve_task'), false, `Expected role ${role || '<empty>'} to be denied for approve_task`);
   }
+
+  for (const role of allowedRoles) {
+    assert.equal(canPerformAction(role, 'plan_approve'), true, `Expected role ${role} to be authorized for plan_approve`);
+    assert.equal(canPerformAction(role, 'plan_reject'), true, `Expected role ${role} to be authorized for plan_reject`);
+  }
+
+  for (const role of deniedRoles) {
+    assert.equal(canPerformAction(role, 'plan_approve'), false, `Expected role ${role || '<empty>'} to be denied for plan_approve`);
+    assert.equal(canPerformAction(role, 'plan_reject'), false, `Expected role ${role || '<empty>'} to be denied for plan_reject`);
+  }
 });
 
 test('53-02-01: IAM policy check remains fail-closed for unknown actions and roles', () => {

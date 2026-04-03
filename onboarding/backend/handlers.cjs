@@ -26,10 +26,16 @@ const {
   resolveProjectSlug,
   resolveRequestedProjectSlug,
   resolveSeedOutputPath,
+  buildDenyEvent,
+  emitDenyTelemetry,
   validateRequiredSecrets,
 } = require('./runtime-context.cjs');
 const telemetry = require('./agents/telemetry.cjs');
 const { generateSkeletons } = require('./agents/skeleton-generator.cjs');
+const {
+  assertAwaitingApproval,
+  recordApprovalDecision,
+} = require('./agents/approval-gate.cjs');
 const {
   MARKOSDB_SCHEMA_VERSION,
   SUPABASE_RELATIONAL_CONTRACT,
@@ -45,16 +51,18 @@ const { readBody, json } = require('./utils.cjs');
 
 // Phase 51-03: IAM v3.2 authorization integration
 let iamModule = null;
+const approvalDecisionStore = new Map();
+
 function loadIamModule() {
   if (!iamModule) {
     try {
-      iamModule = require('../markos/rbac/iam-v32.js');
+      iamModule = require('../../lib/markos/rbac/iam-v32.js');
     } catch (err) {
-      console.warn('IAM v3.2 module not available, authorization checks disabled:', err.message);
-      iamModule = { canPerformAction: () => true }; // Fallback: allow all
+      console.warn('IAM v3.2 module not available, authorization checks fail-closed:', err.message);
+      iamModule = { canPerformAction: () => false };
     }
-      handleLiteracyQuery,
-      handlePluginRoute,
+  }
+
   return iamModule;
 }
 
@@ -71,6 +79,32 @@ function loadIamModule() {
  */
 function checkActionAuthorization(action, req) {
   const iamMod = loadIamModule();
+  const principal = req && req.markosAuth ? req.markosAuth : null;
+  const fallbackContext = buildExecutionContext(req, 'authorization');
+  const iamRole = (principal && principal.iamRole) || (principal && principal.role) || 'unknown';
+
+  const authorized = Boolean(iamMod.canPerformAction && iamMod.canPerformAction(iamRole, action));
+  if (!authorized) {
+    const reason = `Action '${action}' not permitted for role '${iamRole}'`;
+    const denyEvent = buildDenyEvent({
+      actor_id: fallbackContext.actor_id,
+      tenant_id: fallbackContext.tenant_id,
+      action,
+      reason,
+      request_id: fallbackContext.correlation_id || fallbackContext.request_id,
+    });
+
+    emitDenyTelemetry(denyEvent);
+
+    return {
+      authorized: false,
+      reason,
+      statusCode: 403,
+      denyEvent,
+    };
+  }
+
+  return { authorized: true, reason: null, statusCode: 200 };
 }
 
 // Phase 52: Digital Agency plugin lazy-loader
@@ -100,18 +134,6 @@ async function handlePluginRoute(req, res) {
     }
   }
   return json(res, 404, { success: false, error: 'PLUGIN_ROUTE_NOT_FOUND' });
-}
-
-module.exports = {
-  handleConfig,
-    return {
-      authorized: false,
-      reason: `Action '${action}' not permitted for role '${iamRole}'`,
-      statusCode: 403,
-    };
-  }
-  
-  return { authorized: true, reason: null, statusCode: 200 };
 }
 
 const INTERVIEW_MAX_QUESTIONS = 5;
@@ -1472,28 +1494,14 @@ async function handleApprove(req, res) {
   let projectSlug = null;
   let runtimeMode = 'unknown';
   try {
-    // Phase 51-03: Action-level IAM authorization check
-    const authCheck = checkActionAuthorization('approve_task', req);
-    if (!authCheck.authorized) {
-      emitRolloutEndpointTelemetry({
-        endpoint,
-        startedAt,
-        outcomeState: 'failure',
-        statusCode: authCheck.statusCode,
-        runtimeMode: 'unauthorized',
-        projectSlug,
-      });
-      return json(res, authCheck.statusCode, {
-        success: false,
-        error: 'AUTHORIZATION_DENIED',
-        message: authCheck.reason,
-        outcome: {
-          state: 'failure',
-          code: 'AUTHORIZATION_DENIED',
-          message: authCheck.reason,
-        },
-      });
-    }
+    const {
+      approvedDrafts,
+      slug,
+      run_id,
+      run_state,
+      decision,
+      rationale,
+    } = await readBody(req);
 
     const runtime = createRuntimeContext();
     runtimeMode = runtime.mode;
@@ -1517,8 +1525,6 @@ async function handleApprove(req, res) {
         message: `Missing required runtime secret(s): ${secretCheck.missing.join(', ')}`,
       });
     }
-
-    const { approvedDrafts, slug } = await readBody(req);
 
     if (!runtime.canWriteLocalFiles) {
       telemetry.captureExecutionCheckpoint('execution_failure', {
@@ -1554,6 +1560,77 @@ async function handleApprove(req, res) {
         config: runtime.config,
       })
     );
+
+    const approvalContext = buildExecutionContext(req, projectSlug || slug || 'approval');
+    const runId = String(run_id || `approve-${projectSlug || 'unknown'}`);
+    const runState = String(run_state || '');
+
+    try {
+      assertAwaitingApproval({ run_id: runId, state: runState });
+    } catch (approvalErr) {
+      emitRolloutEndpointTelemetry({
+        endpoint,
+        startedAt,
+        outcomeState: 'failure',
+        statusCode: 409,
+        runtimeMode,
+        projectSlug,
+      });
+      return json(res, 409, {
+        success: false,
+        error: 'AGENT_RUN_NOT_AWAITING_APPROVAL',
+        message: approvalErr.message,
+        outcome: createOutcome('failure', 'AGENT_RUN_NOT_AWAITING_APPROVAL', approvalErr.message, {
+          errors: [approvalErr.message],
+        }),
+      });
+    }
+
+    const decisionResult = recordApprovalDecision({
+      run_id: runId,
+      tenant_id: approvalContext.tenant_id,
+      state: runState,
+      actor_id: approvalContext.actor_id,
+      actor_role: approvalContext.role,
+      action: decision || 'approved',
+      rationale: rationale || null,
+      correlation_id: approvalContext.correlation_id || approvalContext.request_id,
+      decisionStore: approvalDecisionStore,
+      authorizationCheck: (roleOverride) => {
+        const principal = req && req.markosAuth ? req.markosAuth : {};
+        const authReq = {
+          ...req,
+          markosAuth: {
+            ...principal,
+            iamRole: roleOverride,
+            role: roleOverride,
+          },
+        };
+        return checkActionAuthorization('approve_task', authReq);
+      },
+      buildDenyEvent,
+      emitDenyTelemetry,
+    });
+
+    if (!decisionResult.ok) {
+      const statusCode = decisionResult.statusCode || 403;
+      emitRolloutEndpointTelemetry({
+        endpoint,
+        startedAt,
+        outcomeState: 'failure',
+        statusCode,
+        runtimeMode,
+        projectSlug,
+      });
+
+      return json(res, statusCode, {
+        success: false,
+        error: decisionResult.error || 'APPROVAL_DECISION_DENIED',
+        message: decisionResult.message || 'Approval decision denied.',
+        deny_event: decisionResult.deny_event || null,
+        outcome: createOutcome('failure', decisionResult.error || 'APPROVAL_DECISION_DENIED', decisionResult.message || 'Approval decision denied.'),
+      });
+    }
 
     let mirOutputPath;
     try {
@@ -2092,5 +2169,14 @@ module.exports = {
   handleCompetitorDiscovery,
   handleCorsPreflight,
   handleLiteracyHealth,
-  handleLiteracyQuery
+  handleLiteracyQuery,
+  __testing: {
+    checkActionAuthorization,
+    resetApprovalDecisionStore() {
+      approvalDecisionStore.clear();
+    },
+    getApprovalDecisionStoreSize() {
+      return approvalDecisionStore.size;
+    },
+  },
 };

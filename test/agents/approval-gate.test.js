@@ -1,11 +1,14 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('fs');
+const path = require('path');
 
 const { buildDenyEvent } = require('../../onboarding/backend/runtime-context.cjs');
 const {
   assertAwaitingApproval,
   recordApprovalDecision,
 } = require('../../onboarding/backend/agents/approval-gate.cjs');
+const handlers = require('../../onboarding/backend/handlers.cjs');
 
 function createDecisionStore() {
   const decisions = new Map();
@@ -104,4 +107,39 @@ test('53-02-01: approval decision writes are immutable once recorded for a run',
   assert.equal(second.ok, false);
   assert.match(second.error, /immutable|already/i);
   assert.equal(store.size(), 1);
+});
+
+test('53-02-03: handler IAM authorization denies unknown roles with immutable deny telemetry context', () => {
+  const req = {
+    headers: {
+      'x-request-id': 'req-53-02-deny',
+      'x-correlation-id': 'corr-53-02-deny',
+    },
+    markosAuth: {
+      tenant_id: 'tenant-1',
+      iamRole: 'unknown_role',
+      principal: { id: 'actor-1' },
+      request_id: 'req-53-02-deny',
+      correlation_id: 'corr-53-02-deny',
+    },
+  };
+
+  const result = handlers.__testing.checkActionAuthorization('approve_task', req);
+  assert.equal(result.authorized, false);
+  assert.equal(result.statusCode, 403);
+  assert.equal(Boolean(result.denyEvent.actor_id), true);
+  assert.equal(Boolean(result.denyEvent.tenant_id), true);
+  assert.equal(Boolean(result.denyEvent.action), true);
+  assert.equal(Boolean(result.denyEvent.correlation_id), true);
+});
+
+test('53-02-03: approve handler is wired to awaiting_approval gate before side effects', () => {
+  const handlersSource = fs.readFileSync(
+    path.join(__dirname, '../../onboarding/backend/handlers.cjs'),
+    'utf8'
+  );
+
+  assert.match(handlersSource, /handleApprove[\s\S]*assertAwaitingApproval\(/);
+  assert.match(handlersSource, /handleApprove[\s\S]*recordApprovalDecision\(/);
+  assert.match(handlersSource, /writeMIR\.applyDrafts/);
 });

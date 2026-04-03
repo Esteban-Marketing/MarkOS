@@ -608,14 +608,15 @@ function recordCapabilityGrant(store, tenantId, pluginId, capability) {
   return store;
 }
 
-function buildDenyEvent({ actor_id, tenant_id, action, reason, request_id }) {
+function buildDenyEvent({ actor_id, tenant_id, action, reason, request_id, correlation_id }) {
   const timestamp = new Date().toISOString();
+  const resolvedCorrelationId = correlation_id || request_id || crypto.randomUUID?.() || `${Date.now()}`;
   
   // Immutable event structure with correlation ID for audit tracing
   const event = Object.freeze({
     event_type: 'markos_tenant_access_denied',
     timestamp,
-    correlation_id: request_id || crypto.randomUUID?.() || `${Date.now()}`,
+    correlation_id: resolvedCorrelationId,
     actor_id: String(actor_id || 'unknown'),
     tenant_id: String(tenant_id || 'unknown'),
     action: String(action || 'unknown'),
