@@ -445,6 +445,64 @@ Current state (v3.0 end):
 
 ---
 
+### Agentic Orchestration Requirements (Phase 53 — Agentic MarkOS Orchestration and MIR/MSP Intelligence)
+
+**AGT-01:** Agent runs are tenant-bound and consume tenant-approved context only.
+- Input: Phase 51 tenant context + IAM v3.2 roles; Phase 52 plugin telemetry hooks
+- Output: Run envelope with tenant_id, actor_id, correlation_id, model policy, prompt version, tool policy profile
+- Success: Agent run creation fails when tenant scope or policy metadata is missing
+- Phase: 53
+
+**AGT-02:** Agent workflows support deterministic state transitions, retries, and timeout handling.
+- Input: Run envelope (AGT-01)
+- Output: State machine enforcing requested → accepted → context_loaded → executing → awaiting_approval → approved/rejected → completed/failed → archived
+- Success: Illegal state transitions are blocked and logged; duplicate queue redelivery does not create duplicate plan mutations
+- Phase: 53
+
+**AGT-03:** Human approval gates exist before externally visible high-impact actions.
+- Input: IAM-03 authorized reviewer roles; agent run state machine (AGT-02)
+- Output: High-impact action pathways pause at `awaiting_approval`, emit pending event, and resume only on authorized approval or explicit rejection
+- Success: Approval bypass negative tests fail; approval decision is immutable and audit-logged
+- Phase: 53
+
+**AGT-04:** Agent run artifacts include model, prompt version, tool events, latency, cost, and outcome.
+- Input: Run envelope + provider adapter (AGT-01, AGT-02)
+- Output: Per-run telemetry record with all 6 fields frozen at run close
+- Success: No run reaches `completed` state without a complete telemetry record; cost field maps to BIL-02 metering schema
+- Phase: 53
+
+**MIR-01:** MIR Gate 1 entities initialize per project from onboarding and order context.
+- Input: Onboarding seed data + tenant context
+- Output: All required MIR Gate 1 entities present before MSP planning starts; missing entity validation enforced
+- Success: MSP discipline activation cannot start until MIR Gate 1 is complete
+- Phase: 53
+
+**MIR-02:** MSP discipline activation derives from MIR and purchased service context.
+- Input: MIR Gate 1 complete (MIR-01); tenant order/subscription metadata
+- Output: Discipline activation rules encoded with rationale; activation evidence stored per discipline
+- Success: Discipline activation is explainable and traceable; unexpected deactivation blocked
+- Phase: 53
+
+**MIR-03:** Critical client edits produce update reports and versioned regeneration records.
+- Input: Existing MIR entity + edit event
+- Output: Update report (what changed, why, impact on dependent MSP entities); append-only regeneration record with rationale
+- Success: Edit without rationale is rejected; downstream re-generation is triggered on gate-1 entity changes
+- Phase: 53
+
+**MIR-04:** Historical plan versions remain append-only and queryable.
+- Input: Plan lifecycle events (create, approve, reject, archive)
+- Output: Immutable version chain per plan with full history queryable by tenant and date range
+- Success: Version deletion is blocked; rollback reads correct historical snapshot
+- Phase: 53
+
+**IAM-03:** Approval actions for MarkOS plans require authorized reviewer roles and immutable decision logs.
+- Input: IAM v3.2 role model (Phase 51); agent run approval gate (AGT-03)
+- Output: Approval or rejection action available only to roles with `plan:approve` permission; decision written to audit log
+- Success: Non-reviewer role approval attempt is denied and logged; decision log cannot be mutated after write
+- Phase: 53
+
+---
+
 ### Coverage Verification
 
 | Req ID | Phase | Domain | Status |
@@ -460,3 +518,12 @@ Current state (v3.0 end):
 | WL-02 | 52 | White-Label | 🟡 Planning |
 | WL-03 | 52 | White-Label | 🟡 Planning |
 | WL-04 | 52 | White-Label | 🟡 Planning |
+| AGT-01 | 53 | Agent Runtime | 🔲 Discuss |
+| AGT-02 | 53 | Agent Runtime | 🔲 Discuss |
+| AGT-03 | 53 | Agent Runtime | 🔲 Discuss |
+| AGT-04 | 53 | Agent Runtime | 🔲 Discuss |
+| MIR-01 | 53 | MIR/MSP Lifecycle | 🔲 Discuss |
+| MIR-02 | 53 | MIR/MSP Lifecycle | 🔲 Discuss |
+| MIR-03 | 53 | MIR/MSP Lifecycle | 🔲 Discuss |
+| MIR-04 | 53 | MIR/MSP Lifecycle | 🔲 Discuss |
+| IAM-03 | 53 | Authorization | 🔲 Discuss |

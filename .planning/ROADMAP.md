@@ -314,6 +314,12 @@ Plans:
 > - ✅ 52-04: Plugin telemetry + brand-version audit trail (DELIVERED 2026-04-03)
 > - 🔲 HV1: Plugin settings UI visual verification (pending live environment)
 > - 🔲 HV2: Live plugin-disable gate E2E (pending live environment)
+>
+> ### Phase 53: Agentic MarkOS Orchestration and MIR/MSP Intelligence
+> **Goal:** Deliver tenant-bound AI orchestration infrastructure for MarkOS: deterministic agent run lifecycle engine (envelope, state machine, idempotency), policy-based provider abstraction with failover, MIR Gate 1 hardening and MSP discipline activation contracts, human approval gates for high-impact agent actions, and full run telemetry capturing model/prompt/cost/outcome per tenant.
+> **Requirements Mapped:** AGT-01, AGT-02, AGT-03, AGT-04, MIR-01, MIR-02, MIR-03, MIR-04, IAM-03
+> **Depends on:** Phase 51 (Multi-Tenant Foundation), Phase 52 (Plugin Runtime — telemetry hooks)
+> **Status:** 🟡 Planning — discuss-phase in progress
 
 ---
 <details>
