@@ -1,0 +1,176 @@
+.page {
+  font-family: "Space Grotesk", sans-serif;
+  background: #f5f7fa;
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  gap: 32px;
+}
+
+.heroCard,
+.panel {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.title {
+  margin: 8px 0 0;
+  font-family: "Sora", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.heroText,
+.bodyText {
+  color: #475569;
+}
+
+.heroText {
+  margin: 8px 0 0;
+}
+
+.bodyText {
+  margin: 0 0 16px;
+}
+
+.layoutGrid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.4fr 0.9fr;
+  gap: 24px;
+}
+
+.sectionTitle {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.tabList,
+.mainColumn,
+.evidenceList {
+  display: grid;
+  gap: 12px;
+}
+
+.mainColumn {
+  gap: 24px;
+}
+
+.tab,
+.activeTab,
+.evidenceItem,
+.activeEvidenceItem {
+  padding: 14px 16px;
+  border-radius: 14px;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.tab {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.activeTab {
+  border: 1px solid #0d9488;
+  background: #f0fdfa;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHead {
+  text-align: left;
+  padding-bottom: 12px;
+  font-size: 14px;
+}
+
+.tableCell {
+  padding: 12px 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 44px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton {
+  border: none;
+  background: #0d9488;
+  color: #ffffff;
+}
+
+.secondaryButton {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.evidenceItem,
+.activeEvidenceItem {
+  background: #f8fafc;
+}
+
+.evidenceItem {
+  border-left: 4px solid #cbd5e1;
+}
+
+.activeEvidenceItem {
+  border-left: 4px solid #0d9488;
+}
+
+.reviewCard {
+  background: #eff6ff;
+  border-left: 4px solid #0369a1;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.reviewTitle {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0c4a6e;
+}
+
+.reviewText {
+  margin: 0;
+  color: #075985;
+}
+
+@media (max-width: 1100px) {
+  .layoutGrid {
+    grid-template-columns: 1fr;
+  }
+}

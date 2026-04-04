@@ -170,19 +170,25 @@ test('ui-auth: tasks page does not render blank for unauthorized users (renders 
 
 test('ui-auth: operations layout provides auth context to child routes', () => {
   const layoutFile = readFile('app/(markos)/layout.tsx');
-  // Should have auth provider or context setup
-  const hasAuthSetup = 
-    layoutFile.includes('provider') ||
-    layoutFile.includes('Provider') ||
-    layoutFile.includes('context') ||
-    layoutFile.includes('Context') ||
-    layoutFile.includes('auth') ||
-    layoutFile.includes('Auth');
-    
-  assert.ok(
-    hasAuthSetup || layoutFile.includes('export'),
-    'Layout must provide auth context or provider'
-  );
+  const sessionFilePath = path.join(ROOT, 'lib/markos/auth/session.ts');
+
+  assert.equal(fs.existsSync(sessionFilePath), true, 'Session helper must exist');
+  assert.doesNotMatch(layoutFile, /ACTIVE_ROLE|ACTIVE_TENANT_ID/, 'Layout must not rely on scaffold placeholders');
+  assert.match(layoutFile, /requireMarkosSession/);
+  assert.match(layoutFile, /getActiveTenantContext/);
+
+  const sessionFile = fs.readFileSync(sessionFilePath, 'utf8');
+  assert.match(sessionFile, /export async function requireMarkosSession/);
+  assert.match(sessionFile, /export async function getActiveTenantContext/);
+  assert.match(sessionFile, /TENANT_CONTEXT_MISSING|SESSION_REQUIRED/);
+});
+
+test('ui-auth tenant deny: layout fails closed when session tenant context is missing', () => {
+  const layoutFile = readFile('app/(markos)/layout.tsx');
+
+  assert.match(layoutFile, /Access Denied/);
+  assert.match(layoutFile, /Unable to establish tenant context|Please sign in again/);
+  assert.match(layoutFile, /tenant context/i);
 });
 
 // ============================================================================

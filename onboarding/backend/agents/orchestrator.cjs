@@ -233,6 +233,7 @@ function resolveExecutionContext(slug, executionContext) {
     ...context,
     actor_id: actorId,
     correlation_id: correlationId,
+    entitlement_snapshot: runtimeContext.resolveEntitlementSnapshot(context),
     provider_policy: context.provider_policy || policyMetadata.provider_policy,
     tool_policy: context.tool_policy || policyMetadata.tool_policy,
     request_id: context.request_id || correlationId || `legacy-${Date.now()}`,
@@ -321,6 +322,15 @@ function recordOrchestratorSideEffect(runEnvelope, section, content) {
   });
 }
 
+function buildLLMRuntimeOptions(resolvedExecutionContext, slug, agentName) {
+  return runtimeContext.buildLLMCallOptions(resolvedExecutionContext, {
+    metadata: {
+      projectSlug: slug,
+      agentName,
+    },
+  });
+}
+
 function getTokenUsage(result) {
   const usage = result && result.usage ? result.usage : {};
   const totalTokens = Number(usage.totalTokens ?? ((usage.promptTokens || 0) + (usage.completionTokens || 0)));
@@ -338,14 +348,33 @@ function estimateCostUsd(tokenUsage) {
 
 function finalizeRunClose({ slug, runEnvelope, resolvedExecutionContext, agentResults, errors }) {
   const providerPrimary = resolvedExecutionContext.provider_policy.primary_provider;
-  const providerAttempts = Object.entries(agentResults || {}).map(([agentName, result], index) => {
+  const providerAttempts = Object.entries(agentResults || {}).flatMap(([agentName, result], agentIndex) => {
+    if (Array.isArray(result && result.providerAttempts) && result.providerAttempts.length > 0) {
+      return result.providerAttempts.map((attempt, attemptIndex) => telemetry.captureProviderAttempt({
+        run_id: runEnvelope.run_id,
+        tenant_id: runEnvelope.tenant_id,
+        project_slug: slug,
+        agent_name: agentName,
+        attempt_number: attempt.attempt_number || attempt.attemptNumber || attemptIndex + 1,
+        provider: attempt.provider || (result && result.provider) || providerPrimary,
+        provider_policy_primary: attempt.primary_provider || attempt.primaryProvider || providerPrimary,
+        model: attempt.model || (result && result.model) || providerPrimary,
+        outcome_state: attempt.outcome_state || (result && result.ok ? 'success' : 'error'),
+        reason_code: attempt.reason_code || (attempt.error && attempt.error.code) || null,
+        fallback_reason: attempt.fallback_reason || attempt.fallbackReason || null,
+        latency_ms: Number(attempt.latency_ms || attempt.latencyMs || 0),
+        cost_usd: Number(attempt.cost_usd || 0),
+        token_usage: attempt.token_usage || attempt.tokenUsage || getTokenUsage(result),
+      }));
+    }
+
     const tokenUsage = getTokenUsage(result);
-    return telemetry.captureProviderAttempt({
+    return [telemetry.captureProviderAttempt({
       run_id: runEnvelope.run_id,
       tenant_id: runEnvelope.tenant_id,
       project_slug: slug,
       agent_name: agentName,
-      attempt_number: index + 1,
+      attempt_number: agentIndex + 1,
       provider: result && result.provider ? result.provider : providerPrimary,
       provider_policy_primary: providerPrimary,
       model: result && result.model ? result.model : providerPrimary,
@@ -355,7 +384,7 @@ function finalizeRunClose({ slug, runEnvelope, resolvedExecutionContext, agentRe
       latency_ms: Number(result && (result.generationTimeMs || result.latencyMs || 0)),
       cost_usd: estimateCostUsd(tokenUsage),
       token_usage: tokenUsage,
-    });
+    })];
   });
 
   const uniqueModels = [...new Set(providerAttempts.map((attempt) => attempt.model).filter(Boolean))];
@@ -382,6 +411,15 @@ function finalizeRunClose({ slug, runEnvelope, resolvedExecutionContext, agentRe
 
 async function orchestrate(seed, slug, executionContext) {
   const resolvedExecutionContext = resolveExecutionContext(slug, executionContext);
+  const executionEntitlement = runtimeContext.assertEntitledAction(resolvedExecutionContext, 'execute_task');
+  if (!executionEntitlement.allowed) {
+    const blockedError = new Error(executionEntitlement.reason_code || 'BILLING_POLICY_BLOCKED');
+    blockedError.code = executionEntitlement.reason_code || 'BILLING_POLICY_BLOCKED';
+    blockedError.statusCode = 403;
+    blockedError.entitlementDecision = executionEntitlement;
+    throw blockedError;
+  }
+
   const lifecycle = bootstrapRunLifecycle(slug, resolvedExecutionContext);
   const runEnvelope = lifecycle.run;
 
@@ -475,15 +513,15 @@ async function orchestrate(seed, slug, executionContext) {
 
   // ── 2. Run MIR agents (Batched to prevent 429s) ──────────────────────────
   console.log('[orchestrator] Generating MIR drafts...');
-  const companyProfileResult = await executeWithRetry(() => mirFiller.generateCompanyProfile(seed), 'Company Profile', slug);
-  const missionValuesResult  = await executeWithRetry(() => mirFiller.generateMissionVisionValues(seed), 'Mission/Values', slug);
-  const audienceResult       = await executeWithRetry(() => mirFiller.generateAudienceProfile(seed), 'Audience Profile', slug);
-  const competitiveResult    = await executeWithRetry(() => mirFiller.generateCompetitiveLandscape(seed), 'Competitive Landscape', slug);
+  const companyProfileResult = await executeWithRetry(() => mirFiller.generateCompanyProfile(seed, buildLLMRuntimeOptions(resolvedExecutionContext, slug, 'company_profile')), 'Company Profile', slug);
+  const missionValuesResult  = await executeWithRetry(() => mirFiller.generateMissionVisionValues(seed, buildLLMRuntimeOptions(resolvedExecutionContext, slug, 'mission_values')), 'Mission/Values', slug);
+  const audienceResult       = await executeWithRetry(() => mirFiller.generateAudienceProfile(seed, buildLLMRuntimeOptions(resolvedExecutionContext, slug, 'audience')), 'Audience Profile', slug);
+  const competitiveResult    = await executeWithRetry(() => mirFiller.generateCompetitiveLandscape(seed, buildLLMRuntimeOptions(resolvedExecutionContext, slug, 'competitive')), 'Competitive Landscape', slug);
 
   // ── 3. Run MSP agents ─────────────────────────────────────────────────────
   console.log('[orchestrator] Generating MSP drafts...');
-  const brandVoiceResult      = await executeWithRetry(() => mspFiller.generateBrandVoice(seed, slug), 'Brand Voice', slug);
-  const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed, slug), 'Channel Strategy', slug);
+  const brandVoiceResult      = await executeWithRetry(() => mspFiller.generateBrandVoice(seed, slug, buildLLMRuntimeOptions(resolvedExecutionContext, slug, 'brand_voice')), 'Brand Voice', slug);
+  const channelStrategyResult = await executeWithRetry(() => mspFiller.generateChannelStrategy(seed, slug, buildLLMRuntimeOptions(resolvedExecutionContext, slug, 'channel_strategy')), 'Channel Strategy', slug);
 
   // ── 3.5. Neuro-Auditor Validation ─────────────────────────────────────────
   /**
@@ -503,7 +541,7 @@ async function orchestrate(seed, slug, executionContext) {
       const systemPrompt = fs.readFileSync(auditorPath, 'utf8');
       const userPrompt = `Review the following Audience logic and Brand Voice for psychological archetype alignment:\n\nAUDIENCE:\n${audienceResult.text}\n\nBRAND VOICE:\n${brandVoiceResult.text}\n\nOutput ONLY a concise 2-sentence verification summary (e.g. "Archetype alignment confirmed. The Rebel brand voice accurately attacks the Target Audience's core fear of conformity.") No preamble or pleasantries.`;
       
-      const auditResult = await executeWithRetry(() => llm.call(systemPrompt, userPrompt), 'Neuro-Auditor', slug);
+      const auditResult = await executeWithRetry(() => llm.call(systemPrompt, userPrompt, buildLLMRuntimeOptions(resolvedExecutionContext, slug, 'neuro_auditor')), 'Neuro-Auditor', slug);
       if (auditResult && auditResult.ok) {
         const blockquote = `\n\n> 🧠 **Neuro-Auditor Verification:**\n> ${auditResult.text.replace(/\n/g, '\n> ')}\n`;
         audienceResult.text += blockquote;

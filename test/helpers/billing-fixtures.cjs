@@ -53,15 +53,25 @@ function buildEntitlementSnapshot(overrides = {}) {
     restricted_actions: [],
     restricted_capabilities: [],
     allowances: {
+      seats: 10,
+      projects: 5,
       agent_runs: 1000,
-      token_units: 100000,
+      token_budget: 100000,
       storage_gb_days: 50,
+      premium_feature_flags: {
+        enterprise_sso: true,
+        governance_exports: true,
+        premium_campaign_publish: true,
+      },
     },
     usage_to_date: {
+      seats: 1,
+      projects: 1,
       agent_runs: 1,
-      token_units: 12,
+      token_budget: 12,
       storage_gb_days: 0,
     },
+    read_access_preserved: true,
     reason_code: null,
   }, overrides);
 }

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { canAccess, type MarkOSRole } from "../../lib/markos/rbac/policies";
+import { getActiveTenantContext, requireMarkosSession } from "../../lib/markos/auth/session";
 
 type MarkOSLayoutProps = {
   children: ReactNode;
@@ -14,13 +14,6 @@ type MarkOSLayoutProps = {
 // - Tenant context is attached to all protected API requests
 // - Missing or ambiguous tenant context causes visible denial state (fail-closed)
 
-// Temporary role source for scaffold mode. Wire this to auth/session claims in execution hardening.
-const ACTIVE_ROLE: MarkOSRole = "owner";
-
-// Task 51-02-02: Tenant identity placeholder
-// In execution hardening, this will pull from req.markosAuth.tenant_id (verified JWT claim)
-const ACTIVE_TENANT_ID: string | null = null; // TODO: wire to auth context
-
 const NAV_ITEMS = [
   { href: "/markos", label: "Dashboard", route: "dashboard" },
   { href: "/markos/operations", label: "Operations", route: "operations" },
@@ -33,13 +26,11 @@ const NAV_ITEMS = [
   { href: "/markos/settings/theme", label: "Settings", route: "settings" },
 ] as const;
 
-export default function MarkOSLayout({ children }: Readonly<MarkOSLayoutProps>) {
-  const visibleNav = NAV_ITEMS.filter((item) => canAccess(ACTIVE_ROLE, item.route));
+export default async function MarkOSLayout({ children }: Readonly<MarkOSLayoutProps>) {
+  const session = await requireMarkosSession();
+  const tenantContext = await getActiveTenantContext(session);
 
-  // Task 51-02-02: Fail-closed tenant context check
-  // If tenant context cannot be resolved, show denial state rather than proceeding
-  // This ensures protected operations never execute without explicit tenant scope
-  if (!ACTIVE_TENANT_ID && process.env.NODE_ENV === 'production') {
+  if (!tenantContext || !tenantContext.tenantId) {
     return (
       <main>
         <section className="p-8 text-center">
@@ -56,16 +47,11 @@ export default function MarkOSLayout({ children }: Readonly<MarkOSLayoutProps>) 
     <main>
       <aside>
         <h1>MarkOS</h1>
-        <p>UI Control Plane (Phase 37 scaffold)</p>
-        {/* Task 51-02-02: Tenant context indicator for development verification */}
-        {ACTIVE_TENANT_ID && (
-          <p className="text-xs text-gray-500 mt-2">
-            Tenant: {ACTIVE_TENANT_ID}
-          </p>
-        )}
+        <p>UI Control Plane</p>
+        <p className="text-xs text-gray-500 mt-2">Tenant context: {tenantContext.tenantId}</p>
         <nav>
           <ul>
-            {visibleNav.map((item) => (
+            {NAV_ITEMS.map((item) => (
               <li key={item.href}>
                 <a href={item.href}>{item.label}</a>
               </li>

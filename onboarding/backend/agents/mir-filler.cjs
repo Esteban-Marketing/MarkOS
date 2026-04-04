@@ -58,9 +58,16 @@ RULES:
 5. If data is missing, write "[REQUIRES HUMAN INPUT — describe what is needed]" as a placeholder.
 6. Never output JSON — output the actual markdown content only.`;
 
+function withLLMOptions(baseOptions, llmOptions) {
+  return {
+    ...(llmOptions && typeof llmOptions === 'object' ? llmOptions : {}),
+    ...baseOptions,
+  };
+}
+
 // ─── INDIVIDUAL SECTION GENERATORS ────────────────────────────────────────────
 
-async function generateCompanyProfile(seed) {
+async function generateCompanyProfile(seed, llmOptions = {}) {
   const company = seed.company || {};
   const product = seed.product || {};
   const audience = seed.audience || {};
@@ -104,10 +111,10 @@ Write the following sections as markdown:
 
 Be specific. Use real data from above. Do not repeat the input verbatim.`;
 
-  return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1400 });
+  return llm.call(SYSTEM_PROMPT, prompt, withLLMOptions({ max_tokens: 1400 }, llmOptions));
 }
 
-async function generateMissionVisionValues(seed) {
+async function generateMissionVisionValues(seed, llmOptions = {}) {
   const company = seed.company || {};
   const product = seed.product || {};
 
@@ -133,10 +140,10 @@ For each of the 3 values provided, write:
 ## Cultural Norms (3 bullet points)
 Inferred behaviors based on the values above.`;
 
-  return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 800 });
+  return llm.call(SYSTEM_PROMPT, prompt, withLLMOptions({ max_tokens: 800 }, llmOptions));
 }
 
-async function generateAudienceProfile(seed) {
+async function generateAudienceProfile(seed, llmOptions = {}) {
   const audience = seed.audience || {};
   const product = seed.product || {};
   const company = seed.company || {};
@@ -172,10 +179,10 @@ Write:
 
 Keep it practical — every point should directly inform a marketing decision.`;
 
-  return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1200 });
+  return llm.call(SYSTEM_PROMPT, prompt, withLLMOptions({ max_tokens: 1200 }, llmOptions));
 }
 
-async function generateCompetitiveLandscape(seed) {
+async function generateCompetitiveLandscape(seed, llmOptions = {}) {
   const competition = seed.competition || {};
   const company = seed.company || {};
   const product = seed.product || {};
@@ -207,7 +214,7 @@ Write:
 ## Messaging Landmines
 [3-5 claims our competitors make that we should actively avoid parroting — even if true]`;
 
-  return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1000 });
+  return llm.call(SYSTEM_PROMPT, prompt, withLLMOptions({ max_tokens: 1000 }, llmOptions));
 }
 
 // ─── EXPORTS ───────────────────────────────────────────────────────────────────

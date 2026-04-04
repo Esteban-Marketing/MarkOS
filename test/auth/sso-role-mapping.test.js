@@ -10,6 +10,9 @@ const {
 } = require('../helpers/billing-fixtures.cjs');
 
 const identityContractsPath = path.join(__dirname, '../../lib/markos/identity/contracts.ts');
+const roleMappingPath = path.join(__dirname, '../../lib/markos/identity/role-mapping.ts');
+const ssoBindingsPath = path.join(__dirname, '../../lib/markos/identity/sso-bindings.ts');
+const federationMigrationPath = path.join(__dirname, '../../supabase/migrations/54_identity_federation.sql');
 
 test('IAM-04: identity contracts lock tenant SSO binding and canonical role mapping vocabulary', () => {
   const source = fs.readFileSync(identityContractsPath, 'utf8');
@@ -37,4 +40,34 @@ test('IAM-04: role mapping decisions resolve only to canonical IAM v3.2 roles', 
   assert.ok(IAM_V32_ROLES.includes(decision.canonical_role));
   assert.equal(decision.external_permission_set, undefined);
   assert.equal(decision.decision, 'granted');
+});
+
+test('IAM-04: sso role mapping exports canonical claim mapping helpers', () => {
+  assert.equal(fs.existsSync(roleMappingPath), true, 'role-mapping.ts must exist');
+
+  const source = fs.readFileSync(roleMappingPath, 'utf8');
+  assert.match(source, /export function mapExternalClaimsToRole/);
+  assert.match(source, /export function recordRoleMappingDecision/);
+  assert.match(source, /IAM_V32_ROLES|canPerformAction/);
+  assert.match(source, /EXTERNAL_ROLE_ESCALATION_DENIED|UNMAPPED_EXTERNAL_CLAIM/);
+});
+
+test('IAM-04: tenant sso bindings encode provider metadata and tenant scoping', () => {
+  assert.equal(fs.existsSync(ssoBindingsPath), true, 'sso-bindings.ts must exist');
+
+  const source = fs.readFileSync(ssoBindingsPath, 'utf8');
+  assert.match(source, /export function normalizeTenantSsoBinding/);
+  assert.match(source, /export function resolveTenantSsoBinding/);
+  assert.match(source, /tenant_id/);
+  assert.match(source, /sso_provider_id/);
+});
+
+test('IAM-04: identity federation migration creates binding, rule, and immutable mapping event tables', () => {
+  assert.equal(fs.existsSync(federationMigrationPath), true, '54_identity_federation.sql must exist');
+
+  const source = fs.readFileSync(federationMigrationPath, 'utf8');
+  assert.match(source, /create table if not exists tenant_sso_bindings/i);
+  assert.match(source, /create table if not exists identity_role_mapping_rules/i);
+  assert.match(source, /create table if not exists identity_role_mapping_events/i);
+  assert.match(source, /enable row level security/i);
 });

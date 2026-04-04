@@ -503,6 +503,40 @@ Current state (v3.0 end):
 
 ---
 
+### Billing, Metering, and Enterprise Governance Requirements (Phase 54 — Billing, Metering, and Enterprise Governance)
+
+**BIL-01:** Subscription entitlements and billing state are enforced per tenant without breaking tenant isolation or plugin/runtime compatibility.
+- Input: Tenant subscription record, plan tier metadata, Phase 52 plugin enablement hooks, Phase 51 tenant context
+- Output: Canonical entitlement snapshot covering seats, projects, agent runs, token budgets, storage, and premium feature flags
+- Success: Billing state changes are reflected deterministically at request time; out-of-entitlement actions fail closed with operator-visible reason codes
+- Phase: 54
+
+**BIL-02:** Metering events from plugin and agent runtimes are validated, deduplicated, and aggregated into billing-period usage records.
+- Input: Phase 52 plugin telemetry, Phase 53 run-close/provider-attempt telemetry, tenant billing period metadata
+- Output: Normalized usage ledger keyed by tenant, billing period, correlation lineage, and billable unit
+- Success: Duplicate delivery does not inflate usage; reconciliation can map every billed unit back to immutable source telemetry
+- Phase: 54
+
+**BIL-03:** Operators can reconcile invoice-grade usage, invoice line items, and billing-provider failures with entitlement-safe degradation.
+- Input: Usage ledger (BIL-02), subscription entitlements (BIL-01), billing provider sync state
+- Output: Invoice line items, reconciliation status surfaces, hold/dunning state, and safe degradation rules when billing sync fails
+- Success: Billing failures never silently over-provision restricted features; reconciliation mismatches are surfaced and auditable before invoice close
+- Phase: 54
+
+**IAM-04:** Enterprise identity federation extends IAM v3.2 with external role mapping and governed provisioning boundaries.
+- Input: IAM v3.2 canonical roles from Phase 51, enterprise IdP claims/groups, tenant governance policy
+- Output: Deterministic SSO/SAML role mapping, provisioning/deprovisioning rules, and immutable audit events for identity-bound privilege changes
+- Success: External identity claims cannot escalate privilege beyond tenant policy; role mapping is explainable and test-covered for negative cases
+- Phase: 54
+
+**GOV-01:** Compliance-ready governance artifacts exist for billing, identity, and privileged operations.
+- Input: Audit logs from Phases 51–53, security/compliance baseline, vendor/subprocessor metadata for AI and billing providers
+- Output: Evidence map for privileged actions, retention/export controls, and operator-facing governance reports for access reviews and billing reconciliation
+- Success: Operators can produce audit evidence for privileged billing and identity actions without manual log stitching
+- Phase: 54
+
+---
+
 ### Coverage Verification
 
 | Req ID | Phase | Domain | Status |
@@ -512,18 +546,23 @@ Current state (v3.0 end):
 | TEN-03 | 51 | Multi-Tenancy | ✅ Delivered 2026-04-03 |
 | IAM-01 | 51 | Authorization | ✅ Delivered 2026-04-03 |
 | IAM-02 | 51 | Authorization | ✅ Delivered 2026-04-03 |
-| PLG-DA-01 | 52 | Plugin Runtime | 🟡 Planning |
-| PLG-DA-02 | 52 | Plugin Runtime | 🟡 Planning |
-| WL-01 | 52 | White-Label | 🟡 Planning (base: Phase 37) |
-| WL-02 | 52 | White-Label | 🟡 Planning |
-| WL-03 | 52 | White-Label | 🟡 Planning |
-| WL-04 | 52 | White-Label | 🟡 Planning |
-| AGT-01 | 53 | Agent Runtime | 🔲 Discuss |
-| AGT-02 | 53 | Agent Runtime | 🔲 Discuss |
-| AGT-03 | 53 | Agent Runtime | 🔲 Discuss |
-| AGT-04 | 53 | Agent Runtime | 🔲 Discuss |
-| MIR-01 | 53 | MIR/MSP Lifecycle | 🔲 Discuss |
-| MIR-02 | 53 | MIR/MSP Lifecycle | 🔲 Discuss |
-| MIR-03 | 53 | MIR/MSP Lifecycle | 🔲 Discuss |
-| MIR-04 | 53 | MIR/MSP Lifecycle | 🔲 Discuss |
-| IAM-03 | 53 | Authorization | 🔲 Discuss |
+| PLG-DA-01 | 52 | Plugin Runtime | ✅ Delivered 2026-04-03 |
+| PLG-DA-02 | 52 | Plugin Runtime | ✅ Delivered 2026-04-03 |
+| WL-01 | 52 | White-Label | ✅ Delivered 2026-04-03 |
+| WL-02 | 52 | White-Label | ✅ Delivered 2026-04-03 |
+| WL-03 | 52 | White-Label | ✅ Delivered 2026-04-03 |
+| WL-04 | 52 | White-Label | ✅ Delivered 2026-04-03 |
+| AGT-01 | 53 | Agent Runtime | ✅ Delivered 2026-04-03 |
+| AGT-02 | 53 | Agent Runtime | ✅ Delivered 2026-04-03 |
+| AGT-03 | 53 | Agent Runtime | ✅ Delivered 2026-04-03 |
+| AGT-04 | 53 | Agent Runtime | ✅ Delivered 2026-04-03 |
+| MIR-01 | 53 | MIR/MSP Lifecycle | ✅ Delivered 2026-04-03 |
+| MIR-02 | 53 | MIR/MSP Lifecycle | ✅ Delivered 2026-04-03 |
+| MIR-03 | 53 | MIR/MSP Lifecycle | ✅ Delivered 2026-04-03 |
+| MIR-04 | 53 | MIR/MSP Lifecycle | ✅ Delivered 2026-04-03 |
+| IAM-03 | 53 | Authorization | ✅ Delivered 2026-04-03 |
+| BIL-01 | 54 | Billing | ✅ Delivered 2026-04-03 |
+| BIL-02 | 54 | Billing | ✅ Delivered 2026-04-03 |
+| BIL-03 | 54 | Billing | ✅ Delivered 2026-04-03 |
+| IAM-04 | 54 | Authorization | ✅ Delivered 2026-04-03 |
+| GOV-01 | 54 | Governance | ✅ Delivered 2026-04-03 |

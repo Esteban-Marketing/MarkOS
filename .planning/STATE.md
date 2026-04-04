@@ -21,35 +21,42 @@ progress:
 gsd_state_version: 1.0
 milestone: v3.2.0
 milestone_name: Post-Unification Execution & Adoption
-status: Phase 52 verified (human_needed)
-last_updated: "2026-04-03T09:30:00.000Z"
+status: Phase 54 verified (human_needed)
+last_updated: "2026-04-03T23:45:00.000Z"
 
 - 2026-04-03: Phase 52 fully executed with 4 atomic plans (52-01 plugin contracts/registry/loader, 52-02 Digital Agency plugin routes/migration, 52-03 plugin settings API/brand-context/domain routing/UI, 52-04 plugin telemetry + brand-version audit trail); 73/73 tests passing, Nyquist-compliant.
 - 2026-04-03: Phase 52 verification complete — 12/12 truths verified, 14/14 artifacts, 8/8 key links wired, 73/73 tests pass, 0 anti-pattern blockers; status human_needed pending 2 live-environment E2E checks (plugin-settings UI visual + live plugin-disable gate).
+- 2026-04-03: Phase 53 verification passed with 13/13 truths verified after closing deny-telemetry durability and live provider-policy routing gaps.
+- 2026-04-03: Phase 54 discuss-phase completed with billing model, entitlement-safe degradation, balanced billing surfaces, and SSO/SAML role-mapping scope locked in `54-CONTEXT.md`.
+- 2026-04-03: Phase 54 UI design contract approved in `54-UI-SPEC.md`, covering tenant billing, operator billing, and governance surfaces on the existing token-based UI system.
+- 2026-04-03: Phase 54 planning completed with six execution plans (`54-01` through `54-06`) and plan-checker PASS, making billing, metering, and enterprise governance ready for execution.
+- 2026-04-03: Phase 54 fully executed with 6 atomic plans covering Wave 0 contracts, billing ledger foundations, enterprise SSO/session hardening, entitlement enforcement, billing projection/UI, and governance evidence surfaces.
+- 2026-04-03: Phase 54 broader automated verification completed with 12/12 truths verified, 77/77 broader regression tests passing, and `npm run build:llm` clean; status remains human_needed pending 2 live-environment checks (tenant billing UX review and real IdP SSO callback validation).
 
 progress:
-  total_phases: 48
-  completed_phases: 48
+  total_phases: 49
+  completed_phases: 49
   active_phases: 0
-  total_plans: 135
-  completed_plans: 135
+  total_plans: 141
+  completed_plans: 141
   planned_plans: 0
 ---
 
 Current Position
 ----------------
 
-Milestone: v3.2.0 — Plugin-First Architecture & Digital Agency v1
-Phase: Phase 52 discuss-phase complete; planning initiation ready
-Status: Phase 51 full execution complete (119/119 tests, 107/107 verification PASS); Phase 52 design decisions locked; ready for planning
+Milestone: v3.2.0 — Multi-Tenant Agency Runtime and Enterprise Governance
+Phase: Phase 54 implemented and broader-verified; live checks pending
+Status: Phase 53 verified PASS; Phase 54 broader automated verification green with 2 human-needed checks outstanding
 Previous Milestone: v3.1.0 — Operator Surface Unification (COMPLETE ✅)
-Next Step: Execute `/gsd:plan-phase 52` to create concrete task breakdown and begin implementation.
+Next Step: Run the two Phase 54 live checks, then open the next v3.2 planning phase.
 
 Tooling Snapshot
 ----------------
 
-- Roadmap parser snapshot at closeout: total=48, completed=48, pending=0, verification_passed=48.
+- Roadmap parser snapshot last recorded pre-closeout: total=48, completed=48, pending=0, verification_passed=48.
 - Incomplete-plan check at closeout: 0 phases with incomplete plans.
+- Shared planning ledgers reconciled after Phase 54 execution: total_phases=49, completed_phases=49, total_plans=141, completed_plans=141.
 - v3.1 closeout artifacts:
   - `.planning/milestones/v3.1-NORMALIZATION-REPORT.md`
   - `.planning/milestones/v3.1.0-REPORT.md`
@@ -134,3 +141,8 @@ Roadmap Evolution
 - 2026-04-02: Phase 43 completed with post-submit literacy activation readiness evaluation, submit/status readiness parity, and activation telemetry contracts.
 - 2026-04-02: Phase 44 completed with lifecycle E2E verification, literacy coverage API contract enforcement, populated-corpus zero-hit regression gating, and CI integration.
 - 2026-04-03: Phase 47 completed with multi-provider BYOK abstraction, legacy wrapper bridge integration, dual-path/e2e verification, and operator/architecture documentation closure.
+- 2026-04-03: Phase 53 verified PASS (13/13 truths), Phase 54 added for billing, metering, and enterprise governance, and Phase 54 context was locked for planning.
+- 2026-04-03: Phase 54 UI-SPEC approved, preserving the manual token-based MarkOS design system and defining billing/governance route contracts before planning.
+- 2026-04-03: Phase 54 planning completed with six executable plans and checker PASS; next execution starts at `54-01-PLAN.md`.
+- 2026-04-03: Phase 54 execution completed across all six plans and the shared planning ledgers were reconciled to reflect delivered billing, identity, and governance scope.
+- 2026-04-03: Phase 54 broader automated verification completed with 77/77 regression tests green and `npm run build:llm` clean; only live tenant-billing UX and real IdP SSO checks remain.

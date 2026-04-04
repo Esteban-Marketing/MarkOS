@@ -274,7 +274,7 @@ Plans:
 
 ## 🟢 v3.2.0 — Post-Unification Execution & Adoption
 
-**Status:** 🟢 In Progress — Phase 52 verified (human_needed); Phase 53 pending
+**Status:** 🟢 In Progress — Phase 52 verified (human_needed); Phase 53 verified PASS; Phase 54 verified (human_needed)
 
 **Goal:** Establish strict tenant boundaries, deterministic tenant context propagation, and enforceable role boundaries to enable multi-tenant operator execution with measurable security and isolation guarantees.
 
@@ -319,7 +319,30 @@ Plans:
 **Goal:** Deliver tenant-bound AI orchestration infrastructure for MarkOS: deterministic agent run lifecycle engine (envelope, state machine, idempotency), policy-based provider abstraction with failover, MIR Gate 1 hardening and MSP discipline activation contracts, human approval gates for high-impact agent actions, and full run telemetry capturing model/prompt/cost/outcome per tenant.
 **Requirements Mapped:** AGT-01, AGT-02, AGT-03, AGT-04, MIR-01, MIR-02, MIR-03, MIR-04, IAM-03
 **Depends on:** Phase 51 (Multi-Tenant Foundation), Phase 52 (Plugin Runtime — telemetry hooks)
-**Status:** 🟡 Planning — discuss-phase in progress
+**Status:** ✅ Verified PASS — 13/13 truths; targeted regression suite green
+
+## Phase 54: Billing, Metering, and Enterprise Governance
+**Goal:** Deliver invoice-grade tenant billing and enterprise governance for MarkOS by turning Phase 52/53 telemetry into deduplicated usage records, reconciling usage against subscription entitlements, generating operator-facing billing evidence and invoice line items, and extending IAM v3.2 with enterprise identity federation and compliance-ready audit controls.
+**Requirements Mapped:** BIL-01, BIL-02, BIL-03, IAM-04, GOV-01
+**Depends on:** Phase 51 (IAM v3.2 foundations), Phase 52 (plugin telemetry), Phase 53 (agent run telemetry and provider-attempt evidence)
+**Status:** ✅ Verified (human_needed) — 6/6 plans complete, broader regression 77/77 green, `npm run build:llm` clean, 2 live checks pending
+**Plans:**
+- [x] 54-01-PLAN.md — Phase 54 contract baseline + Wave 0 billing/auth/governance test scaffolds
+- [x] 54-02-PLAN.md — Billing schema, normalized usage events, dedupe keys, and immutable ledger foundation
+- [x] 54-03-PLAN.md — Session/auth hardening + enterprise SSO provider binding and canonical role-mapping foundations
+- [x] 54-04-PLAN.md — Request-time entitlement snapshots, fail-closed degradation, and runtime/plugin enforcement
+- [x] 54-05-PLAN.md — Shared billing APIs, Stripe sync projection, tenant billing UX, and operator reconciliation surface
+- [x] 54-06-PLAN.md — Governance evidence exports, access reviews, retention controls, and vendor inventory surface
+
+**Phase 54 Milestones:**
+- ✅ 54-01: Wave 0 contracts, fixtures, and requirement-family scaffolds (DELIVERED 2026-04-03)
+- ✅ 54-02: Billing foundation, normalization, pricing snapshots, and immutable usage ledger (DELIVERED 2026-04-03)
+- ✅ 54-03: Session-backed auth hardening and enterprise SSO role-mapping foundation (DELIVERED 2026-04-03)
+- ✅ 54-04: Shared entitlement snapshots and fail-closed runtime enforcement (DELIVERED 2026-04-03)
+- ✅ 54-05: Invoice evidence, Stripe sync projection, and tenant/operator billing surfaces (DELIVERED 2026-04-03)
+- ✅ 54-06: Governance evidence, vendor inventory, and admin governance surface (DELIVERED 2026-04-03)
+- 🔲 HV1: Tenant billing UX language and evidence readability review in a live app session
+- 🔲 HV2: Real enterprise IdP SSO callback verification against non-production Supabase enterprise setup
 
 ---
 <details>
@@ -936,8 +959,6 @@ Plans:
 - [x] 30-01: MarkOSDB schema and adapter contracts
 - [x] 30-02: Local-to-cloud ingestion pipeline
 - [x] 30-03: Next.js + Supabase auth boundary integration
-
----
 
 1. Compatibility retirement remains a manual operator decision recorded in .planning/phases/31-rollout-hardening/31-COMPATIBILITY-DECISIONS.json.
 

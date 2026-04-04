@@ -46,8 +46,21 @@ try {
 // ── OpenAI SDK (lazy-initialized singleton to avoid repeated auth) ───────────
 const { OpenAI } = require('openai');
 
+const PROVIDER_ORDER = Object.freeze(['anthropic', 'openai', 'gemini', 'ollama']);
+const FALLBACK_ELIGIBLE_CODES = new Set(['TIMEOUT', 'RATE_LIMITED', 'AUTH_ERROR']);
+const SUPPORTED_ERROR_CODES = new Set([
+  'TIMEOUT',
+  'RATE_LIMITED',
+  'AUTH_ERROR',
+  'INVALID_CONFIG',
+  'FALLBACK_EXHAUSTED',
+  'NOT_IMPLEMENTED',
+  'UNKNOWN_ERROR',
+]);
+
 let _openai = null;
 let _modernAdapter = null;
+let _providerImplementations = null;
 
 /**
  * Returns a singleton OpenAI client, initialized on first call.
@@ -97,10 +110,13 @@ function resolveModernAdapter() {
 function mapLegacyOptionsToModern(options) {
   return {
     provider: options.provider,
+    primaryProvider: options.primaryProvider,
     model: options.model,
     maxTokens: options.max_tokens,
     temperature: options.temperature,
     timeoutMs: options.timeout_ms,
+    allowedProviders: options.allowedProviders,
+    fallbackChain: options.fallbackChain,
     noFallback: options.no_fallback,
     metadata: options.metadata,
     requestId: options.request_id,
@@ -168,6 +184,7 @@ async function callAnthropic(systemPrompt, userPrompt, options) {
   const data = await res.json();
   return { 
     text: data.content[0].text,
+    model,
     usage: {
       promptTokens: data.usage?.input_tokens || 0,
       completionTokens: data.usage?.output_tokens || 0,
@@ -212,6 +229,7 @@ async function callGemini(systemPrompt, userPrompt, options) {
   const data = await res.json();
   return {
     text: data.candidates[0].content.parts[0].text,
+    model,
     usage: {
       promptTokens: data.usageMetadata?.promptTokenCount || 0,
       completionTokens: data.usageMetadata?.candidatesTokenCount || 0,
@@ -234,6 +252,7 @@ async function callOpenAI(systemPrompt, userPrompt, options) {
   });
   return {
     text: response.choices?.[0]?.message?.content?.trim() || '',
+    model,
     usage: {
       promptTokens: response.usage?.prompt_tokens || 0,
       completionTokens: response.usage?.completion_tokens || 0,
@@ -278,12 +297,226 @@ async function callOllama(systemPrompt, userPrompt, options) {
   const data = await res.json();
   return {
     text: data.response || '',
+    model,
     usage: {
       promptTokens: data.prompt_eval_count || 0,
       completionTokens: data.eval_count || 0,
       totalTokens: (data.prompt_eval_count || 0) + (data.eval_count || 0)
     }
   };
+}
+
+function normalizeProvider(value, fallback = 'anthropic') {
+  const normalized = String(value || '').trim().toLowerCase();
+  return PROVIDER_ORDER.includes(normalized) ? normalized : fallback;
+}
+
+function normalizeProviderList(value) {
+  const source = Array.isArray(value)
+    ? value
+    : typeof value === 'string'
+      ? value.split(',')
+      : [];
+
+  return [...new Set(source
+    .map((provider) => normalizeProvider(provider, ''))
+    .filter(Boolean))];
+}
+
+function getConfiguredProviders() {
+  const providers = [];
+
+  if (_providerImplementations) {
+    for (const provider of Object.keys(_providerImplementations)) {
+      providers.push(normalizeProvider(provider, ''));
+    }
+  }
+
+  if (process.env.ANTHROPIC_API_KEY) providers.push('anthropic');
+  if (process.env.OPENAI_API_KEY) providers.push('openai');
+  if (process.env.GEMINI_API_KEY) providers.push('gemini');
+  if (providers.length === 0) providers.push('ollama');
+
+  return [...new Set(providers.filter(Boolean))];
+}
+
+function getDefaultModel(provider) {
+  if (provider === 'anthropic') {
+    return process.env.ANTHROPIC_MODEL || 'claude-3-5-haiku-20241022';
+  }
+  if (provider === 'openai') {
+    return process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  }
+  if (provider === 'gemini') {
+    return process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+  }
+
+  try {
+    const configPath = path.resolve(__dirname, '../../onboarding-config.json');
+    const config = require(configPath);
+    return config.ollama_model || 'llama3:8b';
+  } catch {
+    return 'llama3:8b';
+  }
+}
+
+function buildProviderChain(options = {}) {
+  const configuredProviders = getConfiguredProviders();
+  const primaryProvider = normalizeProvider(
+    options.primaryProvider || options.provider || configuredProviders[0] || 'anthropic'
+  );
+  const allowedProviders = normalizeProviderList(options.allowedProviders || options.fallbackChain);
+  const fallbackCandidates = allowedProviders.length > 0
+    ? allowedProviders
+    : configuredProviders.filter((provider) => provider !== primaryProvider);
+
+  return {
+    primaryProvider,
+    chain: [...new Set([primaryProvider, ...fallbackCandidates].filter(Boolean))],
+  };
+}
+
+function classifyProviderError(error) {
+  const message = String(error && error.message ? error.message : error || 'UNKNOWN_ERROR');
+  if (error && typeof error.code === 'string' && SUPPORTED_ERROR_CODES.has(error.code)) {
+    return { code: error.code, message };
+  }
+
+  const normalized = message.toLowerCase();
+  if (normalized.includes('timeout') || normalized.includes('timed out') || normalized.includes('abort')) {
+    return { code: 'TIMEOUT', message };
+  }
+  if (normalized.includes('429') || normalized.includes('rate')) {
+    return { code: 'RATE_LIMITED', message };
+  }
+  if (normalized.includes('401') || normalized.includes('403') || normalized.includes('api_key') || normalized.includes('not set') || normalized.includes('auth')) {
+    return { code: 'AUTH_ERROR', message };
+  }
+  if (normalized.includes('invalid_config')) {
+    return { code: 'INVALID_CONFIG', message };
+  }
+
+  return { code: 'UNKNOWN_ERROR', message };
+}
+
+function shouldFallbackForError(code) {
+  return FALLBACK_ELIGIBLE_CODES.has(code);
+}
+
+function getProviderImplementation(provider) {
+  if (_providerImplementations && typeof _providerImplementations[provider] === 'function') {
+    return _providerImplementations[provider];
+  }
+
+  if (provider === 'anthropic') return callAnthropic;
+  if (provider === 'openai') return callOpenAI;
+  if (provider === 'gemini') return callGemini;
+  if (provider === 'ollama') return callOllama;
+  return null;
+}
+
+async function callWithPolicyRuntime(systemPrompt, userPrompt, options = {}) {
+  const { primaryProvider, chain } = buildProviderChain(options);
+  const fallbackEnabled = options.no_fallback !== true;
+  const parsedMaxAttempts = Number.parseInt(
+    options.max_fallback_attempts ?? options.maxAttempts ?? `${chain.length}`,
+    10,
+  );
+  const maxAttempts = Math.max(1, Number.isFinite(parsedMaxAttempts) ? parsedMaxAttempts : chain.length);
+  const activeChain = (fallbackEnabled ? chain : [primaryProvider]).slice(0, maxAttempts);
+  const providerAttempts = [];
+  const fallbackReasons = [];
+  const startedAt = Date.now();
+  let lastError = null;
+
+  for (let index = 0; index < activeChain.length; index += 1) {
+    const provider = activeChain[index];
+    const implementation = getProviderImplementation(provider);
+    const model = provider === primaryProvider && options.model
+      ? options.model
+      : getDefaultModel(provider);
+    const attemptStartedAt = Date.now();
+
+    if (typeof implementation !== 'function') {
+      const missingImplementationError = { code: 'INVALID_CONFIG', message: `Unsupported provider '${provider}'` };
+      providerAttempts.push({
+        provider,
+        model,
+        attempt_number: index + 1,
+        primary_provider: primaryProvider,
+        outcome_state: 'error',
+        reason_code: missingImplementationError.code,
+        fallback_reason: index > 0 ? fallbackReasons[index - 1] : null,
+        latency_ms: 0,
+        token_usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        cost_usd: 0,
+      });
+      lastError = missingImplementationError;
+      break;
+    }
+
+    try {
+      const result = await implementation(systemPrompt, userPrompt, {
+        ...options,
+        provider,
+        model,
+      });
+      const usage = result && result.usage ? result.usage : { promptTokens: 0, completionTokens: 0, totalTokens: 0 };
+      const elapsed = Date.now() - attemptStartedAt;
+      providerAttempts.push({
+        provider,
+        model: result && result.model ? result.model : model,
+        attempt_number: index + 1,
+        primary_provider: primaryProvider,
+        outcome_state: 'success',
+        reason_code: null,
+        fallback_reason: index > 0 ? fallbackReasons[index - 1] : null,
+        latency_ms: elapsed,
+        token_usage: usage,
+        cost_usd: 0,
+      });
+
+      return {
+        ok: true,
+        text: result.text,
+        usage,
+        generationTimeMs: Date.now() - startedAt,
+        provider,
+        model: result && result.model ? result.model : model,
+        providerAttempts,
+        fallbackReasons,
+      };
+    } catch (error) {
+      const normalizedError = classifyProviderError(error);
+      const elapsed = Date.now() - attemptStartedAt;
+      providerAttempts.push({
+        provider,
+        model,
+        attempt_number: index + 1,
+        primary_provider: primaryProvider,
+        outcome_state: 'error',
+        reason_code: normalizedError.code,
+        fallback_reason: index > 0 ? fallbackReasons[index - 1] : null,
+        latency_ms: elapsed,
+        token_usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+        cost_usd: 0,
+      });
+      lastError = normalizedError;
+
+      const canContinue = fallbackEnabled && index < activeChain.length - 1 && shouldFallbackForError(normalizedError.code);
+      if (!canContinue) {
+        break;
+      }
+
+      fallbackReasons.push(normalizedError.code);
+    }
+  }
+
+  const failure = lastError || { code: 'FALLBACK_EXHAUSTED', message: 'All providers failed.' };
+  const err = new Error(failure.message);
+  err.code = providerAttempts.length >= activeChain.length ? 'FALLBACK_EXHAUSTED' : failure.code;
+  err.providerAttempts = providerAttempts;
+  throw err;
 }
 
 /**
@@ -304,42 +537,7 @@ async function call(systemPrompt, userPrompt, options = {}) {
     if (modernResult) {
       return modernResult;
     }
-
-    const start = Date.now();
-    let result = { text: '', usage: {} };
-    /**
-     * @llm_context
-     * intent: Resolve provider deterministically based on explicit override first, then
-     * configured API keys, and finally local Ollama fallback.
-     * failure_boundaries:
-     * - Missing cloud keys are expected and should fall through to remaining providers.
-     * - Unknown provider value is treated as fatal and handled by outer fallback.
-     */
-    const provider = options.provider || 
-                     (process.env.ANTHROPIC_API_KEY ? 'anthropic' : 
-                     (process.env.OPENAI_API_KEY ? 'openai' : 
-                     (process.env.GEMINI_API_KEY ? 'gemini' : 'ollama')));
-
-    if (provider === 'anthropic') {
-      result = await callAnthropic(systemPrompt, userPrompt, options);
-    } else if (provider === 'gemini') {
-      result = await callGemini(systemPrompt, userPrompt, options);
-    } else if (provider === 'openai') {
-      result = await callOpenAI(systemPrompt, userPrompt, options);
-    } else if (provider === 'ollama') {
-      result = await callOllama(systemPrompt, userPrompt, options);
-    } else {
-      throw new Error('NO_AI_AVAILABLE');
-    }
-
-    const elapsed = Date.now() - start;
-    return { 
-      ok: true, 
-      text: result.text, 
-      usage: result.usage, 
-      generationTimeMs: elapsed,
-      provider 
-    };
+    return await callWithPolicyRuntime(systemPrompt, userPrompt, options);
   } catch (err) {
     /**
      * @llm_context
@@ -357,6 +555,7 @@ async function call(systemPrompt, userPrompt, options = {}) {
       provider: 'static-mock',
       error: err.message,
       fallback_kind: classifyFallbackKind(err.message),
+      providerAttempts: Array.isArray(err.providerAttempts) ? err.providerAttempts : [],
       text: fallbackText
     };
   }
@@ -404,4 +603,14 @@ function getFallbackResponse(system, user) {
   return '[NO AI AVAILABLE] Please enter your content manually here while AI providers are unavailable.';
 }
 
-module.exports = { call };
+module.exports = {
+  call,
+  __testing: {
+    resetProviderImplementations() {
+      _providerImplementations = null;
+    },
+    setProviderImplementations(overrides) {
+      _providerImplementations = overrides && typeof overrides === 'object' ? { ...overrides } : null;
+    },
+  },
+};

@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const billingEntitlements = require('../../lib/markos/billing/entitlements.cjs');
 
 const {
   CONFIG_PATH,
@@ -42,6 +43,8 @@ const RETENTION_POLICY = Object.freeze({
   rollout_reports_days: 30,
   migration_checkpoint_days: 90,
 });
+
+const SUPPORTED_LLM_PROVIDERS = Object.freeze(['anthropic', 'openai', 'gemini']);
 
 const REDACTED_LITERAL = '[REDACTED]';
 const SENSITIVE_KEY_PATTERN = /(authorization|token|access_token|refresh_token|posthog_api_key|linear_api_key|supabase_service_role_key|upstash_vector_rest_token|x-markos-project-slug)/i;
@@ -534,6 +537,9 @@ function requireHostedSupabaseAuth({ req, runtimeContext, operation, requiredPro
   // This is a placeholder for future tenant membership resolution
   const tenantMemberships = payload.app_metadata?.tenant_memberships || [];
   const tenantRole = payload.app_metadata?.tenant_role || 'member';
+  const entitlementSnapshot = resolveEntitlementSnapshot({
+    entitlement_snapshot: payload.app_metadata?.entitlement_snapshot || payload.user_metadata?.entitlement_snapshot,
+  });
 
   return {
     ok: true,
@@ -541,6 +547,9 @@ function requireHostedSupabaseAuth({ req, runtimeContext, operation, requiredPro
     operation,
     token_payload: payload,
     tenant_id: canonicalTenantId,
+    iamRole: tenantRole,
+    role: tenantRole,
+    entitlement_snapshot: entitlementSnapshot,
     principal: {
       type: serviceRole ? 'supabase_service_role' : 'supabase_user',
       id: payload.sub,
@@ -626,15 +635,141 @@ function buildDenyEvent({ actor_id, tenant_id, action, reason, request_id, corre
   return event;
 }
 
-function emitDenyTelemetry(denyEvent) {
-  // Task 51-04-03: Emit to telemetry layer (sanitization happens in events.ts)
-  // This is a placeholder for actual telemetry emission
-  // The actual implementation will call events.ts buildEvent with sanitization
+function resolveTelemetryCapture() {
+  try {
+    const telemetry = require('./agents/telemetry.cjs');
+    if (telemetry && typeof telemetry.capture === 'function') {
+      return telemetry.capture.bind(telemetry);
+    }
+  } catch {
+    // Telemetry is optional in local/test environments.
+  }
+
+  return null;
+}
+
+function emitDenyTelemetry(denyEvent, dependencies = {}) {
+  const capture = typeof dependencies.capture === 'function'
+    ? dependencies.capture
+    : resolveTelemetryCapture();
+  const payload = Object.freeze({
+    ...denyEvent,
+    request_id: denyEvent && denyEvent.correlation_id ? denyEvent.correlation_id : null,
+  });
+
+  if (capture) {
+    capture('markos_tenant_access_denied', payload);
+  }
+
   return {
-    ok: true,
+    ok: Boolean(capture),
+    event_name: 'markos_tenant_access_denied',
     event_id: denyEvent.correlation_id,
     recorded_at: denyEvent.timestamp,
+    payload,
   };
+}
+
+function buildIdentityMappingEvidence(input = {}) {
+  return Object.freeze({
+    event_id: String(input.event_id || input.correlation_id || crypto.randomUUID()),
+    tenant_id: String(input.tenant_id || 'unknown'),
+    actor_id: String(input.actor_id || 'unknown'),
+    correlation_id: String(input.correlation_id || `corr-${crypto.randomUUID()}`),
+    sso_provider_id: String(input.sso_provider_id || 'unknown'),
+    source_claims: Array.isArray(input.source_claims) ? input.source_claims : [],
+    matched_rule_id: input.matched_rule_id || null,
+    canonical_role: input.canonical_role || null,
+    decision: input.decision === 'granted' ? 'granted' : 'denied',
+    denial_reason: input.denial_reason || null,
+    timestamp: input.timestamp || new Date().toISOString(),
+  });
+}
+
+function emitIdentityMappingTelemetry(identityEvent, dependencies = {}) {
+  const capture = typeof dependencies.capture === 'function'
+    ? dependencies.capture
+    : resolveTelemetryCapture();
+  const eventName = identityEvent && identityEvent.decision === 'granted'
+    ? 'markos_identity_role_mapping_granted'
+    : 'markos_identity_role_mapping_denied';
+
+  if (capture) {
+    capture(eventName, identityEvent);
+  }
+
+  return {
+    ok: Boolean(capture),
+    event_name: eventName,
+    event_id: identityEvent && identityEvent.event_id ? identityEvent.event_id : null,
+    recorded_at: identityEvent && identityEvent.timestamp ? identityEvent.timestamp : null,
+    payload: identityEvent,
+  };
+}
+
+function resolveEntitlementSnapshot(input = {}) {
+  const rawSnapshot = input.entitlement_snapshot
+    || input.entitlementSnapshot
+    || input.billing_entitlement_snapshot
+    || (input.markosAuth && input.markosAuth.entitlement_snapshot)
+    || (input.tenantContext && input.tenantContext.entitlementSnapshot)
+    || (input.principal && input.principal.entitlement_snapshot)
+    || {};
+
+  return billingEntitlements.buildEntitlementSnapshot(rawSnapshot);
+}
+
+function assertEntitledAction(input = {}, action = 'unknown', overrides = {}) {
+  const snapshot = overrides.snapshot || resolveEntitlementSnapshot(input);
+  const actorRole = overrides.actor_role
+    || input.role
+    || input.iamRole
+    || (input.principal && input.principal.tenant_role)
+    || 'unknown';
+
+  const decision = billingEntitlements.evaluateEntitlementAccess({
+    snapshot,
+    action,
+    actor_role: actorRole,
+  });
+
+  return {
+    ...decision,
+    snapshot,
+    deny_reason: decision.allowed
+      ? null
+      : billingEntitlements.buildBillingDenyReason({ snapshot, action }),
+  };
+}
+
+function parseBooleanFlag(value, fallback) {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    if (['true', '1', 'yes'].includes(normalized)) {
+      return true;
+    }
+    if (['false', '0', 'no'].includes(normalized)) {
+      return false;
+    }
+  }
+
+  return fallback;
+}
+
+function normalizeProviderList(value) {
+  const source = Array.isArray(value)
+    ? value
+    : typeof value === 'string'
+      ? value.split(',')
+      : [];
+
+  return [...new Set(source
+    .map((provider) => String(provider || '').trim().toLowerCase())
+    .filter((provider) => SUPPORTED_LLM_PROVIDERS.includes(provider)))];
 }
 
 /**
@@ -656,13 +791,36 @@ function resolveTenantFromDomain(hostname, domainMap) {
 }
 
 function buildRunPolicyMetadata(input = {}, env = process.env) {
-  const providerPolicy = input.provider_policy && typeof input.provider_policy === 'object'
+  const inputProviderPolicy = input.provider_policy && typeof input.provider_policy === 'object'
     ? input.provider_policy
-    : {
-        primary_provider: String(env.MARKOS_PRIMARY_PROVIDER || 'openai').trim() || 'openai',
-        allow_fallback: String(env.MARKOS_ALLOW_FALLBACK || 'true').toLowerCase() !== 'false',
-        max_fallback_attempts: Number.parseInt(env.MARKOS_MAX_FALLBACK_ATTEMPTS || '3', 10) || 3,
-      };
+    : {};
+  const primaryProvider = String(
+    inputProviderPolicy.primary_provider
+    || env.MARKOS_PRIMARY_PROVIDER
+    || env.MARKOS_LLM_PRIMARY_PROVIDER
+    || 'openai'
+  ).trim().toLowerCase() || 'openai';
+  const configuredAllowedProviders = normalizeProviderList(
+    inputProviderPolicy.allowed_providers
+    || env.MARKOS_ALLOWED_PROVIDERS
+    || env.MARKOS_LLM_AVAILABLE_PROVIDERS
+  );
+  const providerPolicy = {
+    ...inputProviderPolicy,
+    primary_provider: primaryProvider,
+    allowed_providers: [...new Set([
+      primaryProvider,
+      ...(configuredAllowedProviders.length > 0 ? configuredAllowedProviders : SUPPORTED_LLM_PROVIDERS),
+    ])],
+    allow_fallback: parseBooleanFlag(
+      inputProviderPolicy.allow_fallback ?? env.MARKOS_ALLOW_FALLBACK,
+      true,
+    ),
+    max_fallback_attempts: Number.parseInt(
+      inputProviderPolicy.max_fallback_attempts ?? env.MARKOS_MAX_FALLBACK_ATTEMPTS ?? '3',
+      10,
+    ) || 3,
+  };
 
   const toolPolicy = input.tool_policy && typeof input.tool_policy === 'object'
     ? input.tool_policy
@@ -677,15 +835,47 @@ function buildRunPolicyMetadata(input = {}, env = process.env) {
   };
 }
 
+function buildLLMCallOptions(executionContext = {}, overrides = {}) {
+  const policyMetadata = buildRunPolicyMetadata(executionContext);
+  const providerPolicy = policyMetadata.provider_policy;
+  const primaryProvider = providerPolicy.primary_provider;
+  const allowedProviders = normalizeProviderList(providerPolicy.allowed_providers)
+    .filter((provider) => provider !== primaryProvider);
+  const overrideMetadata = overrides.metadata && typeof overrides.metadata === 'object'
+    ? overrides.metadata
+    : {};
+
+  return {
+    primaryProvider,
+    allowedProviders,
+    no_fallback: providerPolicy.allow_fallback === false,
+    max_fallback_attempts: providerPolicy.max_fallback_attempts,
+    request_id: executionContext.request_id || executionContext.correlation_id || null,
+    workspace_id: executionContext.workspace_id || executionContext.tenant_id || null,
+    role: executionContext.role || 'operator',
+    metadata: {
+      operatorId: executionContext.actor_id || null,
+      tenantId: executionContext.tenant_id || null,
+      correlationId: executionContext.correlation_id || null,
+      ...overrideMetadata,
+    },
+    ...overrides,
+  };
+}
+
 module.exports = {
   ROLLOUT_MODES,
   REQUIRED_SECRET_MATRIX,
   RETENTION_POLICY,
   assertRolloutPromotionAllowed,
+  assertEntitledAction,
   assertPluginCapability,
   buildDenyEvent,
+  buildIdentityMappingEvidence,
+  buildLLMCallOptions,
   createRuntimeContext,
   emitDenyTelemetry,
+  emitIdentityMappingTelemetry,
   getRolloutMode,
   getGrantedCapabilities,
   getMarkosdbAccessMatrix,
@@ -700,6 +890,7 @@ module.exports = {
   redactSensitive,
   requireHostedSupabaseAuth,
   readPersistedProjectSlug,
+  resolveEntitlementSnapshot,
   resolveMirOutputPath,
   resolveRequestedProjectSlugFromRequest,
   ensureMirOutputPathWithinLocalRoots,

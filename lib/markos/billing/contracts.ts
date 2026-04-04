@@ -56,8 +56,24 @@ export type EntitlementSnapshot = {
   enforcement_source: 'markos-ledger';
   restricted_actions: string[];
   restricted_capabilities: string[];
-  allowances: Record<string, number>;
-  usage_to_date: Record<string, number>;
+  allowances: {
+    seats: number;
+    projects: number;
+    agent_runs: number;
+    token_budget: number;
+    storage_gb_days: number;
+    premium_feature_flags: Record<string, boolean>;
+    [key: string]: number | Record<string, boolean>;
+  };
+  usage_to_date: {
+    seats: number;
+    projects: number;
+    agent_runs: number;
+    token_budget: number;
+    storage_gb_days: number;
+    [key: string]: number;
+  };
+  read_access_preserved: boolean;
   reason_code: string | null;
 };
 

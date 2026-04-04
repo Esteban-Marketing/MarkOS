@@ -12,7 +12,7 @@
  * Phase 52 — Plan 03 (Task 52-03-01)
  */
 
-const { createRuntimeContext, requireHostedSupabaseAuth } = require('../onboarding/backend/runtime-context.cjs');
+const { assertEntitledAction, createRuntimeContext, requireHostedSupabaseAuth } = require('../onboarding/backend/runtime-context.cjs');
 
 const ADMIN_ROLES = new Set(['owner', 'tenant-admin']);
 
@@ -41,6 +41,20 @@ async function handlePluginSettings(req, res) {
 
   if (!ADMIN_ROLES.has(iamRole)) {
     return writeJson(res, 403, { success: false, error: 'SETTINGS_FORBIDDEN', message: 'Owner or tenant-admin role required to manage plugin settings' });
+  }
+
+  const entitlementDecision = assertEntitledAction({
+    entitlement_snapshot: req.entitlementSnapshot || auth?.entitlement_snapshot,
+    role: iamRole,
+  }, 'manage_plugin_settings');
+
+  if (!entitlementDecision.allowed) {
+    return writeJson(res, 403, {
+      success: false,
+      error: entitlementDecision.reason_code || 'BILLING_POLICY_BLOCKED',
+      message: 'Action blocked by billing policy',
+      enforcement_source: entitlementDecision.enforcement_source,
+    });
   }
 
   // Persist the settings update (in-memory for testability; production wires to Supabase)

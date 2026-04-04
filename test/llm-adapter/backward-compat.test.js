@@ -83,3 +83,51 @@ test('Phase 47-09: legacy wrapper falls back to static response on modern adapte
     fs.rmSync(tmpDir, { recursive: true, force: true });
   }
 });
+
+test('Phase 53-04: legacy wrapper honors primary-provider-first bounded fallback at runtime', async () => {
+  const wrapper = loadWrapperFresh();
+  const callOrder = [];
+
+  wrapper.__testing.setProviderImplementations({
+    openai: async () => {
+      callOrder.push('openai');
+      const error = new Error('timeout');
+      error.code = 'TIMEOUT';
+      throw error;
+    },
+    gemini: async (_systemPrompt, _userPrompt, options) => {
+      callOrder.push('gemini');
+      return {
+        text: 'gemini success',
+        model: options.model,
+        usage: { promptTokens: 7, completionTokens: 3, totalTokens: 10 },
+      };
+    },
+    anthropic: async () => {
+      callOrder.push('anthropic');
+      return {
+        text: 'anthropic should not run',
+        model: 'claude-3-5-haiku-20241022',
+        usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+      };
+    },
+  });
+
+  try {
+    const result = await wrapper.call('sys', 'usr', {
+      primaryProvider: 'openai',
+      allowedProviders: ['gemini', 'anthropic'],
+      max_fallback_attempts: 2,
+    });
+
+    assert.equal(result.ok, true);
+    assert.equal(result.provider, 'gemini');
+    assert.deepEqual(callOrder, ['openai', 'gemini']);
+    assert.equal(result.providerAttempts.length, 2);
+    assert.equal(result.providerAttempts[0].provider, 'openai');
+    assert.equal(result.providerAttempts[0].reason_code, 'TIMEOUT');
+    assert.equal(result.providerAttempts[1].provider, 'gemini');
+  } finally {
+    wrapper.__testing.resetProviderImplementations();
+  }
+});

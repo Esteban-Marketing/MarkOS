@@ -52,6 +52,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
     "@google/generative-ai": "^0.24.1",
+    "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.58.0",
     "@upstash/vector": "^1.2.3",
     "csv-parse": "^6.2.1",
@@ -72,6 +73,7 @@
     "@storybook/addon-interactions": "^8.6.18",
     "@storybook/addon-links": "^8.6.18",
     "@storybook/react-vite": "^8.6.18",
+    "stripe": "^22.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

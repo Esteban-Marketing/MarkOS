@@ -1,0 +1,156 @@
+.page {
+  font-family: "Space Grotesk", sans-serif;
+  background: #f5f7fa;
+  min-height: 100vh;
+  padding: 32px;
+}
+
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 32px;
+}
+
+.summaryCard,
+.panel {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.summaryCard {
+  display: grid;
+  gap: 16px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 8px 0 0;
+  font-family: "Sora", sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.summaryText,
+.bodyText {
+  color: #475569;
+  font-size: 16px;
+}
+
+.summaryText {
+  margin: 8px 0 0;
+}
+
+.bodyText {
+  margin: 0 0 16px;
+}
+
+.actionRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 44px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton {
+  border: none;
+  background: #0d9488;
+  color: #ffffff;
+}
+
+.secondaryButton {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+.mainColumn,
+.sideColumn {
+  display: grid;
+  gap: 24px;
+}
+
+.sectionTitle {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHead {
+  text-align: left;
+  font-size: 14px;
+  padding-bottom: 12px;
+}
+
+.tableCell {
+  padding: 12px 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.invoiceRow {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.holdCard {
+  background: #fff7ed;
+  border-left: 4px solid #b45309;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.holdTitle {
+  margin: 0 0 16px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #7c2d12;
+}
+
+.holdText {
+  margin: 0;
+  color: #9a3412;
+}
+
+@media (max-width: 960px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .invoiceRow {
+    grid-template-columns: 1fr 1fr;
+  }
+}

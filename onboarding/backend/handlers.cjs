@@ -27,7 +27,9 @@ const {
   resolveRequestedProjectSlug,
   resolveSeedOutputPath,
   buildDenyEvent,
+  buildLLMCallOptions,
   emitDenyTelemetry,
+  assertEntitledAction,
   validateRequiredSecrets,
 } = require('./runtime-context.cjs');
 const telemetry = require('./agents/telemetry.cjs');
@@ -393,7 +395,20 @@ function buildExecutionContext(req, slug) {
     correlation_id: (principal && principal.correlation_id)
       || headers['x-correlation-id']
       || null,
+    entitlement_snapshot: (req && (req.entitlementSnapshot || req.entitlement_snapshot))
+      || (principal && principal.entitlement_snapshot)
+      || null,
   };
+}
+
+function buildRuntimeLLMOptions(req, slug, agentName) {
+  const executionContext = buildExecutionContext(req, slug);
+  return buildLLMCallOptions(executionContext, {
+    metadata: {
+      projectSlug: slug,
+      agentName,
+    },
+  });
 }
 
 function buildMigrationArtifactRecord(projectSlug, artifactFile, ingestedAt) {
@@ -1221,6 +1236,28 @@ async function handleSubmit(req, res) {
       });
     }
 
+    const entitlementCheck = assertEntitledAction(buildExecutionContext(req, slug || 'submit'), 'execute_task');
+    if (!entitlementCheck.allowed) {
+      emitRolloutEndpointTelemetry({
+        endpoint,
+        startedAt,
+        outcomeState: 'failure',
+        statusCode: 403,
+        runtimeMode: runtime.mode,
+        projectSlug: slug,
+      });
+      return json(res, 403, {
+        success: false,
+        error: entitlementCheck.reason_code || 'BILLING_POLICY_BLOCKED',
+        message: 'Action blocked by billing policy',
+        outcome: {
+          state: 'blocked',
+          code: entitlementCheck.reason_code || 'BILLING_POLICY_BLOCKED',
+          message: 'Action blocked by billing policy',
+        },
+      });
+    }
+
     const secretCheck = validateRequiredSecrets({
       runtimeMode: runtime.mode,
       operation: 'submit_write',
@@ -1391,6 +1428,20 @@ async function handleRegenerate(req, res) {
       });
     }
 
+    const entitlementCheck = assertEntitledAction(buildExecutionContext(req, 'regenerate'), 'execute_task');
+    if (!entitlementCheck.allowed) {
+      return json(res, 403, {
+        success: false,
+        error: entitlementCheck.reason_code || 'BILLING_POLICY_BLOCKED',
+        message: 'Action blocked by billing policy',
+        outcome: {
+          state: 'blocked',
+          code: entitlementCheck.reason_code || 'BILLING_POLICY_BLOCKED',
+          message: 'Action blocked by billing policy',
+        },
+      });
+    }
+
     const runtime = createRuntimeContext();
     const vectorStore = require('./vector-store-client.cjs');
     vectorStore.configure(runtime.config);
@@ -1399,12 +1450,12 @@ async function handleRegenerate(req, res) {
     const mspFiller = require('./agents/msp-filler.cjs');
     
     const generators = {
-      company_profile: () => mirFiller.generateCompanyProfile(seed),
-      mission_values: () => mirFiller.generateMissionVisionValues(seed),
-      audience: () => mirFiller.generateAudienceProfile(seed),
-      competitive: () => mirFiller.generateCompetitiveLandscape(seed),
-      brand_voice: () => mspFiller.generateBrandVoice(seed),
-      channel_strategy: () => mspFiller.generateChannelStrategy(seed),
+      company_profile: () => mirFiller.generateCompanyProfile(seed, buildRuntimeLLMOptions(req, slug, 'company_profile')),
+      mission_values: () => mirFiller.generateMissionVisionValues(seed, buildRuntimeLLMOptions(req, slug, 'mission_values')),
+      audience: () => mirFiller.generateAudienceProfile(seed, buildRuntimeLLMOptions(req, slug, 'audience')),
+      competitive: () => mirFiller.generateCompetitiveLandscape(seed, buildRuntimeLLMOptions(req, slug, 'competitive')),
+      brand_voice: () => mspFiller.generateBrandVoice(seed, slug, buildRuntimeLLMOptions(req, slug, 'brand_voice')),
+      channel_strategy: () => mspFiller.generateChannelStrategy(seed, slug, buildRuntimeLLMOptions(req, slug, 'channel_strategy')),
     };
 
     if (!generators[section]) {

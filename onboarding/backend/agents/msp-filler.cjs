@@ -44,6 +44,27 @@ RULES:
 3. Output clean markdown only. No preamble, no meta-commentary.
 4. Where data is missing, output "[REQUIRES HUMAN INPUT — reason]" as a placeholder.`;
 
+function resolveGenerationContext(slugOrOptions, maybeLlmOptions) {
+  if (slugOrOptions && typeof slugOrOptions === 'object' && !Array.isArray(slugOrOptions)) {
+    return {
+      slug: undefined,
+      llmOptions: slugOrOptions,
+    };
+  }
+
+  return {
+    slug: typeof slugOrOptions === 'string' ? slugOrOptions : undefined,
+    llmOptions: maybeLlmOptions && typeof maybeLlmOptions === 'object' ? maybeLlmOptions : {},
+  };
+}
+
+function withLLMOptions(baseOptions, llmOptions) {
+  return {
+    ...(llmOptions && typeof llmOptions === 'object' ? llmOptions : {}),
+    ...baseOptions,
+  };
+}
+
 async function buildWinnersAnchor(slug, discipline) {
   if (!slug) return '';
   try {
@@ -69,7 +90,8 @@ async function buildWinnersAnchor(slug, discipline) {
   }
 }
 
-async function generateBrandVoice(seed, slug) {
+async function generateBrandVoice(seed, slugOrOptions, maybeLlmOptions) {
+  const { slug, llmOptions } = resolveGenerationContext(slugOrOptions, maybeLlmOptions);
   const company = seed.company || {};
   const audience = seed.audience || {};
   const winnersAnchor = await buildWinnersAnchor(slug, 'Strategy');
@@ -107,10 +129,11 @@ Create 4 dimensions using this format:
 - **Sales/Landing Pages:** [tone guidance]
 - **Customer Support Responses:** [tone guidance]`;
 
-  return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1000 });
+  return llm.call(SYSTEM_PROMPT, prompt, withLLMOptions({ max_tokens: 1000 }, llmOptions));
 }
 
-async function generateChannelStrategy(seed, slug) {
+async function generateChannelStrategy(seed, slugOrOptions, maybeLlmOptions) {
+  const { slug, llmOptions } = resolveGenerationContext(slugOrOptions, maybeLlmOptions);
   const company = seed.company || {};
   const audience = seed.audience || {};
   const content = seed.content || {};
@@ -152,10 +175,11 @@ Rank channels 1-5 in execution priority. For each:
 ## Channels to Explicitly Avoid (for now)
 [List any channels not recommended and explain why — connect to audience data]`;
 
-  return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1000 });
+  return llm.call(SYSTEM_PROMPT, prompt, withLLMOptions({ max_tokens: 1000 }, llmOptions));
 }
 
-async function generatePaidAcquisition(seed, slug) {
+async function generatePaidAcquisition(seed, slugOrOptions, maybeLlmOptions) {
+  const { slug, llmOptions } = resolveGenerationContext(slugOrOptions, maybeLlmOptions);
   const company = seed.company || {};
   const audience = seed.audience || {};
   const market = seed.market || {};
@@ -203,7 +227,7 @@ Write a complete Paid Acquisition Pipeline covering:
 ## Channels to Avoid (For Now)
 [List with rationale tied to audience data]`;
 
-  return llm.call(SYSTEM_PROMPT, prompt, { max_tokens: 1200 });
+  return llm.call(SYSTEM_PROMPT, prompt, withLLMOptions({ max_tokens: 1200 }, llmOptions));
 }
 
 module.exports = { generateBrandVoice, generateChannelStrategy, generatePaidAcquisition };

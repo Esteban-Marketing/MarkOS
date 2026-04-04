@@ -88,3 +88,56 @@ test('AGT-04: orchestrator finalizer records complete run-close payload with pro
   assert.equal(record.tool_events[0].provider_policy_primary, 'openai');
   assert.ok(record.cost_usd >= 0);
 });
+
+test('AGT-04: orchestrator finalizer preserves multi-attempt provider telemetry from live agent results', () => {
+  orchestrator.__testing.resetRunEngineState();
+  const executionContext = createExecutionContext();
+  const lifecycle = orchestrator.__testing.bootstrapRunLifecycle('acme', executionContext);
+
+  const record = orchestrator.__testing.finalizeRunClose({
+    slug: 'acme',
+    runEnvelope: lifecycle.run,
+    resolvedExecutionContext: executionContext,
+    agentResults: {
+      company_profile: {
+        ok: true,
+        provider: 'gemini',
+        model: 'gemini-2.5-flash',
+        providerAttempts: [
+          {
+            provider: 'openai',
+            model: 'gpt-4o-mini',
+            attempt_number: 1,
+            primary_provider: 'openai',
+            outcome_state: 'error',
+            reason_code: 'TIMEOUT',
+            latency_ms: 25,
+            token_usage: { promptTokens: 0, completionTokens: 0, totalTokens: 0 },
+          },
+          {
+            provider: 'gemini',
+            model: 'gemini-2.5-flash',
+            attempt_number: 2,
+            primary_provider: 'openai',
+            outcome_state: 'success',
+            fallback_reason: 'TIMEOUT',
+            latency_ms: 15,
+            token_usage: { promptTokens: 8, completionTokens: 4, totalTokens: 12 },
+          },
+        ],
+        usage: {
+          promptTokens: 8,
+          completionTokens: 4,
+          totalTokens: 12,
+        },
+      },
+    },
+    errors: [],
+  });
+
+  assert.equal(record.tool_events.length, 2);
+  assert.equal(record.tool_events[0].provider, 'openai');
+  assert.equal(record.tool_events[0].reason_code, 'TIMEOUT');
+  assert.equal(record.tool_events[1].provider, 'gemini');
+  assert.equal(record.tool_events[1].fallback_reason, 'TIMEOUT');
+});

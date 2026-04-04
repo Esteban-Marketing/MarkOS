@@ -119,7 +119,7 @@ function captureProviderAttempt(properties = {}) {
     token_usage: redactSensitive(properties.token_usage || {}),
   };
 
-  capture('agent_run_provider_attempt', event);
+  capture('markos_agent_run_provider_attempt', event);
   return redactSensitive(event);
 }
 
@@ -156,7 +156,7 @@ function getMissingRunCloseFields(properties = {}) {
 function captureRunClose(properties = {}) {
   const missing = getMissingRunCloseFields(properties);
   if (missing.length > 0) {
-    capture('agent_run_close_incomplete', {
+    capture('markos_agent_run_close_incomplete', {
       run_id: properties.run_id || null,
       tenant_id: properties.tenant_id || null,
       project_slug: properties.project_slug || null,
@@ -179,7 +179,7 @@ function captureRunClose(properties = {}) {
     error_count: Math.max(0, Math.trunc(normalizeNumeric(properties.error_count, 0))),
   };
 
-  capture('agent_run_close_completed', event);
+  capture('markos_agent_run_close_completed', event);
   return redactSensitive(event);
 }
 

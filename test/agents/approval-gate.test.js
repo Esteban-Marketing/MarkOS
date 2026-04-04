@@ -3,12 +3,15 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const { buildDenyEvent } = require('../../onboarding/backend/runtime-context.cjs');
+const runtimeContext = require('../../onboarding/backend/runtime-context.cjs');
+const telemetry = require('../../onboarding/backend/agents/telemetry.cjs');
 const {
   assertAwaitingApproval,
   recordApprovalDecision,
 } = require('../../onboarding/backend/agents/approval-gate.cjs');
 const handlers = require('../../onboarding/backend/handlers.cjs');
+
+const { buildDenyEvent } = runtimeContext;
 
 function createDecisionStore() {
   const decisions = new Map();
@@ -107,6 +110,42 @@ test('53-02-01: approval decision writes are immutable once recorded for a run',
   assert.equal(second.ok, false);
   assert.match(second.error, /immutable|already/i);
   assert.equal(store.size(), 1);
+});
+
+test('53-02-01: unauthorized approval attempts are durably emitted to deny telemetry', () => {
+  const store = createDecisionStore();
+  const captured = [];
+  const originalCapture = telemetry.capture;
+
+  telemetry.capture = (eventName, payload) => {
+    captured.push({ eventName, payload });
+  };
+
+  try {
+    const result = recordApprovalDecision({
+      run_id: 'run-deny-emit',
+      tenant_id: 'tenant-1',
+      state: 'awaiting_approval',
+      actor_id: 'actor-1',
+      actor_role: 'readonly',
+      action: 'approved',
+      rationale: 'attempt unauthorized approval',
+      correlation_id: 'corr-deny-emit',
+      decisionStore: store,
+      authorizationCheck: () => ({ authorized: false, statusCode: 403, reason: 'forbidden' }),
+      buildDenyEvent,
+      emitDenyTelemetry: runtimeContext.emitDenyTelemetry,
+    });
+
+    assert.equal(result.ok, false);
+    assert.equal(captured.length, 1);
+    assert.equal(captured[0].eventName, 'markos_tenant_access_denied');
+    assert.equal(captured[0].payload.actor_id, 'actor-1');
+    assert.equal(captured[0].payload.tenant_id, 'tenant-1');
+    assert.equal(captured[0].payload.correlation_id, 'corr-deny-emit');
+  } finally {
+    telemetry.capture = originalCapture;
+  }
 });
 
 test('53-02-03: handler IAM authorization denies unknown roles with immutable deny telemetry context', () => {
