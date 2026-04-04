@@ -508,7 +508,7 @@ Current state (v3.0 end):
 **BIL-01:** Subscription entitlements and billing state are enforced per tenant without breaking tenant isolation or plugin/runtime compatibility.
 - Input: Tenant subscription record, plan tier metadata, Phase 52 plugin enablement hooks, Phase 51 tenant context
 - Output: Canonical entitlement snapshot covering seats, projects, agent runs, token budgets, storage, and premium feature flags
-- Success: Billing state changes are reflected deterministically at request time; out-of-entitlement actions fail closed with operator-visible reason codes
+- Success: Billing state changes are reflected deterministically at request time; out-of-entitlement actions fail closed with operator-visible reason codes; monthly and annual billing terms resolve through the same entitlement and ledger vocabulary even if advanced proration or dispute flows are deferred
 - Phase: 54
 
 **BIL-02:** Metering events from plugin and agent runtimes are validated, deduplicated, and aggregated into billing-period usage records.
@@ -520,7 +520,7 @@ Current state (v3.0 end):
 **BIL-03:** Operators can reconcile invoice-grade usage, invoice line items, and billing-provider failures with entitlement-safe degradation.
 - Input: Usage ledger (BIL-02), subscription entitlements (BIL-01), billing provider sync state
 - Output: Invoice line items, reconciliation status surfaces, hold/dunning state, and safe degradation rules when billing sync fails
-- Success: Billing failures never silently over-provision restricted features; reconciliation mismatches are surfaced and auditable before invoice close
+- Success: Billing failures never silently over-provision restricted features; reconciliation mismatches are surfaced and auditable before invoice close; tenant and operator surfaces expose monthly and annual term context from the same reconciled ledger
 - Phase: 54
 
 **IAM-04:** Enterprise identity federation extends IAM v3.2 with external role mapping and governed provisioning boundaries.

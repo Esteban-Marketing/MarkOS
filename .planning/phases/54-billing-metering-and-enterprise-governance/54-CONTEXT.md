@@ -17,33 +17,38 @@ This phase does not own tenant isolation foundations (Phase 51), first-party plu
 <decisions>
 ## Implementation Decisions
 
-### Billing Model and Metering Contract
+## Billing Model and Metering Contract
 - **D-01:** Use a hybrid billing model: base subscription plus metered overages for tokens, agent runs, and premium feature units.
 - **D-02:** Preserve raw telemetry lineage and aggregate it into billable units rather than billing directly from raw event streams.
 - **D-03:** Every billed unit must reconcile back to immutable Phase 52/53 telemetry so finance and operators can explain charges without manual stitching.
+- **D-03a:** Phase 54 must preserve one billing-term vocabulary for monthly and annual plans across entitlement snapshots, ledger rows, invoice evidence, and tenant/operator billing surfaces. Advanced proration, credits, disputes, and mid-cycle migration mechanics may remain deferred if they do not weaken that shared term model.
 
-### Entitlement and Billing Failure Behavior
+## Entitlement and Billing Failure Behavior
 - **D-04:** Enforce entitlement-safe degradation when a tenant exceeds allowance or billing state is unhealthy.
 - **D-05:** Restricted write, execute, and premium operations fail closed with explicit operator-facing reason codes; core read access and evidence visibility should remain available.
 - **D-06:** Billing failures may not silently over-provision restricted capabilities; holds, degradation, and recovery state must be auditable.
 
-### Billing Surfaces and User Experience Scope
+## Billing Surfaces and User Experience Scope
 - **D-07:** Phase 54 includes a balanced internal plus tenant-facing billing surface.
 - **D-08:** Operators need reconciliation, hold/dunning, and invoice-evidence workflows; tenants also need a meaningful usage and billing view in the same phase.
 - **D-09:** Tenant-facing billing views should reflect the same reconciled ledger used by operators, not a separate approximate reporting path.
 
-### Enterprise Identity and Governance Scope
+## Enterprise Identity and Governance Scope
 - **D-10:** Prioritize SSO/SAML federation, external-role to canonical-role mapping, and audit evidence for identity-bound privilege changes.
 - **D-11:** External identity claims map onto existing IAM v3.2 canonical roles rather than introducing a second permission model.
 - **D-12:** Full provisioning lifecycle automation beyond deterministic mapping and governed access changes is deferred unless required by locked scope later.
 
-### Governance Evidence and Compliance Readiness
+## Governance Evidence and Compliance Readiness
 - **D-13:** Governance outputs must cover privileged billing actions, privileged identity changes, retention/export evidence, and vendor/subprocessor traceability for AI and billing providers.
 - **D-14:** Compliance-ready evidence should be generated from existing immutable logs and ledgers, not from ad hoc operator notes.
 
-### the agent's Discretion
+## the agent's Discretion
 - The planner/researcher may choose exact billing-provider integration boundaries, storage schema, and job cadence as long as reconciliation lineage and entitlement-safe behavior remain intact.
 - The planner/researcher may choose whether usage aggregation is near-real-time or batched so long as invoice evidence, tenant views, and operator reconciliation stay consistent.
+
+## Required Human Checkpoints
+- **HC-01:** Live tenant/operator billing UX review is required before full phase closeout so translated billing vocabulary and evidence readability are confirmed in a running app session.
+- **HC-02:** Live enterprise IdP SSO callback verification is required before full phase closeout so canonical-role mapping and escalation-denial behavior are confirmed against a non-production Supabase enterprise setup.
 
 </decisions>
 
@@ -120,4 +125,4 @@ This phase does not own tenant isolation foundations (Phase 51), first-party plu
 
 *Phase: 54-billing-metering-and-enterprise-governance*
 *Context gathered: 2026-04-03*
-*Decisions locked: 14 (D-01 through D-14)*
+*Decisions locked: 15 (D-01 through D-14 plus D-03a)*
