@@ -1,4 +1,4 @@
-export type __ModuleMarker = import('node:fs').Stats;
+import type { Stats } from 'node:fs';
 
 'use strict';
 

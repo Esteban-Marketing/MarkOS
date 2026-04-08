@@ -1,4 +1,4 @@
-export type __ModuleMarker = import('node:fs').Stats;
+import type { Stats } from 'node:fs';
 
 'use strict';
 
@@ -30,18 +30,22 @@ function formatTwilioRecipient(channel, value) {
   return normalized;
 }
 
-function createTwilioAdapter(options = {}) {
+function toTrimmedString(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
+
+function createTwilioAdapter(options: Record<string, unknown> = {}) {
   const fetchImpl = options.fetchImpl || (typeof fetch === 'function' ? fetch.bind(globalThis) : null);
-  const accountSid = options.accountSid || process.env.TWILIO_ACCOUNT_SID || '';
-  const authToken = options.authToken || process.env.TWILIO_AUTH_TOKEN || '';
-  const defaultFromSms = options.defaultFromSms || process.env.MARKOS_OUTBOUND_SMS_FROM || '+10000000000';
-  const defaultFromWhatsApp = options.defaultFromWhatsApp || process.env.MARKOS_OUTBOUND_WHATSAPP_FROM || 'whatsapp:+10000000001';
+  const accountSid = toTrimmedString(options.accountSid, process.env.TWILIO_ACCOUNT_SID || '');
+  const authToken = toTrimmedString(options.authToken, process.env.TWILIO_AUTH_TOKEN || '');
+  const defaultFromSms = toTrimmedString(options.defaultFromSms, process.env.MARKOS_OUTBOUND_SMS_FROM || '+10000000000');
+  const defaultFromWhatsApp = toTrimmedString(options.defaultFromWhatsApp, process.env.MARKOS_OUTBOUND_WHATSAPP_FROM || 'whatsapp:+10000000001');
 
   return {
     provider: 'twilio',
     channels: ['sms', 'whatsapp'],
-    async send(message = {}) {
-      const channel = String(message.channel || '').trim().toLowerCase();
+    async send(message: Record<string, unknown> = {}) {
+      const channel = toTrimmedString(message.channel).toLowerCase();
       if (!['sms', 'whatsapp'].includes(channel)) {
         throw new Error(`CRM_OUTBOUND_CHANNEL_INVALID:${message.channel}`);
       }
@@ -49,7 +53,7 @@ function createTwilioAdapter(options = {}) {
       const requestBody = new URLSearchParams({
         To: formatTwilioRecipient(channel, message.to),
         From: channel === 'whatsapp' ? defaultFromWhatsApp : defaultFromSms,
-        Body: String(message.body_markdown || message.body_text || '').trim(),
+        Body: toTrimmedString(message.body_markdown, toTrimmedString(message.body_text)),
       });
 
       let responseJson;
@@ -64,7 +68,7 @@ function createTwilioAdapter(options = {}) {
         });
         responseJson = await response.json();
         if (!response.ok) {
-          const error = new Error(responseJson?.message || 'CRM_OUTBOUND_PROVIDER_ERROR');
+          const error = new Error(responseJson?.message || 'CRM_OUTBOUND_PROVIDER_ERROR') as Error & { code?: string };
           error.code = 'CRM_OUTBOUND_PROVIDER_ERROR';
           throw error;
         }
@@ -80,20 +84,20 @@ function createTwilioAdapter(options = {}) {
         recipient: formatTwilioRecipient(channel, message.to),
       };
     },
-    normalizeEvent(payload = {}) {
+    normalizeEvent(payload: Record<string, unknown> = {}) {
       const status = normalizeTwilioStatus(payload.MessageStatus || payload.SmsStatus || payload.status);
-      const from = String(payload.From || payload.from || '').trim();
-      const to = String(payload.To || payload.to || '').trim();
+      const from = toTrimmedString(payload.From, toTrimmedString(payload.from));
+      const to = toTrimmedString(payload.To, toTrimmedString(payload.to));
       const channel = from.startsWith('whatsapp:') || to.startsWith('whatsapp:') ? 'whatsapp' : 'sms';
       return {
         provider: 'twilio',
         channel,
         direction: status === 'received' ? 'inbound' : 'outbound',
-        provider_message_id: String(payload.SmsSid || payload.MessageSid || payload.sid || '').trim(),
+        provider_message_id: toTrimmedString(payload.SmsSid, toTrimmedString(payload.MessageSid, toTrimmedString(payload.sid))),
         status,
         recipient: to,
         sender: from,
-        body: payload.Body ? String(payload.Body) : '',
+        body: typeof payload.Body === 'string' ? payload.Body : '',
       };
     },
   };

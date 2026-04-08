@@ -1,4 +1,4 @@
-export type __ModuleMarker = import('node:fs').Stats;
+import type { Stats } from 'node:fs';
 
 'use strict';
 
@@ -24,21 +24,25 @@ function normalizeEmailStatus(value) {
   return 'queued';
 }
 
-function createResendAdapter(options = {}) {
+function toTrimmedString(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
+
+function createResendAdapter(options: Record<string, unknown> = {}) {
   const fetchImpl = options.fetchImpl || (typeof fetch === 'function' ? fetch.bind(globalThis) : null);
-  const apiKey = options.apiKey || process.env.RESEND_API_KEY || '';
-  const defaultFrom = options.defaultFrom || process.env.MARKOS_OUTBOUND_EMAIL_FROM || 'no-reply@markos.local';
+  const apiKey = toTrimmedString(options.apiKey, process.env.RESEND_API_KEY || '');
+  const defaultFrom = toTrimmedString(options.defaultFrom, process.env.MARKOS_OUTBOUND_EMAIL_FROM || 'no-reply@markos.local');
 
   return {
     provider: 'resend',
     channels: ['email'],
-    async send(message = {}) {
-      if (String(message.channel || '').trim().toLowerCase() !== 'email') {
+    async send(message: Record<string, unknown> = {}) {
+      if (toTrimmedString(message.channel).toLowerCase() !== 'email') {
         throw new Error('CRM_OUTBOUND_CHANNEL_INVALID:email');
       }
 
       const brandContext = message.brand || {
-        tenantId: String(message.tenant_id || '').trim(),
+        tenantId: toTrimmedString(message.tenant_id),
         label: 'MarkOS',
         logoUrl: null,
         primaryColor: '#0d9488',
@@ -46,20 +50,20 @@ function createResendAdapter(options = {}) {
       };
       const notification = buildPluginNotificationPayload({
         type: 'email',
-        subject: String(message.subject || '').trim(),
-        body: String(message.body_markdown || message.body_text || '').trim(),
-        recipientId: String(message.contact_id || message.to || '').trim(),
+        subject: toTrimmedString(message.subject),
+        body: toTrimmedString(message.body_markdown, toTrimmedString(message.body_text)),
+        recipientId: toTrimmedString(message.contact_id, toTrimmedString(message.to)),
       }, brandContext);
 
       const requestBody = {
-        from: String(message.from || defaultFrom).trim(),
-        to: [String(message.to || '').trim()],
+        from: toTrimmedString(message.from, defaultFrom),
+        to: [toTrimmedString(message.to)],
         subject: notification.subject,
         text: notification.body,
         tags: [
-          { name: 'tenant_id', value: String(message.tenant_id || '').trim() },
-          { name: 'contact_id', value: String(message.contact_id || '').trim() },
-          { name: 'brand_label', value: String(notification.brand.label || 'MarkOS').trim() },
+          { name: 'tenant_id', value: toTrimmedString(message.tenant_id) },
+          { name: 'contact_id', value: toTrimmedString(message.contact_id) },
+          { name: 'brand_label', value: toTrimmedString(notification.brand.label, 'MarkOS') },
         ],
       };
 
@@ -75,7 +79,7 @@ function createResendAdapter(options = {}) {
         });
         responseJson = await response.json();
         if (!response.ok) {
-          const error = new Error(responseJson?.message || 'CRM_OUTBOUND_PROVIDER_ERROR');
+          const error = new Error(responseJson?.message || 'CRM_OUTBOUND_PROVIDER_ERROR') as Error & { code?: string };
           error.code = 'CRM_OUTBOUND_PROVIDER_ERROR';
           throw error;
         }
@@ -93,17 +97,20 @@ function createResendAdapter(options = {}) {
         brand_label: notification.brand.label,
       };
     },
-    normalizeEvent(payload = {}) {
-      const eventType = String(payload.type || payload.event || '').trim().toLowerCase();
-      const data = payload.data && typeof payload.data === 'object' ? payload.data : {};
+    normalizeEvent(payload: Record<string, unknown> = {}) {
+      const eventType = toTrimmedString(payload.type, toTrimmedString(payload.event)).toLowerCase();
+      const data: Record<string, unknown> =
+        payload.data && typeof payload.data === 'object'
+          ? payload.data as Record<string, unknown>
+          : {};
 
       return {
         provider: 'resend',
         channel: 'email',
         direction: eventType.includes('reply') ? 'inbound' : 'outbound',
-        provider_message_id: String(data.email_id || data.id || '').trim(),
+        provider_message_id: toTrimmedString(data.email_id, toTrimmedString(data.id)),
         status: normalizeEmailStatus(eventType.split('.').pop()),
-        recipient: Array.isArray(data.to) ? String(data.to[0] || '').trim() : String(data.to || '').trim(),
+        recipient: Array.isArray(data.to) ? toTrimmedString(data.to[0]) : toTrimmedString(data.to),
       };
     },
   };

@@ -1,0 +1,203 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/crm/[objectKind]",
+      "regex": "^/crm/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPobjectKind": "nxtPobjectKind"
+      },
+      "namedRegex": "^/crm/(?<nxtPobjectKind>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/crm/[objectKind]/[recordId]",
+      "regex": "^/crm/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPobjectKind": "nxtPobjectKind",
+        "nxtPrecordId": "nxtPrecordId"
+      },
+      "namedRegex": "^/crm/(?<nxtPobjectKind>[^/]+?)/(?<nxtPrecordId>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin/billing",
+      "regex": "^/admin/billing(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/billing(?:/)?$"
+    },
+    {
+      "page": "/admin/governance",
+      "regex": "^/admin/governance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/governance(?:/)?$"
+    },
+    {
+      "page": "/campaigns",
+      "regex": "^/campaigns(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/campaigns(?:/)?$"
+    },
+    {
+      "page": "/company",
+      "regex": "^/company(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/company(?:/)?$"
+    },
+    {
+      "page": "/crm",
+      "regex": "^/crm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm(?:/)?$"
+    },
+    {
+      "page": "/crm/copilot",
+      "regex": "^/crm/copilot(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/copilot(?:/)?$"
+    },
+    {
+      "page": "/crm/copilot/playbooks",
+      "regex": "^/crm/copilot/playbooks(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/copilot/playbooks(?:/)?$"
+    },
+    {
+      "page": "/crm/execution",
+      "regex": "^/crm/execution(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/execution(?:/)?$"
+    },
+    {
+      "page": "/crm/outbound",
+      "regex": "^/crm/outbound(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/outbound(?:/)?$"
+    },
+    {
+      "page": "/crm/outbound/conversations",
+      "regex": "^/crm/outbound/conversations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/outbound/conversations(?:/)?$"
+    },
+    {
+      "page": "/crm/reporting",
+      "regex": "^/crm/reporting(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/reporting(?:/)?$"
+    },
+    {
+      "page": "/crm/reporting/verification",
+      "regex": "^/crm/reporting/verification(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/crm/reporting/verification(?:/)?$"
+    },
+    {
+      "page": "/icps",
+      "regex": "^/icps(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icps(?:/)?$"
+    },
+    {
+      "page": "/mir",
+      "regex": "^/mir(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/mir(?:/)?$"
+    },
+    {
+      "page": "/msp",
+      "regex": "^/msp(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/msp(?:/)?$"
+    },
+    {
+      "page": "/operations",
+      "regex": "^/operations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/operations(?:/)?$"
+    },
+    {
+      "page": "/operations/tasks",
+      "regex": "^/operations/tasks(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/operations/tasks(?:/)?$"
+    },
+    {
+      "page": "/plugins/digital-agency",
+      "regex": "^/plugins/digital\\-agency(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/plugins/digital\\-agency(?:/)?$"
+    },
+    {
+      "page": "/segments",
+      "regex": "^/segments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/segments(?:/)?$"
+    },
+    {
+      "page": "/settings/billing",
+      "regex": "^/settings/billing(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/settings/billing(?:/)?$"
+    },
+    {
+      "page": "/settings/plugins",
+      "regex": "^/settings/plugins(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/settings/plugins(?:/)?$"
+    },
+    {
+      "page": "/settings/theme",
+      "regex": "^/settings/theme(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/settings/theme(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
