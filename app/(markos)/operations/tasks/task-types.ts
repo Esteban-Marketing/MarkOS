@@ -124,6 +124,7 @@ export type TaskEventRecord = {
   step_id: string;
   event_name:
     | "step_started"
+    | "step_executed"
     | "step_completed"
     | "step_failed"
     | "step_approved"

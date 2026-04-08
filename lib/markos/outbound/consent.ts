@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { getCrmStore, listCrmEntities } = require('../crm/api.cjs');
@@ -5,6 +7,10 @@ const { getCrmStore, listCrmEntities } = require('../crm/api.cjs');
 const OPT_OUT_STATUSES = new Set(['opted_out', 'unsubscribed', 'revoked']);
 const EMAIL_ALLOWED_STATUSES = new Set(['subscribed', 'transactional']);
 const PHONE_ALLOWED_STATUSES = new Set(['opted_in']);
+
+function toTrimmedString(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
 
 function normalizeChannel(channel) {
   const normalized = String(channel || '').trim().toLowerCase();
@@ -53,13 +59,13 @@ function buildEligibilityResult(partial) {
   });
 }
 
-function evaluateOutboundEligibility(store, input = {}) {
+function evaluateOutboundEligibility(store, input: Record<string, unknown> = {}) {
   const targetStore = ensureOutboundConsentStore(store);
-  const tenantId = String(input.tenant_id || '').trim();
-  const contactId = String(input.contact_id || '').trim();
+  const tenantId = toTrimmedString(input.tenant_id);
+  const contactId = toTrimmedString(input.contact_id);
   const channel = normalizeChannel(input.channel);
-  const useCase = String(input.use_case || 'marketing').trim().toLowerCase();
-  const riskLevel = String(input.risk_level || 'standard').trim().toLowerCase();
+  const useCase = toTrimmedString(input.use_case, 'marketing').toLowerCase();
+  const riskLevel = toTrimmedString(input.risk_level, 'standard').toLowerCase();
   const approvalGranted = input.approval_granted === true || input.approved === true;
 
   const contact = getContactRecord(targetStore, tenantId, contactId);
@@ -151,23 +157,23 @@ function evaluateOutboundEligibility(store, input = {}) {
   });
 }
 
-function recordOutboundOptOut(store, input = {}) {
+function recordOutboundOptOut(store, input: Record<string, unknown> = {}) {
   const targetStore = ensureOutboundConsentStore(store);
-  const tenantId = String(input.tenant_id || '').trim();
-  const contactId = String(input.contact_id || '').trim();
+  const tenantId = toTrimmedString(input.tenant_id);
+  const contactId = toTrimmedString(input.contact_id);
   const channel = normalizeChannel(input.channel);
   const now = new Date().toISOString();
   const nextRecord = Object.freeze({
-    consent_id: String(input.consent_id || `consent-${tenantId}-${contactId}-${channel}`),
+    consent_id: toTrimmedString(input.consent_id, `consent-${tenantId}-${contactId}-${channel}`),
     tenant_id: tenantId,
     contact_id: contactId,
     channel,
     status: 'opted_out',
-    lawful_basis: String(input.lawful_basis || 'marketing').trim(),
+    lawful_basis: toTrimmedString(input.lawful_basis, 'marketing'),
     verified_at: input.verified_at || null,
     unsubscribed_at: now,
-    opt_out_reason: String(input.reason || 'unspecified').trim(),
-    updated_by: input.actor_id ? String(input.actor_id).trim() : null,
+    opt_out_reason: toTrimmedString(input.reason, 'unspecified'),
+    updated_by: typeof input.actor_id === 'string' ? input.actor_id.trim() : null,
     updated_at: now,
   });
 

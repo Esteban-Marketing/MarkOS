@@ -72,6 +72,96 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
   type __Unused = __Check
 }
 
+// Validate ../../app/(markos)/crm/[objectKind]/[recordId]/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/[objectKind]/[recordId]">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/[objectKind]/[recordId]/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/[objectKind]/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/[objectKind]">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/[objectKind]/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/copilot/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/copilot">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/copilot/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/copilot/playbooks/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/copilot/playbooks">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/copilot/playbooks/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/execution/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/execution">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/execution/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/outbound/conversations/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/outbound/conversations">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/outbound/conversations/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/outbound/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/outbound">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/outbound/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/reporting/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/reporting">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/reporting/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(markos)/crm/reporting/verification/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/crm/reporting/verification">> = Specific
+  const handler = {} as typeof import("../../app/(markos)/crm/reporting/verification/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/(markos)/icps/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/icps">> = Specific

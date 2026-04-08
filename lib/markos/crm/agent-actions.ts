@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { canPerformAction } = require('../rbac/iam-v32.js');
@@ -11,7 +13,11 @@ const MUTATION_FAMILY_TO_ACTION = Object.freeze({
   update_stage: 'package_copilot_action',
 });
 
-function assertAgentMutationAllowed(context = {}, mutationFamily, options = {}) {
+function assertAgentMutationAllowed(
+  context: Record<string, unknown> = {},
+  mutationFamily: unknown,
+  options: Record<string, unknown> = {},
+) {
   const tenantId = String(context.tenant_id || '').trim();
   if (!tenantId) {
     return {
@@ -61,7 +67,7 @@ function assertAgentMutationAllowed(context = {}, mutationFamily, options = {}) 
   };
 }
 
-function buildApprovalPackage(input = {}) {
+function buildApprovalPackage(input: Record<string, unknown> = {}) {
   const tenantId = String(input.tenant_id || '').trim();
   const reviewTenantId = String(input.review_tenant_id || tenantId).trim();
   const mutationFamily = String(input.mutation_family || '').trim();
@@ -89,7 +95,7 @@ function buildApprovalPackage(input = {}) {
   });
 }
 
-function recordAgentMutationOutcome(store, input = {}) {
+function recordAgentMutationOutcome(store, input: Record<string, unknown> = {}) {
   const targetStore = getCrmStore({ crmStore: store });
   const row = Object.freeze({
     outcome_id: String(input.outcome_id || `copilot-outcome-${targetStore.copilotMutationOutcomes.length + 1}`),

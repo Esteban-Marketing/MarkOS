@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const {
@@ -32,7 +34,7 @@ function listLinkedEntities(store, tenantId, recordKind, recordId) {
   return entities.filter((entry) => entry.linked_record_id === recordId);
 }
 
-function buildCrmWorkspaceSnapshot(input = {}) {
+function buildCrmWorkspaceSnapshot(input: Record<string, unknown> = {}) {
   const tenantId = String(input.tenant_id || '').trim();
   const recordKind = String(input.record_kind || 'deal').trim();
   const viewType = input.view_type || 'kanban';

@@ -1,16 +1,55 @@
+import type { BillingUsageEvent, BillingUsageLedgerRow } from './contracts';
+
 'use strict';
 
-const crypto = require('node:crypto');
+const usageLedgerCrypto = require('node:crypto');
 
-function getUnitPrice(pricingSnapshot, pricingKey) {
-  const snapshot = pricingSnapshot || {};
-  if (!snapshot.unit_prices || !Object.prototype.hasOwnProperty.call(snapshot.unit_prices, pricingKey)) {
+type BillingPricingSnapshot = {
+  snapshot_id: string;
+  pricing_version: string;
+  effective_at: string;
+  unit_prices: Record<string, number>;
+};
+
+type BillingUsageLedgerEvent = Pick<
+  BillingUsageEvent,
+  | 'usage_event_id'
+  | 'tenant_id'
+  | 'billing_period_start'
+  | 'billing_period_end'
+  | 'unit_type'
+  | 'source_event_key'
+  | 'source_payload_ref'
+  | 'pricing_key'
+> & {
+  quantity: number;
+};
+
+type BillingUsageAggregate = {
+  tenant_id: string;
+  billing_period_start: string;
+  billing_period_end: string;
+  unit_type: BillingUsageEvent['unit_type'];
+  pricing_key: string;
+  pricing_snapshot_id: string | null;
+  pricing_version: string | null;
+  aggregated_quantity: number;
+  lineage_count: number;
+  source_event_keys: string[];
+  source_payload_refs: string[];
+  usage_event_ids: string[];
+};
+
+function getUnitPrice(pricingSnapshot: BillingPricingSnapshot | null | undefined, pricingKey: string) {
+  if (!pricingSnapshot?.unit_prices || !Object.prototype.hasOwnProperty.call(pricingSnapshot.unit_prices, pricingKey)) {
     throw new Error(`BILLING_PRICING_MISSING:${pricingKey}`);
   }
-  return Number(snapshot.unit_prices[pricingKey]);
+  return Number(pricingSnapshot.unit_prices[pricingKey]);
 }
 
-function assertUsageEvent(event = {}) {
+function assertUsageEvent(
+  event: Partial<BillingUsageLedgerEvent> & Record<string, unknown> = {},
+): BillingUsageLedgerEvent {
   const requiredFields = [
     'usage_event_id',
     'tenant_id',
@@ -33,12 +72,19 @@ function assertUsageEvent(event = {}) {
   }
 
   return {
-    ...event,
+    usage_event_id: String(event.usage_event_id),
+    tenant_id: String(event.tenant_id),
+    billing_period_start: String(event.billing_period_start),
+    billing_period_end: String(event.billing_period_end),
+    unit_type: event.unit_type as BillingUsageEvent['unit_type'],
     quantity,
+    source_event_key: String(event.source_event_key),
+    source_payload_ref: String(event.source_payload_ref),
+    pricing_key: String(event.pricing_key),
   };
 }
 
-function buildAggregateKey(event, pricingSnapshotId) {
+function buildAggregateKey(event: BillingUsageLedgerEvent, pricingSnapshotId: string | null | undefined) {
   return [
     event.tenant_id,
     event.billing_period_start,
@@ -49,8 +95,11 @@ function buildAggregateKey(event, pricingSnapshotId) {
   ].join('|');
 }
 
-function aggregateUsageForPeriod(events = [], options = {}) {
-  const deduped = new Map();
+function aggregateUsageForPeriod(
+  events: Array<Partial<BillingUsageLedgerEvent> & Record<string, unknown>> = [],
+  options: { pricingSnapshot?: BillingPricingSnapshot | null } = {},
+): BillingUsageAggregate[] {
+  const deduped = new Map<string, BillingUsageLedgerEvent>();
   for (const rawEvent of events) {
     const event = assertUsageEvent(rawEvent);
     if (!deduped.has(event.source_event_key)) {
@@ -59,7 +108,7 @@ function aggregateUsageForPeriod(events = [], options = {}) {
   }
 
   const pricingSnapshot = options.pricingSnapshot || null;
-  const aggregates = new Map();
+  const aggregates = new Map<string, BillingUsageAggregate>();
   for (const event of deduped.values()) {
     const aggregateKey = buildAggregateKey(event, pricingSnapshot && pricingSnapshot.snapshot_id);
     if (!aggregates.has(aggregateKey)) {
@@ -95,7 +144,10 @@ function aggregateUsageForPeriod(events = [], options = {}) {
   }));
 }
 
-function buildLedgerRows(aggregates = [], options = {}) {
+function buildLedgerRows(
+  aggregates: BillingUsageAggregate[] = [],
+  options: { pricingSnapshot?: BillingPricingSnapshot | null } = {},
+): BillingUsageLedgerRow[] {
   const pricingSnapshot = options.pricingSnapshot || null;
 
   return aggregates.map((aggregate) => {
@@ -111,7 +163,7 @@ function buildLedgerRows(aggregates = [], options = {}) {
       aggregate.pricing_key,
       pricingSnapshotId || '',
     ].join('|');
-    const ledgerRowId = `ledger:${crypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 24)}`;
+    const ledgerRowId = `ledger:${usageLedgerCrypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 24)}`;
 
     return Object.freeze({
       ledger_row_id: ledgerRowId,

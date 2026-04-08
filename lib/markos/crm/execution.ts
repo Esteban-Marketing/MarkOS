@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { listCrmEntities } = require('./entities.ts');
@@ -30,15 +32,19 @@ function ensureExecutionStore(store) {
   return store;
 }
 
-function toTimestamp(value, fallback) {
-  const resolved = value ? Date.parse(value) : Date.parse(fallback || 0);
+function toTimestamp(value, fallback = 0) {
+  const resolved = value
+    ? Date.parse(String(value))
+    : typeof fallback === 'number'
+      ? fallback
+      : Date.parse(String(fallback || 0));
   if (Number.isNaN(resolved)) {
     return 0;
   }
   return resolved;
 }
 
-function toIso(value, fallback) {
+function toIso(value, fallback = Date.now()) {
   const timestamp = toTimestamp(value, fallback || Date.now());
   return new Date(timestamp || Date.now()).toISOString();
 }
@@ -63,36 +69,51 @@ function resolveRiskLevel(urgencyScore) {
   return 'low';
 }
 
-function normalizeExecutionSignals(input = {}) {
-  const record = input.record || {};
+function normalizeExecutionSignals(input: Record<string, unknown> = {}) {
+  const record: Record<string, unknown> =
+    input.record && typeof input.record === 'object' ? input.record as Record<string, unknown> : {};
+  const recordAttributes: Record<string, unknown> =
+    record.attributes && typeof record.attributes === 'object' ? record.attributes as Record<string, unknown> : {};
   const nowIso = input.now || new Date().toISOString();
   const nowTs = toTimestamp(nowIso, Date.now());
-  const tasks = Array.isArray(input.tasks) ? input.tasks : [];
-  const timeline = Array.isArray(input.timeline) ? input.timeline : [];
-  const taskDueTimestamps = tasks
+  const tasks: Array<Record<string, unknown>> = Array.isArray(input.tasks)
+    ? input.tasks.filter((task): task is Record<string, unknown> => Boolean(task) && typeof task === 'object')
+    : [];
+  const timeline: Array<Record<string, unknown>> = Array.isArray(input.timeline)
+    ? input.timeline.filter((entry): entry is Record<string, unknown> => Boolean(entry) && typeof entry === 'object')
+    : [];
+  const normalizedTasks: Array<Record<string, unknown> & { attributes: Record<string, unknown> }> = tasks.map((task) => ({
+    ...task,
+    attributes: task.attributes && typeof task.attributes === 'object' ? task.attributes as Record<string, unknown> : {},
+  }));
+  const normalizedTimeline: Array<Record<string, unknown> & { payload_json: Record<string, unknown> }> = timeline.map((entry) => ({
+    ...entry,
+    payload_json: entry.payload_json && typeof entry.payload_json === 'object' ? entry.payload_json as Record<string, unknown> : {},
+  }));
+  const taskDueTimestamps = normalizedTasks
     .map((task) => toTimestamp(task.attributes?.due_at, 0))
     .filter((value) => value > 0);
-  const openTasks = tasks.filter((task) => !['completed', 'done', 'closed'].includes(String(task.status || '').toLowerCase()));
+  const openTasks = normalizedTasks.filter((task) => !['completed', 'done', 'closed'].includes(String(task.status || '').toLowerCase()));
   const overdueTasks = openTasks.filter((task) => {
     const dueAt = toTimestamp(task.attributes?.due_at, 0);
     return dueAt > 0 && dueAt < nowTs;
   });
-  const inboundTouches = timeline.filter((entry) => {
+  const inboundTouches = normalizedTimeline.filter((entry) => {
     const payload = entry.payload_json || {};
     return payload.direction === 'inbound' || payload.reply_state === 'received' || payload.channel_state === 'inbound';
   });
-  const approvalNeeded = record.attributes?.approval_state === 'needed' || record.attributes?.approval_required === true;
-  const ownerActorId = record.attributes?.owner_actor_id || null;
+  const approvalNeeded = recordAttributes.approval_state === 'needed' || recordAttributes.approval_required === true;
+  const ownerActorId = recordAttributes.owner_actor_id || null;
   const assignedActorIds = Array.from(new Set(openTasks.map((task) => String(task.attributes?.assigned_actor_id || task.attributes?.owner_actor_id || task.attributes?.assigned_to || '').trim()).filter(Boolean)));
-  const lastActivityAt = timeline.reduce((latest, entry) => {
+  const lastActivityAt = normalizedTimeline.reduce((latest, entry) => {
     const candidate = toTimestamp(entry.occurred_at || entry.created_at, 0);
     return Math.max(candidate, latest);
   }, toTimestamp(record.updated_at || record.created_at, 0));
   const stalledDays = Math.max(0, Math.floor((nowTs - lastActivityAt) / 86400000));
-  const intentScore = Number(record.attributes?.intent_score || 0);
-  const healthScore = Number(record.attributes?.health_score || 0);
-  const renewalAtTs = toTimestamp(record.attributes?.renewal_at, 0);
-  const expectedCloseTs = toTimestamp(record.attributes?.expected_close_at, 0);
+  const intentScore = Number(recordAttributes.intent_score || 0);
+  const healthScore = Number(recordAttributes.health_score || 0);
+  const renewalAtTs = toTimestamp(recordAttributes.renewal_at, 0);
+  const expectedCloseTs = toTimestamp(recordAttributes.expected_close_at, 0);
   const renewalWindowDays = renewalAtTs > 0 ? Math.floor((renewalAtTs - nowTs) / 86400000) : null;
   const closeWindowDays = expectedCloseTs > 0 ? Math.floor((expectedCloseTs - nowTs) / 86400000) : null;
   const missingData = resolveMissingData(record);
@@ -118,6 +139,8 @@ function normalizeExecutionSignals(input = {}) {
     next_due_at: taskDueTimestamps.length > 0 ? new Date(Math.min(...taskDueTimestamps)).toISOString() : null,
   });
 }
+
+type ExecutionSignals = ReturnType<typeof normalizeExecutionSignals>;
 
 function resolveQueueTab(signals) {
   if (signals.approval_needed) {
@@ -187,8 +210,17 @@ function buildSourceSignals(record, signals) {
   ]);
 }
 
+type BoundedAction = {
+  action_key: string;
+  label: string;
+  safe: boolean;
+  allowed_fields?: string[];
+  approval_required?: boolean;
+  suggestion_only?: boolean;
+};
+
 function buildBoundedActions(signals) {
-  const actions = [
+  const actions: BoundedAction[] = [
     { action_key: 'create_task', label: 'Create Task', safe: true },
     { action_key: 'append_note', label: 'Add Note', safe: true },
     { action_key: 'update_record', label: 'Update Record', safe: true, allowed_fields: ['stage_key', 'owner_actor_id', 'priority', 'status'] },
@@ -233,9 +265,13 @@ function buildDraftSuggestion(record, signals) {
   });
 }
 
-function buildExecutionRecommendation(input = {}) {
-  const record = input.record || {};
-  const signals = input.signals || normalizeExecutionSignals(input);
+function buildExecutionRecommendation(input: Record<string, unknown> = {}) {
+  const record: Record<string, unknown> =
+    input.record && typeof input.record === 'object' ? input.record as Record<string, unknown> : {};
+  const signals: ExecutionSignals =
+    input.signals && typeof input.signals === 'object'
+      ? input.signals as ExecutionSignals
+      : normalizeExecutionSignals(input);
   const queueTab = resolveQueueTab(signals);
   const urgencyScore = computeUrgencyScore(signals);
   const actorId = String(input.actor_id || '').trim() || null;
@@ -264,6 +300,8 @@ function buildExecutionRecommendation(input = {}) {
   });
 }
 
+type ExecutionRecommendationRecord = ReturnType<typeof buildExecutionRecommendation>;
+
 function readRecommendationLifecycle(store, recommendationId) {
   const targetStore = ensureExecutionStore(store);
   return targetStore.executionRecommendations.find((row) => row.recommendation_id === recommendationId) || null;
@@ -282,7 +320,7 @@ function applyRecommendationLifecycle(recommendation, lifecycle) {
   });
 }
 
-function buildExecutionRecommendations(input = {}) {
+function buildExecutionRecommendations(input: Record<string, unknown> = {}) {
   const store = ensureExecutionStore(input.crmStore || input.store || { entities: [], activities: [], identityLinks: [] });
   const tenantId = String(input.tenant_id || '').trim();
   if (!tenantId) {
@@ -326,11 +364,13 @@ function queueTabWeight(queueTab) {
   }[queueTab] || 0;
 }
 
-function rankExecutionQueue(input = {}) {
+function rankExecutionQueue(input: Record<string, unknown> = {}) {
   const scope = input.scope === 'team' ? 'team' : 'personal';
   const queueTab = input.queue_tab ? String(input.queue_tab).trim() : 'all';
   const actorId = String(input.actor_id || '').trim() || null;
-  const recommendations = Array.isArray(input.recommendations) ? input.recommendations.slice() : [];
+  const recommendations: ExecutionRecommendationRecord[] = Array.isArray(input.recommendations)
+    ? input.recommendations.slice() as ExecutionRecommendationRecord[]
+    : [];
   return recommendations
     .filter((recommendation) => {
       if (scope === 'personal') {
@@ -355,14 +395,14 @@ function rankExecutionQueue(input = {}) {
     });
 }
 
-function buildQueueTabs(recommendations) {
+function buildQueueTabs(recommendations: ExecutionRecommendationRecord[]) {
   return EXECUTION_QUEUE_TABS.map((tab) => ({
     tab_key: tab,
     count: recommendations.filter((item) => item.queue_tab === tab).length,
   }));
 }
 
-function buildExecutionQueues(input = {}) {
+function buildExecutionQueues(input: Record<string, unknown> = {}) {
   const recommendations = buildExecutionRecommendations(input);
   const actorId = String(input.actor_id || '').trim() || null;
   const personal = rankExecutionQueue({ recommendations, scope: 'personal', actor_id: actorId, queue_tab: input.queue_tab || 'all' });
@@ -375,7 +415,7 @@ function buildExecutionQueues(input = {}) {
   });
 }
 
-function upsertRecommendationLifecycle(store, input = {}) {
+function upsertRecommendationLifecycle(store, input: Record<string, unknown> = {}) {
   const targetStore = ensureExecutionStore(store);
   const recommendationId = String(input.recommendation_id || '').trim();
   if (!recommendationId) {
@@ -399,10 +439,10 @@ function upsertRecommendationLifecycle(store, input = {}) {
   return next;
 }
 
-function listDraftSuggestions(input = {}) {
+function listDraftSuggestions(input: Record<string, unknown> = {}) {
   const store = input.crmStore ? ensureExecutionStore(input.crmStore) : null;
-  const recommendations = Array.isArray(input.recommendations)
-    ? input.recommendations
+  const recommendations: ExecutionRecommendationRecord[] = Array.isArray(input.recommendations)
+    ? input.recommendations as ExecutionRecommendationRecord[]
     : buildExecutionRecommendations(input);
   return recommendations
     .filter((recommendation) => recommendation.suggestion_artifact)
@@ -424,7 +464,7 @@ function listDraftSuggestions(input = {}) {
     }));
 }
 
-function upsertDraftLifecycle(store, input = {}) {
+function upsertDraftLifecycle(store, input: Record<string, unknown> = {}) {
   const targetStore = ensureExecutionStore(store);
   const suggestionId = String(input.suggestion_id || '').trim();
   if (!suggestionId) {
@@ -446,7 +486,7 @@ function upsertDraftLifecycle(store, input = {}) {
   return next;
 }
 
-function buildExecutionWorkspaceSnapshot(input = {}) {
+function buildExecutionWorkspaceSnapshot(input: Record<string, unknown> = {}) {
   const store = ensureExecutionStore(input.crmStore || input.store || { entities: [], activities: [], identityLinks: [] });
   const tenantId = String(input.tenant_id || '').trim();
   const actorId = String(input.actor_id || '').trim() || null;

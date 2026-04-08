@@ -1,14 +1,22 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { createResendAdapter } = require('./providers/resend-adapter.ts');
 const { createTwilioAdapter } = require('./providers/twilio-adapter.ts');
 const { normalizeOutboundProviderEvent } = require('./providers/base-adapter.ts');
 
-function normalizeOutboundEventForLedger(input = {}) {
-  const provider = String(input.provider || '').trim().toLowerCase();
+function toTrimmedString(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
+
+function normalizeOutboundEventForLedger(input: Record<string, unknown> = {}) {
+  const provider = toTrimmedString(input.provider).toLowerCase();
   const adapter = provider === 'resend' ? createResendAdapter() : createTwilioAdapter();
-  const normalized = normalizeOutboundProviderEvent(adapter, input.payload || {});
-  const text = normalized.body || (input.payload && input.payload.Body ? String(input.payload.Body) : '');
+  const payload: Record<string, unknown> =
+    input.payload && typeof input.payload === 'object' ? input.payload as Record<string, unknown> : {};
+  const normalized = normalizeOutboundProviderEvent(adapter, payload);
+  const text = normalized.body || (typeof payload.Body === 'string' ? payload.Body : '');
   const optOut = /^(stop|unsubscribe|cancel|end|quit)$/i.test(String(text || '').trim());
 
   return {
@@ -24,10 +32,10 @@ function normalizeOutboundEventForLedger(input = {}) {
   };
 }
 
-function buildConversationStateUpdate(current = {}, event = {}) {
-  const currentStatus = String(current.status || 'active').trim();
-  const direction = String(event.direction || '').trim();
-  const status = String(event.status || '').trim();
+function buildConversationStateUpdate(current: Record<string, unknown> = {}, event: Record<string, unknown> = {}) {
+  const currentStatus = toTrimmedString(current.status, 'active');
+  const direction = toTrimmedString(event.direction);
+  const status = toTrimmedString(event.status);
 
   if (status === 'opted_out') {
     return {

@@ -105,12 +105,12 @@ export const taskReducer = (
         ? TaskStepState.Queued
         : TaskStepState.Approved;
 
-      const updatedStep = {
+      const updatedStep: TaskStepRecord = {
         ...step,
         state: newStepState,
       };
 
-      const updatedTask = {
+      const updatedTask: TaskExecutionRecord = {
         ...task,
         status: "in_progress",
         updated_at: new Date().toISOString(),
@@ -155,7 +155,7 @@ export const taskReducer = (
       const step = task.steps[stepIndex];
       const now = new Date().toISOString();
 
-      const updatedStep = {
+      const updatedStep: TaskStepRecord = {
         ...step,
         state: TaskStepState.Executing,
         evidence: {
@@ -170,7 +170,7 @@ export const taskReducer = (
         },
       };
 
-      const updatedTask = {
+      const updatedTask: TaskExecutionRecord = {
         ...task,
         status: "in_progress",
         updated_at: now,
@@ -212,7 +212,7 @@ export const taskReducer = (
       const step = task.steps[stepIndex];
       const now = new Date().toISOString();
 
-      const updatedStep = {
+      const updatedStep: TaskStepRecord = {
         ...step,
         state: TaskStepState.Completed,
         evidence: {
@@ -229,9 +229,9 @@ export const taskReducer = (
 
       // Check if this is the last step
       const isLastStep = stepIndex === task.steps.length - 1;
-      const newTaskStatus = isLastStep ? "completed" : "in_progress";
+      const newTaskStatus: TaskExecutionRecord["status"] = isLastStep ? "completed" : "in_progress";
 
-      const updatedTask = {
+      const updatedTask: TaskExecutionRecord = {
         ...task,
         status: newTaskStatus,
         updated_at: now,
@@ -277,7 +277,7 @@ export const taskReducer = (
       const step = task.steps[stepIndex];
       const now = new Date().toISOString();
 
-      const updatedStep = {
+      const updatedStep: TaskStepRecord = {
         ...step,
         state: TaskStepState.Failed,
         latest_error: action.error,
@@ -288,7 +288,7 @@ export const taskReducer = (
         },
       };
 
-      const updatedTask = {
+      const updatedTask: TaskExecutionRecord = {
         ...task,
         status: "failed",
         updated_at: now,
@@ -330,7 +330,7 @@ export const taskReducer = (
       const step = task.steps[stepIndex];
       const now = new Date().toISOString();
 
-      const updatedStep = {
+      const updatedStep: TaskStepRecord = {
         ...step,
         state: TaskStepState.Approved,
         approval: {
@@ -342,7 +342,7 @@ export const taskReducer = (
         },
       };
 
-      const updatedTask = {
+      const updatedTask: TaskExecutionRecord = {
         ...task,
         updated_at: now,
         steps: task.steps.map((s) => (s.id === action.stepId ? updatedStep : s)),
@@ -385,7 +385,7 @@ export const taskReducer = (
       const now = new Date().toISOString();
 
       // Rejection leaves step in queued state, not failed
-      const updatedStep = {
+      const updatedStep: TaskStepRecord = {
         ...step,
         state: TaskStepState.Queued,
         approval: {
@@ -397,7 +397,7 @@ export const taskReducer = (
         },
       };
 
-      const updatedTask = {
+      const updatedTask: TaskExecutionRecord = {
         ...task,
         updated_at: now,
         steps: task.steps.map((s) => (s.id === action.stepId ? updatedStep : s)),
@@ -452,12 +452,12 @@ export const taskReducer = (
 
       // If requires approval and inputs changed, reset approval to pending
       // Otherwise transition to queued/approved as appropriate
-      const newApprovalStatus = step.requires_approval ? "pending" : "approved";
+      const newApprovalStatus: TaskStepRecord["approval"]["status"] = step.requires_approval ? "pending" : "approved";
       const newStepState = step.requires_approval
         ? TaskStepState.Queued
         : TaskStepState.Approved;
 
-      const updatedStep = {
+      const updatedStep: TaskStepRecord = {
         ...step,
         state: newStepState,
         retry_count: step.retry_count + 1,
@@ -485,7 +485,7 @@ export const taskReducer = (
         },
       };
 
-      const updatedTask = {
+      const updatedTask: TaskExecutionRecord = {
         ...task,
         updated_at: now,
         steps: task.steps.map((s) => (s.id === action.stepId ? updatedStep : s)),

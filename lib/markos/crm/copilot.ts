@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { listCrmEntities } = require('./entities.ts');
@@ -26,7 +28,7 @@ function unique(values) {
   return Array.from(new Set(values.filter(Boolean)));
 }
 
-function normalizeSelector(input = {}) {
+function normalizeSelector(input: Record<string, unknown> = {}) {
   return {
     tenantId: String(input.tenant_id || '').trim(),
     recordKind: input.record_kind ? String(input.record_kind).trim() : null,
@@ -101,7 +103,7 @@ function buildConversationContext(store, tenantId, recordKind, recordId, convers
   return { conversation, outboundHistory };
 }
 
-function buildCopilotGroundingBundle(input = {}) {
+function buildCopilotGroundingBundle(input: Record<string, unknown> = {}) {
   const store = ensureCopilotStore(input.crmStore || input.store || { entities: [], activities: [], identityLinks: [] });
   const { tenantId, recordKind, recordId, conversationId } = normalizeSelector(input);
   if (!tenantId) {
@@ -167,7 +169,7 @@ function buildRiskFlags(bundle) {
   return flags;
 }
 
-function packageRecommendationAction(bundle, input = {}) {
+function packageRecommendationAction(bundle, input: Record<string, unknown> = {}) {
   const actionKey = String(input.action_key || 'append_note').trim();
   const record = bundle.record;
   const recommendedLabel = input.label || actionKey.replaceAll('_', ' ');
@@ -192,7 +194,7 @@ function packageRecommendationAction(bundle, input = {}) {
   });
 }
 
-function generateCopilotSummaryModel(bundle, input = {}) {
+function generateCopilotSummaryModel(bundle, input: Record<string, unknown> = {}) {
   const mode = String(input.mode || (bundle.conversation ? 'conversation' : 'record')).trim();
   const record = bundle.record;
   const riskFlags = buildRiskFlags(bundle);
@@ -247,7 +249,7 @@ function generateCopilotSummaryModel(bundle, input = {}) {
   });
 }
 
-function buildCopilotWorkspaceSnapshot(input = {}) {
+function buildCopilotWorkspaceSnapshot(input: Record<string, unknown> = {}) {
   const store = ensureCopilotStore(input.crmStore || input.store || { entities: [], activities: [], identityLinks: [] });
   const tenantId = String(input.tenant_id || '').trim();
   const records = listCrmEntities(store, { tenant_id: tenantId })

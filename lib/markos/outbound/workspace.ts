@@ -1,7 +1,13 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { getCrmStore, listCrmEntities } = require('../crm/api.cjs');
 const { selectDueOutboundWork } = require('./scheduler.ts');
+
+function toTrimmedString(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
 
 function listTenantQueue(store, tenantId) {
   return store.outboundQueue
@@ -9,9 +15,9 @@ function listTenantQueue(store, tenantId) {
     .sort((left, right) => Date.parse(left.due_at) - Date.parse(right.due_at));
 }
 
-function buildOutboundWorkspaceSnapshot(input = {}) {
+function buildOutboundWorkspaceSnapshot(input: Record<string, unknown> = {}) {
   const store = getCrmStore({ crmStore: input.crmStore });
-  const tenantId = String(input.tenant_id || '').trim();
+  const tenantId = toTrimmedString(input.tenant_id);
   const queue = listTenantQueue(store, tenantId);
   const due = selectDueOutboundWork(store, {
     tenant_id: tenantId,
@@ -30,8 +36,8 @@ function buildOutboundWorkspaceSnapshot(input = {}) {
 
   return {
     tenant_id: tenantId,
-    actor_id: input.actor_id ? String(input.actor_id).trim() : null,
-    role: input.role ? String(input.role).trim() : null,
+    actor_id: typeof input.actor_id === 'string' ? input.actor_id.trim() : null,
+    role: typeof input.role === 'string' ? input.role.trim() : null,
     queue,
     due_queue: due,
     templates: store.outboundTemplates.filter((row) => row.tenant_id === tenantId),

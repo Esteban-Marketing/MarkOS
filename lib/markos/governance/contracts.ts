@@ -30,7 +30,7 @@ export type GovernanceEvidencePack = {
   privileged_billing_actions: string[];
   privileged_identity_actions: string[];
   privileged_action_families: GovernancePrivilegedActionFamily[];
-  generated_from_operator_notes: false;
+  generated_from_operator_notes: boolean;
 };
 
 export type RetentionExportRecord = {

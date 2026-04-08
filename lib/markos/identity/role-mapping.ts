@@ -1,10 +1,11 @@
 import type { ExternalRoleClaim, IdentityRoleMappingDecision, TenantSsoBinding } from './contracts';
+import { CANONICAL_IAM_ROLES } from './contracts';
 import { IAM_V32_ROLES } from '../rbac/iam-v32.js';
 
 export const UNMAPPED_EXTERNAL_CLAIM = 'UNMAPPED_EXTERNAL_CLAIM';
 export const EXTERNAL_ROLE_ESCALATION_DENIED = 'EXTERNAL_ROLE_ESCALATION_DENIED';
 
-const CLAIM_TO_ROLE: Record<string, (typeof IAM_V32_ROLES)[number]> = {
+const CLAIM_TO_ROLE: Record<string, (typeof CANONICAL_IAM_ROLES)[number]> = {
   'markos-owner': 'owner',
   'markos-tenant-admin': 'tenant-admin',
   'markos-manager': 'manager',

@@ -38,12 +38,18 @@ export type BillingUsageLedgerRow = {
   billing_period_start: string;
   billing_period_end: string;
   unit_type: (typeof BILLING_USAGE_UNIT_TYPES)[number];
+  pricing_key: string;
+  pricing_snapshot_id: string | null;
+  pricing_version: string | null;
   aggregated_quantity: number;
   lineage_count: number;
   source_event_keys: string[];
   source_payload_refs: string[];
+  usage_event_ids: string[];
   ledger_source: 'markos-ledger';
   priced_at: string;
+  unit_amount_usd: number;
+  amount_usd: number;
 };
 
 export type EntitlementSnapshot = {

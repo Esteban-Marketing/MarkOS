@@ -1,6 +1,19 @@
+import type { BillingUsageEvent } from './contracts';
+
 'use strict';
 
-const crypto = require('node:crypto');
+const usageNormalizerCrypto = require('node:crypto');
+
+type UsageDedupeKeyParts = {
+  source_type: string;
+  tenant_id: string;
+  correlation_id: string;
+  unit_type: string;
+  source_payload_ref: string;
+  plugin_id?: unknown;
+  operation_name?: unknown;
+  attempt_number?: unknown;
+};
 
 function assertString(value, fieldName) {
   if (!String(value || '').trim()) {
@@ -37,7 +50,7 @@ function toMonthPeriod(measuredAt) {
   };
 }
 
-function buildUsageDedupeKey(parts = {}) {
+function buildUsageDedupeKey(parts: Partial<UsageDedupeKeyParts> & Record<string, unknown> = {}) {
   const normalized = [
     assertString(parts.source_type, 'source_type'),
     assertString(parts.tenant_id, 'tenant_id'),
@@ -49,14 +62,14 @@ function buildUsageDedupeKey(parts = {}) {
     String(parts.attempt_number || '').trim(),
   ].join('|');
 
-  return crypto.createHash('sha256').update(normalized).digest('hex');
+  return usageNormalizerCrypto.createHash('sha256').update(normalized).digest('hex');
 }
 
 function buildUsageEventId(sourceEventKey) {
   return `usage:${sourceEventKey.slice(0, 24)}`;
 }
 
-function normalizePluginUsageEvent(rawEvent = {}) {
+function normalizePluginUsageEvent(rawEvent: Record<string, unknown> = {}): BillingUsageEvent {
   if (rawEvent.event_name !== 'plugin_operation') {
     throw new Error('BILLING_INPUT_INVALID:event_name');
   }
@@ -101,7 +114,7 @@ function normalizePluginUsageEvent(rawEvent = {}) {
   });
 }
 
-function inferAgentSourceType(rawEvent = {}) {
+function inferAgentSourceType(rawEvent: Record<string, unknown> = {}): 'agent_run_close' | 'agent_provider_attempt' {
   if (rawEvent.prompt_version || rawEvent.tool_events) {
     return 'agent_run_close';
   }
@@ -111,7 +124,7 @@ function inferAgentSourceType(rawEvent = {}) {
   throw new Error('BILLING_INPUT_INVALID:agent_source_type');
 }
 
-function normalizeAgentRunUsageEvent(rawEvent = {}) {
+function normalizeAgentRunUsageEvent(rawEvent: Record<string, unknown> = {}): BillingUsageEvent[] {
   const sourceType = inferAgentSourceType(rawEvent);
   const tenantId = assertString(rawEvent.tenant_id, 'tenant_id');
   const runId = assertString(rawEvent.run_id, 'run_id');
@@ -164,7 +177,10 @@ function normalizeAgentRunUsageEvent(rawEvent = {}) {
   }
 
   const attemptNumber = Math.max(1, Math.trunc(assertFiniteNumber(rawEvent.attempt_number, 'attempt_number')));
-  const tokenUsage = rawEvent.token_usage || {};
+  const tokenUsage: Record<string, unknown> =
+    rawEvent.token_usage && typeof rawEvent.token_usage === 'object' && !Array.isArray(rawEvent.token_usage)
+      ? rawEvent.token_usage as Record<string, unknown>
+      : {};
   const inputTokens = Number(tokenUsage.input_tokens);
   const outputTokens = Number(tokenUsage.output_tokens);
   const events = [];

@@ -1,26 +1,205 @@
 {
   "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/_not-found/page-8532c22ca042454c.js"
+    ],
     "/(markos)/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(markos)/layout.js"
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/css/1662e666dee3936e.css",
+      "static/chunks/app/(markos)/layout-6b812d02afc8910b.js"
     ],
-    "/(markos)/settings/plugins/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/(markos)/settings/plugins/page.js"
+    "/(markos)/campaigns/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/campaigns/page-ac6a4827bf7c7386.js"
     ],
-    "/(markos)/settings/billing/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(markos)/settings/billing/page.css",
-      "static/chunks/app/(markos)/settings/billing/page.js"
+    "/(markos)/company/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/company/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/admin/governance/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/css/cb480322c9094835.css",
+      "static/chunks/app/(markos)/admin/governance/page-64bff19b92c17f65.js"
+    ],
+    "/(markos)/crm/[objectKind]/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/460-aaba80c9cbd025c7.js",
+      "static/chunks/app/(markos)/crm/[objectKind]/page-2c1aee3a11d7add3.js"
+    ],
+    "/(markos)/crm/[objectKind]/[recordId]/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/460-aaba80c9cbd025c7.js",
+      "static/chunks/app/(markos)/crm/[objectKind]/[recordId]/page-b3e7c45c4ba72efe.js"
+    ],
+    "/(markos)/crm/outbound/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/crm/outbound/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/crm/execution/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/aaea2bcf-b01cc100fa6b3bb8.js",
+      "static/chunks/372-0843a0b23339e890.js",
+      "static/chunks/app/(markos)/crm/execution/page-1e1a6434dc642c3f.js"
+    ],
+    "/(markos)/crm/copilot/playbooks/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/crm/copilot/playbooks/page-972051e2067fc870.js"
+    ],
+    "/(markos)/crm/outbound/conversations/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/crm/outbound/conversations/page-ac6a4827bf7c7386.js"
     ],
     "/(markos)/admin/billing/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/(markos)/admin/billing/page.css",
-      "static/chunks/app/(markos)/admin/billing/page.js"
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/css/494585f4188ccab1.css",
+      "static/chunks/app/(markos)/admin/billing/page-29a4425d2c8acf9b.js"
+    ],
+    "/(markos)/crm/copilot/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/crm/copilot/page-6d5297296d93f229.js"
+    ],
+    "/(markos)/icps/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/icps/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/crm/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/460-aaba80c9cbd025c7.js",
+      "static/chunks/app/(markos)/crm/page-dd8414c2a5d80802.js"
+    ],
+    "/(markos)/mir/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/mir/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/crm/reporting/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/crm/reporting/page-fbf869849e096666.js"
+    ],
+    "/(markos)/msp/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/msp/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/crm/reporting/verification/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/crm/reporting/verification/page-ccc6e07a185ac8a4.js"
+    ],
+    "/(markos)/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/operations/tasks/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/css/f1d1ed20d7d39079.css",
+      "static/chunks/app/(markos)/operations/tasks/page-6483605b7b0318ef.js"
+    ],
+    "/(markos)/segments/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/segments/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/operations/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/css/d03356cb8844c5f2.css",
+      "static/chunks/app/(markos)/operations/page-80067d532ee399d0.js"
+    ],
+    "/(markos)/settings/plugins/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/css/41b70e05164e8292.css",
+      "static/chunks/app/(markos)/settings/plugins/page-51e22c544fd9a3d5.js"
+    ],
+    "/(markos)/plugins/digital-agency/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/plugins/digital-agency/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/settings/theme/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/chunks/app/(markos)/settings/theme/page-ac6a4827bf7c7386.js"
+    ],
+    "/(markos)/settings/billing/page": [
+      "static/chunks/webpack-493a1e081ab3e43d.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-b907973371c9e4f0.js",
+      "static/chunks/main-app-88d0e3444d5a0025.js",
+      "static/css/0779079c324faacb.css",
+      "static/chunks/app/(markos)/settings/billing/page-f62c4a1643d88883.js"
     ]
   }
 }

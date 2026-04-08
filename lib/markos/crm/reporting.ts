@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { listCrmEntities } = require('./entities.ts');
@@ -9,48 +11,62 @@ function toTimestamp(value) {
   return Number.isNaN(resolved) ? 0 : resolved;
 }
 
-function normalizeContacts(input = {}) {
+function toTrimmedString(value) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function normalizeCrmStore(input: Record<string, unknown>) {
+  return input.crmStore && typeof input.crmStore === 'object'
+    ? input.crmStore as Record<string, unknown>
+    : {};
+}
+
+function normalizeContacts(input: Record<string, unknown> = {}) {
+  const crmStore = normalizeCrmStore(input);
   if (Array.isArray(input.contacts)) {
     return input.contacts;
   }
-  if (input.crmStore) {
-    return listCrmEntities(input.crmStore, { tenant_id: input.tenant_id, record_kind: 'contact' });
+  if (Object.keys(crmStore).length > 0) {
+    return listCrmEntities(crmStore, { tenant_id: input.tenant_id, record_kind: 'contact' });
   }
   return [];
 }
 
-function normalizeActivities(input = {}) {
+function normalizeActivities(input: Record<string, unknown> = {}) {
+  const crmStore = normalizeCrmStore(input);
   if (Array.isArray(input.activities)) {
     return input.activities.filter((entry) => entry?.tenant_id === input.tenant_id);
   }
-  return Array.isArray(input.crmStore?.activities)
-    ? input.crmStore.activities.filter((entry) => entry?.tenant_id === input.tenant_id)
+  return Array.isArray(crmStore.activities)
+    ? crmStore.activities.filter((entry) => entry?.tenant_id === input.tenant_id)
     : [];
 }
 
-function normalizeIdentityLinks(input = {}) {
+function normalizeIdentityLinks(input: Record<string, unknown> = {}) {
+  const crmStore = normalizeCrmStore(input);
   let links = [];
   if (Array.isArray(input.identity_links)) {
     links = input.identity_links;
-  } else if (Array.isArray(input.crmStore?.identityLinks)) {
-    links = input.crmStore.identityLinks;
+  } else if (Array.isArray(crmStore.identityLinks)) {
+    links = crmStore.identityLinks;
   }
   return links.filter((entry) => entry?.tenant_id === input.tenant_id);
 }
 
-function normalizeOutboundMessages(input = {}) {
+function normalizeOutboundMessages(input: Record<string, unknown> = {}) {
+  const crmStore = normalizeCrmStore(input);
   let messages = [];
   if (Array.isArray(input.outbound_messages)) {
     messages = input.outbound_messages;
-  } else if (Array.isArray(input.crmStore?.outboundMessages)) {
-    messages = input.crmStore.outboundMessages;
+  } else if (Array.isArray(crmStore.outboundMessages)) {
+    messages = crmStore.outboundMessages;
   }
   return messages.filter((entry) => entry?.tenant_id === input.tenant_id);
 }
 
-function collectTenantIds(input = {}) {
-  const crmStore = input.crmStore || {};
-  const tenantIds = new Set();
+function collectTenantIds(input: Record<string, unknown> = {}) {
+  const crmStore = normalizeCrmStore(input);
+  const tenantIds = new Set<string>();
   [crmStore.entities, crmStore.activities, crmStore.identityLinks, crmStore.outboundMessages]
     .filter(Array.isArray)
     .forEach((rows) => {
@@ -61,7 +77,7 @@ function collectTenantIds(input = {}) {
         }
       });
     });
-  const requestedTenantId = String(input.tenant_id || '').trim();
+  const requestedTenantId = toTrimmedString(input.tenant_id);
   if (requestedTenantId) {
     tenantIds.add(requestedTenantId);
   }
@@ -115,8 +131,8 @@ function deriveRiskLevel(signals) {
   return 'low';
 }
 
-function buildReadinessReport(input = {}) {
-  const tenantId = String(input.tenant_id || '').trim();
+function buildReadinessReport(input: Record<string, unknown> = {}) {
+  const tenantId = toTrimmedString(input.tenant_id);
   const contacts = normalizeContacts({ ...input, tenant_id: tenantId });
   const activities = normalizeActivities({ ...input, tenant_id: tenantId });
   const identityLinks = normalizeIdentityLinks({ ...input, tenant_id: tenantId });
@@ -174,9 +190,13 @@ function buildReadinessReport(input = {}) {
   });
 }
 
-function buildReportingCockpitData(input = {}) {
-  const tenantId = String(input.tenant_id || '').trim();
-  const store = input.crmStore || { entities: [], activities: [], identityLinks: [] };
+type ReportingReadinessReport = ReturnType<typeof buildReadinessReport>;
+
+function buildReportingCockpitData(input: Record<string, unknown> = {}) {
+  const tenantId = toTrimmedString(input.tenant_id);
+  const store = Object.keys(normalizeCrmStore(input)).length > 0
+    ? normalizeCrmStore(input)
+    : { entities: [], activities: [], identityLinks: [] };
   const records = listCrmEntities(store, { tenant_id: tenantId })
     .filter((entry) => !['task', 'note'].includes(entry.record_kind));
   const tasks = listCrmEntities(store, { tenant_id: tenantId, record_kind: 'task' });
@@ -218,9 +238,17 @@ function buildReportingCockpitData(input = {}) {
   });
 }
 
-function buildExecutiveSummary(input = {}) {
-  const readiness = input.readiness || buildReadinessReport(input);
-  const cockpit = input.cockpit || buildReportingCockpitData(input);
+type ReportingCockpitData = ReturnType<typeof buildReportingCockpitData>;
+
+function buildExecutiveSummary(input: Record<string, unknown> = {}) {
+  const readiness: ReportingReadinessReport =
+    input.readiness && typeof input.readiness === 'object'
+      ? input.readiness as ReportingReadinessReport
+      : buildReadinessReport(input);
+  const cockpit: ReportingCockpitData =
+    input.cockpit && typeof input.cockpit === 'object'
+      ? input.cockpit as ReportingCockpitData
+      : buildReportingCockpitData(input);
   return Object.freeze({
     readiness_status: readiness.status,
     readiness_summary: readiness.summary,
@@ -230,7 +258,7 @@ function buildExecutiveSummary(input = {}) {
   });
 }
 
-function buildCentralReportingRollup(input = {}) {
+function buildCentralReportingRollup(input: Record<string, unknown> = {}) {
   const tenantIds = collectTenantIds(input);
   const tenants = tenantIds.map((tenantId) => {
     const readiness = buildReadinessReport({ ...input, tenant_id: tenantId });
@@ -253,7 +281,9 @@ function buildCentralReportingRollup(input = {}) {
   });
 
   return Object.freeze({
-    generated_at: new Date(input.now || Date.now()).toISOString(),
+    generated_at: typeof input.now === 'string' || typeof input.now === 'number'
+      ? new Date(input.now).toISOString()
+      : new Date().toISOString(),
     totals,
     tenants,
     governance: Object.freeze({

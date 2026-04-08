@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const HIGH_SIGNAL_AUTHENTICATED_EVENTS = new Set([
@@ -8,9 +10,13 @@ const HIGH_SIGNAL_AUTHENTICATED_EVENTS = new Set([
   'execution_loop_abandoned',
 ]);
 
-function buildTrackedEntryPayload(input = {}) {
+function toTrimmedString(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
+
+function buildTrackedEntryPayload(input: Record<string, unknown> = {}) {
   return Object.freeze({
-    destination: String(input.destination || input.to || input.fallback_destination || '').trim(),
+    destination: toTrimmedString(input.destination, toTrimmedString(input.to, toTrimmedString(input.fallback_destination))),
     utm_source: input.utm_source || null,
     utm_medium: input.utm_medium || null,
     utm_campaign: input.utm_campaign || null,
@@ -23,8 +29,8 @@ function buildTrackedEntryPayload(input = {}) {
   });
 }
 
-function normalizeTrackedActivity(input = {}) {
-  const eventName = String(input.event_name || '').trim();
+function normalizeTrackedActivity(input: Record<string, unknown> = {}) {
+  const eventName = toTrimmedString(input.event_name);
   if (!eventName) {
     throw new Error('TRACKING_EVENT_NAME_REQUIRED');
   }
@@ -34,12 +40,12 @@ function normalizeTrackedActivity(input = {}) {
       crm_visible: false,
       excluded_reason: 'LOW_SIGNAL_EVENT',
       event_name: eventName,
-      source_event_ref: String(input.source_event_ref || `tracking:${eventName}`).trim(),
+      source_event_ref: toTrimmedString(input.source_event_ref, `tracking:${eventName}`),
     });
   }
 
   let activityFamily = 'web_activity';
-  let payload = Object.freeze({
+  let payload: Readonly<Record<string, unknown>> = Object.freeze({
     ...(input.payload && typeof input.payload === 'object' ? input.payload : {}),
     event_name: eventName,
   });
@@ -58,15 +64,17 @@ function normalizeTrackedActivity(input = {}) {
 
   return Object.freeze({
     crm_visible: true,
-    tenant_id: String(input.tenant_id || '').trim(),
+    tenant_id: toTrimmedString(input.tenant_id),
     activity_family: activityFamily,
-    related_record_kind: String(input.related_record_kind || 'contact').trim(),
-    related_record_id: String(input.related_record_id || input.anonymous_identity_id || 'anonymous').trim(),
-    anonymous_identity_id: input.anonymous_identity_id ? String(input.anonymous_identity_id).trim() : null,
-    source_event_ref: String(input.source_event_ref || `tracking:${eventName}`).trim(),
+    related_record_kind: toTrimmedString(input.related_record_kind, 'contact'),
+    related_record_id: toTrimmedString(input.related_record_id, toTrimmedString(input.anonymous_identity_id, 'anonymous')),
+    anonymous_identity_id: typeof input.anonymous_identity_id === 'string' ? input.anonymous_identity_id.trim() : null,
+    source_event_ref: toTrimmedString(input.source_event_ref, `tracking:${eventName}`),
     payload_json: payload,
-    actor_id: input.actor_id ? String(input.actor_id).trim() : null,
-    occurred_at: new Date(input.occurred_at || Date.now()).toISOString(),
+    actor_id: typeof input.actor_id === 'string' ? input.actor_id.trim() : null,
+    occurred_at: typeof input.occurred_at === 'string' || typeof input.occurred_at === 'number'
+      ? new Date(input.occurred_at).toISOString()
+      : new Date().toISOString(),
   });
 }
 

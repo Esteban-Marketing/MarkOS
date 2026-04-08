@@ -1,6 +1,8 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
-function assertString(value, fieldName) {
+function assertPricingString(value, fieldName) {
   if (!String(value || '').trim()) {
     throw new Error(`BILLING_INPUT_INVALID:${fieldName}`);
   }
@@ -20,7 +22,7 @@ function assertUnitPrices(unitPrices) {
     throw new Error('BILLING_INPUT_INVALID:unit_prices');
   }
 
-  const normalizedEntries = Object.entries(unitPrices).map(([pricingKey, amount]) => {
+  const normalizedEntries: Array<[string, number]> = Object.entries(unitPrices).map(([pricingKey, amount]) => {
     const numericAmount = Number(amount);
     if (!pricingKey || !Number.isFinite(numericAmount) || numericAmount < 0) {
       throw new Error('BILLING_INPUT_INVALID:unit_prices');
@@ -32,15 +34,16 @@ function assertUnitPrices(unitPrices) {
     throw new Error('BILLING_INPUT_INVALID:unit_prices');
   }
 
-  return Object.freeze(Object.fromEntries(normalizedEntries.sort(([left], [right]) => left.localeCompare(right))));
+  const sortedEntries = normalizedEntries.toSorted(([left], [right]) => left.localeCompare(right));
+  return Object.freeze(Object.fromEntries(sortedEntries));
 }
 
-function buildPricingSnapshot(input = {}) {
+function buildPricingSnapshot(input: Record<string, unknown> = {}) {
   const snapshot = {
-    snapshot_id: assertString(input.snapshot_id, 'snapshot_id'),
-    tenant_id: assertString(input.tenant_id, 'tenant_id'),
-    pricing_version: assertString(input.pricing_version, 'pricing_version'),
-    effective_at: assertString(input.effective_at, 'effective_at'),
+    snapshot_id: assertPricingString(input.snapshot_id, 'snapshot_id'),
+    tenant_id: assertPricingString(input.tenant_id, 'tenant_id'),
+    pricing_version: assertPricingString(input.pricing_version, 'pricing_version'),
+    effective_at: assertPricingString(input.effective_at, 'effective_at'),
     currency: assertCurrency(input.currency),
     unit_prices: assertUnitPrices(input.unit_prices),
   };
@@ -48,10 +51,10 @@ function buildPricingSnapshot(input = {}) {
   return Object.freeze(snapshot);
 }
 
-function getUnitPrice(pricingSnapshot, pricingKey) {
+function resolvePricingCatalogUnitPrice(pricingSnapshot: { unit_prices?: Record<string, number> } | null | undefined, pricingKey: unknown) {
   const snapshot = pricingSnapshot || {};
-  const key = assertString(pricingKey, 'pricing_key');
-  if (!snapshot.unit_prices || !Object.prototype.hasOwnProperty.call(snapshot.unit_prices, key)) {
+  const key = assertPricingString(pricingKey, 'pricing_key');
+  if (!snapshot.unit_prices || !Object.hasOwn(snapshot.unit_prices, key)) {
     throw new Error(`BILLING_PRICING_MISSING:${key}`);
   }
   return Number(snapshot.unit_prices[key]);
@@ -59,5 +62,5 @@ function getUnitPrice(pricingSnapshot, pricingKey) {
 
 module.exports = {
   buildPricingSnapshot,
-  getUnitPrice,
+  getUnitPrice: resolvePricingCatalogUnitPrice,
 };

@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { buildCrmTimeline } = require('./timeline.ts');
@@ -21,7 +23,7 @@ function toTimestamp(value) {
   return Number.isNaN(resolved) ? 0 : resolved;
 }
 
-function buildEligibleTimeline(input = {}) {
+function buildEligibleTimeline(input: Record<string, unknown> = {}) {
   const timeline = buildCrmTimeline({
     tenant_id: input.tenant_id,
     record_kind: input.record_kind,
@@ -68,7 +70,7 @@ function normalizeWeights(entries) {
   }));
 }
 
-function computeRevenueContribution(input = {}) {
+function computeRevenueContribution(input: Record<string, unknown> = {}) {
   const revenueAmount = toMoney(input.revenue_amount);
   const weight = Number(input.weight || 0);
   return Object.freeze({
@@ -79,7 +81,7 @@ function computeRevenueContribution(input = {}) {
   });
 }
 
-function buildAttributionEvidence(input = {}) {
+function buildAttributionEvidence(input: Record<string, unknown> = {}) {
   const weights = Array.isArray(input.weights) ? input.weights : [];
   return Object.freeze(weights.map((entry) => Object.freeze({
     source_event_ref: entry.source_event_ref,
@@ -90,24 +92,30 @@ function buildAttributionEvidence(input = {}) {
   })));
 }
 
-function buildWeightedAttributionModel(input = {}) {
+function buildWeightedAttributionModel(input: Record<string, unknown> = {}) {
   const eligibleTimeline = buildEligibleTimeline(input);
   const selectedTouches = selectWeightedTouches(eligibleTimeline);
   const weights = normalizeWeights(selectedTouches);
   const revenueAmount = toMoney(input.revenue_amount);
+  const identityLinks = Array.isArray(input.identity_links) ? input.identity_links : [];
+  const timelineEntries = Array.isArray(input.timeline)
+    ? input.timeline
+    : Array.isArray(input.activities)
+      ? input.activities
+      : [];
   const contributions = weights.map((entry) => computeRevenueContribution({
     revenue_amount: revenueAmount,
     weight: entry.weight,
     activity_family: entry.activity_family,
     source_event_ref: entry.source_event_ref,
   }));
-  const acceptedAnonymousIds = new Set((input.identity_links || [])
+  const acceptedAnonymousIds = new Set(identityLinks
     .filter((link) => link?.tenant_id === input.tenant_id)
     .filter((link) => link?.known_record_kind === input.record_kind && link?.known_record_id === input.record_id)
     .filter((link) => link?.link_status === 'accepted')
     .map((link) => String(link.anonymous_identity_id || '').trim())
     .filter(Boolean));
-  const reviewExcludedCount = (input.timeline || input.activities || [])
+  const reviewExcludedCount = timelineEntries
     .filter((entry) => entry && typeof entry === 'object')
     .filter((entry) => Object.hasOwn(FAMILY_WEIGHTS, entry.activity_family))
     .filter((entry) => entry.anonymous_identity_id)

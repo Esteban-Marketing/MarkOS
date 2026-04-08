@@ -1,8 +1,14 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const { getCrmStore, appendCrmActivity } = require('../crm/api.cjs');
 const { recordOutboundOptOut } = require('./consent.ts');
 const { buildConversationStateUpdate } = require('./events.ts');
+
+function toTrimmedString(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
 
 function buildThreadId(message, channelOverride = null) {
   return `thread-${message.tenant_id}-${message.record_kind}-${message.record_id}-${channelOverride || message.channel}`;
@@ -58,9 +64,9 @@ function ensureThread(store, message, channelOverride = null) {
   return thread;
 }
 
-function appendConversationProviderEvent(store, input = {}) {
+function appendConversationProviderEvent(store, input: Record<string, unknown> = {}) {
   const targetStore = ensureConversationStore(store);
-  const providerMessageId = String(input.provider_message_id || '').trim();
+  const providerMessageId = toTrimmedString(input.provider_message_id);
   const message = findMessageByProviderRef(targetStore, providerMessageId);
   if (!message) {
     throw new Error('CRM_OUTBOUND_PROVIDER_REF_UNKNOWN');
@@ -70,12 +76,14 @@ function appendConversationProviderEvent(store, input = {}) {
   const event = Object.freeze({
     message_id: `message-${thread.thread_id}-${thread.messages.length + 1}`,
     provider_message_id: providerMessageId,
-    direction: String(input.direction || 'inbound').trim(),
-    status: String(input.status || 'received').trim(),
-    channel: String(input.channel || message.channel).trim(),
-    text: String(input.text || '').trim(),
-    occurred_at: new Date(input.occurred_at || Date.now()).toISOString(),
-    provider: String(input.provider || message.provider || '').trim() || null,
+    direction: toTrimmedString(input.direction, 'inbound'),
+    status: toTrimmedString(input.status, 'received'),
+    channel: toTrimmedString(input.channel, message.channel),
+    text: toTrimmedString(input.text),
+    occurred_at: typeof input.occurred_at === 'string' || typeof input.occurred_at === 'number'
+      ? new Date(input.occurred_at).toISOString()
+      : new Date().toISOString(),
+    provider: toTrimmedString(input.provider, toTrimmedString(message.provider)) || null,
   });
   thread.messages.push(event);
 
@@ -111,15 +119,15 @@ function appendConversationProviderEvent(store, input = {}) {
   };
 }
 
-function appendInboundConversationEvent(store, input = {}) {
+function appendInboundConversationEvent(store, input: Record<string, unknown> = {}) {
   return appendConversationProviderEvent(store, input);
 }
 
-function buildOutboundConversation(store, selector = {}) {
+function buildOutboundConversation(store, selector: Record<string, unknown> = {}) {
   const targetStore = ensureConversationStore(store);
-  const tenantId = String(selector.tenant_id || '').trim();
-  const recordKind = String(selector.record_kind || '').trim();
-  const recordId = String(selector.record_id || '').trim();
+  const tenantId = toTrimmedString(selector.tenant_id);
+  const recordKind = toTrimmedString(selector.record_kind);
+  const recordId = toTrimmedString(selector.record_id);
   const matchingMessages = targetStore.outboundMessages.filter((row) => row.tenant_id === tenantId && row.record_kind === recordKind && row.record_id === recordId);
   const preferred = targetStore.outboundConversations.find((row) => row.tenant_id === tenantId && row.record_kind === recordKind && row.record_id === recordId)
     || (matchingMessages[0] ? ensureThread(targetStore, matchingMessages[0]) : null);
@@ -147,9 +155,9 @@ function buildOutboundConversation(store, selector = {}) {
   };
 }
 
-function listOutboundConversations(store, selector = {}) {
+function listOutboundConversations(store, selector: Record<string, unknown> = {}) {
   const targetStore = ensureConversationStore(store);
-  const tenantId = String(selector.tenant_id || '').trim();
+  const tenantId = toTrimmedString(selector.tenant_id);
   return targetStore.outboundConversations
     .filter((row) => row.tenant_id === tenantId)
     .map((row) => buildOutboundConversation(targetStore, {
@@ -161,9 +169,9 @@ function listOutboundConversations(store, selector = {}) {
     .sort((left, right) => Date.parse(right.last_message_at || 0) - Date.parse(left.last_message_at || 0));
 }
 
-function applyOptOutFromConversation(store, input = {}) {
+function applyOptOutFromConversation(store, input: Record<string, unknown> = {}) {
   const targetStore = ensureConversationStore(store);
-  const providerMessageId = String(input.provider_message_id || '').trim();
+  const providerMessageId = toTrimmedString(input.provider_message_id);
   const message = findMessageByProviderRef(targetStore, providerMessageId);
   if (!message) {
     return null;

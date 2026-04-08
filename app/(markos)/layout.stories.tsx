@@ -1,7 +1,7 @@
 import React from "react";
 
 import type { Meta, StoryObj } from "@storybook/react";
-import { MarkOSAccessDeniedState, MarkOSLayoutShell } from "./layout";
+import { MarkOSAccessDeniedState, MarkOSLayoutShell } from "./layout-shell";
 import styles from "./layout-shell.module.css";
 
 function LayoutStory({

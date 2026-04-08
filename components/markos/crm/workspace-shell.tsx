@@ -11,12 +11,26 @@ import { FunnelView } from './funnel-view';
 
 const workspace = require('../../../lib/markos/crm/workspace');
 
+type WorkspaceRecord = {
+  entity_id: string;
+  display_name: string;
+  attributes?: Record<string, unknown>;
+  [key: string]: unknown;
+};
+
+type WorkspaceDetail = {
+  record: WorkspaceRecord | null;
+  timeline: Array<any>;
+  tasks: Array<any>;
+  notes: Array<any>;
+};
+
 type WorkspaceShellProps = Readonly<{
   tenantId: string;
   objectKind: string;
   state: ReturnType<typeof workspace.createWorkspaceState>;
   pipeline?: { stages?: Array<{ stage_key: string; display_name: string; stage_order: number }> };
-  detail?: { record: unknown; timeline: Array<any>; tasks: Array<any>; notes: Array<any> };
+  detail?: WorkspaceDetail;
   objectDefinition?: { calendar_enabled?: boolean; calendar_date_field_key?: string };
 }>;
 
@@ -46,11 +60,11 @@ export function WorkspaceShell({
   const calendarEntries = workspace.buildCalendarEntries({ state: workspaceState, object_definition: objectDefinition || {} });
   const funnelRows = workspace.buildFunnelRows({ state: workspaceState, pipeline: pipeline || { stages: [] } });
 
-  function syncRecord(record: any) {
+  function syncRecord(record: WorkspaceRecord) {
     startTransition(() => {
       const nextState = workspace.applyWorkspaceMutation(workspaceState, { type: 'record_updated', record });
       setWorkspaceState(nextState);
-      if (workspaceDetail?.record && workspaceDetail.record.entity_id === record.entity_id) {
+      if (workspaceDetail?.record?.entity_id === record.entity_id) {
         setWorkspaceDetail({ ...workspaceDetail, record });
       }
     });
@@ -73,7 +87,8 @@ export function WorkspaceShell({
 
   async function rescheduleRecord(recordId: string, value: string) {
     setErrorMessage(null);
-    const nextValue = new Date(Date.parse(value || Date.now()) + 86400000).toISOString();
+    const baseValue = value || new Date().toISOString();
+    const nextValue = new Date(Date.parse(baseValue) + 86400000).toISOString();
     const response = await fetch('/api/crm/calendar', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },

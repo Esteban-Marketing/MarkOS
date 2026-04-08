@@ -1,3 +1,5 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
 const ALLOWED_LINK_STATUSES = new Set(['candidate', 'accepted', 'review', 'rejected']);

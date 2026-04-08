@@ -1,9 +1,15 @@
+export type __ModuleMarker = import('node:fs').Stats;
+
 'use strict';
 
-function buildOutboundDraftSuggestion(input = {}) {
-  const channel = String(input.channel || 'email').trim().toLowerCase();
-  const prompt = String(input.prompt || '').trim();
-  const recordId = String(input.record_id || '').trim();
+function toTrimmedString(value, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
+
+function buildOutboundDraftSuggestion(input: Record<string, unknown> = {}) {
+  const channel = toTrimmedString(input.channel, 'email').toLowerCase();
+  const prompt = toTrimmedString(input.prompt);
+  const recordId = toTrimmedString(input.record_id);
 
   return {
     suggestion_id: `draft-${channel}-${recordId || 'record'}`,
