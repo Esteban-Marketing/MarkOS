@@ -1,0 +1,38 @@
+flow_id: "F-64-REPORTING-DATA"
+flow_name: "crm-reporting-data"
+domain: "crm"
+flow_type: "reporting-read"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Reporting Data"
+  version: "1.0.0"
+  description: "CRM-native reporting payload contract for readiness, freshness, pipeline_health, sla_risk, productivity, and executive_summary views."
+
+x-markos-meta:
+  truth_model: "single reporting truth layer"
+  readiness:
+    states:
+      - "ready"
+      - "degraded"
+      - "blocked"
+  coverage_dimensions:
+    - "identity"
+    - "tracking"
+    - "outbound"
+    - "freshness"
+  reporting_surfaces:
+    - "pipeline_health"
+    - "conversion"
+    - "sla_risk"
+    - "productivity"
+    - "executive_summary"
+
+paths:
+  /api/crm/reporting/readiness:
+    get:
+      summary: "Return tenant-safe reporting readiness, freshness, productivity, and executive summary payloads"
+      responses:
+        "200":
+          description: "Readiness and reporting payload returned from canonical CRM evidence"

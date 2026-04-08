@@ -1,0 +1,36 @@
+flow_id: "F-60-PIPELINE-CONFIG"
+flow_name: "pipeline-config"
+domain: "crm"
+flow_type: "configuration-write"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Pipeline Configuration"
+  version: "1.0.0"
+  description: "Tenant-owned pipeline and stage configuration contract for the Phase 60 CRM workspace."
+
+x-markos-meta:
+  actor: "Authenticated MarkOS operator"
+  authorization: "fail_closed"
+  pipeline_fields:
+    - "pipeline_key"
+    - "display_name"
+    - "object_kind"
+  stage_fields:
+    stage_key: "required"
+    display_name: "required"
+    stage_order: "required"
+    color_hex: "optional"
+    is_won: "optional"
+    is_lost: "optional"
+  mutation_payloads:
+    - "pipeline_config_updated"
+    - "pipeline_stage_reordered"
+
+paths:
+  /api/crm/pipelines:
+    get:
+      summary: "List tenant-owned pipeline families and ordered stages"
+    post:
+      summary: "Create or update a tenant-owned pipeline definition with ordered stages"

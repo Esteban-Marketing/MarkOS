@@ -1,0 +1,52 @@
+flow_id: "F-60-WORKSPACE-ROLLUPS"
+flow_name: "workspace-rollups"
+domain: "crm"
+flow_type: "workspace-read"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Workspace Rollups"
+  version: "1.0.0"
+  description: "Calendar and funnel contracts for the Phase 60 multi-view CRM workspace."
+
+x-markos-meta:
+  calendar_eligibility:
+    required_fields:
+      - "calendar_enabled"
+      - "calendar_date_field_key"
+    approved_object_behavior: "only explicitly eligible objects appear in calendar results"
+  funnel_semantics:
+    aggregation_mode: "simple"
+    measures:
+      - "record_count"
+      - "total_value"
+    derives_from:
+      - "pipeline_key"
+      - "stage_key"
+      - "amount"
+  cross_view_truth:
+    shared_context_fields:
+      - "view_type"
+      - "pipeline_key"
+      - "filters"
+      - "selected_record"
+
+paths:
+  /api/crm/calendar:
+    get:
+      summary: "List calendar entries for eligible CRM object families and approved date fields"
+      responses:
+        "200":
+          description: "Calendar entries returned from canonical CRM records"
+    patch:
+      summary: "Reschedule an eligible CRM record through the calendar mutation seam"
+      responses:
+        "200":
+          description: "Calendar date updated with audit evidence"
+  /api/crm/funnel:
+    get:
+      summary: "Return simple stage-count and value totals from canonical CRM records"
+      responses:
+        "200":
+          description: "Funnel rollups returned for the active pipeline and filters"

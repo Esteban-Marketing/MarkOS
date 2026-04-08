@@ -1,0 +1,32 @@
+id: F-61-draft-suggestions-v1
+phase: 61
+name: Draft Suggestions
+status: active
+summary: Suggestion-only draft artifacts for the execution workspace.
+
+artifact_fields:
+  required:
+    - suggestion_id
+    - recommendation_id
+    - suggestion_only
+    - send_disabled
+    - sequence_disabled
+    - channel
+    - preview
+
+boundary:
+  suggestion_only: true
+  send_disabled: true
+  sequence_disabled: true
+  approval_required_supported: true
+  forbidden_actions:
+    - send_email
+    - send_sms
+    - send_whatsapp
+    - start_sequence
+    - delivery_transition
+
+ux_requirements:
+  - clear_non_executable_label
+  - dismissible
+  - preview_visible

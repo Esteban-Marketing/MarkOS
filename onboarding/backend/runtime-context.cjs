@@ -18,6 +18,7 @@ const MARKOS_LOCAL_ROOT = path.join(PROJECT_ROOT, '.markos-local');
 const MARKOSDB_ACCESS_MATRIX = Object.freeze({
   config_read: { auth_required_in_hosted_mode: true, local_fallback_allowed: true },
   status_read: { auth_required_in_hosted_mode: true, local_fallback_allowed: true },
+  tracking_write: { auth_required_in_hosted_mode: true, local_fallback_allowed: true },
   migration_write: { auth_required_in_hosted_mode: true, local_fallback_allowed: true },
   approve_write: { auth_required_in_hosted_mode: true, local_fallback_allowed: true },
   submit_write: { auth_required_in_hosted_mode: true, local_fallback_allowed: true },
@@ -28,6 +29,7 @@ const ROLLOUT_MODES = Object.freeze(['dry-run', 'dual-write', 'cloud-primary']);
 const REQUIRED_SECRET_MATRIX = Object.freeze({
   config_read: Object.freeze({ required: ['MARKOS_SUPABASE_AUD'], hostedOnly: true }),
   status_read: Object.freeze({ required: ['MARKOS_SUPABASE_AUD'], hostedOnly: true }),
+  tracking_write: Object.freeze({ required: ['MARKOS_SUPABASE_AUD'], hostedOnly: true }),
   migration_write: Object.freeze({ required: ['MARKOS_SUPABASE_AUD'], hostedOnly: true }),
   linear_sync_write: Object.freeze({ required: ['LINEAR_API_KEY'], hostedOnly: false }),
   submit_write: Object.freeze({ required: [], hostedOnly: false }),
@@ -410,10 +412,24 @@ function resolveRequestedProjectSlugFromRequest(req) {
 function requireHostedSupabaseAuth({ req, runtimeContext, operation, requiredProjectSlug = null, env = process.env }) {
   const operationRules = MARKOSDB_ACCESS_MATRIX[operation] || MARKOSDB_ACCESS_MATRIX.status_read;
   if (!runtimeContext || runtimeContext.mode !== 'hosted' || !operationRules.auth_required_in_hosted_mode) {
+    const tenantId = String(env.MARKOS_ACTIVE_TENANT_ID || 'tenant-alpha-001').trim();
+    const iamRole = String(env.MARKOS_ACTIVE_ROLE || 'owner').trim() || 'owner';
+    const principalId = String(env.MARKOS_ACTIVE_USER_ID || 'local-operator').trim() || 'local-operator';
+
     return {
       ok: true,
       status: 200,
-      principal: { type: 'runtime_local', id: 'local-operator', scopes: [] },
+      tenant_id: tenantId,
+      role: iamRole,
+      iamRole,
+      principal: {
+        type: 'runtime_local',
+        id: principalId,
+        tenant_id: tenantId,
+        tenant_role: iamRole,
+        active_tenant_id: tenantId,
+        scopes: [],
+      },
       operation,
     };
   }
@@ -742,6 +758,33 @@ function assertEntitledAction(input = {}, action = 'unknown', overrides = {}) {
   };
 }
 
+function evaluateQuotaDimensionAccess(input = {}, dimension = 'token_budget', overrides = {}) {
+  const snapshot = overrides.snapshot || resolveEntitlementSnapshot(input);
+  const action = overrides.action || 'unknown';
+  const requestedDelta = Number.isFinite(Number(overrides.requested_delta)) ? Number(overrides.requested_delta) : 0;
+
+  const decision = billingEntitlements.evaluateQuotaDimensionAccess({
+    snapshot,
+    dimension,
+    requested_delta: requestedDelta,
+    action,
+  });
+  const denyReason = decision.allowed
+    ? null
+    : billingEntitlements.buildBillingDenyReason({
+        snapshot,
+        action,
+        quota_dimension: dimension,
+        requested_delta: requestedDelta,
+      });
+
+  return {
+    ...decision,
+    snapshot,
+    deny_reason: denyReason,
+  };
+}
+
 function parseBooleanFlag(value, fallback) {
   if (typeof value === 'boolean') {
     return value;
@@ -869,6 +912,7 @@ module.exports = {
   RETENTION_POLICY,
   assertRolloutPromotionAllowed,
   assertEntitledAction,
+  evaluateQuotaDimensionAccess,
   assertPluginCapability,
   buildDenyEvent,
   buildIdentityMappingEvidence,

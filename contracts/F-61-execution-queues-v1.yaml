@@ -1,0 +1,38 @@
+id: F-61-execution-queues-v1
+phase: 61
+name: Execution Queues
+status: active
+summary: Personal and manager or team queue scopes for CRM-native execution triage.
+
+queue_scopes:
+  - personal
+  - team
+
+queue_tabs:
+  - due_overdue
+  - inbound
+  - stalled
+  - success_risk
+  - approval_needed
+  - ownership_data
+  - priority
+
+source_of_truth:
+  records: canonical crm entities
+  tasks: crm_tasks linked by linked_record_kind and linked_record_id
+  activity: crm_activity_ledger and stitched identity timeline
+
+ranking:
+  factors:
+    - overdue_task_count
+    - inbound_touch_count
+    - stalled_days
+    - success_risk
+    - approval_needed
+    - ownership_or_data_issue
+    - intent_score
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+  client_side_hidden_ranking: false

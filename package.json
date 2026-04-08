@@ -29,7 +29,9 @@
     "CHANGELOG.md"
   ],
   "scripts": {
+    "dev": "node bin/dev-server.cjs",
     "test": "node --test test/**/*.test.js",
+    "gsd:refresh-manifests": "node tools/gsd-refresh-manifest.cjs",
     "build:llm": "tsc -p tsconfig.llm.json --noEmit",
     "test:llm": "node --test test/llm-adapter/**/*.test.js",
     "test:llm:coverage:core": "node --test --test-concurrency=1 --experimental-test-coverage test/llm-adapter/adapter-init.test.js test/llm-adapter/claude.test.js test/llm-adapter/openai.test.js test/llm-adapter/gemini.test.js test/llm-adapter/cost-calculator.test.js test/llm-adapter/fallback-chain.test.js test/llm-adapter/settings.test.js test/llm-adapter/telemetry.test.js",
@@ -73,7 +75,6 @@
     "@storybook/addon-interactions": "^8.6.18",
     "@storybook/addon-links": "^8.6.18",
     "@storybook/react-vite": "^8.6.18",
-    "stripe": "^22.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
@@ -81,6 +82,7 @@
     "axe-playwright": "^1.2.3",
     "chromatic": "^16.0.0",
     "storybook": "^8.6.18",
+    "stripe": "^22.0.0",
     "typescript": "^5.4.0"
   }
 }

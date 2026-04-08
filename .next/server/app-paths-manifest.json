@@ -1,0 +1,5 @@
+{
+  "/(markos)/settings/billing/page": "app/(markos)/settings/billing/page.js",
+  "/(markos)/admin/billing/page": "app/(markos)/admin/billing/page.js",
+  "/(markos)/settings/plugins/page": "app/(markos)/settings/plugins/page.js"
+}

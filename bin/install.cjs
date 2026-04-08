@@ -134,7 +134,7 @@ function ensureProjectConfig(projectDir, projectName) {
 }
 
 function appendAiDocSection(projectDir) {
-  for (const aiMd of ['GEMINI.md', 'CLAUDE.md', 'AGENTS.md']) {
+  for (const aiMd of ['GEMINI.md', 'CLAUDE.md', 'copilot-instructions.md', 'AGENTS.md']) {
     const aiMdPath = path.join(projectDir, aiMd);
     if (!fs.existsSync(aiMdPath)) {
       continue;

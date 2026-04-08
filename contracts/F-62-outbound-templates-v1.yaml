@@ -1,0 +1,19 @@
+flow_id: F-62-outbound-templates-v1
+title: Outbound Templates
+summary: Reusable CRM-native outbound templates with channel constraints, visible approval state, and tenant branding context.
+inputs:
+  - tenant_id
+  - template_key
+  - channel
+  - display_name
+  - subject
+  - body_markdown
+  - variables
+outputs:
+  - template_id
+  - approval_state
+  - created_at
+rules:
+  - Templates are tenant-scoped and channel-specific.
+  - Approval state must remain explicit for governed templates.
+  - Variable substitution shape must stay explainable to operators.

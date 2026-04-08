@@ -11,6 +11,113 @@ const { writeStateMd } = require('./state.cjs');
 
 const BASENAME_INDEX_CACHE = new Map();
 
+function addExpandedPhaseRef(target, token) {
+  const trimmed = String(token || '').trim();
+  if (!trimmed) return;
+
+  const rangePattern = /^(\d+)\s*[\u2013-]\s*(\d+)$/;
+  const rangeMatch = rangePattern.exec(trimmed);
+  if (rangeMatch) {
+    const start = Number.parseInt(rangeMatch[1], 10);
+    const end = Number.parseInt(rangeMatch[2], 10);
+    if (Number.isFinite(start) && Number.isFinite(end) && start <= end) {
+      for (let index = start; index <= end; index += 1) {
+        target.add(String(index));
+      }
+      return;
+    }
+  }
+
+  if (/^\d+[A-Z]?(?:\.\d+)*$/i.test(trimmed)) {
+    target.add(trimmed.replace(/^0+(?=\d)/, ''));
+  }
+}
+
+function collectPhaseRefsFromText(content) {
+  const refs = new Set();
+  const headingPattern = /#{2,4}\s*Phase\s+(\d+[A-Z]?(?:\.\d+)*)\s*:/gi;
+  let headingMatch;
+
+  while ((headingMatch = headingPattern.exec(content)) !== null) {
+    addExpandedPhaseRef(refs, headingMatch[1]);
+  }
+
+  for (const line of content.split(/\r?\n/)) {
+    const matches = line.matchAll(/\bPhases?\s+([0-9A-Z.,\s\u2013-]+)/gi);
+    for (const match of matches) {
+      const rawList = match[1]
+        .split(',')
+        .map(part => part.trim())
+        .filter(Boolean);
+      for (const token of rawList) {
+        addExpandedPhaseRef(refs, token);
+      }
+    }
+  }
+
+  return refs;
+}
+
+function collectArchivedPhaseDirRefs(milestonesDir) {
+  const refs = new Set();
+  const entries = fs.readdirSync(milestonesDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (!entry.isDirectory() || !/^v[\d.]+-phases$/.test(entry.name)) continue;
+
+    const archivePath = path.join(milestonesDir, entry.name);
+    const dirs = fs.readdirSync(archivePath, { withFileTypes: true });
+    for (const dirEntry of dirs) {
+      if (!dirEntry.isDirectory()) continue;
+      const match = /^(\d+[A-Z]?(?:\.\d+)*)/i.exec(dirEntry.name);
+      if (match) addExpandedPhaseRef(refs, match[1]);
+    }
+  }
+
+  return refs;
+}
+
+function collectArchivedRoadmapRefs(milestonesDir) {
+  const refs = new Set();
+  const entries = fs.readdirSync(milestonesDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (!entry.isFile() || !/ROADMAP\.md$/i.test(entry.name)) continue;
+    const archiveContent = safeReadFile(path.join(milestonesDir, entry.name), '');
+    for (const ref of collectPhaseRefsFromText(archiveContent)) {
+      refs.add(ref);
+    }
+  }
+
+  return refs;
+}
+
+function collectArchivedMilestonePhaseRefs(cwd) {
+  const refs = new Set();
+  const milestonesDir = path.join(cwd, '.planning', 'milestones');
+  if (!fs.existsSync(milestonesDir)) return refs;
+
+  try {
+    for (const ref of collectArchivedPhaseDirRefs(milestonesDir)) {
+      refs.add(ref);
+    }
+    for (const ref of collectArchivedRoadmapRefs(milestonesDir)) {
+      refs.add(ref);
+    }
+  } catch { /* intentionally empty */ }
+
+  return refs;
+}
+
+function hasPhaseRef(refs, phase) {
+  if (refs.has(phase)) return true;
+  if (/^\d+$/.test(phase)) {
+    const normalized = String(Number.parseInt(phase, 10));
+    return refs.has(normalized) || refs.has(normalized.padStart(2, '0'));
+  }
+  return false;
+}
+
 function toPosix(relPath) {
   return relPath.split(path.sep).join('/');
 }
@@ -864,6 +971,10 @@ function cmdValidateHealth(cwd, options, raw) {
     const roadmapContentRaw = fs.readFileSync(roadmapPath, 'utf-8');
     const roadmapContent = extractCurrentMilestone(roadmapContentRaw, cwd);
     const roadmapPhases = new Set();
+    const knownRoadmapPhases = new Set([
+      ...collectPhaseRefsFromText(roadmapContentRaw),
+      ...collectArchivedMilestonePhaseRefs(cwd),
+    ]);
     const phasePattern = /#{2,4}\s*Phase\s+(\d+[A-Z]?(?:\.\d+)*)\s*:/gi;
     let m;
     while ((m = phasePattern.exec(roadmapContent)) !== null) {
@@ -892,7 +1003,7 @@ function cmdValidateHealth(cwd, options, raw) {
     // Phases on disk but not in ROADMAP
     for (const p of diskPhases) {
       const unpadded = String(parseInt(p, 10));
-      if (!roadmapPhases.has(p) && !roadmapPhases.has(unpadded)) {
+      if (!roadmapPhases.has(p) && !roadmapPhases.has(unpadded) && !hasPhaseRef(knownRoadmapPhases, p)) {
         addIssue('warning', 'W007', `Phase ${p} exists on disk but not in ROADMAP.md`, 'Add to roadmap or remove directory');
       }
     }

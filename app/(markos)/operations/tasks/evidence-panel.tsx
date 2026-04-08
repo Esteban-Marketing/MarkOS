@@ -19,6 +19,7 @@
 import React from "react";
 import { useSelectedEvidenceStep } from "./task-store";
 import { TaskStepEvidence } from "./task-types";
+import styles from "./task-ui.module.css";
 
 /**
  * Evidence section header component
@@ -31,11 +32,9 @@ function EvidenceSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className="mb-4">
-      <h4 className="text-xs font-semibold text-[#0f172a] uppercase tracking-wider mb-2">
-        {title}
-      </h4>
-      <div className="bg-gray-50 rounded p-3">{children}</div>
+    <div className={styles.sectionBlock}>
+      <h4 className={styles.sectionHeading}>{title}</h4>
+      <div>{children}</div>
     </div>
   );
 }
@@ -54,11 +53,9 @@ function EvidenceField({
   const isLong = stringValue.length > 80;
 
   return (
-    <div className="mb-2">
-      <p className="text-xs font-medium text-[#475569] mb-1">{label}</p>
-      <code className={`text-xs text-[#0f172a] font-mono p-2 bg-white rounded block ${
-        isLong ? "max-h-32 overflow-y-auto" : ""
-      }`}>
+    <div className={styles.kvPair}>
+      <p className={styles.kvLabel}>{label}</p>
+      <code className={`${styles.codeBlock} ${isLong ? styles.scrollBlock : ""}`}>
         {stringValue}
       </code>
     </div>
@@ -73,9 +70,9 @@ export function EvidencePanel() {
 
   if (!selectedEvidenceStep) {
     return (
-      <div className="text-sm text-[#475569] py-6 text-center">
-        <p className="font-medium text-[#0f172a]">No evidence selected</p>
-        <p className="mt-2 text-xs">
+      <div className={styles.emptyState}>
+        <p className={styles.emptyTitle}>No evidence selected</p>
+        <p className={styles.sectionBody}>
           Click on a step in the task list to view its evidence and audit details.
         </p>
       </div>
@@ -85,31 +82,26 @@ export function EvidencePanel() {
   const evidence = selectedEvidenceStep.evidence;
 
   return (
-    <div className="space-y-1">
-      {/* Header with step context */}
-      <div className="mb-4 pb-3 border-b border-gray-200">
-        <h3 className="text-sm font-semibold text-[#0f172a]">
+    <div>
+      <div className={styles.sectionBlock}>
+        <h3 className={styles.panelTitle}>
           {selectedEvidenceStep.title}
         </h3>
-        <p className="text-xs text-[#475569] mt-1">
+        <p className={styles.panelText}>
           Step {selectedEvidenceStep.order_index + 1} • State: {selectedEvidenceStep.state}
         </p>
       </div>
 
-      {/* Immutability marker */}
-      <div className="mb-4 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
-        <p className="font-medium">🔒 Evidence is immutable (audit trail)</p>
-        <p className="mt-1">
+      <div className={styles.helperCard}>
+        <p className={styles.sectionHeading}>Evidence is immutable</p>
+        <p className={styles.sectionBody}>
           This evidence was recorded during step execution and cannot be edited.
         </p>
       </div>
 
-      {/* Evidence sections in locked order */}
-
-      {/* 1. Inputs */}
       <EvidenceSection title="Inputs">
         {Object.keys(evidence.inputs).length === 0 ? (
-          <p className="text-xs text-[#7c8192] italic">No inputs recorded</p>
+          <p className={styles.sectionBody}>No inputs recorded</p>
         ) : (
           Object.entries(evidence.inputs).map(([key, value]) => (
             <EvidenceField key={key} label={key} value={value} />
@@ -117,14 +109,13 @@ export function EvidencePanel() {
         )}
       </EvidenceSection>
 
-      {/* 2. Outputs */}
       <EvidenceSection title="Outputs">
         {evidence.outputs === null ? (
-          <p className="text-xs text-[#7c8192] italic">
+          <p className={styles.sectionBody}>
             Outputs not yet available (step not completed)
           </p>
         ) : Object.keys(evidence.outputs).length === 0 ? (
-          <p className="text-xs text-[#7c8192] italic">Empty output set</p>
+          <p className={styles.sectionBody}>Empty output set</p>
         ) : (
           Object.entries(evidence.outputs).map(([key, value]) => (
             <EvidenceField key={key} label={key} value={value} />
@@ -132,14 +123,13 @@ export function EvidencePanel() {
         )}
       </EvidenceSection>
 
-      {/* 3. Logs */}
       <EvidenceSection title="Execution Logs">
         {evidence.logs.length === 0 ? (
-          <p className="text-xs text-[#7c8192] italic">No logs recorded</p>
+          <p className={styles.sectionBody}>No logs recorded</p>
         ) : (
-          <code className="text-xs text-[#0f172a] font-mono p-2 bg-white rounded block max-h-40 overflow-y-auto space-y-1">
+          <code className={`${styles.codeBlock} ${styles.scrollBlock}`}>
             {evidence.logs.map((log, idx) => (
-              <div key={idx} className="text-[#475569]">
+              <div key={idx} className={styles.sectionBody}>
                 {log}
               </div>
             ))}
@@ -147,9 +137,8 @@ export function EvidencePanel() {
         )}
       </EvidenceSection>
 
-      {/* 4. Timestamps */}
       <EvidenceSection title="Timestamps">
-        <div className="space-y-2">
+        <div>
           <EvidenceField
             label="Step Started At"
             value={evidence.step_started_at || "–"}
@@ -161,35 +150,33 @@ export function EvidencePanel() {
         </div>
       </EvidenceSection>
 
-      {/* 5. Actor ID */}
       <EvidenceSection title="Actor ID">
         {evidence.actor_id === null ? (
-          <p className="text-xs text-[#7c8192] italic">No actor recorded</p>
+          <p className={styles.sectionBody}>No actor recorded</p>
         ) : (
           <EvidenceField label="Executed By" value={evidence.actor_id} />
         )}
       </EvidenceSection>
 
-      {/* Retry information (if available) */}
       {selectedEvidenceStep.retry_count > 0 && (
         <EvidenceSection title="Retry History">
-          <div className="text-xs space-y-2">
-            <p className="text-[#0f172a] font-medium">
+          <div>
+            <p className={styles.sectionHeading}>
               Total retry attempts: {selectedEvidenceStep.retry_count}
             </p>
             {selectedEvidenceStep.retry_attempts.map((attempt, idx) => (
               <div
                 key={idx}
-                className="p-2 bg-white border-l-2 border-amber-400 rounded ml-1"
+                className={styles.retryCard}
               >
-                <p className="font-medium text-[#0f172a]">
+                <p className={styles.sectionHeading}>
                   Attempt {attempt.attempt}
                 </p>
-                <p className="text-[#475569] mt-0.5">
+                <p className={styles.sectionBody}>
                   Requested by {attempt.requested_by} at {new Date(attempt.requested_at).toLocaleString()}
                 </p>
                 {attempt.previous_error && (
-                  <p className="text-red-600 mt-1 max-h-16 overflow-y-auto font-mono text-[10px]">
+                  <p className={`${styles.codeBlock} ${styles.scrollBlock}`}>
                     Error: {attempt.previous_error}
                   </p>
                 )}
@@ -199,11 +186,10 @@ export function EvidencePanel() {
         </EvidenceSection>
       )}
 
-      {/* Error information (if present) */}
       {selectedEvidenceStep.latest_error && (
         <EvidenceSection title="Latest Error">
-          <div className="p-2 bg-red-50 border border-red-200 rounded">
-            <p className="text-xs text-red-700 font-mono max-h-24 overflow-y-auto">
+          <div className={styles.errorCard}>
+            <p className={`${styles.codeBlock} ${styles.scrollBlock}`}>
               {selectedEvidenceStep.latest_error}
             </p>
           </div>

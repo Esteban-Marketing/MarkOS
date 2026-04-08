@@ -1,0 +1,36 @@
+flow_id: "F-58-MERGE"
+flow_name: "crm-merge-dedupe"
+domain: "crm"
+flow_type: "merge-review"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Merge Review"
+  version: "1.0.0"
+  description: "Reviewable merge and dedupe contract with immutable lineage evidence."
+
+x-markos-meta:
+  actor: "Tenant CRM reviewer"
+  auth_local: "runtime_local"
+  auth_hosted: "supabase bearer"
+  immutable_decisions: true
+  merge_decisions:
+    - "accepted"
+    - "rejected"
+  evidence_fields:
+    - "merge_decision_id"
+    - "reviewer_actor_id"
+    - "confidence"
+    - "source_record_refs"
+    - "canonical_record_id"
+
+paths:
+  /api/crm/merge:
+    post:
+      summary: "Record a merge review decision"
+      responses:
+        "200":
+          description: "Immutable merge decision recorded"
+        "403":
+          description: "Role denied"

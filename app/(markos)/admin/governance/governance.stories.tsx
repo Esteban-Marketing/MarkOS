@@ -6,13 +6,19 @@ export default {
 };
 
 export const Default = {
-  render: () => <GovernanceAdminPage />,
+  args: {
+    variant: "default",
+  },
 };
 
 export const DeniedMapping = {
-  render: () => <GovernanceAdminPage />,
+  args: {
+    variant: "deniedMapping",
+  },
 };
 
 export const ExportReady = {
-  render: () => <GovernanceAdminPage />,
+  args: {
+    variant: "exportReady",
+  },
 };

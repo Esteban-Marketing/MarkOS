@@ -4,13 +4,19 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const tenantPagePath = path.join(__dirname, '../../app/(markos)/settings/billing/page.tsx');
+const tenantShellPath = path.join(__dirname, '../../app/(markos)/settings/billing/page-shell.tsx');
 const tenantActionsPath = path.join(__dirname, '../../app/(markos)/settings/billing/actions.ts');
 const operatorPagePath = path.join(__dirname, '../../app/(markos)/admin/billing/page.tsx');
 const storyPath = path.join(__dirname, '../../app/(markos)/admin/billing/reconciliation.stories.tsx');
 
 test('BIL-03 billing UI: tenant billing page follows the required module order and billing vocabulary', () => {
   assert.equal(fs.existsSync(tenantPagePath), true, 'tenant billing page must exist');
-  const source = fs.readFileSync(tenantPagePath, 'utf8');
+  assert.equal(fs.existsSync(tenantShellPath), true, 'tenant billing shell must exist');
+
+  const pageSource = fs.readFileSync(tenantPagePath, 'utf8');
+  const source = fs.readFileSync(tenantShellPath, 'utf8');
+
+  assert.match(pageSource, /BillingSettingsPageShell/);
 
   const billingStatusIndex = source.indexOf('Billing status summary');
   const currentPlanIndex = source.indexOf('Current plan and included usage');
@@ -27,6 +33,10 @@ test('BIL-03 billing UI: tenant billing page follows the required module order a
   assert.match(source, /included usage/i);
   assert.match(source, /current invoice/i);
   assert.match(source, /hold/i);
+  assert.match(source, /release evidence/i);
+  assert.match(source, /restored active snapshot/i);
+  assert.match(source, /impacted workflows/i);
+  assert.match(source, /recovery criteria/i);
   assert.match(source, /\/api\/billing\/tenant-summary/);
 });
 
@@ -53,6 +63,11 @@ test('BIL-03 billing UI: operator billing page renders reconciliation queue, det
   assert.match(source, /Place Hold/);
   assert.match(source, /Release Hold/);
   assert.match(source, /Retry Provider Sync/);
+  assert.match(source, /same-period release evidence/i);
+  assert.match(source, /restored active snapshot/i);
+  assert.match(source, /impacted workflows/i);
+  assert.match(source, /communication owner/i);
+  assert.match(source, /recovery criteria/i);
   assert.match(source, /\/api\/billing\/operator-reconciliation/);
   assert.match(source, /\/api\/billing\/holds/);
 });

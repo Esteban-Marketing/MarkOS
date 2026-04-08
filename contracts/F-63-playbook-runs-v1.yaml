@@ -1,0 +1,43 @@
+id: F-63-playbook-runs-v1
+name: CRM Copilot Playbook Runs
+version: 1
+summary: Defines bounded multi-step copilot playbooks, approval checkpoints, replay keys, and immutable run lineage.
+entities:
+  - name: CopilotPlaybookRun
+    fields:
+      - name: playbook_id
+        type: string
+      - name: tenant_id
+        type: string
+      - name: review_tenant_id
+        type: string
+      - name: run_id
+        type: string
+      - name: playbook_key
+        type: string
+      - name: status
+        type: enum[awaiting_approval, approved, rejected, executing, completed]
+      - name: actor_id
+        type: string
+      - name: actor_role
+        type: string
+      - name: record_kind
+        type: string
+      - name: record_id
+        type: string
+  - name: CopilotPlaybookStep
+    fields:
+      - name: step_key
+        type: string
+      - name: action_key
+        type: enum[create_task, append_note, propose_enrichment, update_stage, update_owner]
+      - name: replay_key
+        type: string
+      - name: status
+        type: enum[pending_approval, completed, skipped]
+      - name: proposed_changes
+        type: object
+requirements:
+  - All playbooks must create a shared run_id and pause in awaiting_approval before durable side effects.
+  - Every step must carry a replay_key usable with the Phase 53 side-effect ledger.
+  - Approved playbook effects must emit canonical CRM activity with run, actor, and approval lineage.

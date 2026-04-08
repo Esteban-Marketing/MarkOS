@@ -1,3 +1,5 @@
+import React from "react";
+
 import styles from "./page.module.css";
 
 const GOVERNANCE_EVIDENCE_ENDPOINT = "/api/governance/evidence";
@@ -5,14 +7,44 @@ const GOVERNANCE_VENDOR_ENDPOINT = "/api/governance/vendor-inventory";
 
 const sections = ["Identity Federation", "Access Reviews", "Retention and Export", "Vendor Inventory"];
 
-export default function GovernanceAdminPage() {
+export type GovernanceAdminPageVariant = "default" | "deniedMapping" | "exportReady";
+
+type GovernanceAdminPageProps = Readonly<{
+  variant?: GovernanceAdminPageVariant;
+}>;
+
+export default function GovernanceAdminPage({
+  variant = "default",
+}: GovernanceAdminPageProps) {
+  const activeSectionIndex = variant === "exportReady" ? 2 : 0;
+  const heroTitle = variant === "exportReady" ? "Retention and Export" : "Identity Federation";
+  const heroText =
+    variant === "exportReady"
+      ? `Browse evidence-first governance data from ${GOVERNANCE_EVIDENCE_ENDPOINT} and ${GOVERNANCE_VENDOR_ENDPOINT}. Export readiness, deletion workflow proof, and evidence references remain visible to operators.`
+      : `Browse evidence-first governance data from ${GOVERNANCE_EVIDENCE_ENDPOINT} and ${GOVERNANCE_VENDOR_ENDPOINT}. Denied mappings stay visible in the detail rail.`;
+  const detailTitle = variant === "exportReady" ? "Export readiness detail" : "Denied mapping detail";
+  const detailLines =
+    variant === "exportReady"
+      ? [
+          "Workflow status: export_ready",
+          "Retention window: P12M",
+          "Deletion checkpoint: export_before_delete_complete",
+          "Evidence reference: gov-evidence-2026-04-03",
+        ]
+      : [
+          "Source claim: markos-super-admin",
+          "Matched rule: null",
+          "Mapped role: null",
+          "Denial reason: EXTERNAL_ROLE_ESCALATION_DENIED",
+        ];
+
   return (
     <div className={styles.page}>
       <div className={styles.shell}>
         <section className={styles.heroCard}>
           <p className={styles.eyebrow}>Governance administration</p>
-          <h1 className={styles.title}>Identity Federation</h1>
-          <p className={styles.heroText}>Browse evidence-first governance data from {GOVERNANCE_EVIDENCE_ENDPOINT} and {GOVERNANCE_VENDOR_ENDPOINT}. Denied mappings stay visible in the detail rail.</p>
+          <h1 className={styles.title}>{heroTitle}</h1>
+          <p className={styles.heroText}>{heroText}</p>
         </section>
 
         <section className={styles.layoutGrid}>
@@ -20,7 +52,7 @@ export default function GovernanceAdminPage() {
             <h2 className={styles.sectionTitle}>Sections</h2>
             <div className={styles.sectionList}>
               {sections.map((section, index) => (
-                <div key={section} className={index === 0 ? styles.activeSection : styles.sectionItem}>{section}</div>
+                <div key={section} className={index === activeSectionIndex ? styles.activeSection : styles.sectionItem}>{section}</div>
               ))}
             </div>
           </aside>
@@ -136,11 +168,10 @@ export default function GovernanceAdminPage() {
           <aside className={styles.panel}>
             <h2 className={styles.sectionTitle}>Detail rail</h2>
             <div className={styles.detailCard}>
-              <h3 className={styles.detailTitle}>Denied mapping detail</h3>
-              <p className={styles.detailText}>Source claim: markos-super-admin</p>
-              <p className={styles.detailText}>Matched rule: null</p>
-              <p className={styles.detailText}>Mapped role: null</p>
-              <p className={styles.detailText}>Denial reason: EXTERNAL_ROLE_ESCALATION_DENIED</p>
+              <h3 className={styles.detailTitle}>{detailTitle}</h3>
+              {detailLines.map((line) => (
+                <p key={line} className={styles.detailText}>{line}</p>
+              ))}
             </div>
           </aside>
         </section>

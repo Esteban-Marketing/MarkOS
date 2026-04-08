@@ -16,8 +16,9 @@
  * - Modal remains visible until a decision is made
  */
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { useSelectedTask, useCurrentStep, useTaskActions } from "./task-store";
+import styles from "./task-ui.module.css";
 
 /**
  * ApprovalGate: Blocking modal component
@@ -68,91 +69,83 @@ export function ApprovalGate({ stepId }: { stepId: string }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className={styles.modalBackdrop}
       role="dialog"
       aria-modal="true"
       aria-labelledby="approval-gate-title"
     >
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        {/* Modal header */}
+      <div className={styles.modalCard}>
         <h2
           id="approval-gate-title"
-          className="text-lg font-semibold text-[#0f172a] mb-2"
+          className={styles.modalTitle}
         >
           Approval Required
         </h2>
 
-        {/* Step context */}
-        <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <p className="text-sm text-blue-900 font-medium">
+        <div className={styles.modalInfo}>
+          <p className={styles.modalInfoTitle}>
             Step: {currentStep.title}
           </p>
-          <p className="text-xs text-blue-800 mt-1">
+          <p className={styles.modalText}>
             {currentStep.description}
           </p>
         </div>
 
-        {/* Decision prompt */}
-        <div className="mb-6">
-          <p className="text-sm text-[#475569] mb-4">
+        <div>
+          <p className={styles.modalText}>
             This step requires explicit operator approval before execution.
             Please review the step details and make a decision:
           </p>
 
-          {/* Approval requirements */}
           {currentStep.requires_approval && (
-            <div className="text-xs text-[#475569] bg-gray-50 p-3 rounded mb-4 space-y-1">
-              <p className="font-medium text-[#0f172a]">Approval Gate Details:</p>
-              <p>• Review step inputs and expected outputs</p>
-              <p>• Verify step execution prerequisites are met</p>
-              <p className="font-semibold text-amber-700">
-                • Approval cannot be undone after execution
-              </p>
+            <div className={styles.auditNote}>
+              <p className={styles.auditNoteTitle}>Approval Gate Details</p>
+              <ul className={styles.modalList}>
+                <li>Review step inputs and expected outputs</li>
+                <li>Verify step execution prerequisites are met</li>
+                <li>Approval cannot be undone after execution</li>
+              </ul>
             </div>
           )}
         </div>
 
-        {/* Decision buttons - two standalone paths */}
-        <div className="flex gap-3 mb-4">
-          {/* Approve button (primary) */}
+        <div className={styles.modalActions}>
           <button
             onClick={handleApprove}
             disabled={isDeciding}
-            className="flex-1 px-4 py-2.5 bg-[#0d9488] text-white font-medium text-sm rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={styles.buttonPrimary}
             aria-label="Approve this step"
           >
-            {isDeciding ? "Recording..." : "✓ Approve"}
+            {isDeciding ? "Recording..." : "Approve"}
           </button>
 
-          {/* Reject button (danger) */}
           <button
             onClick={() => setShowRejectReason(!showRejectReason)}
             disabled={isDeciding}
-            className="flex-1 px-4 py-2.5 bg-red-600 text-white font-medium text-sm rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={styles.buttonDanger}
             aria-label="Reject this step"
           >
-            {isDeciding ? "Recording..." : "✗ Reject"}
+            {isDeciding ? "Recording..." : "Reject"}
           </button>
         </div>
 
-        {/* Rejection reason field (appears only if rejection path is being taken) */}
         {showRejectReason && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <label className="block text-sm font-medium text-[#0f172a] mb-2">
+          <div className={styles.errorCard}>
+            <label className={styles.fieldLabel}>
               Rejection Reason (optional)
             </label>
             <textarea
-              className="w-full p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-red-400"
+              className={styles.textarea}
               rows={2}
               placeholder="Why are you rejecting this step? (e.g., Missing prerequisites, Data validation concerns)"
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
             />
-            <div className="flex gap-2 mt-2">
+            <div className={styles.modalActions}>
               <button
                 onClick={handleReject}
                 disabled={isDeciding}
-                className="flex-1 px-3 py-2 bg-red-600 text-white font-medium text-sm rounded hover:bg-red-700 transition-colors disabled:opacity-50"
+                className={styles.buttonDanger}
               >
                 {isDeciding ? "Recording..." : "Confirm Rejection"}
               </button>
@@ -162,7 +155,7 @@ export function ApprovalGate({ stepId }: { stepId: string }) {
                   setRejectReason("");
                 }}
                 disabled={isDeciding}
-                className="px-3 py-2 bg-gray-200 text-[#0f172a] font-medium text-sm rounded hover:bg-gray-300 transition-colors"
+                className={styles.buttonSecondary}
               >
                 Back
               </button>
@@ -170,10 +163,9 @@ export function ApprovalGate({ stepId }: { stepId: string }) {
           </div>
         )}
 
-        {/* Immutability notice */}
-        <div className="text-xs text-[#7c8192] border-t pt-4 mt-4">
-          <p className="font-medium text-[#0f172a] mb-1">Audit Trail</p>
-          <p>
+        <div className={styles.auditNote}>
+          <p className={styles.auditNoteTitle}>Audit Trail</p>
+          <p className={styles.modalText}>
             Your decision (and optional reason) will be recorded with timestamp
             and actor ID for compliance audit trail.
           </p>

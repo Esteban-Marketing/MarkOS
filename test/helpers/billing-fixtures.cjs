@@ -1,7 +1,17 @@
 'use strict';
 
+function buildQuotaState(overrides = {}) {
+  return withOverrides({
+    seats: 'within_limit',
+    projects: 'within_limit',
+    agent_runs: 'within_limit',
+    token_budget: 'within_limit',
+    storage_gb_days: 'within_limit',
+  }, overrides);
+}
+
 function withOverrides(base, overrides = {}) {
-  return Object.assign({}, base, overrides);
+  return { ...base, ...overrides };
 }
 
 function buildBillingUsageEvent(overrides = {}) {
@@ -71,6 +81,7 @@ function buildEntitlementSnapshot(overrides = {}) {
       token_budget: 12,
       storage_gb_days: 0,
     },
+    quota_state: buildQuotaState(),
     read_access_preserved: true,
     reason_code: null,
   }, overrides);
@@ -92,6 +103,40 @@ function buildInvoiceLineItem(overrides = {}) {
     ledger_row_ids: ['ledger-row-001'],
     billing_truth_source: 'markos-ledger',
     reconciliation_status: 'pending',
+  }, overrides);
+}
+
+function buildProviderSyncAttempt(overrides = {}) {
+  return withOverrides({
+    sync_attempt_id: 'sync-attempt-001',
+    tenant_id: 'tenant-alpha-001',
+    provider: 'stripe',
+    sync_status: 'failed',
+    reason_code: 'PAYMENT_METHOD_DECLINED',
+    billing_period_start: '2026-04-01T00:00:00.000Z',
+    billing_period_end: '2026-04-30T23:59:59.999Z',
+    synced_at: '2026-04-03T18:30:00.000Z',
+    line_item_count: 1,
+    billing_truth_source: 'markos-ledger',
+  }, overrides);
+}
+
+function buildBillingHoldEvent(overrides = {}) {
+  return withOverrides({
+    hold_event_id: 'hold-event-001',
+    tenant_id: 'tenant-alpha-001',
+    provider: 'stripe',
+    billing_period_start: '2026-04-01T00:00:00.000Z',
+    billing_period_end: '2026-04-30T23:59:59.999Z',
+    event_type: 'hold_opened',
+    hold_state: 'hold',
+    reason_code: 'PAYMENT_METHOD_DECLINED',
+    sync_attempt_id: 'sync-attempt-001',
+    released_by_sync_attempt_id: null,
+    line_item_count: 1,
+    created_at: '2026-04-03T18:30:00.000Z',
+    released_at: null,
+    billing_truth_source: 'markos-ledger',
   }, overrides);
 }
 
@@ -146,9 +191,38 @@ function buildGovernanceEvidencePack(overrides = {}) {
       'markos_audit_log',
       'billing_usage_ledger',
       'identity_role_mapping_events',
+      'billing_provider_sync_log',
+      'agent_approval_decision_log',
+      'tenant_configuration_change_log',
     ],
-    privileged_billing_actions: ['invoice_reconciled', 'billing_hold_applied'],
-    privileged_identity_actions: ['role_mapping_granted', 'role_mapping_denied'],
+    privileged_billing_actions: ['invoice_reconciled', 'billing_hold_applied', 'billing_hold_released', 'entitlement_snapshot_published'],
+    privileged_identity_actions: ['sso_role_mapping_granted', 'sso_role_mapping_denied'],
+    privileged_action_families: [
+      {
+        action_family: 'authentication_authorization',
+        evidence_source: 'identity_role_mapping_events',
+        actions: ['sso_role_mapping_granted', 'sso_role_mapping_denied'],
+        immutable_provenance_fields: ['tenant_id', 'actor_id', 'correlation_id', 'sso_provider_id'],
+      },
+      {
+        action_family: 'approvals',
+        evidence_source: 'agent_approval_decision_log',
+        actions: ['approval_decision_recorded', 'approval_decision_denied'],
+        immutable_provenance_fields: ['run_id', 'tenant_id', 'actor_id', 'actor_role', 'correlation_id'],
+      },
+      {
+        action_family: 'billing_administration',
+        evidence_source: 'billing_provider_sync_log',
+        actions: ['invoice_reconciled', 'billing_hold_applied', 'billing_hold_released', 'entitlement_snapshot_published'],
+        immutable_provenance_fields: ['tenant_id', 'billing_period_start', 'billing_period_end', 'sync_attempt_id'],
+      },
+      {
+        action_family: 'tenant_configuration',
+        evidence_source: 'tenant_configuration_change_log',
+        actions: ['plugin_settings_updated', 'tenant_branding_versioned', 'tenant_sso_binding_updated'],
+        immutable_provenance_fields: ['tenant_id', 'plugin_id', 'enabled', 'capabilities', 'updated_at'],
+      },
+    ],
     generated_from_operator_notes: false,
   }, overrides);
 }
@@ -162,6 +236,25 @@ function buildRetentionExportRecord(overrides = {}) {
     export_status: 'ready',
     exported_at: null,
     export_location: 'markos://governance/evidence-pack-001',
+  }, overrides);
+}
+
+function buildDeletionWorkflowRecord(overrides = {}) {
+  return withOverrides({
+    deletion_request_id: 'deletion-request-001',
+    evidence_pack_id: 'evidence-pack-001',
+    tenant_id: 'tenant-alpha-001',
+    request_received_at: '2026-04-04T00:00:00.000Z',
+    request_scope: 'tenant_workspace_data',
+    requested_by_actor_id: 'privacy-admin-1',
+    approval_reference: 'approval:deletion-request-001',
+    export_before_delete_status: 'completed',
+    export_record_id: 'retention-export-001',
+    export_completed_at: '2026-04-04T00:05:00.000Z',
+    deletion_action: 'anonymize_then_delete',
+    workflow_status: 'completed',
+    resulting_evidence_ref: 'evidence-pack-001',
+    completed_at: '2026-04-04T00:06:00.000Z',
   }, overrides);
 }
 
@@ -182,12 +275,15 @@ function buildVendorInventoryEntry(overrides = {}) {
 module.exports = {
   buildBillingUsageEvent,
   buildBillingUsageLedgerRow,
+  buildBillingHoldEvent,
   buildEntitlementSnapshot,
   buildInvoiceLineItem,
+  buildProviderSyncAttempt,
   buildTenantSsoBinding,
   buildExternalRoleClaim,
   buildIdentityRoleMappingDecision,
   buildGovernanceEvidencePack,
   buildRetentionExportRecord,
+  buildDeletionWorkflowRecord,
   buildVendorInventoryEntry,
 };

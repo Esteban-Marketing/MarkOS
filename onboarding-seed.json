@@ -1,114 +1,11 @@
 {
   "company": {
-    "name": "MarkOS",
-    "full_name": "Marketing Operating System",
-    "business_model": "SaaS",
-    "industry": "Developer Tools / Marketing Technology",
-    "founded": "2024",
-    "country": "Global",
-    "language": "English",
-    "stage": "pre-revenue",
-    "team_size": 1,
-    "mission": "Structure and define marketing operative systems — enabling any team to execute AI-powered marketing with the discipline of a seasoned marketing operator.",
-    "brand_values": ["Systematic thinking", "Radical transparency", "First-principles rigor", "Builder-first design", "Minimal waste, maximum signal"],
-    "tone_of_voice": "Expert and Authoritative — direct, systems-first, practitioner-grade. Formal in documentation, casual-technical on social. Never generic, never hyped.",
-    "url": null,
-    "taglines": [
-      "Structure your marketing brain. Execute with any AI.",
-      "Marketing intelligence architecture for builders.",
-      "The Marketing OS for teams that build with AI."
-    ]
-  },
-  "product": {
-    "name": "MarkOS",
-    "category": "Marketing Operating System / MarketingOps Infrastructure",
-    "distribution": "npx install — one command to full scaffold",
-    "install_command": "npx marketing-get-shit-done install",
-    "primary_benefit": "Transforms scattered AI prompts and disconnected tools into a structured, agent-ready marketing intelligence system — installed in 60 seconds, built to scale.",
-    "top_features": [
-      "MIR (Marketing Intelligence Repository) — 78-file structured brand and strategy intelligence architecture",
-      "MSP (Marketing Strategy Plan) — 80-file tactical execution blueprints for all 10 marketing disciplines",
-      "Gate system (Gate 1 + Gate 2) — progressive validation gates that unlock execution capabilities",
-      "Multi-LLM adapter — OpenAI, Anthropic, Gemini, Ollama with graceful fallback",
-      "Override resolution system — client overrides in .mgsd-local/ without modifying base templates",
-      "25+ specialized AI marketing agents",
-      "Vector memory via Supabase + Upstash for episodic learning and RAG",
-      "Winners catalog for anchoring new assets to historical high-performers"
-    ],
-    "pricing_model": "Freemium + per-seat + usage-based",
-    "price_free": "$0 — user supplies own API keys; MarkOS provides the architecture",
-    "price_paid": "TBD — to be set after first 10 pilot conversations",
-    "constraints": ["$0 budget (pre-revenue)", "No paid ads until post-revenue", "No ad accounts exist", "Legal review required before enterprise sales"]
-  },
-  "audience": {
-    "primary_icp": "AI-ready technical founder or solo operator (1-person team, pre-revenue to early revenue, VS Code + AI tools in stack)",
-    "segment_name": "Developer-Adjacent Founders and AI-Forward Technical Operators",
-    "job_title": "Founder / Co-founder / Indie Hacker / Technical Marketing Lead",
-    "company_size": "1-25 people",
-    "pain_points": [
-      "AI tools keep generating generic outputs that don't reflect brand voice",
-      "No structured marketing system — scattered prompts, scattered tools",
-      "Wasted hours on marketing that doesn't compound",
-      "Can't scale marketing without hiring — no budget for a marketing team",
-      "Onboarded 3+ AI tools and still getting inconsistent outputs"
-    ],
-    "online_hangouts": "X/Twitter developer community, GitHub, Reddit (r/SideProject, r/entrepreneur, r/LocalLLaMA), Hacker News",
-    "buying_trigger": "Failed DIY AI marketing experiment — shipped a product and got silence, or realized AI-generated content doesn't reflect actual brand identity",
-    "vocabulary": "system, architecture, protocol, framework, pipeline, structured, versioned, auditable, agent, context, intelligence layer",
-    "vocabulary_avoids": "viral, game-changing, revolutionary, effortless, magic, AI-powered (generic), simple"
-  },
-  "market": {
-    "maturity": "Emerging",
-    "category": "Marketing OS / AI Marketing Infrastructure",
-    "category_status": "Unclaimed — first-mover opportunity",
-    "biggest_trend": "AI agent proliferation creates coordination problem — every team has multiple AI tools with no shared intelligence layer. MarkOS is the picks-and-shovels infrastructure play.",
-    "adjacent_markets": ["AI content tools ($2B+)", "Marketing automation ($6B+)", "Developer tools ($25B+)", "AI agent infrastructure (emerging)"],
-    "timing": "Window for category creation open now (2024-2025)"
-  },
-  "competitive": {
-    "top_competitors": ["Jasper (AI content platform)", "Copy.ai (AI writing)", "HubSpot (CRM + Marketing Hub)", "Notion AI (general AI)", "Manual ChatGPT prompting (incumbent behavior)"],
-    "positioning_gap": "No competitor has a structured intelligence architecture separating brand intelligence from execution. No competitor is developer-native (CLI install, local-first, open). No competitor owns the 'Marketing OS' category language.",
-    "primary_differentiators": [
-      "One-command install (npx) — zero sales friction",
-      "MIR/MSP architecture — structured intelligence vs. execution separation",
-      "Protocol, not SaaS — installs alongside existing stack, no lock-in",
-      "Developer-native — CLI, markdown, git-compatible, local-first",
-      "12-year expertise encoded in templates"
-    ]
-  },
-  "goals": {
-    "primary_90_day": "200 NPX installs",
-    "secondary_90_day": "10 paid pilots",
-    "github_star_target": 50,
-    "community_mentions_target": 20,
-    "budget": "$0",
-    "team_size": 1,
-    "nyquist_install_threshold": "≥30 installs in month 1 or pivot signal",
-    "channels": ["X/Twitter", "GitHub", "Reddit", "Hacker News Show HN"],
-    "paid_ads": false
-  },
-  "tech_stack": {
-    "analytics": ["PostHog", "GA4"],
-    "automation": ["n8n (self-hosted)", "GitHub Actions", "Cloudflare Workers"],
-    "tracking_events": [
-      "npx_install_complete",
-      "gate1_completed",
-      "gate2_completed",
-      "onboarding_started",
-      "pilot_demo_scheduled",
-      "pilot_proposal_sent",
-      "pilot_contract_signed"
-    ],
-    "utm_framework": "utm_source=[github|twitter|reddit|hn] utm_medium=[readme|thread|post|launch] utm_campaign=[launch|pilots|organic]"
+    "name": "Pantera Travel",
+    "business_model": "SaaS"
   },
   "metadata": {
     "version": "2.1",
-    "generated": "2025-07-18T00:00:00.000Z",
-    "completeness_score": 87,
-    "gate1_status": "GREEN",
-    "gate2_status": "GREEN",
-    "project_slug": "acmeacme-d41f8385",
-    "populated_by": "mgsd-onboarder (Gate 1 + Gate 2 questionnaire intake)",
-    "note": "Populated via structured questionnaire intake — onboarding server could not run due to environment constraints. Update completeness_score to 100 when paid_ads section is populated."
+    "generated": "2026-04-04T03:49:59.115Z",
+    "completeness_score": 100
   }
 }

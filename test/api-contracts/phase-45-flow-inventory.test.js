@@ -34,6 +34,7 @@ const EXPECTED_FLOW_IDS = [
   'F-01','F-02','F-03','F-04','F-05','F-06','F-07','F-08','F-09',
   'F-10','F-11','F-12','F-13','F-14','F-15','F-16','F-17',
 ];
+const registryIds = new Set(registry.flows.map((flow) => flow.flow_id));
 
 // ─── Group 1: FLOW-INVENTORY.md shape and presence ─────────────────────────
 test('FLOW-INVENTORY contains at least 10 flow rows', () => {
@@ -123,17 +124,29 @@ test('every registry flow has a corresponding contract YAML file', () => {
   }
 });
 
-test('exactly 17 contract YAML files exist', () => {
+test('phase 45 registry flows each map to exactly one v1 contract YAML file', () => {
   const contractFiles = fs.readdirSync(CONTRACTS_DIR).filter(f => /^F-\d{2}.*-v1\.yaml$/.test(f));
-  assert.equal(contractFiles.length, 17, `Expected 17 contract files, got ${contractFiles.length}`);
+  const registryContractFiles = contractFiles.filter((file) => registryIds.has(file.match(/^(F-\d{2})/)[1]));
+
+  assert.equal(
+    registryContractFiles.length,
+    registry.flows.length,
+    `Expected ${registry.flows.length} phase-45 contract files, got ${registryContractFiles.length}`
+  );
+
+  for (const flow of registry.flows) {
+    const matches = registryContractFiles.filter((file) => file.startsWith(flow.flow_id + '-'));
+    assert.equal(matches.length, 1, `Expected exactly one contract file for ${flow.flow_id}, got ${matches.length}`);
+  }
 });
 
-test('no contract file exists without a registry entry (zero orphans)', () => {
+test('phase 45 registry has no orphaned contracts within its own flow-id scope', () => {
   const contractFiles = fs.readdirSync(CONTRACTS_DIR).filter(f => /^F-\d{2}.*-v1\.yaml$/.test(f));
-  const registryIds = new Set(registry.flows.map(f => f.flow_id));
   for (const file of contractFiles) {
     const id = file.match(/^(F-\d{2})/)[1];
-    assert.ok(registryIds.has(id), `Orphaned contract file: ${file} has no registry entry`);
+    if (EXPECTED_FLOW_IDS.includes(id)) {
+      assert.ok(registryIds.has(id), `Phase 45 contract file ${file} is missing a registry entry`);
+    }
   }
 });
 

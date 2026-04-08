@@ -1,0 +1,74 @@
+flow_id: "F-63A"
+flow_name: "agent-mutations"
+domain: "crm-ai"
+flow_type: "approval_packaging"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM AI Mutation Packaging"
+  version: "1.0.0"
+  description: "Bounded AI mutation families and approval package shape for CRM copilot operations."
+
+x-markos-meta:
+  actor: "CRM Operator"
+  auth_local: "tenant-scoped runtime"
+  auth_hosted: "status_read Supabase JWT"
+  handler: "handleCopilotRecommendations|handleCopilotApprovalPackage"
+  hosted_path: "/api/crm/copilot/recommendations|/api/crm/copilot/approve-package"
+  slo_tier: "standard"
+
+components:
+  schemas:
+    MutationFamily:
+      type: string
+      enum:
+        - create_task
+        - append_note
+        - propose_enrichment
+        - update_owner
+        - update_stage
+    ApprovalPackage:
+      type: object
+      required:
+        - package_id
+        - tenant_id
+        - mutation_family
+        - approval_required
+        - run_id
+        - rationale
+        - evidence
+      properties:
+        package_id:
+          type: string
+        tenant_id:
+          type: string
+        run_id:
+          type: string
+        mutation_family:
+          $ref: "#/components/schemas/MutationFamily"
+        approval_required:
+          type: boolean
+          enum: [true]
+        status:
+          type: string
+          enum: [awaiting_approval, approved, rejected]
+        rationale:
+          type: object
+        evidence:
+          type: array
+          items:
+            type: object
+        proposed_changes:
+          type: object
+        immutable_lineage:
+          type: object
+paths:
+  /api/crm/copilot/recommendations:
+    post:
+      summary: "Package a bounded copilot recommendation into approval review"
+      responses:
+        "200":
+          description: "Approval package created"
+        "403":
+          description: "Mutation family or oversight scope forbidden"

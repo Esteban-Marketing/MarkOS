@@ -1,0 +1,37 @@
+flow_id: "F-59-TRACKED-REDIRECT"
+flow_name: "tracked-entry-redirect"
+domain: "tracking"
+flow_type: "redirect"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Tracked Entry Redirect"
+  version: "1.0.0"
+  description: "Tracked redirect contract that preserves campaign and affiliate attribution as CRM evidence."
+
+x-markos-meta:
+  actor: "Campaign visitor"
+  auth_local: "runtime_local"
+  auth_hosted: "public"
+  attribution_state:
+    - "preserved"
+    - "degraded_fallback"
+  preserved_fields:
+    - "destination"
+    - "utm_source"
+    - "utm_medium"
+    - "utm_campaign"
+    - "utm_term"
+    - "utm_content"
+    - "affiliate_id"
+
+paths:
+  /api/tracking/redirect:
+    get:
+      summary: "Redirect a tracked campaign or affiliate entry while appending CRM-readable attribution evidence"
+      responses:
+        "302":
+          description: "Redirect issued with preserved attribution parameters"
+        "400":
+          description: "Missing valid destination and no usable fallback"

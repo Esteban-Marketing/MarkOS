@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const telemetry = require('../../onboarding/backend/agents/telemetry.cjs');
 const orchestrator = require('../../onboarding/backend/agents/orchestrator.cjs');
@@ -140,4 +142,14 @@ test('AGT-04: orchestrator finalizer preserves multi-attempt provider telemetry 
   assert.equal(record.tool_events[0].reason_code, 'TIMEOUT');
   assert.equal(record.tool_events[1].provider, 'gemini');
   assert.equal(record.tool_events[1].fallback_reason, 'TIMEOUT');
+});
+
+test('AGT-04: canonical telemetry event contract names rollout, execution, provider, and run-close evidence', () => {
+  const eventsPath = path.resolve(__dirname, '../../lib/markos/telemetry/events.ts');
+  const source = fs.readFileSync(eventsPath, 'utf8');
+
+  assert.match(source, /rollout_endpoint_observed/);
+  assert.match(source, /execution_readiness_blocked/);
+  assert.match(source, /markos_agent_run_provider_attempt/);
+  assert.match(source, /markos_agent_run_close_completed/);
 });

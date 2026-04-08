@@ -1,0 +1,22 @@
+flow_id: F-62-outbound-sequences-v1
+title: Outbound Sequences
+summary: First-pass sequence definitions, step timing, approval-aware launches, and scheduled execution lineage.
+inputs:
+  - tenant_id
+  - sequence_key
+  - contact_id
+  - record_kind
+  - record_id
+  - use_case
+  - risk_level
+  - approval_granted
+  - steps
+outputs:
+  - sequence_id
+  - approval_state
+  - queue_entries
+  - launched_at
+rules:
+  - Sequence steps inherit channel-specific consent and approval evaluation.
+  - Scheduled execution must create visible queue lineage rather than hidden dispatch.
+  - High-risk or reengagement launches fail closed until approval is explicit.

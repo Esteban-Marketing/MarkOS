@@ -30,6 +30,7 @@ const {
   buildLLMCallOptions,
   emitDenyTelemetry,
   assertEntitledAction,
+  evaluateQuotaDimensionAccess,
   validateRequiredSecrets,
 } = require('./runtime-context.cjs');
 const telemetry = require('./agents/telemetry.cjs');
@@ -1325,6 +1326,31 @@ async function handleSubmit(req, res) {
     });
     slug = requestedSlug;
 
+    const projectQuotaCheck = evaluateQuotaDimensionAccess(buildExecutionContext(req, requestedSlug || 'submit'), 'projects', {
+      action: 'create_project',
+      requested_delta: 1,
+    });
+    if (!projectQuotaCheck.allowed) {
+      emitRolloutEndpointTelemetry({
+        endpoint,
+        startedAt,
+        outcomeState: 'failure',
+        statusCode: 403,
+        runtimeMode: runtime.mode,
+        projectSlug: slug,
+      });
+      return json(res, 403, {
+        success: false,
+        error: projectQuotaCheck.reason_code || 'PROJECT_CAP_EXCEEDED',
+        message: 'Project creation blocked by billing quota',
+        outcome: {
+          state: 'blocked',
+          code: projectQuotaCheck.reason_code || 'PROJECT_CAP_EXCEEDED',
+          message: 'Project creation blocked by billing quota',
+        },
+      });
+    }
+
     if (!body.project_slug && !querySlug) {
       slug = `${requestedSlug}-${crypto.randomUUID().slice(0, 8)}`;
     }
@@ -1619,74 +1645,84 @@ async function handleApprove(req, res) {
     );
 
     const approvalContext = buildExecutionContext(req, projectSlug || slug || 'approval');
-    const runId = String(run_id || `approve-${projectSlug || 'unknown'}`);
-    const runState = String(run_state || '');
+    const hasApprovalGateMetadata = [run_id, run_state, decision, rationale]
+      .some((value) => value !== undefined && value !== null && String(value).length > 0);
+    const requiresApprovalGate = runtime.mode === 'hosted' || Boolean(req && req.markosAuth) || hasApprovalGateMetadata;
 
-    try {
-      assertAwaitingApproval({ run_id: runId, state: runState });
-    } catch (approvalErr) {
-      emitRolloutEndpointTelemetry({
-        endpoint,
-        startedAt,
-        outcomeState: 'failure',
-        statusCode: 409,
-        runtimeMode,
-        projectSlug,
-      });
-      return json(res, 409, {
-        success: false,
-        error: 'AGENT_RUN_NOT_AWAITING_APPROVAL',
-        message: approvalErr.message,
-        outcome: createOutcome('failure', 'AGENT_RUN_NOT_AWAITING_APPROVAL', approvalErr.message, {
-          errors: [approvalErr.message],
-        }),
-      });
-    }
+    if (requiresApprovalGate) {
+      const runId = String(run_id || `approve-${projectSlug || 'unknown'}`);
+      const runState = String(run_state || '');
 
-    const decisionResult = recordApprovalDecision({
-      run_id: runId,
-      tenant_id: approvalContext.tenant_id,
-      state: runState,
-      actor_id: approvalContext.actor_id,
-      actor_role: approvalContext.role,
-      action: decision || 'approved',
-      rationale: rationale || null,
-      correlation_id: approvalContext.correlation_id || approvalContext.request_id,
-      decisionStore: approvalDecisionStore,
-      authorizationCheck: (roleOverride) => {
-        const principal = req && req.markosAuth ? req.markosAuth : {};
-        const authReq = {
-          ...req,
-          markosAuth: {
-            ...principal,
-            iamRole: roleOverride,
-            role: roleOverride,
-          },
-        };
-        return checkActionAuthorization('approve_task', authReq);
-      },
-      buildDenyEvent,
-      emitDenyTelemetry,
-    });
+      try {
+        assertAwaitingApproval({ run_id: runId, state: runState });
+      } catch (approvalErr) {
+        emitRolloutEndpointTelemetry({
+          endpoint,
+          startedAt,
+          outcomeState: 'failure',
+          statusCode: 409,
+          runtimeMode,
+          projectSlug,
+        });
+        return json(res, 409, {
+          success: false,
+          error: 'AGENT_RUN_NOT_AWAITING_APPROVAL',
+          message: approvalErr.message,
+          outcome: createOutcome('failure', 'AGENT_RUN_NOT_AWAITING_APPROVAL', approvalErr.message, {
+            errors: [approvalErr.message],
+          }),
+        });
+      }
 
-    if (!decisionResult.ok) {
-      const statusCode = decisionResult.statusCode || 403;
-      emitRolloutEndpointTelemetry({
-        endpoint,
-        startedAt,
-        outcomeState: 'failure',
-        statusCode,
-        runtimeMode,
-        projectSlug,
+      const decisionResult = recordApprovalDecision({
+        run_id: runId,
+        tenant_id: approvalContext.tenant_id,
+        state: runState,
+        actor_id: approvalContext.actor_id,
+        actor_role: approvalContext.role,
+        action: decision || 'approved',
+        rationale: rationale || null,
+        correlation_id: approvalContext.correlation_id || approvalContext.request_id,
+        decisionStore: approvalDecisionStore,
+        authorizationCheck: (roleOverride) => {
+          if (!(req && req.markosAuth) && runtime.mode !== 'hosted') {
+            return { authorized: true, reason: null, statusCode: 200 };
+          }
+
+          const principal = req && req.markosAuth ? req.markosAuth : {};
+          const authReq = {
+            ...req,
+            markosAuth: {
+              ...principal,
+              iamRole: roleOverride,
+              role: roleOverride,
+            },
+          };
+          return checkActionAuthorization('approve_task', authReq);
+        },
+        buildDenyEvent,
+        emitDenyTelemetry,
       });
 
-      return json(res, statusCode, {
-        success: false,
-        error: decisionResult.error || 'APPROVAL_DECISION_DENIED',
-        message: decisionResult.message || 'Approval decision denied.',
-        deny_event: decisionResult.deny_event || null,
-        outcome: createOutcome('failure', decisionResult.error || 'APPROVAL_DECISION_DENIED', decisionResult.message || 'Approval decision denied.'),
-      });
+      if (!decisionResult.ok) {
+        const statusCode = decisionResult.statusCode || 403;
+        emitRolloutEndpointTelemetry({
+          endpoint,
+          startedAt,
+          outcomeState: 'failure',
+          statusCode,
+          runtimeMode,
+          projectSlug,
+        });
+
+        return json(res, statusCode, {
+          success: false,
+          error: decisionResult.error || 'APPROVAL_DECISION_DENIED',
+          message: decisionResult.message || 'Approval decision denied.',
+          deny_event: decisionResult.deny_event || null,
+          outcome: createOutcome('failure', decisionResult.error || 'APPROVAL_DECISION_DENIED', decisionResult.message || 'Approval decision denied.'),
+        });
+      }
     }
 
     let mirOutputPath;

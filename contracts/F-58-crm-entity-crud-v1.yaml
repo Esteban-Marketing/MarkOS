@@ -1,0 +1,56 @@
+flow_id: "F-58-CRUD"
+flow_name: "crm-entity-crud"
+domain: "crm"
+flow_type: "entity-crud"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Entity CRUD"
+  version: "1.0.0"
+  description: "Canonical CRM CRUD contract for first-class tenant-safe records."
+
+x-markos-meta:
+  actor: "Tenant CRM operator"
+  auth_local: "runtime_local"
+  auth_hosted: "supabase bearer"
+  entity_families:
+    - "contact"
+    - "company"
+    - "deal"
+    - "account"
+    - "customer"
+    - "task"
+    - "note"
+  canonical_identifier: "entity_id"
+  tenant_partition_key: "tenant_id"
+  authorization: "fail_closed"
+
+paths:
+  /api/crm/contacts:
+    get:
+      summary: "List tenant-scoped contacts"
+      responses:
+        "200":
+          description: "Tenant-scoped contact list"
+        "401":
+          description: "Missing tenant context"
+    post:
+      summary: "Create tenant-scoped contact"
+      responses:
+        "200":
+          description: "Contact created"
+        "403":
+          description: "Mutation role denied"
+  /api/crm/companies:
+    get:
+      summary: "List tenant-scoped companies"
+      responses:
+        "200":
+          description: "Tenant-scoped company list"
+  /api/crm/deals:
+    get:
+      summary: "List tenant-scoped deals"
+      responses:
+        "200":
+          description: "Tenant-scoped deal list"

@@ -148,6 +148,8 @@ function createTestEnvironment() {
       const destDir = path.join(tmpDir, 'onboarding');
       const apiSrcDir = path.resolve(__dirname, '../api');
       const apiDestDir = path.join(tmpDir, 'api');
+      const libMarkosSrcDir = path.resolve(__dirname, '../lib/markos');
+      const libMarkosDestDir = path.join(tmpDir, 'lib', 'markos');
       
       const copyRecursiveSync = (src, dest) => {
         fs.mkdirSync(dest, { recursive: true });
@@ -163,6 +165,7 @@ function createTestEnvironment() {
       };
       copyRecursiveSync(srcDir, destDir);
       copyRecursiveSync(apiSrcDir, apiDestDir);
+      copyRecursiveSync(libMarkosSrcDir, libMarkosDestDir);
       
       // Override config to prevent browser spawn during tests
       fs.writeFileSync(path.join(destDir, 'onboarding-config.json'), JSON.stringify({

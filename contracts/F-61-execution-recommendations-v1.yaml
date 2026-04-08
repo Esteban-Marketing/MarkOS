@@ -1,0 +1,58 @@
+id: F-61-execution-recommendations-v1
+phase: 61
+name: Execution Recommendations
+status: active
+summary: Explainable next-best-action recommendations for the CRM-native execution workspace.
+
+recommendation_fields:
+  required:
+    - recommendation_id
+    - tenant_id
+    - record_kind
+    - record_id
+    - queue_tab
+    - urgency_score
+    - rationale_summary
+    - source_signals
+    - bounded_actions
+  lifecycle:
+    statuses:
+      - active
+      - dismissed
+      - approved
+      - snoozed
+
+queue_tabs:
+  - due_overdue
+  - inbound
+  - stalled
+  - success_risk
+  - approval_needed
+  - ownership_data
+  - priority
+
+bounded_actions:
+  allowed:
+    - create_task
+    - append_note
+    - update_record
+    - approve_recommendation
+    - view_draft_suggestion
+  forbidden:
+    - send_email
+    - send_sms
+    - send_whatsapp
+    - start_sequence
+    - autonomous_execute
+
+explainability:
+  required_signal_keys:
+    - owner_actor_id
+    - open_task_count
+    - overdue_task_count
+    - inbound_touch_count
+    - stalled_days
+    - intent_score
+    - approval_needed
+    - last_activity_at
+  rationale_required: true

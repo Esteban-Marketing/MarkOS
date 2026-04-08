@@ -11,10 +11,11 @@
 - ✅ **v2.3 Codebase Documentation Intelligence** — Phase 33 completed (2026-03-31) → **ARCHIVED**
 - ✅ **v2.4 Beta Client Onboarding** — Phases 34, 36, 37 shipped (2026-04-01) → **ARCHIVED** (`.planning/milestones/v2.4-ROADMAP.md`)
 - ✅ **v2.5 Enhancement & Optimization Process** — Phase 35 completed (2026-04-01) → **ARCHIVED**
-- 🟢 **v2.6 Post-Deployment Operations & Beta Activation** — Active milestone; Phase 38 shipped (2026-04-01)
+- 📦 **v2.6 Post-Deployment Operations & Beta Activation** — Historical planning track; superseded by the v3.x execution line after Phase 38 shipped (2026-04-01)
 - � **v3.0 MarkOS Literacy System** — Phases 39-44 in execution; Phases 43-44 completed (roadmap at `.planning/milestones/v3.0-LITERACY-SYSTEM-ROADMAP.md`)
 - ✅ **v3.1.0 Operator Surface Unification** — Phases 45-50 completed (2026-04-03) → **ARCHIVED** (`.planning/milestones/v3.1.0-phases/`)
-- 🟢 **v3.2.0 Post-Unification Execution & Adoption** — Active milestone; planning in progress
+- 📦 **v3.2.0 Post-Unification Execution & Adoption** — Repository-complete milestone with hosted follow-through tracked separately from the active v3.3 closeout work
+- 🚧 **v3.3.0 Revenue CRM and Customer Intelligence Core** — Active milestone; Phases 58 through 64 and follow-on Phases 64.1, 64.2, and 64.3 are verified passed, and Phase 65 is the current hosted reporting closeout and milestone-promotion follow-through
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -343,6 +344,158 @@ Plans:
 - ✅ 54-06: Governance evidence, vendor inventory, and admin governance surface (DELIVERED 2026-04-03)
 - 🔲 HV1: Tenant billing UX language and evidence readability review in a live app session
 - 🔲 HV2: Real enterprise IdP SSO callback verification against non-production Supabase enterprise setup
+
+## Phase 55: Tenant Quota and Billing Failure Closure
+**Goal:** Close the remaining MarkOS v3 quota and billing-failure gaps by making plan-tier quota/rate-limit controls explicit and by turning billing-failure degradation and recovery into requirement-specific evidence.
+**Requirements Mapped:** TEN-04, BIL-04
+**Depends on:** Phase 51 (tenant isolation foundations), Phase 54 (billing and entitlement enforcement)
+**Status:** ✅ Complete (2026-04-04)
+**Plans:**
+- [x] 55-01-PLAN.md — Wave 1 quota and rate-limit contract closure for TEN-04
+- [x] 55-02-PLAN.md — Wave 2 dunning, degraded-state, and recovery closure for BIL-04
+- [x] 55-03-PLAN.md — Wave 3 verification and closure-artifact promotion for TEN-04 and BIL-04
+
+## Phase 56: Security and Privacy Evidence Closure
+**Goal:** Close the remaining MarkOS v3 security and privacy evidence gaps by making privileged-action audit coverage, deletion workflow proof, and encryption control evidence explicit.
+**Requirements Mapped:** SEC-01, SEC-02, SEC-03
+**Depends on:** Phase 31 (rollout hardening), Phase 54 (governance and identity evidence)
+**Status:** ✅ Complete (2026-04-04)
+**Plans:**
+- [x] 56-01-PLAN.md — Wave 1 privileged-action audit coverage map for SEC-01
+- [x] 56-02-PLAN.md — Wave 2 GDPR-aligned deletion workflow proof for SEC-02
+- [x] 56-03-PLAN.md — Wave 3 encryption evidence and closure-artifact updates for SEC-03
+
+## Phase 57: Observability and Incident Closure
+**Goal:** Close the remaining MarkOS v3 operational evidence gaps by unifying subsystem observability proof and producing tenant-aware incident workflow and simulation evidence.
+**Requirements Mapped:** OPS-01, OPS-02
+**Depends on:** Phase 31 (API SLO telemetry), Phase 53 (agent runtime telemetry), Phase 54 (billing/governance surfaces)
+**Status:** ✅ Complete (2026-04-04)
+**Plans:**
+- [x] 57-01-PLAN.md — Wave 1 unified subsystem observability inventory for OPS-01
+- [x] 57-02-PLAN.md — Wave 2 tenant-aware incident workflow and communications path for OPS-02
+- [x] 57-03-PLAN.md — Wave 3 incident simulation evidence and closure-artifact updates for OPS-01 and OPS-02
+
+---
+
+## 🚧 v3.3.0 — Revenue CRM and Customer Intelligence Core
+
+**Status:** 🚧 Active milestone — Phases 58 through 64.3 are complete or verified, and Phase 65 is the current hosted reporting closeout and milestone-promotion phase
+
+**Goal:** Turn MarkOS into a Customer 360, AI-first revenue workspace where CRM records are the operational source of truth for relationship state, pipeline progression, next-best action, outbound execution, and reporting, while PostHog remains the behavioral analytics engine feeding that system.
+
+**Requirements:** CRM-01, CRM-02, CRM-03, CRM-04, CRM-05, CRM-06, TRK-01, TRK-02, TRK-03, TRK-04, ATT-01, AI-CRM-01, AI-CRM-02, REP-01
+
+### Phase 58: CRM Canonical Schema and Identity Graph
+**Goal:** Establish tenant-safe CRM primitives and identity graph foundations for contacts, companies, deals, accounts, customers, activities, tasks, and timelines.
+**Requirements Mapped:** CRM-01, CRM-02
+**Depends on:** Phase 51 tenant isolation, Phase 53 agent audit model, Phase 54 billing/governance evidence model
+**Status:** ✅ Complete (2026-04-04)
+
+### Phase 59: Behavioral Tracking and Identity Stitching
+**Goal:** Implement proxy-based PostHog tracking, ads and affiliate tracking subdomain support, session-to-contact stitching, and CRM activity ingestion contracts.
+**Requirements Mapped:** TRK-01, TRK-02, TRK-03, TRK-04
+**Depends on:** Phase 58
+**Status:** ✅ Complete (2026-04-04)
+
+### Phase 60: Pipeline Engine and Multi-View Workspace
+**Goal:** Ship custom pipelines, custom stages, and the required CRM views: Kanban, table, record detail, timeline, calendar, and forecast/funnel.
+**Requirements Mapped:** CRM-03, REP-01
+**Depends on:** Phase 58 and Phase 59
+**Status:** ✅ Verified PASS (2026-04-04) — protected CRM routes now hydrate canonical workspace state and targeted regression passes 22/22
+
+### Phase 61: Sales and Success Execution Workspace
+**Goal:** Deliver lead, deal, account, and customer success workflow surfaces with next-best-action support and operator task orchestration.
+**Requirements Mapped:** CRM-04, CRM-06, REP-01
+**Depends on:** Phase 60
+**Status:** ✅ Verified PASS (2026-04-04) — execution workspace ships explainable recommendation ranking, personal and team queues, bounded task or note or safe-record actions, suggestion-only drafts, and targeted regression passes 20/20
+
+### Phase 62: Native Outbound Execution
+**Goal:** Add first-class outbound execution for Resend email, Twilio SMS, and Twilio WhatsApp with consent-safe delivery telemetry wired back into CRM timelines.
+**Requirements Mapped:** CRM-05, CRM-06
+**Depends on:** Phase 58, Phase 59, and Phase 61
+**Status:** ✅ Verified PASS (2026-04-04) — provider-backed send, governed templates or sequences or bulk scheduling, webhook-driven conversation writeback, and targeted regression pass 16/16
+
+### Phase 63: AI Copilot and Agentic CRM Operations
+**Goal:** Deliver CRM copilots and role-aware agent workflows for summaries, drafting, enrichment, recommendations, and approval-gated automations.
+**Requirements Mapped:** AI-CRM-01, AI-CRM-02, CRM-04, CRM-06
+**Depends on:** Phase 58 through Phase 62
+**Status:** 📋 Planned
+
+**Plans:** 3 plans
+
+Plans:
+- [x] 63-01-PLAN.md — Wave 1 foundation: CRM grounding contract, bounded mutation schema, RBAC/telemetry expansion, tenant-safe copilot APIs
+- [x] 63-02-PLAN.md — Wave 2 operator surfaces: CRM copilot workspace, record and conversation panels, recommendation packaging, approval envelopes
+- [x] 63-03-PLAN.md — Wave 3 governed execution: multi-step playbooks, replay-safety, controlled cross-tenant oversight, audit-lineage closeout
+
+### Phase 64: Attribution, Reporting, and Verification Closure
+**Goal:** Close the milestone with CRM-native attribution, revenue reporting, operator dashboards, live verification, and acceptance evidence.
+**Requirements Mapped:** ATT-01, REP-01
+**Depends on:** Phase 58 through Phase 63
+**Status:** 📋 Planned
+
+**Plans:** 3 plans
+
+Plans:
+- [x] 64-01-PLAN.md — Wave 1 foundation: deterministic attribution model, reporting data contracts, readiness or completeness signals, telemetry expansion
+- [x] 64-02-PLAN.md — Wave 2 cockpit: CRM-native reporting shell, evidence rails, executive summaries, governed central rollups
+- [x] 64-03-PLAN.md — Wave 3 closeout: verification workflows, v3.3 live-check artifacts, evidence-pack promotion, milestone closure updates
+
+### Phase 64.1: GSD Runtime Parity and Hook Stabilization (INSERTED)
+**Goal:** Align the active `.claude` GSD runtime with the newer `.github` 1.32.0 surface by syncing execution logic, reference guidance, and hook strategy before new planning begins.
+**Requirements Mapped:** GSD-ALIGN-01, GSD-ALIGN-02, GSD-ALIGN-03
+**Depends on:** Phase 64
+**Status:** ✅ Verified Passed (2026-04-05)
+
+**Plans:** 3 plans
+
+Plans:
+- [x] 64.1-01-PLAN.md — Wave 1 cleanup: remove dead shell-hook bindings and keep the active `.claude` runtime JS-only
+- [x] 64.1-02-PLAN.md — Wave 2 parity: align allowed `.claude` bin runtime files with canonical `.github` behavior and repo-local `/gsd:...` guidance
+- [x] 64.1-03-PLAN.md — Wave 3 guidance: standardize touched `.claude` workflow/help surfaces on `/gsd:...` without pulling 64.2 or 64.3 scope forward
+
+### Phase 64.2: GSD Surface and Instruction Alignment (INSERTED)
+**Goal:** Reconcile MarkOS-localized `.claude` agents, templates, and instruction surfaces with the refreshed `.github` framework so Copilot, Claude, and shared GSD workflows stay behaviorally aligned.
+**Requirements Mapped:** GSD-ALIGN-04, GSD-ALIGN-05
+**Depends on:** Phase 64.1
+**Status:** ✅ Verified Passed (2026-04-06)
+
+**Plans:** 4 plans
+
+Plans:
+- [x] 64.2-01-PLAN.md — Wave 1 policy foundation: dual-root generation, root `copilot-instructions.md`, installer awareness, and narrow requirements registry sync
+- [x] 64.2-02-PLAN.md — Wave 2 canonical shared framework wording: align `.github` workflows, profile skill surfaces, execute-plan, UI flows, and shared agents to the root project `copilot-instructions.md` contract
+- [x] 64.2-03-PLAN.md — Wave 2 localized runtime wording: keep `.claude` workflows, profile skill surfaces, execute-plan, UI flows, core agents, and skill dispatch centered on root `CLAUDE.md` while acknowledging the sibling shared contract
+- [x] 64.2-04-PLAN.md — Wave 3 targeted regression gate: dual-root generation, installer, execute-plan, UI, update, profile-skill, and instruction-surface policy coverage without pulling 64.3 verification forward
+
+### Phase 64.3: GSD Verification and Customization Closure (INSERTED)
+**Goal:** Verify the aligned GSD surfaces end-to-end, refresh manifests or generated artifacts, and document the MarkOS customization boundary before Phase 65 planning resumes.
+**Requirements Mapped:** GSD-ALIGN-06, GSD-ALIGN-07
+**Depends on:** Phase 64.2
+**Status:** ✅ Verified Passed (2026-04-06)
+
+**Artifacts:** `.planning/phases/64.3-gsd-verification-and-customization-closure/64.3-01-SUMMARY.md`, `.planning/phases/64.3-gsd-verification-and-customization-closure/64.3-02-SUMMARY.md`, `.planning/phases/64.3-gsd-verification-and-customization-closure/64.3-03-SUMMARY.md`, `.planning/phases/64.3-gsd-verification-and-customization-closure/64.3-04-SUMMARY.md`, `.planning/phases/64.3-gsd-verification-and-customization-closure/64.3-VERIFICATION.md`, `.planning/phases/64.3-gsd-verification-and-customization-closure/64.3-HUMAN-UAT.md`
+
+**Plans:** 4 plans
+
+Plans:
+- [x] 64.3-01-PLAN.md — Wave 1 narrow registry fix: add `GSD-ALIGN-06` and `GSD-ALIGN-07` to `.planning/REQUIREMENTS.md`
+- [x] 64.3-02-PLAN.md — Wave 2 deterministic manifest closure: add the repo-local refresh helper and regenerate `.github` and `.claude` manifests
+- [x] 64.3-03-PLAN.md — Wave 2 canonical boundary docs: add `.planning/codebase/GSD-CUSTOMIZATION-BOUNDARY.md` and patch inventory visibility in `FILES.md` and `STRUCTURE.md`
+- [x] 64.3-04-PLAN.md — Wave 3 end-to-end closure proof: extend focused tests, add manifest freshness coverage, assert decimal-phase roadmap lookup, run the broader repo suite, and record automated plus human follow-through evidence
+
+### Phase 65: Hosted Reporting Closeout and Milestone Promotion
+**Goal:** Convert the remaining hosted reporting and live-environment checks into recorded v3.3.0 evidence, promote ATT-01 and REP-01 from repository-passed to satisfied, and close the milestone with honest acceptance records.
+**Requirements Mapped:** ATT-01, REP-01
+**Depends on:** Phase 64.3
+**Status:** 📋 Planned
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 65-01-PLAN.md — Wave 1 closeout contract: reconcile hosted checklist targets, evidence destinations, and requirement-promotion criteria for ATT-01 and REP-01
+- [ ] 65-02-PLAN.md — Wave 2 hosted verification capture: execute and record the hosted reporting shell, readiness, attribution drill-down, and live verification checks
+- [ ] 65-03-PLAN.md — Wave 3 milestone promotion: update closure matrices and milestone records, then record any remaining external follow-through honestly
 
 ---
 <details>

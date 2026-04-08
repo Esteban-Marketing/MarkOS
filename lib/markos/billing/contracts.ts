@@ -73,6 +73,14 @@ export type EntitlementSnapshot = {
     storage_gb_days: number;
     [key: string]: number;
   };
+  quota_state: {
+    seats: 'within_limit' | 'at_limit' | 'over_limit';
+    projects: 'within_limit' | 'at_limit' | 'over_limit';
+    agent_runs: 'within_limit' | 'at_limit' | 'over_limit';
+    token_budget: 'within_limit' | 'at_limit' | 'over_limit';
+    storage_gb_days: 'within_limit' | 'at_limit' | 'over_limit';
+    [key: string]: 'within_limit' | 'at_limit' | 'over_limit';
+  };
   read_access_preserved: boolean;
   reason_code: string | null;
 };

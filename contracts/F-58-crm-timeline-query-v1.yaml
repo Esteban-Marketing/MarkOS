@@ -1,0 +1,29 @@
+flow_id: "F-58-TIMELINE"
+flow_name: "crm-timeline-query"
+domain: "crm"
+flow_type: "timeline-read"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Timeline Query"
+  version: "1.0.0"
+  description: "Read contract for unified CRM timelines assembled from the MarkOS-owned activity ledger."
+
+x-markos-meta:
+  actor: "Tenant CRM operator"
+  auth_local: "runtime_local"
+  auth_hosted: "supabase bearer"
+  source_of_truth: "crm_activity_ledger"
+  preserves_source_reference: true
+  deterministic_ordering: "occurred_at desc, activity_id asc"
+
+paths:
+  /api/crm/activities:
+    get:
+      summary: "Read a tenant-safe unified CRM timeline"
+      responses:
+        "200":
+          description: "Ordered activity rows with source_event_ref preserved"
+        "401":
+          description: "Missing tenant context"

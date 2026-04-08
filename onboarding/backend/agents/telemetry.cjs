@@ -76,6 +76,13 @@ function captureExecutionCheckpoint(eventName, properties = {}) {
   });
 }
 
+function captureTrackingEvent(eventName, properties = {}) {
+  capture(eventName, {
+    telemetry_scope: 'tracking',
+    ...properties,
+  });
+}
+
 function captureRolloutEndpointEvent(endpoint, properties = {}) {
   const slo = ROLLOUT_ENDPOINT_SLOS[endpoint];
   if (!slo) return;
@@ -192,6 +199,7 @@ async function shutdown() {
 module.exports = {
   capture,
   captureExecutionCheckpoint,
+  captureTrackingEvent,
   captureProviderAttempt,
   captureRunClose,
   captureRolloutEndpointEvent,

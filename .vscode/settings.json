@@ -1,0 +1,5 @@
+{
+  "terminal.integrated.env.windows": {
+    "CHROMATIC_PROJECT_TOKEN": "${env:CHROMATIC_PROJECT_TOKEN}"
+  }
+}

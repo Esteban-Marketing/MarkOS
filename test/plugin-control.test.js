@@ -12,6 +12,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const { buildEntitlementSnapshot } = require('./helpers/billing-fixtures.cjs');
 
 const {
   isTenantPluginEnabled,
@@ -172,11 +173,12 @@ test('recordCapabilityGrant: throws for unknown tenant (fail-closed)', () => {
 
 const { handlePluginSettings } = require('../api/tenant-plugin-settings.js');
 
-function makeSettingsReq({ method = 'POST', iamRole = 'owner', tenantId = TENANT_A, body = {} } = {}) {
+function makeSettingsReq({ method = 'POST', iamRole = 'owner', tenantId = TENANT_A, body = {}, entitlementSnapshot = null } = {}) {
   return {
     method,
     url: '/api/tenant-plugin-settings',
     body,
+    entitlementSnapshot,
     markosAuth: { ok: true, status: 200, tenant_id: tenantId, principal: { id: 'user-1', tenant_id: tenantId, tenant_role: iamRole } },
     tenantContext: { tenantId, userId: 'user-1', role: iamRole },
   };
@@ -240,4 +242,31 @@ test('settings: capability update is tenant-scoped (does not bleed to Tenant B)'
   // Responses are independent — each reflects the correct tenant's update
   assert.equal(resA.body?.config?.tenant_id ?? TENANT_A, TENANT_A);
   assert.equal(resB.body?.config?.tenant_id ?? TENANT_B, TENANT_B);
+});
+
+test('settings: owner can restore plugin settings while prepaid token budget is exhausted', async () => {
+  const req = makeSettingsReq({
+    iamRole: 'owner',
+    entitlementSnapshot: buildEntitlementSnapshot({
+      allowances: { token_budget: 100 },
+      usage_to_date: { token_budget: 100 },
+      quota_state: { token_budget: 'over_limit' },
+    }),
+    body: { plugin_id: PLUGIN_ID, enabled: true, capabilities: ['read_drafts'] },
+  });
+  const res = makeSettingsRes();
+  await handlePluginSettings(req, res);
+  assert.equal(res.statusCode, 200);
+  assert.ok(res.body?.success);
+});
+
+test('SEC-01 governance evidence: tenant configuration family cites plugin settings change evidence', () => {
+  const { buildGovernanceEvidencePack } = require('../lib/markos/governance/evidence-pack.cjs');
+  const pack = buildGovernanceEvidencePack();
+  const configFamily = pack.privileged_action_families.find((family) => family.action_family === 'tenant_configuration');
+
+  assert.ok(configFamily);
+  assert.equal(configFamily.evidence_source, 'tenant_configuration_change_log');
+  assert.ok(configFamily.actions.includes('plugin_settings_updated'));
+  assert.ok(configFamily.immutable_provenance_fields.includes('updated_at'));
 });

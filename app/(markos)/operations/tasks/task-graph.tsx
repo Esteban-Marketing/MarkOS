@@ -19,37 +19,33 @@
 import React from "react";
 import { useTaskSteps, useCurrentStep, useTaskActions } from "./task-store";
 import { TaskStepState, TaskStepRecord } from "./task-types";
+import styles from "./task-ui.module.css";
 
 /**
  * State badge styling (locked enum values)
  */
 const STATE_BADGE_CONFIG: Record<
   TaskStepState,
-  { bgClass: string; textClass: string; label: string }
+  { className: string; label: string }
 > = {
   [TaskStepState.Queued]: {
-    bgClass: "bg-gray-100",
-    textClass: "text-gray-700",
+    className: styles.badgeQueued,
     label: "queued",
   },
   [TaskStepState.Approved]: {
-    bgClass: "bg-blue-100",
-    textClass: "text-blue-700",
+    className: styles.badgeApproved,
     label: "approved",
   },
   [TaskStepState.Executing]: {
-    bgClass: "bg-amber-100",
-    textClass: "text-amber-700",
+    className: styles.badgeExecuting,
     label: "executing",
   },
   [TaskStepState.Completed]: {
-    bgClass: "bg-emerald-100",
-    textClass: "text-emerald-700",
+    className: styles.badgeCompleted,
     label: "completed",
   },
   [TaskStepState.Failed]: {
-    bgClass: "bg-red-100",
-    textClass: "text-red-700",
+    className: styles.badgeFailed,
     label: "failed",
   },
 };
@@ -61,68 +57,56 @@ function StepCard({
   step,
   stepIndex,
   isCurrentStep,
-}: {
+}: Readonly<{
   step: TaskStepRecord;
   stepIndex: number;
   isCurrentStep: boolean;
-}) {
+}>) {
   const { selectEvidenceStep } = useTaskActions();
 
   const badgeConfig = STATE_BADGE_CONFIG[step.state];
-
-  const isActionable =
-    isCurrentStep && [TaskStepState.Queued, TaskStepState.Failed].includes(step.state);
 
   const lastActor = step.evidence.actor_id || "system";
   const lastTimestamp = step.evidence.step_completed_at || step.evidence.step_started_at || "—";
 
   return (
-    <div
+    <button
+      type="button"
       onClick={() => selectEvidenceStep(step.id)}
-      className={`
-        mt-3 p-4 rounded-lg border-2 transition-all cursor-pointer
-        ${
-          isCurrentStep ? "border-blue-300 bg-blue-50" : "border-gray-200 bg-white"
-        }
-        ${isActionable ? "hover:shadow-md" : "opacity-70"}
-      `}
+      className={[
+        styles.stepCard,
+        isCurrentStep ? styles.stepCardCurrent : styles.stepCardDimmed,
+      ].join(" ")}
+      aria-label={`Select evidence for ${step.title}`}
     >
-      {/* Step header: order index + title */}
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-baseline gap-2">
-          <span className="text-xs font-bold text-[#475569] bg-gray-200 px-2 py-1 rounded">
+      <div className={styles.stepHeader}>
+        <div className={styles.stepTitleRow}>
+          <span className={styles.stepIndex}>
             #{stepIndex + 1}
           </span>
-          <h3 className="text-sm font-medium text-[#0f172a]">
-            {step.title}
-          </h3>
+          <h3 className={styles.stepTitle}>{step.title}</h3>
         </div>
-        <span
-          className={`text-xs font-semibold px-2 py-1 rounded ${badgeConfig.bgClass} ${badgeConfig.textClass}`}
-        >
+        <span className={`${styles.badge} ${badgeConfig.className}`}>
           {badgeConfig.label}
         </span>
       </div>
 
-      {/* Step description */}
-      <p className="text-xs text-[#475569] mb-3">{step.description}</p>
+      <p className={styles.panelText}>{step.description}</p>
 
-      {/* Metadata: domain, approval requirement, actor, timestamp */}
-      <div className="flex items-center justify-between gap-2 text-xs text-[#7c8192]">
+      <div className={styles.metaRow}>
         {step.requires_approval && (
-          <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded-sm font-medium">
+          <span className={`${styles.metaChip} ${styles.metaChipWarning}`}>
             Requires Approval
           </span>
         )}
         {step.latest_error && (
-          <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded-sm">
+          <span className={`${styles.metaChip} ${styles.metaChipError}`}>
             Error: {step.latest_error.substring(0, 30)}...
           </span>
         )}
       </div>
 
-      {/* Audit trail: last actor + timestamp */}
-      <div className="mt-2 pt-2 border-t border-gray-100 text-xs text-[#7c8192]">
+      <div className={styles.auditRow}>
         <span>by {lastActor}</span>
         {lastTimestamp !== "—" && (
           <>
@@ -134,7 +118,7 @@ function StepCard({
 
       {/* Sequential gating message for future steps */}
       {!isCurrentStep && step.state === TaskStepState.Queued && (
-        <div className="mt-3 p-2 bg-gray-50 rounded text-xs text-[#475569] italic">
+        <div className={styles.helperCard}>
           Complete all prior steps to unlock this step for execution.
         </div>
       )}
@@ -143,25 +127,24 @@ function StepCard({
       {isCurrentStep &&
         step.requires_approval &&
         step.approval.status === "pending" && (
-          <div className="mt-3 p-2 bg-amber-50 rounded text-xs text-amber-700 font-medium">
-            ⚠️ This step requires approval before execution.
+          <div className={`${styles.helperCard} ${styles.helperWarning}`}>
+            This step requires approval before execution.
           </div>
         )}
 
-      {/* Rejection reason (if applicable) */}
       {step.approval.status === "rejected" && (
-        <div className="mt-3 p-2 bg-red-50 rounded text-xs">
-          <p className="text-red-700 font-medium">Rejected</p>
+        <div className={`${styles.helperCard} ${styles.helperError}`}>
+          <p className={styles.sectionHeading}>Rejected</p>
           {step.approval.rejection_reason && (
-            <p className="text-red-600 mt-1">{step.approval.rejection_reason}</p>
+            <p className={styles.sectionBody}>{step.approval.rejection_reason}</p>
           )}
-          <p className="text-red-500 mt-1">
+          <p className={styles.sectionBody}>
             by {step.approval.decided_by} at{" "}
-            {new Date(step.approval.decided_at!).toLocaleString()}
+            {new Date(step.approval.decided_at).toLocaleString()}
           </p>
         </div>
       )}
-    </div>
+    </button>
   );
 }
 
@@ -175,9 +158,9 @@ export function TaskGraph() {
 
   if (!steps || steps.length === 0) {
     return (
-      <div className="text-sm text-[#475569] py-8 text-center">
-        <p className="font-medium text-[#0f172a]">No operator task selected</p>
-        <p className="mt-1">
+      <div className={styles.emptyState}>
+        <p className={styles.emptyTitle}>No operator task selected</p>
+        <p className={styles.sectionBody}>
           Select a queued task from the list to review steps, approvals, and
           evidence before execution.
         </p>
@@ -186,8 +169,7 @@ export function TaskGraph() {
   }
 
   return (
-    <div className="space-y-1">
-      {/* Step progression timeline */}
+    <div className={styles.stepList}>
       {steps.map((step, index) => (
         <StepCard
           key={step.id}

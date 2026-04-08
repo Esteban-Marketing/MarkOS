@@ -1,7 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
+const { buildGovernanceEvidencePack } = require('../../lib/markos/governance/evidence-pack.cjs');
 
 const runtimeContext = require('../../onboarding/backend/runtime-context.cjs');
 const telemetry = require('../../onboarding/backend/agents/telemetry.cjs');
@@ -181,4 +182,14 @@ test('53-02-03: approve handler is wired to awaiting_approval gate before side e
   assert.match(handlersSource, /handleApprove[\s\S]*assertAwaitingApproval\(/);
   assert.match(handlersSource, /handleApprove[\s\S]*recordApprovalDecision\(/);
   assert.match(handlersSource, /writeMIR\.applyDrafts/);
+});
+
+test('SEC-01 governance evidence: approvals family cites immutable approval decision provenance', () => {
+  const pack = buildGovernanceEvidencePack();
+  const approvalsFamily = pack.privileged_action_families.find((family) => family.action_family === 'approvals');
+
+  assert.ok(approvalsFamily);
+  assert.equal(approvalsFamily.evidence_source, 'agent_approval_decision_log');
+  assert.ok(approvalsFamily.actions.includes('approval_decision_recorded'));
+  assert.ok(approvalsFamily.immutable_provenance_fields.includes('actor_role'));
 });

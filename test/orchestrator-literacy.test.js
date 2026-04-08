@@ -68,6 +68,8 @@ async function withOrchestratorHarness(options, runAssertions) {
         }, async () => {
           await withMockedModule(telemetryPath, {
             capture: (eventName, properties) => telemetryEvents.push({ eventName, properties }),
+            captureProviderAttempt: (properties) => properties,
+            captureRunClose: (properties) => properties,
           }, async () => {
             await withMockedModule(vectorStorePath, vectorStoreMock, async () => {
               if (options.configOverride) {

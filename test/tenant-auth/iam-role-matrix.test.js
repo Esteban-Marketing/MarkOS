@@ -1,11 +1,13 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+ 'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
 
 const { 
   IAM_V32_ROLES, 
   ACTION_POLICY, 
   canPerformAction 
-} = await import('../../lib/markos/rbac/iam-v32.js');
+} = require('../../lib/markos/rbac/iam-v32.js');
 
 // ============================================================================
 // Contract Tests: IAM v3.2 Module Exports

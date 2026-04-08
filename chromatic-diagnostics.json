@@ -1714,7 +1714,7 @@
     "interactive": false,
     "isLocalBuild": false,
     "originalArgv": [
-      "--project-token=chpt_9659b8249b9a54c",
+      "--project-token=[REDACTED]",
       "--debug"
     ],
     "logFile": "chromatic.log",

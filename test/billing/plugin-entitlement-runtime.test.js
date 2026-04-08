@@ -41,3 +41,21 @@ test('BIL-01: plugin runtime never treats downstream provider state as entitleme
   assert.equal(decision.allowed, true);
   assert.equal(decision.provider_truth_source, 'markos-ledger');
 });
+
+test('TEN-04: plugin runtime denies premium write capability when prepaid token budget is exhausted', () => {
+  const snapshot = buildEntitlementSnapshot({
+    status: 'active',
+    allowances: { token_budget: 100 },
+    usage_to_date: { token_budget: 100 },
+    quota_state: { token_budget: 'over_limit' },
+  });
+
+  const decision = evaluatePluginCapabilityAccess({
+    snapshot,
+    plugin_id: 'digital-agency-v1',
+    capability: 'publish_campaigns',
+  });
+
+  assert.equal(decision.allowed, false);
+  assert.equal(decision.reason_code, 'TOKEN_BUDGET_EXHAUSTED');
+});

@@ -1,0 +1,34 @@
+flow_id: "F-64-ATTRIBUTION-MODEL"
+flow_name: "crm-attribution-model"
+domain: "crm"
+flow_type: "reporting-read"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Attribution Model"
+  version: "1.0.0"
+  description: "Deterministic fixed_weight_model for CRM-native attribution over canonical activity evidence."
+
+x-markos-meta:
+  attribution_mode: "fixed_weight_model"
+  accepted_identity_only: true
+  evidence_lineage:
+    families:
+      - "campaign_touch"
+      - "web_activity"
+      - "outbound_event"
+      - "attribution_update"
+  weight_rules:
+    campaign_touch: 0.5
+    web_activity: 0.3
+    outbound_event: 0.2
+  degraded_state_policy: "unaccepted identity links and missing touch families remain visible in readiness instead of being silently credited"
+
+paths:
+  /api/crm/reporting/attribution:
+    get:
+      summary: "Return deterministic attribution weights and revenue contribution rows for tenant CRM records"
+      responses:
+        "200":
+          description: "Attribution rows returned with inspectable weights, readiness, and evidence lineage"

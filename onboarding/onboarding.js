@@ -21,6 +21,10 @@ let interviewQuestionCount = 0;
 let interviewAutoProceedTriggered = false;
 
 const INTERVIEW_MAX_QUESTIONS = 5;
+const TRACKING_ENDPOINT = '/api/tracking/ingest';
+const TRACKING_SESSION_KEY = 'markos_tracking_session_id';
+let trackingEnabled = false;
+let onboardingFormStarted = false;
 
 // ── Elements ──────────────────────────────────────────────────────────────────
 const stepSections       = document.querySelectorAll('.step-section');
@@ -71,6 +75,44 @@ function getStoredItem(primaryKey, fallbackKey) {
   return localStorage.getItem(primaryKey) || localStorage.getItem(fallbackKey);
 }
 
+function getTrackingSessionId() {
+  let sessionId = sessionStorage.getItem(TRACKING_SESSION_KEY);
+  if (!sessionId) {
+    sessionId = window.crypto && typeof window.crypto.randomUUID === 'function'
+      ? window.crypto.randomUUID()
+      : `tracking-${Date.now()}`;
+    sessionStorage.setItem(TRACKING_SESSION_KEY, sessionId);
+  }
+  return sessionId;
+}
+
+async function captureTrackingEvent(eventName, payload = {}) {
+  if (!trackingEnabled) return;
+
+  try {
+    await fetch(TRACKING_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        project_slug: lastSlug || DEFAULT_PROJECT_SLUG,
+        events: [
+          {
+            event_name: eventName,
+            anonymous_identity_id: getTrackingSessionId(),
+            related_record_kind: 'contact',
+            related_record_id: 'anonymous',
+            page_url: window.location.href,
+            payload,
+          },
+        ],
+      }),
+    });
+  } catch (error) {
+    console.warn('Tracking capture failed.', error);
+  }
+}
+
 // ── Draft card definitions ────────────────────────────────────────────────────
 const DRAFT_CARDS = [
   { key: 'company_profile',  label: 'Company Profile',      icon: '🏢', mirFile: 'PROFILE.md' },
@@ -102,12 +144,9 @@ async function loadConfig() {
     const res = await fetch('/config');
     if (res.ok) {
       const config = await res.json();
-      if (config.posthog_api_key) {
-        posthog.init(config.posthog_api_key, { api_host: config.posthog_host });
-      }
-      if (window.posthog && posthog.capture) {
-        posthog.capture('onboarding_started', { url: window.location.href });
-      }
+      trackingEnabled = Boolean(config.posthog_api_key || config.posthog_host);
+      await captureTrackingEvent('onboarding_page_view', { page_url: window.location.href });
+      await captureTrackingEvent('onboarding_started', { page_url: window.location.href });
 
       if (config.primary_color) {
         document.documentElement.style.setProperty('--primary', config.primary_color);
@@ -131,8 +170,8 @@ async function loadConfig() {
 
 function onBusinessModelChange() {
   const model  = document.getElementById('businessModel')?.value || '';
-  if (window.posthog && posthog.capture && model) {
-    posthog.capture('business_model_selected', { business_model: model });
+  if (model) {
+    void captureTrackingEvent('business_model_selected', { business_model: model, interaction_type: 'select' });
   }
 }
 
@@ -197,6 +236,11 @@ function updateUI() {
 function showStep(stepIndex) {
   if (stepIndex < 0) return;
   if (stepIndex > TOTAL_STEPS) return;
+
+  if (stepIndex === 1 && !onboardingFormStarted) {
+    onboardingFormStarted = true;
+    void captureTrackingEvent('onboarding_form_started', { step: 1 });
+  }
 
   if (stepIndex === 3) {
     currentStep = 3;
@@ -339,10 +383,8 @@ async function handleDraftGeneration() {
     lastSlug = result.slug;
     draftContents = result.drafts || {};
 
-    if (window.posthog && posthog.capture) {
-      const businessModel = lastSeed?.company?.business_model || lastSeed?.company?.businessModel || 'B2B';
-      posthog.capture('onboarding_completed', { project_slug: lastSlug, business_model: businessModel });
-    }
+    const businessModel = lastSeed?.company?.business_model || lastSeed?.company?.businessModel || 'B2B';
+    await captureTrackingEvent('onboarding_completed', { project_slug: lastSlug, business_model: businessModel });
 
     renderDraftCards(draftContents);
     localStorage.removeItem(STORAGE_KEY);
@@ -512,24 +554,22 @@ async function handlePublish() {
       const readinessStatus = result.handoff?.execution_readiness?.status || 'blocked';
       showOutcomeStatus(result.outcome, `${written.length} MIR files written. STATE.md updated.`);
 
-      if (window.posthog && posthog.capture) {
-        posthog.capture('approval_completed', {
+      await captureTrackingEvent('approval_completed', {
+        project_slug: lastSlug,
+        written_count: written.length,
+        readiness_status: readinessStatus,
+      });
+      await captureTrackingEvent(
+        readinessStatus === 'ready' ? 'execution_readiness_ready' : 'execution_readiness_blocked',
+        {
           project_slug: lastSlug,
-          written_count: written.length,
-          readiness_status: readinessStatus,
-        });
-        posthog.capture(
-          readinessStatus === 'ready' ? 'execution_readiness_ready' : 'execution_readiness_blocked',
-          {
-            project_slug: lastSlug,
-            blocking_count: (result.handoff?.execution_readiness?.blocking_checks || []).length,
-          }
-        );
-        if (readinessStatus === 'ready') {
-          posthog.capture('execution_loop_completed', {
-            project_slug: lastSlug,
-          });
+          blocking_count: (result.handoff?.execution_readiness?.blocking_checks || []).length,
         }
+      );
+      if (readinessStatus === 'ready') {
+        await captureTrackingEvent('execution_loop_completed', {
+          project_slug: lastSlug,
+        });
       }
 
       executionLoopCompleted = readinessStatus === 'ready';
@@ -938,9 +978,7 @@ async function handleSendAnswer() {
 btnNext.addEventListener('click', () => {
   if (validateCurrentStep()) {
     saveDraft();
-    if (window.posthog && posthog.capture) {
-      posthog.capture('onboarding_step_completed', { step: currentStep });
-    }
+    void captureTrackingEvent('onboarding_step_completed', { step: currentStep });
     showStep(currentStep + 1);
   }
 });
@@ -960,8 +998,8 @@ btnPublish.addEventListener('click', handlePublish);
 window.addEventListener('beforeunload', () => {
   const hasDrafts = Object.keys(draftContents || {}).length > 0;
   const hasApprovals = Object.keys(approvedDrafts || {}).length > 0;
-  if (!executionLoopCompleted && hasDrafts && hasApprovals && window.posthog && posthog.capture) {
-    posthog.capture('execution_loop_abandoned', {
+  if (!executionLoopCompleted && hasDrafts && hasApprovals) {
+    void captureTrackingEvent('execution_loop_abandoned', {
       project_slug: lastSlug,
       approved_count: Object.keys(approvedDrafts || {}).length,
     });

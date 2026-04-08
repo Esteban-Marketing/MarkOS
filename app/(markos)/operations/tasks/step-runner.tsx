@@ -26,18 +26,7 @@ import {
 } from "./task-store";
 import { TaskStepState } from "./task-types";
 import { ApprovalGate } from "./approval-gate";
-
-/**
- * Action button styling
- */
-const BUTTON_CONFIG = {
-  primary:
-    "px-4 py-2 bg-[#0d9488] text-white font-medium text-sm rounded-lg hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-  danger:
-    "px-4 py-2 bg-red-600 text-white font-medium text-sm rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-  secondary:
-    "px-4 py-2 bg-gray-200 text-[#0f172a] font-medium text-sm rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
-};
+import styles from "./task-ui.module.css";
 
 /**
  * StepRunner: Main component for sequential action controls
@@ -65,18 +54,6 @@ export function StepRunner() {
   const [mockLogs, setMockLogs] = useState<string[]>([]);
   const [mockError, setMockError] = useState<string>("");
   const [retryReason, setRetryReason] = useState<string>("");
-
-  // Guard: no task or step selected
-  if (!selectedTask || !currentStep) {
-    return (
-      <div className="text-center py-8 text-[#475569]">
-        <p className="font-medium text-[#0f172a]">No operator task selected</p>
-        <p className="mt-2 text-sm">
-          Select a queued task from the list to begin step execution.
-        </p>
-      </div>
-    );
-  }
 
   // Step state indicator
   const stateDescriptions: Record<TaskStepState, string> = {
@@ -162,28 +139,33 @@ export function StepRunner() {
     );
   }, [selectedTask, currentStep, retryStep, retryReason, currentActorId]);
 
-  return (
-    <div className="space-y-6">
-      {/* Step header */}
-      <div>
-        <h3 className="text-lg font-semibold text-[#0f172a] mb-2">
-          {currentStep.title}
-        </h3>
-        <p className="text-sm text-[#475569] mb-4">{currentStep.description}</p>
+  if (!selectedTask || !currentStep) {
+    return (
+      <div className={styles.emptyState}>
+        <p className={styles.emptyTitle}>No operator task selected</p>
+        <p className={styles.sectionBody}>
+          Select a queued task from the list to begin step execution.
+        </p>
+      </div>
+    );
+  }
 
-        {/* State status bar */}
-        <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center justify-between">
+  return (
+    <div className={styles.runnerStack}>
+      <div>
+        <h3 className={styles.heroTitle}>{currentStep.title}</h3>
+        <p className={styles.heroText}>{currentStep.description}</p>
+
+        <div className={styles.statusCard}>
+          <div className={styles.statusHeader}>
             <div>
-              <p className="text-xs font-medium text-blue-700">
+              <p className={styles.statusLabel}>
                 Current Status: {currentStep.state}
               </p>
-              <p className="text-xs text-blue-600 mt-1">
-                {stateDescriptions[currentStep.state]}
-              </p>
+              <p className={styles.statusText}>{stateDescriptions[currentStep.state]}</p>
             </div>
             {currentStep.retry_count > 0 && (
-              <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded">
+              <span className={`${styles.metaChip} ${styles.metaChipWarning}`}>
                 Retried {currentStep.retry_count}x
               </span>
             )}
@@ -194,25 +176,23 @@ export function StepRunner() {
       {/* Approval requirement message */}
       {currentStep.requires_approval &&
         currentStep.approval.status === "pending" && (
-          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
-            <p className="text-sm font-medium text-amber-900">
-              ⚠️ Approval Required
-            </p>
-            <p className="text-xs text-amber-800 mt-1">
+          <div className={`${styles.helperCard} ${styles.helperWarning}`}>
+            <p className={styles.sectionHeading}>Approval Required</p>
+            <p className={styles.sectionBody}>
               This step requires operator approval before execution can proceed.
               Review the evidence and click the execute button to approve and run.
             </p>
           </div>
         )}
 
-      {/* Mock input/output section (for demo purposes) */}
-      <div className="border-t pt-4 space-y-3">
+      <div className={styles.fieldGrid}>
         <div>
-          <label className="text-xs font-medium text-[#0f172a]">
+          <label className={styles.fieldLabel} htmlFor="mock-input-json">
             Mock Input (JSON)
           </label>
           <textarea
-            className="w-full mt-1 p-2 text-xs border border-gray-300 rounded font-mono bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            id="mock-input-json"
+            className={styles.textarea}
             rows={3}
             placeholder='{"key": "value"}'
             onChange={(e) => {
@@ -228,11 +208,12 @@ export function StepRunner() {
         {currentStep.state === TaskStepState.Executing && (
           <>
             <div>
-              <label className="text-xs font-medium text-[#0f172a]">
+              <label className={styles.fieldLabel} htmlFor="mock-output-json">
                 Mock Output (JSON)
               </label>
               <textarea
-                className="w-full mt-1 p-2 text-xs border border-gray-300 rounded font-mono bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                id="mock-output-json"
+                className={styles.textarea}
                 rows={3}
                 placeholder='{"result": "success"}'
                 onChange={(e) => {
@@ -245,11 +226,12 @@ export function StepRunner() {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-[#0f172a]">
+              <label className={styles.fieldLabel} htmlFor="execution-logs">
                 Execution Logs (newline-separated)
               </label>
               <textarea
-                className="w-full mt-1 p-2 text-xs border border-gray-300 rounded font-mono bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                id="execution-logs"
+                className={styles.textarea}
                 rows={2}
                 placeholder="Log line 1&#10;Log line 2"
                 onChange={(e) => {
@@ -263,12 +245,13 @@ export function StepRunner() {
         {(currentStep.state === TaskStepState.Executing ||
           currentStep.state === TaskStepState.Failed) && (
           <div>
-            <label className="text-xs font-medium text-[#0f172a]">
+            <label className={styles.fieldLabel} htmlFor="step-error-message">
               Error Message
             </label>
             <input
+              id="step-error-message"
               type="text"
-              className="w-full mt-1 p-2 text-xs border border-gray-300 rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={styles.input}
               placeholder="Error details (if step fails)"
               value={mockError}
               onChange={(e) => setMockError(e.target.value)}
@@ -278,12 +261,13 @@ export function StepRunner() {
 
         {currentStep.state === TaskStepState.Failed && (
           <div>
-            <label className="text-xs font-medium text-[#0f172a]">
+            <label className={styles.fieldLabel} htmlFor="retry-reason">
               Retry Reason (optional)
             </label>
             <input
+              id="retry-reason"
               type="text"
-              className="w-full mt-1 p-2 text-xs border border-gray-300 rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={styles.input}
               placeholder="Reason for retry"
               value={retryReason}
               onChange={(e) => setRetryReason(e.target.value)}
@@ -292,12 +276,11 @@ export function StepRunner() {
         )}
       </div>
 
-      {/* Action buttons based on step state */}
-      <div className="flex flex-wrap gap-3 pt-4 border-t">
+      <div className={styles.buttonRow}>
         {currentStep.state === TaskStepState.Queued && (
           <button
             onClick={handleStartStep}
-            className={BUTTON_CONFIG.primary}
+            className={styles.buttonPrimary}
           >
             Execute Task Step {currentStep.requires_approval ? "(+ Approve)" : ""}
           </button>
@@ -307,11 +290,11 @@ export function StepRunner() {
           <>
             <button
               onClick={handleCompleteStep}
-              className={BUTTON_CONFIG.primary}
+              className={styles.buttonPrimary}
             >
               Mark Complete
             </button>
-            <button onClick={handleFailStep} className={BUTTON_CONFIG.danger}>
+            <button onClick={handleFailStep} className={styles.buttonDanger}>
               Fail Step
             </button>
           </>
@@ -320,7 +303,7 @@ export function StepRunner() {
         {currentStep.state === TaskStepState.Failed && (
           <button
             onClick={handleRetryStep}
-            className={BUTTON_CONFIG.secondary}
+            className={styles.buttonSecondary}
           >
             Retry Step
           </button>
@@ -333,28 +316,26 @@ export function StepRunner() {
                 ...mockInputs,
               })
             }
-            className={BUTTON_CONFIG.primary}
+            className={styles.buttonPrimary}
           >
             Execute Approved Step
           </button>
         )}
 
         {currentStep.state === TaskStepState.Completed && (
-          <div className="text-sm text-[#475569] italic">
+          <div className={styles.completedNote}>
             ✓ This step is completed. No further actions available.
           </div>
         )}
       </div>
 
-      {/* Sequential gating message */}
-      <div className="p-3 bg-gray-100 rounded text-xs text-[#475569]">
-        <p className="font-medium text-[#0f172a] mb-1">Sequential Execution</p>
-        <p>
+      <div className={styles.helperCard}>
+        <p className={styles.sectionHeading}>Sequential Execution</p>
+        <p className={styles.sectionBody}>
           Only the current actionable step displays controls. Future steps become available after all prior steps complete.
         </p>
       </div>
 
-      {/* Approval gate modal (renders only when modal state is active) */}
       {modalState.type === "approval" && modalState.stepId && (
         <ApprovalGate stepId={modalState.stepId} />
       )}

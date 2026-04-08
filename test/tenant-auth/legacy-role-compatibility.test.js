@@ -1,14 +1,16 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
+ 'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
 
 const {
   validateLegacyRole,
   LEGACY_TO_IAM_MAPPING,
-} = await import('../../lib/markos/tenant/contracts.js');
+} = require('../../lib/markos/tenant/contracts.js');
 
 const {
   canPerformAction,
-} = await import('../../lib/markos/rbac/iam-v32.js');
+} = require('../../lib/markos/rbac/iam-v32.js');
 
 // ============================================================================
 // Legacy Role Compatibility Bridge Tests

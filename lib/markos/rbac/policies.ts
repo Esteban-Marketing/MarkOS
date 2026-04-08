@@ -7,10 +7,86 @@
  * Phase 51-03: Integration point between legacy route authorization and action-level IAM.
  */
 
-// @ts-expect-error: CommonJS import in TS context
-import { LEGACY_TO_IAM_MAPPING, validateLegacyRole } from './../../lib/markos/tenant/contracts.js';
-// @ts-expect-error: CommonJS import in TS context  
-import { canPerformAction } from './iam-v32.js';
+const LEGACY_TO_IAM_MAPPING = Object.freeze({
+  owner: "owner",
+  operator: "tenant-admin",
+  strategist: "manager",
+  viewer: "readonly",
+  agent: "owner",
+} satisfies Record<MarkOSRole, string>);
+
+const ACTION_POLICY = Object.freeze({
+  read_operations: [
+    "owner",
+    "tenant-admin",
+    "manager",
+    "contributor",
+    "reviewer",
+    "billing-admin",
+    "readonly",
+  ],
+  execute_task: ["owner", "tenant-admin", "manager"],
+  retry_task: ["owner", "tenant-admin", "manager"],
+  approve_task: ["owner", "tenant-admin", "manager", "reviewer"],
+  send_outbound: ["owner", "tenant-admin", "manager", "contributor"],
+  approve_outbound: ["owner", "tenant-admin", "manager", "reviewer"],
+  plan_approve: ["owner", "tenant-admin", "manager", "reviewer"],
+  plan_reject: ["owner", "tenant-admin", "manager", "reviewer"],
+  publish_campaign: ["owner", "tenant-admin", "manager"],
+  manage_billing: ["owner", "billing-admin"],
+  manage_users: ["owner", "tenant-admin"],
+  access_analytics: [
+    "owner",
+    "tenant-admin",
+    "manager",
+    "contributor",
+    "reviewer",
+    "billing-admin",
+    "readonly",
+  ],
+  view_copilot: [
+    "owner",
+    "tenant-admin",
+    "manager",
+    "contributor",
+    "reviewer",
+    "readonly",
+  ],
+  package_copilot_action: ["owner", "tenant-admin", "manager", "reviewer"],
+  approve_copilot_action: ["owner", "tenant-admin", "manager", "reviewer"],
+  run_copilot_playbook: ["owner", "tenant-admin", "manager", "reviewer"],
+  review_cross_tenant_copilot: ["owner"],
+} satisfies Record<string, string[]>);
+
+function validateLegacyRole(role: string): string {
+  if (typeof role !== "string") {
+    const err = new Error(`Legacy role must be string, got ${typeof role}`) as Error & {
+      code?: string;
+    };
+    err.code = "INVALID_LEGACY_ROLE_TYPE";
+    throw err;
+  }
+
+  const mapped = LEGACY_TO_IAM_MAPPING[role as MarkOSRole];
+  if (!mapped) {
+    const err = new Error(
+      `Unmapped legacy role: ${role}. Supported: ${Object.keys(LEGACY_TO_IAM_MAPPING).join(", ")}`
+    ) as Error & { code?: string };
+    err.code = "UNMAPPED_LEGACY_ROLE";
+    throw err;
+  }
+
+  return mapped;
+}
+
+function canPerformAction(role: string, action: string): boolean {
+  if (!role || !action) {
+    return false;
+  }
+
+  const allowedRoles = ACTION_POLICY[action];
+  return Array.isArray(allowedRoles) ? allowedRoles.includes(role) : false;
+}
 
 export type MarkOSRole = "owner" | "operator" | "strategist" | "viewer" | "agent";
 

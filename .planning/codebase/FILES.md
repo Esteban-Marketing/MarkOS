@@ -10,9 +10,11 @@
 | `package.json` | Package metadata, scripts, and CLI registration. |
 | `VERSION` | Canonical package version string. |
 | `vercel.json` | Hosted route mapping for `api/` wrappers. |
-| `CLAUDE.md`, `GEMINI.md` | Agent bootstrap instructions. |
+| `copilot-instructions.md`, `CLAUDE.md`, `GEMINI.md` | Root AI instruction and bootstrap artifacts; `copilot-instructions.md` is the shared project contract and `CLAUDE.md` is the localized project contract. |
 | `tokenize.cjs` | Token utility helper. |
 | `patch.ps1` | Patch utility script. |
+
+Ownership details for these root instruction surfaces, plus `.github/**`, `.claude/**`, and `.markos-local/**`, live in `.planning/codebase/GSD-CUSTOMIZATION-BOUNDARY.md`.
 
 ## Hosted Wrapper Files (`api/`)
 
@@ -39,6 +41,7 @@ Each wrapper delegates to `onboarding/backend/handlers.cjs`; selected wrappers e
 - Protocol map: `.protocol-lore/*.md`
 - GSD and MarkOS tools: `.agent/get-shit-done/bin/*`, `.agent/markos/bin/*`
 - Planning state and roadmap: `.planning/STATE.md`, `.planning/ROADMAP.md`, `.planning/PROJECT.md`
+- Canonical dual-root ownership guide: `.planning/codebase/GSD-CUSTOMIZATION-BOUNDARY.md`
 
 ## Test Files (`test/`)
 

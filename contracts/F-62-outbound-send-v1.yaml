@@ -1,0 +1,50 @@
+id: F-62-outbound-send-v1
+phase: 62
+name: Outbound Send
+status: active
+summary: Tenant-safe one-off outbound execution for email, sms, and whatsapp.
+
+channels:
+  - email
+  - sms
+  - whatsapp
+
+provider_mapping:
+  email: resend
+  sms: twilio
+  whatsapp: twilio
+
+request_contract:
+  required:
+    - contact_id
+    - channel
+    - body_markdown
+  optional:
+    - subject
+    - template_key
+    - use_case
+    - risk_level
+    - approval_granted
+
+response_contract:
+  success_fields:
+    - outbound_id
+    - provider
+    - provider_message_id
+    - status
+    - contact_point
+  blocked_fields:
+    - error
+    - reason_code
+    - requires_approval
+
+writeback:
+  ledger_family: outbound_event
+  source_of_truth: crm_activity_ledger
+  immutable_activity: true
+
+boundary:
+  tenant_scoped: true
+  detached_messaging_api: false
+  client_side_send_logic: false
+  ui_only_stub: false

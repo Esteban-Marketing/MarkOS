@@ -1,0 +1,82 @@
+flow_id: "F-63"
+flow_name: "copilot-grounding"
+domain: "crm-ai"
+flow_type: "grounded_summary"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Copilot Grounding"
+  version: "1.0.0"
+  description: "Typed grounding bundle for CRM copilot summaries, rationale, recommendations, and conversation guidance."
+
+x-markos-meta:
+  actor: "CRM Operator"
+  auth_local: "tenant-scoped runtime"
+  auth_hosted: "status_read Supabase JWT"
+  handler: "handleCopilotContext|handleCopilotSummaries"
+  hosted_path: "/api/crm/copilot/context|/api/crm/copilot/summaries"
+  slo_tier: "standard"
+
+components:
+  schemas:
+    CopilotGroundingBundle:
+      type: object
+      required:
+        - grounding_id
+        - tenant_id
+        - source_classes
+        - missing_context
+      properties:
+        grounding_id:
+          type: string
+        tenant_id:
+          type: string
+        record:
+          type: object
+          nullable: true
+        conversation:
+          type: object
+          nullable: true
+        timeline:
+          type: array
+          items:
+            type: object
+        tasks:
+          type: array
+          items:
+            type: object
+        notes:
+          type: array
+          items:
+            type: object
+        outbound_history:
+          type: array
+          items:
+            type: object
+        source_classes:
+          type: array
+          items:
+            type: string
+            enum:
+              - record_state
+              - timeline_activity
+              - linked_tasks
+              - linked_notes
+              - outbound_history
+              - conversation_context
+        missing_context:
+          type: array
+          items:
+            type: string
+paths:
+  /api/crm/copilot/context:
+    get:
+      summary: "Get deterministic CRM grounding bundle"
+      responses:
+        "200":
+          description: "Grounding bundle returned"
+        "401":
+          description: "Tenant context missing"
+        "403":
+          description: "Cross-tenant oversight not permitted"

@@ -31,7 +31,7 @@ import {
 } from "./task-types";
 import { taskReducer, taskActionCreators } from "./task-machine";
 import { initialTaskStoreState } from "./task-fixtures";
-import { buildEvent } from "../../../lib/markos/telemetry/events";
+import { buildEvent } from "../../../../lib/markos/telemetry/events";
 
 /**
  * Context definition (internal, exported for module structure only)
@@ -48,17 +48,23 @@ const TaskStoreContext = createContext<TaskStoreContextType | undefined>(
 /**
  * Provider component: wraps task graph UI, initializes store with fixtures
  */
-function TaskStoreContent({ children }: { children: ReactNode }) {
+function TaskStoreContent({ children }: Readonly<{ children: ReactNode }>) {
   // Subscribe to telemetry events automatically
   useTaskEventTelemetry();
 
   return <>{children}</>;
 }
 
-export function TaskStoreProvider({ children }: { children: ReactNode }) {
+export function TaskStoreProvider({
+  children,
+  initialState,
+}: Readonly<{
+  children: ReactNode;
+  initialState?: TaskStoreState;
+}>) {
   const [state, dispatch] = useReducer(
     taskReducer,
-    initialTaskStoreState(),
+    initialState ?? initialTaskStoreState(),
     (initial) => initial // initializer function to compute initial state
   );
 

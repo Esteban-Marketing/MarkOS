@@ -1,8 +1,8 @@
 # MarkOS (MarkOS Protocol)
 
-## Current Milestone: v3.2.0 — Multi-Tenant Agency Runtime and Enterprise Governance
+## Current Milestone: v3.3.0 — Revenue CRM and Customer Intelligence Core
 
-**Goal:** Enable agencies and in-house marketing teams to run hybrid human + AI operations across multiple tenant brands with strict isolation, approval-governed automation, white-label delivery, and enterprise-grade billing/compliance controls.
+**Goal:** Establish CRM records and timelines as the operational source of truth, preserve the v3.2 tenant and IAM and governance guarantees, and deliver flexible pipelines, native outbound channels, AI-assisted execution, attribution, and reporting closeout under honest hosted verification.
 
 **Target features:**
 - Multi-tenant foundation with deterministic tenant context propagation, RLS isolation, and enforceable RBAC across UI/API/jobs/agent runs
@@ -11,7 +11,7 @@
 - Tenant-bound agent orchestration with approval gates, append-only lineage, and full telemetry for model/prompt/tool/cost outcomes
 - Billing and metering controls that reconcile to invoices and support enterprise trust gates
 
-**Status:** v3.1.0 archived 2026-04-03 (Phases 45-50 complete). v3.2.0 started 2026-04-03 through new-milestone kickoff.
+**Status:** v3.2.0 is repository-complete with only live checklist follow-through remaining from hosted verification. v3.3.0 is the active milestone, with Phases 58-64.3 repository-verified and Phase 65 currently handling hosted reporting closeout and milestone promotion for ATT-01 and REP-01.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -22,7 +22,7 @@ A protocol for agentic marketing execution, built as a parallel system to the de
 Standardization and automation of marketing ideation, planning, and execution via robust agentic workflows and Linear issue tracking.
 
 ## Context
-This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. The system is production-grade with literacy lifecycle and operator-surface unification complete through v3.1.0. The v3.2.0 milestone focuses on **agency-scale multi-tenancy and pluginized expansion**, starting with the first MarkOS plugin: **Digital Agency**. The shift is from operational unification to extensible domain packaging: a plugin architecture that lets MarkOS ship vertical operating systems safely under tenant isolation, governance, and enterprise billing/compliance controls.
+This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. The system is production-grade with literacy lifecycle, operator-surface unification, and agency-scale multi-tenancy complete through v3.2.0 at the repository level. The active v3.3.0 milestone focuses on **Revenue CRM and Customer Intelligence Core**: canonical CRM records, first-party tracking and identity stitching, pipelines and workspaces, native outbound execution, CRM-grounded copilot operations, and hosted-closeout-quality attribution/reporting evidence that can be promoted honestly.
 
 The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. Phase 34 delivered the intake automation backbone for beta onboarding. Phase 35 delivered installer/readiness optimization and is archived under v2.5. Phase 36 delivered the v2.4 beta-operations baseline with lifecycle ownership, weekly cadence, KPI scorecard, and PLG evidence-loop contracts. Phase 37 then delivered the MarkOS app/control-plane scaffolding with governance and data-model foundations, formally closing v2.4. Phase 38 established the Storybook, Chromatic, accessibility, and UI security baseline that now anchors v2.6 execution.
 

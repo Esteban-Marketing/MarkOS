@@ -1,0 +1,39 @@
+flow_id: "F-60-OBJECT-WORKSPACE-METADATA"
+flow_name: "object-workspace-metadata"
+domain: "crm"
+flow_type: "configuration-write"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS CRM Workspace Object Metadata"
+  version: "1.0.0"
+  description: "Contract for canonical and custom-object workspace participation across the six Phase 60 views."
+
+x-markos-meta:
+  object_families:
+    canonical:
+      - "contact"
+      - "company"
+      - "deal"
+      - "account"
+      - "customer"
+      - "task"
+      - "note"
+    custom_object: "tenant_defined_slug"
+  capabilities:
+    - "workspace_enabled"
+    - "pipeline_enabled"
+    - "detail_enabled"
+    - "timeline_enabled"
+    - "calendar_enabled"
+    - "funnel_enabled"
+  calendar_requirements:
+    - "calendar_date_field_key"
+
+paths:
+  /api/crm/object-definitions:
+    get:
+      summary: "List workspace-eligible canonical and custom object definitions"
+    post:
+      summary: "Create or update object capability rules for the CRM workspace"

@@ -24,21 +24,29 @@ Core platform characteristics:
 1. Start with `HANDOFF-SUMMARY.md`.
 2. Continue with `UPLOAD-MANIFEST.md`.
 3. Load `PROJECT.md`, `REQUIREMENTS.md`, `ROADMAP.md`, and `ARCHITECTURE.md`.
-4. Load all ADRs in `decisions/`.
-5. Load technical specs in `technical-specs/`.
-6. Run `prompts/MASTER-IMPLEMENTATION-PROMPT.md` with the supporting context files.
-7. Use role prompts in `prompts/` for deep implementation passes.
-8. Execute phase starter plans in `phases/` and verify with `checklists/`.
+4. Load `CLOSURE-MATRIX.md` to see current live requirement status before planning any remediation.
+5. If working against the live repository state, load `.planning/milestones/v3.1.0-GAP-REMEDIATION-PLAN.md`, `.planning/milestones/v3.1.0-LIVE-CHECKLIST.md`, and `.planning/milestones/v3.1.0-LIVE-CHECK-LOG-TEMPLATE.md` before selecting follow-up work.
+6. Load all ADRs in `decisions/`.
+7. Load technical specs in `technical-specs/`.
+8. Run `prompts/MASTER-IMPLEMENTATION-PROMPT.md` with the supporting context files.
+9. Use role prompts in `prompts/` for deep implementation passes.
+10. Execute phase starter plans in `phases/` and verify with `checklists/`.
 
 ## Package index
 
 ### Core
 - `HANDOFF-SUMMARY.md`
+- `CLOSURE-MATRIX.md`
 - `PROJECT.md`
 - `REQUIREMENTS.md`
 - `ROADMAP.md`
 - `ARCHITECTURE.md`
 - `UPLOAD-MANIFEST.md`
+
+### Live-state remediation artifacts
+- `.planning/milestones/v3.1.0-GAP-REMEDIATION-PLAN.md`
+- `.planning/milestones/v3.1.0-LIVE-CHECKLIST.md`
+- `.planning/milestones/v3.1.0-LIVE-CHECK-LOG-TEMPLATE.md`
 
 ### Architecture decisions
 - `decisions/ADR-001-tenant-isolation.md`

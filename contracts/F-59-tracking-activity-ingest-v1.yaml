@@ -1,0 +1,44 @@
+flow_id: "F-59-TRACKING-INGEST"
+flow_name: "tracking-activity-ingest"
+domain: "tracking"
+flow_type: "activity-write"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Tracking Activity Ingest"
+  version: "1.0.0"
+  description: "First-party ingest contract for CRM-feeding tracked activity with normalized MarkOS activity families."
+
+x-markos-meta:
+  actor: "Browser or authenticated MarkOS surface"
+  auth_local: "runtime_local"
+  auth_hosted: "public for first-party pages, supabase bearer for protected surfaces"
+  source_of_truth: "crm_activity_ledger"
+  supported_activity_families:
+    - "web_activity"
+    - "campaign_touch"
+    - "attribution_update"
+    - "agent_event"
+  authenticated_scope:
+    included:
+      - "approval_completed"
+      - "execution_readiness_ready"
+      - "execution_readiness_blocked"
+      - "execution_loop_completed"
+      - "execution_loop_abandoned"
+    excluded_default: "low-signal UI noise"
+
+paths:
+  /api/tracking/ingest:
+    post:
+      summary: "Ingest first-party tracked activity and normalize it into CRM-visible event families"
+      responses:
+        "202":
+          description: "Tracked activity accepted and normalized"
+        "400":
+          description: "Invalid or empty tracking payload"
+        "401":
+          description: "Missing tenant or hosted auth context where required"
+        "403":
+          description: "Protected-surface tenant context denied"

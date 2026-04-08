@@ -1,3 +1,5 @@
+import React from "react";
+
 import { defaultBrandPack, getPluginBrandContext } from "../../../../lib/markos/theme/brand-pack";
 
 /**

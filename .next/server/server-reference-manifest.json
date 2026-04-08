@@ -1,0 +1,58 @@
+{
+  "node": {
+    "401eea5bdf4401e11ec7d99882646c2608b5ec4ce3": {
+      "workers": {
+        "app/(markos)/settings/plugins/page": {
+          "moduleId": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cplugins%5C%5Cactions.ts%22%2C%5B%7B%22id%22%3A%22401eea5bdf4401e11ec7d99882646c2608b5ec4ce3%22%2C%22exportedName%22%3A%22disablePlugin%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cplugins%5C%5Cactions.ts%22%7D%2C%7B%22id%22%3A%22409c7505814bf8e452d0122012f41811948332d6a4%22%2C%22exportedName%22%3A%22savePluginSettings%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cplugins%5C%5Cactions.ts%22%7D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(markos)/settings/plugins/page": "rsc"
+      },
+      "filename": "../C:\\Users\\User PC\\Documents\\GitHub\\MarkOS\\app\\(markos)\\settings\\plugins\\actions.ts",
+      "exportedName": "disablePlugin"
+    },
+    "409c7505814bf8e452d0122012f41811948332d6a4": {
+      "workers": {
+        "app/(markos)/settings/plugins/page": {
+          "moduleId": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cplugins%5C%5Cactions.ts%22%2C%5B%7B%22id%22%3A%22401eea5bdf4401e11ec7d99882646c2608b5ec4ce3%22%2C%22exportedName%22%3A%22disablePlugin%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cplugins%5C%5Cactions.ts%22%7D%2C%7B%22id%22%3A%22409c7505814bf8e452d0122012f41811948332d6a4%22%2C%22exportedName%22%3A%22savePluginSettings%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cplugins%5C%5Cactions.ts%22%7D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(markos)/settings/plugins/page": "rsc"
+      },
+      "filename": "../C:\\Users\\User PC\\Documents\\GitHub\\MarkOS\\app\\(markos)\\settings\\plugins\\actions.ts",
+      "exportedName": "savePluginSettings"
+    },
+    "00889abcc0403886486e17339c1ea03e56a2820307": {
+      "workers": {
+        "app/(markos)/settings/billing/page": {
+          "moduleId": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cbilling%5C%5Cactions.ts%22%2C%5B%7B%22id%22%3A%2200889abcc0403886486e17339c1ea03e56a2820307%22%2C%22exportedName%22%3A%22reviewCurrentInvoice%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cbilling%5C%5Cactions.ts%22%7D%2C%7B%22id%22%3A%2200cdd57031920e73666852ae18ea4e16a73a38a636%22%2C%22exportedName%22%3A%22reviewBillingDetails%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cbilling%5C%5Cactions.ts%22%7D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(markos)/settings/billing/page": "rsc"
+      },
+      "filename": "../C:\\Users\\User PC\\Documents\\GitHub\\MarkOS\\app\\(markos)\\settings\\billing\\actions.ts",
+      "exportedName": "reviewCurrentInvoice"
+    },
+    "00cdd57031920e73666852ae18ea4e16a73a38a636": {
+      "workers": {
+        "app/(markos)/settings/billing/page": {
+          "moduleId": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cbilling%5C%5Cactions.ts%22%2C%5B%7B%22id%22%3A%2200889abcc0403886486e17339c1ea03e56a2820307%22%2C%22exportedName%22%3A%22reviewCurrentInvoice%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cbilling%5C%5Cactions.ts%22%7D%2C%7B%22id%22%3A%2200cdd57031920e73666852ae18ea4e16a73a38a636%22%2C%22exportedName%22%3A%22reviewBillingDetails%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CUser%20PC%5C%5CDocuments%5C%5CGitHub%5C%5CMarkOS%5C%5Capp%5C%5C(markos)%5C%5Csettings%5C%5Cbilling%5C%5Cactions.ts%22%7D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/(markos)/settings/billing/page": "rsc"
+      },
+      "filename": "../C:\\Users\\User PC\\Documents\\GitHub\\MarkOS\\app\\(markos)\\settings\\billing\\actions.ts",
+      "exportedName": "reviewBillingDetails"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "Y3v4lo6ioknWrzmG6XouV8ja3KOwEGmezl6sRvWxP6I="
+}

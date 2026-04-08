@@ -58,6 +58,9 @@ const writeMIR     = require('./write-mir.cjs');
 
 const runtime = createRuntimeContext();
 const { config } = runtime;
+const trackingIngestHandler = require('../../api/tracking/ingest.js');
+const trackingRedirectHandler = require('../../api/tracking/redirect.js');
+const trackingIdentifyHandler = require('../../api/tracking/identify.js');
 
 // Apply vector store config
 vectorStore.configure(config);
@@ -82,6 +85,9 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && req.url === '/config') return handlers.handleConfig(req, res);
   if (req.method === 'GET' && req.url === '/status') return handlers.handleStatus(req, res);
   if (req.method === 'GET' && req.url.startsWith('/api/literacy/coverage')) return handlers.handleLiteracyCoverage(req, res);
+  if (req.method === 'GET' && (req.url.startsWith('/api/tracking/redirect') || req.url.startsWith('/tracking/redirect'))) return trackingRedirectHandler(req, res);
+  if (req.method === 'POST' && (req.url.startsWith('/api/tracking/identify') || req.url.startsWith('/tracking/identify'))) return trackingIdentifyHandler(req, res);
+  if (req.method === 'POST' && (req.url.startsWith('/api/tracking/ingest') || req.url.startsWith('/tracking/ingest'))) return trackingIngestHandler(req, res);
   if (req.method === 'POST' && req.url.startsWith('/submit')) return handlers.handleSubmit(req, res);
   if (req.method === 'POST' && req.url.startsWith('/api/extract-sources')) return handlers.handleExtractSources(req, res);
   if (req.method === 'POST' && req.url.startsWith('/api/extract-and-score')) return handlers.handleExtractAndScore(req, res);

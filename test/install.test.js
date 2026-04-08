@@ -109,6 +109,27 @@ test('Suite 1: Interactive Install Wizard', async (t) => {
     }
   });
 
+  await t.test('1.1.3 Existing root copilot instructions file is preserved and annotated', async () => {
+    const env = createTestEnvironment();
+    try {
+      const copilotInstructionsPath = path.join(env.dir, 'copilot-instructions.md');
+      fs.writeFileSync(copilotInstructionsPath, '# Project Instructions\n\nShared contract.\n');
+
+      const { code, output } = await runCLI(INSTALL_SCRIPT, env.dir, [], {
+        args: ['--yes', '--project-name', 'CopilotClient', '--no-onboarding'],
+      });
+
+      assert.equal(code, 0, 'Install should succeed when root copilot instructions already exist');
+      assert.match(output, /MarkOS section appended to copilot-instructions\.md/);
+
+      const content = fs.readFileSync(copilotInstructionsPath, 'utf8');
+      assert.match(content, /MarkOS protocol installed/);
+      assert.match(content, /\.agent\/markos\//);
+    } finally {
+      env.cleanup();
+    }
+  });
+
   await t.test('1.2 GSD Co-existence Install', async () => {
     const env = createTestEnvironment();
     try {

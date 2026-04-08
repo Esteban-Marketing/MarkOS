@@ -11,19 +11,26 @@
  */
 
 import React, { useMemo } from 'react';
+import styles from './page.module.css';
 
-interface AuthContext {
+export interface AuthContext {
   iamRole?: string;
   isAuthorized?: boolean;
 }
 
-export default function MarkOSOperationsPage() {
+type MarkOSOperationsPageProps = Readonly<{
+  authOverride?: AuthContext;
+}>;
+
+export default function MarkOSOperationsPage({
+  authOverride,
+}: MarkOSOperationsPageProps) {
   // Phase 51-03: Check authorization at component render
   // In a real implementation, this would come from auth context/session
   const authContext: AuthContext = useMemo(() => ({
-    iamRole: 'readonly', // Placeholder - would come from session/auth
-    isAuthorized: false, // Would be evaluated with canPerformAction
-  }), []);
+    iamRole: authOverride?.iamRole ?? 'readonly', // Placeholder - would come from session/auth
+    isAuthorized: authOverride?.isAuthorized ?? false, // Would be evaluated with canPerformAction
+  }), [authOverride?.iamRole, authOverride?.isAuthorized]);
 
   // Fail-closed: deny access if role is missing or not authorized
   const canAccess = authContext.isAuthorized && authContext.iamRole && 
@@ -31,26 +38,91 @@ export default function MarkOSOperationsPage() {
 
   if (!canAccess) {
     return (
-      <div className="p-6">
-        <h2 className="text-lg font-semibold text-red-600">Access Denied</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Your role ({authContext.iamRole || 'unknown'}) does not have permission to access Operations.
-        </p>
-        <p className="mt-1 text-xs text-gray-500">
-          Required role: owner, tenant-admin, or manager
-        </p>
+      <div className={styles.page}>
+        <div className={styles.shell}>
+          <section className={`${styles.callout} ${styles.deniedCard}`}>
+            <p className={styles.eyebrow}>Operator execution surface</p>
+            <div className={styles.headerRow}>
+              <h2 className={styles.title}>Access Denied</h2>
+              <span className={`${styles.statusPill} ${styles.statusDenied}`}>Blocked</span>
+            </div>
+            <p className={styles.heroText}>
+              Your role ({authContext.iamRole || 'unknown'}) does not have permission to access Operations.
+            </p>
+            <ul className={styles.metaList}>
+              <li className={styles.metaItem}>
+                <span className={styles.metaLabel}>Required role</span>{" "}
+                <span>owner, tenant-admin, or manager</span>
+              </li>
+              <li className={styles.metaItem}>
+                <span className={styles.metaLabel}>Boundary</span>{" "}
+                <span>Phase 51-03 fail-closed authorization gate for execute_task access.</span>
+              </li>
+            </ul>
+          </section>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <h2>Operations</h2>
-      <p>
-        Run operator tasks step-by-step with explicit approvals, retries, and evidence capture. This route is
-        the entrypoint for the Phase 46 execution surface.
-      </p>
-      <a href="/markos/operations/tasks">Go to task execution surface</a>
+    <div className={styles.page}>
+      <div className={styles.shell}>
+        <section className={styles.hero}>
+          <p className={styles.eyebrow}>Operator execution surface</p>
+          <div className={styles.headerRow}>
+            <h2 className={styles.title}>Operations</h2>
+            <span className={`${styles.statusPill} ${styles.statusAllowed}`}>Authorized</span>
+          </div>
+          <p className={styles.heroText}>
+            Run operator tasks step-by-step with explicit approvals, retries, and evidence capture. This route is the entrypoint for the Phase 46 execution surface.
+          </p>
+        </section>
+
+        <section className={styles.contentGrid}>
+          <div className={styles.mainColumn}>
+            <article className={styles.panel}>
+              <h3 className={styles.sectionTitle}>Execution workflow</h3>
+              <p className={styles.sectionText}>
+                Operators move tasks through approval-safe transitions, preserve audit evidence for every step, and only unlock later steps once the current step is resolved.
+              </p>
+              <ul className={styles.featureList}>
+                <li className={styles.featureItem}>Sequential step execution with explicit state transitions</li>
+                <li className={styles.featureItem}>Approval gates for higher-risk actions before execution</li>
+                <li className={styles.featureItem}>Read-only evidence capture for logs, timestamps, inputs, and outputs</li>
+              </ul>
+            </article>
+
+            <article className={styles.panel}>
+              <h3 className={styles.sectionTitle}>Next action</h3>
+              <p className={styles.sectionText}>
+                Open the task execution surface to review queued work, inspect evidence, and move the current step forward without leaving the operator context.
+              </p>
+              <a className={styles.actionButton} href="/markos/operations/tasks">Go to task execution surface</a>
+            </article>
+          </div>
+
+          <aside className={styles.sideColumn}>
+            <section className={styles.callout}>
+              <h3 className={styles.sectionTitle}>Access context</h3>
+              <ul className={styles.metaList}>
+                <li className={styles.metaItem}>
+                  <span className={styles.metaLabel}>IAM role</span>{" "}
+                  <span>{authContext.iamRole}</span>
+                </li>
+                <li className={styles.metaItem}>
+                  <span className={styles.metaLabel}>Authorization</span>{" "}
+                  <span>execute_task boundary satisfied</span>
+                </li>
+                <li className={styles.metaItem}>
+                  <span className={styles.metaLabel}>Scope</span>{" "}
+                  <span>operator task execution, retry handling, and evidence review</span>
+                </li>
+              </ul>
+            </section>
+          </aside>
+        </section>
+      </div>
     </div>
   );
 }

@@ -164,16 +164,45 @@ jobs:
           fi
           
           # Validate that each critical route has stories
-          ROUTES=("company" "mir" "msp" "icps" "segments" "campaigns" "settings/theme")
+          ROUTES=(
+            "company"
+            "mir"
+            "msp"
+            "icps"
+            "segments"
+            "campaigns"
+            "settings/theme"
+            "operations"
+            "operations/tasks"
+            "settings/plugins"
+            "settings/billing"
+            "plugins/digital-agency"
+            "admin/billing"
+            "admin/governance"
+          )
           for route in "${ROUTES[@]}"; do
             if ! find . -path "*/$route/*.stories.tsx" | grep -q .; then
               echo "Error: No stories found for route: $route"
               exit 1
             fi
           done
+
+          if ! test -f "./app/(markos)/layout.stories.tsx"; then
+            echo "Error: No story found for shared MarkOS layout shell"
+            exit 1
+          fi
           
           echo "✓ All required routes have story coverage"
         shell: bash
+
+      - name: Run milestone route contract tests
+        run: |
+          node --test \
+            test/tenant-auth/ui-authorization-negative-path.test.js \
+            test/plugin-control.test.js \
+            test/plugin-branding.test.js \
+            test/ui-billing/billing-pages-contract.test.js \
+            test/ui-governance/governance-pages-contract.test.js
 
   # ============================================================================
   # Gate Summary

@@ -12,6 +12,7 @@ const roleMappingPath = path.join(__dirname, '../../lib/markos/identity/role-map
 const callbackHandlerPath = path.join(__dirname, '../../api/auth/sso/callback.js');
 const startHandlerPath = path.join(__dirname, '../../api/auth/sso/start.js');
 const runtimeContextPath = path.join(__dirname, '../../onboarding/backend/runtime-context.cjs');
+const { buildGovernanceEvidencePack } = require('../../lib/markos/governance/evidence-pack.cjs');
 
 test('IAM-04 sso deny: escalation claims are rejected by canonical mapping rules', () => {
   const binding = buildTenantSsoBinding();
@@ -47,4 +48,14 @@ test('IAM-04 sso deny: runtime context exposes immutable identity mapping eviden
   assert.match(source, /buildIdentityMappingEvidence/);
   assert.match(source, /emitIdentityMappingTelemetry/);
   assert.match(source, /markos_identity_role_mapping_(granted|denied)/);
+});
+
+test('SEC-01 governance evidence: auth and authz family cites immutable role-mapping evidence', () => {
+  const pack = buildGovernanceEvidencePack();
+  const authFamily = pack.privileged_action_families.find((family) => family.action_family === 'authentication_authorization');
+
+  assert.ok(authFamily);
+  assert.equal(authFamily.evidence_source, 'identity_role_mapping_events');
+  assert.ok(authFamily.actions.includes('sso_role_mapping_denied'));
+  assert.ok(authFamily.immutable_provenance_fields.includes('correlation_id'));
 });

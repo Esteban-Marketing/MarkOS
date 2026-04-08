@@ -1,0 +1,40 @@
+flow_id: "F-59-IDENTITY-STITCHING"
+flow_name: "identity-stitching"
+domain: "tracking"
+flow_type: "identity-link"
+version: "v1"
+openapi: "3.0.3"
+
+info:
+  title: "MarkOS Identity Stitching"
+  version: "1.0.0"
+  description: "Known-identity assertion contract for attaching eligible anonymous history to CRM records with explicit accepted, review, and rejected outcomes."
+
+x-markos-meta:
+  actor: "Authenticated MarkOS operator or known conversion surface"
+  auth_local: "runtime_local"
+  auth_hosted: "supabase bearer"
+  decisions:
+    - "accepted"
+    - "review"
+    - "rejected"
+  immutable_lineage_fields:
+    - "anonymous_identity_id"
+    - "known_record_kind"
+    - "known_record_id"
+    - "source_event_ref"
+    - "confidence"
+
+paths:
+  /api/tracking/identify:
+    post:
+      summary: "Score and persist identity stitch decisions for anonymous CRM history attachment"
+      responses:
+        "200":
+          description: "Identity stitch decision stored with explicit decision state"
+        "400":
+          description: "Missing known-record or anonymous identity inputs"
+        "401":
+          description: "Hosted identify requests require tenant auth"
+        "403":
+          description: "Tenant context conflict or project scope denial"

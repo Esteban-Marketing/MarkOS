@@ -132,133 +132,6 @@
 
 ## 2. Success Metrics & Activation KPI Baseline
 
-### v3.1.0 Acceptance Criteria
-
-| Criterion | Target | Measurement |
-|-----------|--------|-------------|
-| Flow Contract Coverage | 100% of active flows | Count flows in FLOW-CONTRACTS.md / Total active flows |
-| OpenAPI Coverage | 100% of contract endpoints | Endpoints in openapi.yaml / Total contracts |
-| Contract Test Gate | Required CI check | CI workflow enforces contract-tests pass |
-| Breaking Change Blocking | Zero unapproved breaking changes | Contract test suite flags and blocks breaking changes |
-| Task Evidence Completeness | ≥95% of executed steps | Steps with evidence / Total executed steps (from telemetry) |
-| RBAC Enforcement | 100% of protected routes | Routes with role guards / Total protected routes |
-| Operator Onboarding Completion Rate | ≥80% first-run success | Operators who complete onboarding wizard / Total new operators |
-
-### Activation KPI Baseline (Measured at Milestone Start)
-
-**Definition:** "Activation" = Operator completes first end-to-end task execution (submit → execute → review evidence → close).
-
-Current state (v3.0 end):
-- **Time-to-First-Task (T0):** Not currently measured; estimate ~15–30 min manual setup
-- **Evidence Capture Rate (T0):** ~60% of steps have partial evidence (missing logs/timestamps)
-- **Operator Self-Service Rate (T0):** ~30% (most need support for task approval, evidence review)
-- **Flow Coverage (T0):** ~40% of flows are operationally reachable; remainder require code/CLI access
-
-**v3.1.0 Target:**
-- **Time-to-First-Task (T1):** ≤5 minutes (UI-driven, guided)
-- **Evidence Capture Rate (T1):** ≥95% (all steps immutable, structured)
-- **Operator Self-Service Rate (T1):** ≥85% (UI removes need for manual intervention)
-- **Flow Coverage (T1):** 100% (all flows accessible from operator UI)
-
-**Measurement Mechanism:**
-- `time_to_first_task`: Timestamp from operator role assignment to first task completion; recorded in telemetry
-- `evidence_capture_rate`: Steps with evidence / Total steps per session; tracked in onboarding backend
-- `operator_self_service_rate`: Sessions with zero manual support requests / Total operator sessions; tracked in Linear + telemetry
-- `flow_coverage`: Flows reachable from UI / Total active flows; reported in Phase 47/50
-
-**KPI Locked:** 2026-04-02. Baseline measurement to occur at Phase 45 kickoff; progress tracked per phase.
-
----
-
-## 3. Tightened Phase Frame (Locked for Roadmap)
-
-### Phase 45: Operations Flow Inventory & Canonical Contract Map
-
-**Goal:** Audit all production MarkOS flows, create canonical flow registry, and lock API contract mapping.
-
-**Deliverables:**
-- `.planning/FLOW-INVENTORY.md` — Complete list of all active flows (onboarding, execution, reporting, admin) with descriptions, actors, and success criteria
-- `.planning/FLOW-CONTRACTS.md` — Mapping of each flow to versioned contracts (flow_name → [contract_v1, contract_v2, ...])
-- `contracts/schema.json` — Canonical contract schema (request/response/errors structure)
-- `.planning/FLOW-VERIFICATION.md` — Checklist confirming all flows are documented and mapped
-- **Tests:** test/api-contracts/phase-45-flow-inventory.test.js (verify 100% flow coverage, no orphaned flows)
-- **KPI Step:** Baseline measurement of T0 metrics (time-to-first-task, evidence rate, flow coverage)
-
-**Success Criteria:**
-- All active flows are documented and mapped
-- Contract schema is reviewed and approved
-- Flow inventory is cross-referenced with Phase 37 RBAC contracts
-- Phase 45 tests pass; CI integrations begin
-
----
-
-### Phase 46: Operator Task Graph UI (MVP)
-
-**Goal:** Ship a functional task graph UI with step-by-step execution, approval checkpoints, and evidence panel.
-
-**Deliverables:**
-- `app/(markos)/operations/tasks/graphql.tsx` — Live task graph component (renders from approved MIR/MSP state)
-- `app/(markos)/operations/tasks/step-runner.tsx` — Step-by-step execution UI with state machine
-- `app/(markos)/operations/tasks/approval-gate.tsx` — Approval checkpoint modal
-- `app/(markos)/operations/tasks/evidence-panel.tsx` — Immutable evidence viewer (inputs, outputs, logs, timestamps)
-- `app/(markos)/operations/tasks/page.tsx` — Task operations hub integrating all above
-- Integration: Task state mutations persist to MarkOSDB (audit trail via Event Store pattern)
-- **Stories:** Storybook coverage for 5 task states (queued, approved, executing, completed, failed)
-- **Tests:** test/ui-operations/ covering component interactions, state transitions, evidence capture
-- **KPI Step:** Measure T1 time-to-first-task (via instrumentation) after phase 46 UI ships
-
-**Success Criteria:**
-- Task graph renders without error
-- Step state transitions are atomic and logged
-- Approval checkpoint blocks execution until human decision recorded
-- Evidence panel displays for ≥95% of steps
-- Storybook stories are live and accessible
-- UI tests pass in CI
-
----
-
-### Phase 47: OpenAPI Generation Pipeline & Versioning Policy
-
-**Goal:** Auto-generate authoritative OpenAPI spec from contract files; lock versioning policy.
-
-**Deliverables:**
-- `bin/generate-openapi.cjs` — CLI tool to regenerate api/openapi.yaml from contracts/ directory
-- `api/openapi.yaml` — Authoritative spec generated from contracts (human-readable, validates against OpenAPI 3.0)
-- `.planning/codebase/API-VERSIONING-POLICY.md` — SemVer + deprecation window (e.g., 2 minor versions overlap) + migration examples
-- `api/contracts/{flow_name}.v1.yaml`, `api/contracts/{flow_name}.v2.yaml`, … — Versioned per-flow contracts
-- Integration into CI: `npm run generate-openapi` validates spec and fails if spec ≠ implementation
-- Publish: POST to swagger.io or Postman API registry (optional)
-- **Tests:** test/api-contracts/phase-47-openapi.test.js (spec validity, endpoint coverage, version schema consistency)
-- **KPI Step:** Verify 100% flow coverage in OpenAPI
-
-**Success Criteria:**
-- OpenAPI spec is valid and covers all active endpoints
-- Versioning policy is documented and reviewed
-- CI enforces spec ↔ implementation parity
-- All contract files follow schema from Phase 45
-
----
-
-### Phase 48: Contract Testing Framework & CI Compatibility Gates
-
-**Goal:** Ship contract test suite enforcing backward compatibility; prevent breaking changes.
-
-**Deliverables:**
-- `test/api-contracts/framework.js` — Test utilities for contract validation (schema checking, version compat, error handling)
-- `test/api-contracts/{flow_name}.test.js` — ≥1 test per contract covering happy path, error paths, version compat assertion
-- `.github/workflows/contract-tests.yml` — CI step running contract tests, blocking on failure, reporting breaking changes
-- `test/fixtures/contracts/` — Sample request/response payloads per contract for mock testing
-- **Tests:** test/api-contracts/ suite with ≥N tests per contract (N = 3 for simple, 5 for complex)
-- **KPI Step:** Measure contract test pass rate; ensure CI blocks on breaking changes
-
-**Success Criteria:**
-- Contract test suite is required CI gate (no merge without passing)
-- ≥1 test per contract covering happy + error paths
-- Version compatibility test (v1 client against v2 API) passes
-- CI reports breaking changes clearly (prevents silent regressions)
-
----
-
 ### Phase 49: Hardening Layer (RBAC Ops UI, Diagnostics, Migration Assistants, Rollback Safety)
 
 **Goal:** Harden operations surface with role guards, health diagnostics, preflight checks, and rollback safety.
@@ -419,6 +292,125 @@ Current state (v3.0 end):
 - Success: Full DA workflow (draft → approve → campaign assemble → publish → telemetry) completes end-to-end for authorized tenant
 - Phase: 52
 
+---
+
+## 9. Milestone v3.3.0 Requirements — Revenue CRM and Customer Intelligence Core
+
+**Milestone:** v3.3.0 — Revenue CRM and Customer Intelligence Core
+**Goal:** Make MarkOS the operational system of record for relationship state, pipeline progression, next-best action, outbound execution, and revenue reporting while using PostHog as the behavioral analytics source feeding CRM timelines and attribution.
+**Status:** Active. Locked 2026-04-04 for roadmap initialization.
+
+---
+
+### Pillar 1: CRM Domain Model and Timeline Truth
+
+**CRM-01:** Contact, company, deal, account, and customer records exist as first-class tenant-safe entities with dedupe, merge, and history-safe update rules.
+- Phase: 58
+- Success: Canonical entities, merge decisions, and immutable audit history exist for all CRM object mutations
+
+**CRM-02:** Every CRM record exposes a unified timeline that combines pageviews, form events, campaign touches, stage changes, tasks, notes, agent actions, outbound delivery events, and attribution updates.
+- Phase: 58
+- Success: A single record query can reconstruct meaningful lifecycle history without joining across ad hoc operational tables
+
+---
+
+### Pillar 2: Behavioral Tracking and Identity Stitching
+
+**TRK-01:** PostHog proxy tracking is mandatory for all first-party web surfaces that feed CRM activity timelines.
+- Phase: 59
+- Success: All supported first-party surfaces emit proxy-routed events that can be linked back to CRM activity records
+
+**TRK-02:** Ads and affiliate traffic use a dedicated tracking subdomain and server-side enrichment path to preserve attribution through blockers and privacy filtering where technically feasible.
+- Phase: 59
+- Success: Campaign traffic arriving through supported tracked links retains source attribution at the CRM layer with explicit fallback semantics
+
+**TRK-03:** Website interaction capture includes page-level and element-level telemetry sufficient to reconstruct meaningful visitor, contact, and account timelines.
+- Phase: 59
+- Success: Operators can inspect major page and key element interactions from CRM record detail views, not only aggregate funnels
+
+**TRK-04:** Identity stitching links anonymous sessions to known contacts and accounts using approved identity resolution rules while preserving pre-conversion history.
+- Phase: 59
+- Success: A contact conversion event can attach prior anonymous activity to the correct CRM timeline with explicit confidence and merge lineage
+
+---
+
+### Pillar 3: Pipeline and Revenue Execution Workspace
+
+**CRM-03:** Pipelines support custom objects and custom stages, with mandatory views for Kanban, table, record detail, timeline, calendar, and forecast or funnel.
+- Phase: 60
+- Success: Operators can manage lead, deal, account, and customer-success workflows using the required views without leaving the CRM workspace
+
+**CRM-04:** The system computes next-best action per lead, deal, and account using recency, stage, SLA risk, intent score, and open task context, while keeping execution approval-aware.
+- Phase: 61
+- Success: Every actionable record can surface a rationale-backed recommendation with auditable inputs and optional human approval gates
+
+**CRM-05:** Resend email, Twilio SMS, and Twilio WhatsApp are native execution channels in this milestone; social publishing remains deferred to v4.
+- Phase: 62
+- Success: Outbound events from the three supported channels can be initiated, logged, and traced directly from CRM records and sequences
+
+**CRM-06:** Human agents and AI agents can create tasks, draft outreach, update stages, append notes, and generate summaries, with immutable audit records for every AI-originated action.
+- Phase: 61, 62, 63
+- Success: All operator and AI-originated CRM mutations retain actor identity, policy context, and before/after evidence
+
+---
+
+### Pillar 4: AI-Assisted Intelligence and Reporting
+
+**ATT-01:** Multi-touch attribution is operationally available at the CRM layer for contact, deal, and campaign reporting, even though full MMM remains deferred.
+
+---
+
+## 10. GSD Alignment Addendum
+
+These narrow requirements track the decimal GSD alignment work inserted after Phase 64 without expanding the underlying CRM milestone scope.
+
+**GSD-ALIGN-04:** The repository intentionally supports two root project-instruction files: `CLAUDE.md` for the localized `.claude` runtime and `copilot-instructions.md` for the shared `.github` GSD and Copilot surface.
+- Phase: 64.2
+- Success: One managed policy defines both root outputs and keeps them distinct from hidden framework-only artifacts.
+
+**GSD-ALIGN-05:** Shared `.github` and localized `.claude` instruction surfaces stay aligned to the dual-root policy while preserving their ownership boundary.
+- Phase: 64.2
+- Success: Shared workflows and agents point at root `copilot-instructions.md`, localized workflows and agents point at root `CLAUDE.md`, and `.claude/skills/**` remain localized.
+
+**GSD-ALIGN-06:** The aligned dual-root GSD system is verified end-to-end and any stale manifests or generated artifacts lagging the 64.2 policy are refreshed deterministically.
+- Phase: 64.3
+- Success: Repo-local proof covers dual-root generator behavior, root-versus-hidden artifact distinction, and deterministic refresh of stale `.github` and `.claude` GSD manifests or generated root instruction artifacts.
+
+**GSD-ALIGN-07:** The final MarkOS customization boundary is documented so future work can distinguish canonical shared framework ownership, localized runtime ownership, and client override ownership.
+- Phase: 64.3
+- Success: Durable codebase documentation makes the ownership split between `.github`, `.claude`, and `.markos-local` explicit without reopening the 64.2 dual-root policy.
+- Phase: 64
+- Success: Operators can inspect campaign influence and revenue contribution from CRM-native reporting surfaces tied to deal and contact history
+
+**AI-CRM-01:** AI copilots can generate summaries, stage rationale, next-step recommendations, risk flags, and draft outreach directly from CRM context.
+- Phase: 63
+- Success: Copilot outputs are grounded in tenant-approved CRM context and can be reviewed before action
+
+**AI-CRM-02:** Role-aware agent workflows can execute follow-up sequences, task creation, enrichment, and reporting with policy gates before externally visible actions.
+- Phase: 63
+- Success: High-impact or externally visible automations are fail-closed behind policy and approval controls
+
+**REP-01:** Operators can view pipeline health, conversion, attribution, SLA risk, and agent productivity in one place without leaving the CRM.
+- Phase: 60, 61, 64
+- Success: CRM workspace provides a coherent operational cockpit for revenue, service, and AI-assist reporting
+
+---
+
+## 10. v3.3.0 Acceptance Criteria
+
+| Criterion | Target | Measurement |
+|-----------|--------|-------------|
+| CRM Entity Coverage | 100% of canonical CRM objects live | Contacts, companies, deals, accounts, customers, activities, tasks, timelines present in schema and APIs |
+| Timeline Completeness | >=95% of key customer actions visible in unified timelines | Sampled records with page, campaign, stage, note, task, and outbound evidence |
+| Tracking Reliability | 100% of supported first-party surfaces use proxy tracking | Route inventory vs. proxy-enabled surfaces |
+| Identity Stitch Success | >=90% of eligible conversions attach prior anonymous activity | Stitched conversions / eligible identified conversions |
+| Pipeline View Coverage | Required views available for active pipelines | Kanban, table, detail, timeline, calendar, forecast or funnel implemented |
+| Native Outbound Coverage | 3 of 3 locked channels operational | Resend, Twilio SMS, Twilio WhatsApp live with telemetry return path |
+| AI Action Auditability | 100% of AI-originated CRM mutations are immutable and attributable | AI mutations with actor, policy, and evidence / total AI mutations |
+| Revenue Reporting Coverage | Contact, deal, and campaign attribution visible in CRM | Reporting surfaces verify ATT-01 and REP-01 |
+
+---
+
 **WL-01:** Tenants can configure logo, color tokens, and brand metadata for customer-facing surfaces.
 - Input: Phase 37 brand-pack system
 - Output: Plugin UI surfaces render with tenant's configured brand overrides
@@ -566,3 +558,130 @@ Current state (v3.0 end):
 | BIL-03 | 54 | Billing | ✅ Delivered 2026-04-03 |
 | IAM-04 | 54 | Authorization | ✅ Delivered 2026-04-03 |
 | GOV-01 | 54 | Governance | ✅ Delivered 2026-04-03 |
+
+---
+
+## 9. Milestone v3.3.0 Requirements — Revenue CRM and Customer Intelligence Core
+
+**Milestone:** v3.3.0 — Revenue CRM and Customer Intelligence Core
+**Goal:** Make MarkOS the operational system of record for relationship state, pipeline progression, next-best action, outbound execution, and revenue reporting while using PostHog as the behavioral analytics source feeding CRM timelines and attribution.
+**Status:** Active. Locked 2026-04-04 for roadmap initialization.
+
+---
+
+### Pillar 1: CRM Domain Model and Timeline Truth
+
+**CRM-01:** Contact, company, deal, account, and customer records exist as first-class tenant-safe entities with dedupe, merge, and history-safe update rules.
+- Phase: 58
+- Success: Canonical entities, merge decisions, and immutable audit history exist for all CRM object mutations
+
+**CRM-02:** Every CRM record exposes a unified timeline that combines pageviews, form events, campaign touches, stage changes, tasks, notes, agent actions, outbound delivery events, and attribution updates.
+- Phase: 58
+- Success: A single record query can reconstruct meaningful lifecycle history without joining across ad hoc operational tables
+
+---
+
+### Pillar 2: Behavioral Tracking and Identity Stitching
+
+**TRK-01:** PostHog proxy tracking is mandatory for all first-party web surfaces that feed CRM activity timelines.
+- Phase: 59
+- Success: All supported first-party surfaces emit proxy-routed events that can be linked back to CRM activity records
+
+**TRK-02:** Ads and affiliate traffic use a dedicated tracking subdomain and server-side enrichment path to preserve attribution through blockers and privacy filtering where technically feasible.
+- Phase: 59
+- Success: Campaign traffic arriving through supported tracked links retains source attribution at the CRM layer with explicit fallback semantics
+
+**TRK-03:** Website interaction capture includes page-level and element-level telemetry sufficient to reconstruct meaningful visitor, contact, and account timelines.
+- Phase: 59
+- Success: Operators can inspect major page and key element interactions from CRM record detail views, not only aggregate funnels
+
+**TRK-04:** Identity stitching links anonymous sessions to known contacts and accounts using approved identity resolution rules while preserving pre-conversion history.
+- Phase: 59
+- Success: A contact conversion event can attach prior anonymous activity to the correct CRM timeline with explicit confidence and merge lineage
+
+---
+
+### Pillar 3: Pipeline and Revenue Execution Workspace
+
+**CRM-03:** Pipelines support custom objects and custom stages, with mandatory views for Kanban, table, record detail, timeline, calendar, and forecast or funnel.
+- Phase: 60
+- Success: Operators can manage lead, deal, account, and customer-success workflows using the required views without leaving the CRM workspace
+
+**CRM-04:** The system computes next-best action per lead, deal, and account using recency, stage, SLA risk, intent score, and open task context, while keeping execution approval-aware.
+- Phase: 61
+- Success: Every actionable record can surface a rationale-backed recommendation with auditable inputs and optional human approval gates
+
+**CRM-05:** Resend email, Twilio SMS, and Twilio WhatsApp are native execution channels in this milestone; social publishing remains deferred to v4.
+- Phase: 62
+- Success: Outbound events from the three supported channels can be initiated, logged, and traced directly from CRM records and sequences
+
+**CRM-06:** Human agents and AI agents can create tasks, draft outreach, update stages, append notes, and generate summaries, with immutable audit records for every AI-originated action.
+- Phase: 61, 62, 63
+- Success: All operator and AI-originated CRM mutations retain actor identity, policy context, and before/after evidence
+
+---
+
+### Pillar 4: AI-Assisted Intelligence and Reporting
+
+**ATT-01:** Multi-touch attribution is operationally available at the CRM layer for contact, deal, and campaign reporting, even though full MMM remains deferred.
+- Phase: 64
+- Success: Operators can inspect campaign influence and revenue contribution from CRM-native reporting surfaces tied to deal and contact history
+
+**AI-CRM-01:** AI copilots can generate summaries, stage rationale, next-step recommendations, risk flags, and draft outreach directly from CRM context.
+- Phase: 63
+- Success: Copilot outputs are grounded in tenant-approved CRM context and can be reviewed before action
+
+**AI-CRM-02:** Role-aware agent workflows can execute follow-up sequences, task creation, enrichment, and reporting with policy gates before externally visible actions.
+- Phase: 63
+- Success: High-impact or externally visible automations are fail-closed behind policy and approval controls
+
+**REP-01:** Operators can view pipeline health, conversion, attribution, SLA risk, and agent productivity in one place without leaving the CRM.
+- Phase: 60, 61, 64
+- Success: CRM workspace provides a coherent operational cockpit for revenue, service, and AI-assist reporting
+
+---
+
+## 10. v3.3.0 Acceptance Criteria
+
+| Criterion | Target | Measurement |
+|-----------|--------|-------------|
+| CRM Entity Coverage | 100% of canonical CRM objects live | Contacts, companies, deals, accounts, customers, activities, tasks, timelines present in schema and APIs |
+| Timeline Completeness | >=95% of key customer actions visible in unified timelines | Sampled records with page, campaign, stage, note, task, and outbound evidence |
+| Tracking Reliability | 100% of supported first-party surfaces use proxy tracking | Route inventory vs. proxy-enabled surfaces |
+| Identity Stitch Success | >=90% of eligible conversions attach prior anonymous activity | Stitched conversions / eligible identified conversions |
+| Pipeline View Coverage | Required views available for active pipelines | Kanban, table, detail, timeline, calendar, forecast or funnel implemented |
+| Native Outbound Coverage | 3 of 3 locked channels operational | Resend, Twilio SMS, Twilio WhatsApp live with telemetry return path |
+| AI Action Auditability | 100% of AI-originated CRM mutations are immutable and attributable | AI mutations with actor, policy, and evidence / total AI mutations |
+| Revenue Reporting Coverage | Contact, deal, and campaign attribution visible in CRM | Reporting surfaces verify ATT-01 and REP-01 |
+
+---
+
+## 11. Tightened Phase Frame for v3.3.0
+
+### Phase 58: CRM Canonical Schema and Identity Graph
+**Goal:** Define tenant-safe CRM primitives, activity ledger foundations, custom fields, merge rules, and core APIs.
+**Deliverables:** canonical CRM schema, tenant-safe APIs, merge or dedupe contracts, unified activity model, Phase 58 verification artifacts
+
+### Phase 59: Behavioral Tracking and Identity Stitching
+**Goal:** Wire proxy-based PostHog telemetry, ads and affiliate tracking subdomain flows, identity stitching, and CRM activity ingestion.
+**Deliverables:** proxy tracking architecture, event taxonomy, element interaction contracts, stitching rules, tracking verification evidence
+
+### Phase 60: Pipeline Engine and Multi-View Workspace
+**Goal:** Deliver flexible pipelines with required views and stage automation hooks.
+**Deliverables:** pipeline schema, custom stages, Kanban/table/detail/timeline/calendar/forecast or funnel views, phase verification artifacts
+
+### Phase 61: Sales and Success Execution Workspace
+**Goal:** Deliver lead, deal, account, and customer success workflow surfaces with next-best-action support.
+**Deliverables:** execution hub, task queues, inbox-like activity center, recommendation engine, phase verification artifacts
+
+### Phase 62: Native Outbound Execution
+**Goal:** Add email, SMS, and WhatsApp execution with consent-safe telemetry return paths.
+**Deliverables:** channel adapters, templates or sequences, delivery logging, consent controls, outbound verification artifacts
+
+### Phase 63: AI Copilot and Agentic CRM Operations
+**Goal:** Provide CRM copilots and approval-aware agent workflows grounded in CRM context.
+**Deliverables:** summaries, draft generation, enrichment flows, policy-gated automations, AI audit verification artifacts
+
+### Phase 64: Attribution, Reporting, and Verification Closure
+**Goal:** Close the milestone with CRM-native attribution, reporting, live checks, and acceptance evidence.
+**Deliverables:** attribution models, reporting cockpit, live verification logs, milestone closure package

@@ -4,7 +4,7 @@ import { TaskStoreProvider } from "./task-store";
 import { TaskGraph } from "./task-graph";
 import { StepRunner } from "./step-runner";
 import { EvidencePanel } from "./evidence-panel";
-import { ApprovalGate } from "./approval-gate";
+import styles from "./task-ui.module.css";
 import {
   queuedStoryTask,
   approvedStoryTask,
@@ -19,33 +19,54 @@ import type { TaskExecutionRecord } from "./task-types";
  * Story wrapper component: renders the full three-region layout seeded with a specific task fixture
  * Used for all five required state stories
  */
-function TaskUIStoryWrapper({ task }: { task: TaskExecutionRecord }) {
+function TaskUIStoryWrapper({ task }: Readonly<{ task: TaskExecutionRecord }>) {
+  const seededState = {
+    ...initialTaskStoreState(),
+    tasksById: { [task.id]: task },
+    taskOrder: [task.id],
+    selectedTaskId: task.id,
+    selectedEvidenceStepId: task.current_step_id,
+  };
+
   return (
-    <TaskStoreProvider>
-      <div className="flex flex-col lg:flex-row gap-4 p-6 min-h-screen bg-[#f5f7fa]">
-        {/* Left: Task Graph */}
-        <aside className="w-full lg:w-[30%] bg-white rounded-lg border border-gray-200 shadow-sm p-4 max-h-screen overflow-y-auto order-last lg:order-first">
-          <h3 className="text-sm font-medium text-[#0f172a] mb-4">
-            Operator Tasks
-          </h3>
+    <TaskStoreProvider initialState={seededState}>
+      <div className={styles.page}>
+        <section className={styles.storyHero}>
+          <p className={styles.eyebrow}>Phase 46 operator execution surface</p>
+          <h2 className={styles.heroTitle}>Operator Task UI</h2>
+          <p className={styles.heroText}>
+            Review the linear task graph, act on the current step, and inspect immutable evidence without leaving the same operator workspace.
+          </p>
+        </section>
+
+        <div className={styles.layout}>
+          <aside className={`${styles.panel} ${styles.panelSticky}`}>
+            <p className={styles.panelEyebrow}>Task list</p>
+            <h3 className={styles.panelTitle}>Operator Tasks</h3>
+            <p className={styles.panelText}>
+              Current task state is seeded from a deterministic story fixture.
+            </p>
           <TaskGraph />
         </aside>
 
-        {/* Center: Step Runner */}
-        <main className="w-full lg:w-[45%] bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-          <h2 className="text-lg font-medium text-[#0f172a] mb-6">
-            Active Step
-          </h2>
+          <main className={styles.panel}>
+            <p className={styles.panelEyebrow}>Active step</p>
+            <h2 className={styles.panelTitle}>Execution Controls</h2>
+            <p className={styles.panelText}>
+              Only the current actionable step exposes transitions. Future steps stay locked until prior work is resolved.
+            </p>
           <StepRunner />
         </main>
 
-        {/* Right: Evidence Panel */}
-        <aside className="hidden lg:block w-full lg:w-[25%] bg-white rounded-lg border border-gray-200 shadow-sm p-4 max-h-screen overflow-y-auto">
-          <p className="text-sm font-medium text-[#0f172a] mb-4">
-            Evidence Panel
-          </p>
+          <aside className={`${styles.panel} ${styles.panelSticky}`}>
+            <p className={styles.panelEyebrow}>Audit evidence</p>
+            <h3 className={styles.panelTitle}>Evidence Panel</h3>
+            <p className={styles.panelText}>
+              Inputs, outputs, logs, timestamps, and retry history remain read-only for audit clarity.
+            </p>
           <EvidencePanel />
         </aside>
+        </div>
       </div>
     </TaskStoreProvider>
   );

@@ -10,6 +10,12 @@ const {
   sha256,
 } = require('../onboarding/backend/provisioning/migration-runner.cjs');
 
+const tenantPrincipal = Object.freeze({
+  id: 'test-actor',
+  tenant_id: 'tenant-test',
+  role: 'tenant-admin',
+});
+
 function makeDir() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'markos-migrations-'));
 }
@@ -26,6 +32,7 @@ test('42-03-01 applies SQL migrations in deterministic lexical order', async () 
   try {
     const summary = await applyPendingMigrations({
       migrationsDir,
+      tenantPrincipal,
       executeSql: async (_sql, meta) => {
         if (meta.kind === 'ledger-read') {
           return { rows: [] };
@@ -62,6 +69,7 @@ test('42-03-02 writes markos_migrations ledger and skips already applied files o
   try {
     const summary = await applyPendingMigrations({
       migrationsDir,
+      tenantPrincipal,
       executeSql: async (_sql, meta) => {
         if (meta.kind === 'ledger-read') {
           return {
@@ -103,6 +111,7 @@ test('42-03-03 stops on first failing migration and reports failing file', async
     await assert.rejects(
       () => applyPendingMigrations({
         migrationsDir,
+        tenantPrincipal,
         executeSql: async (_sql, meta) => {
           if (meta.kind === 'ledger-read') {
             return { rows: [] };

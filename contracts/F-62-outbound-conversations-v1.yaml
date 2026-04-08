@@ -1,0 +1,18 @@
+flow_id: F-62-outbound-conversations-v1
+title: Outbound Conversations
+summary: Conversation threads, inbound normalization, reply attribution, and opt-out outcomes as CRM-visible thread state.
+inputs:
+  - provider
+  - provider_message_id
+  - channel
+  - direction
+  - status
+  - text
+outputs:
+  - thread_id
+  - conversation_status
+  - crm_activity
+rules:
+  - Provider events normalize into outbound_event history visible through CRM timeline surfaces.
+  - Replies and opt-outs must remain tied to record context and provider lineage.
+  - AI assistance remains suggestion-only and cannot autonomously send or sequence work.

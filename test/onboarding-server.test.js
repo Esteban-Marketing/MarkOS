@@ -99,6 +99,52 @@ function createUnsignedJwt(payload) {
   return `${toBase64Url(JSON.stringify(header))}.${toBase64Url(JSON.stringify(payload))}.`;
 }
 
+async function getAvailablePortPair() {
+  const net = require('net');
+
+  async function getEphemeralPort() {
+    return await new Promise((resolve, reject) => {
+      const probe = net.createServer();
+      probe.unref();
+      probe.once('error', reject);
+      probe.listen(0, '127.0.0.1', () => {
+        const { port } = probe.address();
+        probe.close((error) => error ? reject(error) : resolve(port));
+      });
+    });
+  }
+
+  async function isPortFree(port) {
+    return await new Promise((resolve) => {
+      const probe = net.createServer();
+      probe.unref();
+      probe.once('error', () => resolve(false));
+      probe.listen(port, '127.0.0.1', () => {
+        probe.close(() => resolve(true));
+      });
+    });
+  }
+
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const port = await getEphemeralPort();
+    if (port < 65534 && await isPortFree(port + 1)) {
+      return port;
+    }
+  }
+
+  throw new Error('Unable to find a free localhost port pair for onboarding tests');
+}
+
+function writeOnboardingConfig(tmpRoot, overrides = {}) {
+  const configPath = path.join(tmpRoot, 'onboarding', 'onboarding-config.json');
+  fs.writeFileSync(configPath, JSON.stringify({
+    auto_open_browser: false,
+    port: 4242,
+    output_path: '../mock-onboarding-seed.json',
+    ...overrides,
+  }));
+}
+
 test('Suite 3: Web-Based Onboarding Engine', async (t) => {
   let env;
 
@@ -112,10 +158,13 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
   });
 
   await t.test('3.1 & 3.2 Server Port Fallback and Static Serving', async () => {
+    const basePort = await getAvailablePortPair();
+    writeOnboardingConfig(env.dir, { port: basePort });
+
     // Occupy 4242 port artificially to trigger fallback logic
     const net = require('net');
     const dummyServer = net.createServer();
-    await new Promise((resolve) => dummyServer.listen(4242, '127.0.0.1', resolve));
+    await new Promise((resolve) => dummyServer.listen(basePort, '127.0.0.1', resolve));
 
     // Spawn the securely copied onboarding server
     const serverScript = path.join(env.dir, 'onboarding', 'backend', 'server.cjs');
@@ -138,10 +187,10 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       to = setTimeout(() => { child.kill(); reject(new Error('Server did not start in time: ' + stdout)); }, 5000);
     });
 
-    assert.match(stdout, /Port 4242 in use, trying 4243/, 'Port fallback protocol failed to trigger');
+    assert.match(stdout, new RegExp(`Port ${basePort} in use, trying ${basePort + 1}`), 'Port fallback protocol failed to trigger');
 
     // Native fetch Request (Node >18)
-    const res = await fetch('http://127.0.0.1:4243/');
+    const res = await fetch(`http://127.0.0.1:${basePort + 1}/`);
     assert.equal(res.status, 200, 'HTTP response should be 200 OK');
     const html = await res.text();
     assert.match(html, /<!DOCTYPE html>/i, 'Should reliably serve the index.html payload');
@@ -153,6 +202,9 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
   });
 
   await t.test('3.3 Data Form Submission', async () => {
+    const basePort = await getAvailablePortPair();
+    writeOnboardingConfig(env.dir, { port: basePort });
+
     // Spawn server normally (expecting 4242)
     const serverScript = path.join(env.dir, 'onboarding', 'backend', 'server.cjs');
     const rootNodeModules = path.resolve(__dirname, '../node_modules');
@@ -181,7 +233,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       competitive: { top_competitor_name: 'Corp B', differentiator: 'Speed' }
     };
     
-    const res = await fetch('http://127.0.0.1:4242/submit', {
+    const res = await fetch(`http://127.0.0.1:${basePort}/submit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(mockSeed)
@@ -215,6 +267,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       const token = createUnsignedJwt({
         aud: 'authenticated',
         sub: 'user-123',
+        active_tenant_id: 'tenant-123',
         app_metadata: { project_slugs: [projectSlug] },
       });
 
@@ -463,6 +516,8 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
         }, async () => {
           await withMockedModule(telemetryPath, {
             capture: () => {},
+            captureProviderAttempt: (payload) => payload,
+            captureRunClose: (payload) => payload,
           }, async () => {
             await withMockedModule(vectorStorePath, {
               configure: () => {},
@@ -912,6 +967,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       const deniedToken = createUnsignedJwt({
         aud: 'authenticated',
         sub: 'user-456',
+        active_tenant_id: 'tenant-456',
         app_metadata: { project_slugs: ['another-project'] },
       });
 
@@ -933,6 +989,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       const allowedToken = createUnsignedJwt({
         aud: 'authenticated',
         sub: 'user-789',
+        active_tenant_id: 'tenant-789',
         app_metadata: { project_slugs: ['acme'] },
       });
       const allowedReq = {

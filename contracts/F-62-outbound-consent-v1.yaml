@@ -1,0 +1,50 @@
+id: F-62-outbound-consent-v1
+phase: 62
+name: Outbound Consent
+status: active
+summary: Channel-specific consent and eligibility policy for CRM-native outbound execution.
+
+channels:
+  email:
+    contact_point: attributes.email
+    allowed_statuses:
+      - subscribed
+      - transactional
+    blocked_statuses:
+      - ambiguous
+      - pending
+      - opted_out
+      - unsubscribed
+      - revoked
+  sms:
+    contact_point: attributes.phone
+    allowed_statuses:
+      - opted_in
+    blocked_statuses:
+      - ambiguous
+      - pending
+      - opted_out
+      - unsubscribed
+      - revoked
+  whatsapp:
+    contact_point: attributes.whatsapp_number or attributes.phone
+    allowed_statuses:
+      - opted_in
+    additional_requirements:
+      - whatsapp_window_open or template_key
+
+approval_escalation:
+  triggers:
+    - risk_level high
+    - use_case reengagement
+    - bulk_size greater than 1
+  fail_closed: true
+
+opt_out:
+  state_write: immutable latest-status record
+  blocked_after_opt_out: true
+
+boundary:
+  generic_single_consent_flag: false
+  tenant_cross_read: false
+  ambiguous_default_allow: false

@@ -1,7 +1,9 @@
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
+ 'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const ROOT = process.cwd();
 
@@ -92,6 +94,14 @@ test('telemetry/events.ts defines markos_tenant_access_denied event', () => {
   const events = read('lib/markos/telemetry/events.ts');
   // Check for deny event
   assert.match(events, /markos_tenant_access_denied|TENANT_ACCESS_DENIED|tenant_denied/i);
+});
+
+test('telemetry.cjs exposes rollout and execution-checkpoint observability seams for OPS-01', () => {
+  const telemetry = read('onboarding/backend/agents/telemetry.cjs');
+  assert.match(telemetry, /ROLLOUT_ENDPOINT_SLOS/);
+  assert.match(telemetry, /captureRolloutEndpointEvent/);
+  assert.match(telemetry, /captureExecutionCheckpoint/);
+  assert.match(telemetry, /execution_readiness_blocked|execution_failure|execution_loop_completed/);
 });
 
 test('telemetry/events.ts implements sanitizePayload or redaction helper', () => {

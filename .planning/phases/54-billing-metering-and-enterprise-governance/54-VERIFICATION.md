@@ -50,6 +50,9 @@ automated_gate: 77/77 broader regression tests pass; build:llm clean
 | `api/billing/*`, `api/governance/*`, `api/auth/sso/*` | ✓ VERIFIED | Shared billing, governance, and SSO contract endpoints |
 | `app/(markos)/settings/billing/*`, `app/(markos)/admin/billing/*`, `app/(markos)/admin/governance/*` | ✓ VERIFIED | Contract-compliant tenant/operator/admin surfaces |
 | `54-01-SUMMARY.md` through `54-06-SUMMARY.md` | ✓ VERIFIED | Per-plan closeout artifacts exist for all six execution plans |
+| Phase 55 remediation references | ✓ VERIFIED | TEN-04 and BIL-04 closure ownership moved to `55-01-SUMMARY.md`, `55-02-SUMMARY.md`, and `55-VALIDATION.md` while Phase 54 remains the historical entitlement and billing baseline. |
+| Phase 56 remediation references | ✓ VERIFIED | SEC-01, SEC-02, and SEC-03 closure ownership moved to `56-01-SUMMARY.md`, `56-02-SUMMARY.md`, `56-03-ENCRYPTION-EVIDENCE.md`, and `56-VALIDATION.md` while Phase 54 remains the historical governance and identity baseline. |
+| Phase 57 remediation references | ✓ VERIFIED | OPS-01 and OPS-02 closure ownership moved to `57-01-OBSERVABILITY-INVENTORY.md`, `57-02-INCIDENT-WORKFLOW.md`, `57-03-SIMULATION.md`, and `57-VALIDATION.md` while Phase 54 remains the historical billing and governance baseline. |
 
 ---
 
@@ -83,3 +86,10 @@ npm run build:llm
 **Automated:** PASS — 12/12 truths verified, 77/77 broader regression tests pass, TypeScript compiler surface clean  
 **Overall status:** `human_needed` pending HV1 and HV2  
 **Recommended action:** Treat Phase 54 as repository-closed for automated verification and planning-ledger purposes, then clear the two live checks before declaring full live-environment completion.
+
+---
+
+## Re-Verification Addendum
+
+**Re-verified:** 2026-04-04  
+**Result:** No regression found. Phase 54 still stands as planning-PASS and automated-runtime-PASS, with Phase 55 retaining closure ownership only for TEN-04 and BIL-04. The Phase 54 file remains historically accurate as the billing, identity, and governance baseline, and the only remaining closeout work is still HV1 and HV2.

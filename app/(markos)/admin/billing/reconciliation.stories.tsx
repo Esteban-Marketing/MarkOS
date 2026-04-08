@@ -6,13 +6,19 @@ export default {
 };
 
 export const Healthy = {
-  render: () => <AdminBillingPage />,
+  args: {
+    variant: "healthy",
+  },
 };
 
 export const Hold = {
-  render: () => <AdminBillingPage />,
+  args: {
+    variant: "hold",
+  },
 };
 
 export const SyncFailure = {
-  render: () => <AdminBillingPage />,
+  args: {
+    variant: "syncFailure",
+  },
 };
