@@ -201,6 +201,26 @@ Tests use Node's built-in test runner. Zero external test framework dependencies
 
 ---
 
+## Hobby Deployment Gate
+
+Vercel Hobby deployments are limited to 12 Serverless Functions. This repository includes a build-time gate so you can ship a reduced route set without deleting routes from source.
+
+Default behavior:
+- `npm run vercel-build` builds the full app locally.
+- Set `MARKOS_DEPLOY_PROFILE=hobby` to keep only the hosted onboarding API surface.
+
+Useful environment variables:
+
+```bash
+MARKOS_DEPLOY_PROFILE=hobby
+MARKOS_SERVERLESS_BUDGET=12
+MARKOS_ALLOWED_SERVERLESS_ROUTES=api/config.js,api/status.js,api/submit.js,api/regenerate.js,api/approve.js
+```
+
+The commented allowlist lives in `vercel.function-gate.config.cjs`.
+
+---
+
 ## LLM BYOK (Phase 47)
 
 MarkOS now includes a unified multi-provider LLM adapter layer with BYOK support for Anthropic, OpenAI, and Gemini.
