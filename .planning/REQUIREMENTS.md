@@ -685,3 +685,192 @@ These narrow requirements track the decimal GSD alignment work inserted after Ph
 ### Phase 64: Attribution, Reporting, and Verification Closure
 **Goal:** Close the milestone with CRM-native attribution, reporting, live checks, and acceptance evidence.
 **Deliverables:** attribution models, reporting cockpit, live verification logs, milestone closure package
+
+---
+
+## 12. Milestone v3.3.1 Requirements — Obsidian Mind Vault-First Pivot
+
+**Milestone:** v3.3.1 — Obsidian Mind Vault-First Pivot
+**Goal:** Replace the MIR/MSP-first MarkOS operating model with a vault-first knowledge system inspired by Obsidian Mind, making the local Obsidian vault the canonical source of context, workflows, memory, evidence, and operator support.
+**Status:** Planned future milestone after Phase 66. Added to the live roadmap on 2026-04-11.
+
+---
+
+### Pillar 1: Vault-Native Knowledge Model
+
+**VAULT-01:** MarkOS defines a canonical vault taxonomy for marketing strategy, execution, people, evidence, and operational memory that replaces MIR/MSP as the primary knowledge structure.
+- Phase: 67
+- Success: Fresh installs no longer depend on MIR/MSP-first scaffolding to become usable
+
+**VAULT-02:** MIR and MSP stop being first-class canonical structures in the product architecture, public docs, and default bootstrap path.
+- Phase: 67, 72
+- Success: MIR/MSP are migration aliases or legacy compatibility surfaces only
+
+**VAULT-03:** The new vault model supports Base-style views, dashboard-friendly metadata, and note-linking semantics needed for operational navigation.
+- Phase: 67, 71
+- Success: Operational views can be generated without relying on legacy MIR/MSP trees
+
+### Pillar 2: Vault-First Bootstrap, Install, and Update
+
+**BOOT-01:** `npx markos` bootstraps a usable vault-first MarkOS installation rather than cloning MIR/MSP-first protocol scaffolding as the primary path.
+- Phase: 68
+- Success: A new install lands in the canonical vault-ready state
+
+**BOOT-02:** Obsidian becomes an explicit required dependency for the primary MarkOS operating model, with clear readiness messaging and failure handling.
+- Phase: 68
+- Success: Install flow clearly reports `ready`, `degraded`, or `blocked` against the new dependency contract
+
+**BOOT-03:** QMD support remains optional and integrates as an enhancement, not a hard dependency.
+- Phase: 68
+- Success: MarkOS remains usable without QMD while advertising the richer path when present
+
+**BOOT-04:** `npx markos update` preserves the vault-first contract and handles upgrades without reintroducing MIR/MSP as canonical surfaces.
+- Phase: 68, 72
+- Success: Updates preserve installed vault assets, migration state, and canonical docs
+
+### Pillar 3: Vault-Native Onboarding and Legacy Migration
+
+**MIG-01:** Existing `.markos-local/MIR` and `.markos-local/MSP` installs can be imported into the new vault with a one-way migration path.
+- Phase: 67, 69
+- Success: Legacy users can move into the new vault without requiring dual-write or long-lived sync
+
+**MIG-02:** The onboarding UI, if retained, writes directly into the vault-native structure instead of publishing to `.markos-local/` MIR/MSP trees.
+- Phase: 69
+- Success: Guided onboarding populates the canonical vault destination
+
+**MIG-03:** Migration and onboarding outcomes are explicit, operator-readable, and validated.
+- Phase: 69
+- Success: Operators can see what imported, what failed, and what still needs manual follow-through
+
+### Pillar 4: Command, Hook, and Agent Surface Alignment
+
+**FLOW-01:** Session lifecycle hooks follow an Obsidian Mind-native operating pattern for startup context, routing hints, markdown validation, compaction safety, and wrap-up behavior.
+- Phase: 70
+- Success: Session behavior is vault-first and durable across supported agent surfaces
+
+**FLOW-02:** MarkOS prefers an Obsidian Mind-native command family and agent pattern, with marketing-specific overlays added where the upstream model does not cover marketing execution needs.
+- Phase: 70
+- Success: The primary workflow model is no longer MIR/MSP-first or legacy MarkOS-first
+
+**FLOW-03:** Agent boot guidance and canonical docs point to the vault-first operating model rather than MIR/MSP-era assumptions.
+- Phase: 70, 72
+- Success: Agents start with the new knowledge model as the default mental model
+
+### Pillar 5: Dashboards, Evidence, and Marketing Memory Graph
+
+**GRAPH-01:** MarkOS provides a Home or dashboard experience and Base-style operational views aligned to the new vault model.
+- Phase: 71
+- Success: Operators can navigate active work, people, evidence, and priorities through the vault-native model
+
+**GRAPH-02:** Marketing execution evidence, wins, reviews, and related performance history are represented inside the vault using graph-friendly note relationships.
+- Phase: 71
+- Success: Campaign and operator evidence accumulates without relying on disconnected external artifacts
+
+**GRAPH-03:** Marketing-specific operational reporting works inside the vault-first model without reintroducing MIR/MSP as hidden canonical stores.
+- Phase: 71
+- Success: The vault itself is the durable operational memory substrate
+
+### Pillar 6: Legacy Demotion and End-to-End Validation
+
+**CUT-01:** MIR/MSP-era docs, scaffolds, and workflows are clearly marked legacy, migration-only, or removed from the canonical path.
+- Phase: 72
+- Success: New users are not routed into the old model accidentally
+
+**CUT-02:** End-to-end validation covers fresh install, dependency readiness, onboarding-to-vault flow, legacy import, command lifecycle, and dashboard or evidence behavior.
+- Phase: 72
+- Success: The vault-first model is proven as the real primary operating path
+
+---
+
+## 13. Milestone v3.4.0 Requirements — Complete Branding Engine
+
+**Milestone:** v3.4.0 — Complete Branding Engine
+**Goal:** Deliver an end-to-end, tenant-safe branding engine that turns raw concept and pain-point inputs into deterministic strategy, identity, token, component-contract, and Next.js starter outputs on the canonical Tailwind v4 + shadcn/ui + Next.js stack.
+**Status:** Active. Locked 2026-04-11 for roadmap initialization.
+
+---
+
+### Pillar 1: Brand Inputs and Strategy Foundation
+
+**BRAND-INP-01:** Operators can capture structured brand concept inputs including audience pains, needs, expectations, and desired outcomes.
+- Phase: 67
+- Success: Input schema persists complete and validated concept records with explicit evidence fields per tenant
+
+**BRAND-INP-02:** The engine normalizes raw brand input into a deterministic evidence graph usable by downstream strategy and identity stages.
+- Phase: 67
+- Success: Identical inputs produce stable normalized nodes and links across repeated runs
+
+**BRAND-STRAT-01:** The engine generates a strategy artifact with positioning, value promise, differentiators, and messaging pillars mapped to source pain/need signals.
+- Phase: 68
+- Success: Every strategic claim includes source lineage back to input evidence nodes
+
+**BRAND-STRAT-02:** Brand personality, tone boundaries, and channel messaging rules are explicit and role-consumable.
+- Phase: 68
+- Success: Strategist, content, and founder views expose consistent rules without contradictory channel guidance
+
+### Pillar 2: Identity and Design-System Compilation
+
+**BRAND-ID-01:** The engine produces deterministic visual identity artifacts including semantic color roles, typography hierarchy, and visual language constraints.
+- Phase: 69
+- Success: Repeated generation from the same strategy artifact yields stable identity outputs except explicitly marked stochastic fields
+
+**BRAND-ID-02:** Identity outputs enforce accessibility-aware defaults (contrast/readability) before publish eligibility.
+- Phase: 69
+- Success: Accessibility checks pass for required semantic role pairs or block publish with explicit diagnostics
+
+**BRAND-DS-01:** Strategy and identity outputs compile into a canonical token contract targeting Tailwind v4 and shadcn/ui usage patterns.
+- Phase: 70
+- Success: Generated token bundle can be consumed by branded app surfaces without manual token remapping
+
+**BRAND-DS-02:** A component contract manifest defines required shadcn/ui components, variants, and interaction states tied to token semantics.
+- Phase: 70
+- Success: Manifest covers core product primitives and required states with deterministic mapping metadata
+
+### Pillar 3: Implementation Starter, Handoffs, and Governance
+
+**BRAND-NEXT-01:** The engine emits a Next.js starter descriptor with theme variables, component bindings, and scaffold-ready integration metadata.
+- Phase: 71
+- Success: Frontend engineers can apply starter outputs without reinterpreting brand rules
+
+**BRAND-ROLE-01:** The system produces role-specific handoff packs for strategist, designer, founder/operator, frontend engineer, and content/marketing stakeholders.
+- Phase: 71
+- Success: Each role can execute its immediate next action from artifacts without additional clarification loops
+
+**BRAND-GOV-01:** Branding artifacts are versioned as a single lineage bundle with publish, rollback, and drift-detection evidence.
+- Phase: 72
+- Success: Operators can promote or roll back brand versions safely with full traceability across strategy, identity, tokens, and component contracts
+
+**BRAND-GOV-02:** Determinism, tenant isolation, and contract integrity checks are mandatory verification gates for milestone closure.
+- Phase: 72
+- Success: Verification suite proves stable regeneration, no cross-tenant leakage, and no contract breakages in canonical branding outputs
+
+---
+
+## 13.1 Out of Scope (v3.4.0)
+
+| Feature | Reason |
+|---------|--------|
+| Fully autonomous brand generation with no human approval | Violates governance and quality-control requirements for this milestone |
+| Automatic production deployment pipeline | Delivery automation is deferred; this milestone focuses on actionable artifact generation |
+| Paid media execution automation | Belongs to campaign execution tracks, not branding engine core |
+| CRM/outbound feature expansion unrelated to branding | Explicitly constrained to avoid scope bloat from v3.3 lanes |
+| Full app replatform | Must remain additive to preserve existing architecture and delivery velocity |
+
+---
+
+## 13.2 Traceability Scaffold (to be filled by roadmapper)
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| BRAND-INP-01 | Phase 67 | Pending |
+| BRAND-INP-02 | Phase 67 | Pending |
+| BRAND-STRAT-01 | Phase 68 | Pending |
+| BRAND-STRAT-02 | Phase 68 | Pending |
+| BRAND-ID-01 | Phase 69 | Pending |
+| BRAND-ID-02 | Phase 69 | Pending |
+| BRAND-DS-01 | Phase 70 | Pending |
+| BRAND-DS-02 | Phase 70 | Pending |
+| BRAND-NEXT-01 | Phase 71 | Pending |
+| BRAND-ROLE-01 | Phase 71 | Pending |
+| BRAND-GOV-01 | Phase 72 | Pending |
+| BRAND-GOV-02 | Phase 72 | Pending |
