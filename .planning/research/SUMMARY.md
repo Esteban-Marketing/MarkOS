@@ -1,73 +1,109 @@
-﻿# Research Summary: MarkOS
+# Research Summary: v3.4.0 Complete Branding Engine
 
-**Domain:** AI-native marketing operating system
-**Researched:** 2026-03-28
+**Domain:** Tenant-scoped branding pipeline (strategy -> identity -> design system -> Next.js starter)
+**Researched:** 2026-04-11
 **Overall confidence:** HIGH
 
 ## Executive Summary
 
-MarkOS is already beyond a greenfield scaffold. The repository contains a working Node-based CLI installer and updater, a local onboarding web app, a shared backend handler layer that also powers Vercel API routes, a multi-provider LLM adapter, and a Vector Store-backed draft persistence layer. The GSD and MARKOS protocol structures are both present, and the planning scaffold is populated with PROJECT, REQUIREMENTS, ROADMAP, STATE, MIR, MSP, and research directories.
+v3.4.0 should ship a branding domain in place, not a platform rewrite. The right shape is an append-only, tenant-scoped pipeline that converts structured brand inputs into strategy artifacts, identity artifacts, token sets, shadcn component contracts, and executable Next.js starter outputs. The implementation should reuse existing MarkOS seams in app, api, lib, contracts, telemetry, and governance.
 
-The current opportunity is not "stand up the framework" from scratch. It is to align the research layer with the real product that now exists. The previous research files were narrowly focused on a rename pass, which made them poor inputs for roadmap creation. The codebase now clearly supports a stronger recommendation: treat MarkOS as a local-first protocol product with optional hosted entrypoints, versioned templates, client-owned override data, and provider-agnostic AI generation.
+Roadmap scope should stay tight around deterministic artifact generation and controlled activation. Focus on contracts, repository interfaces, compiler stages, and publish/rollback pointer semantics. Defer full UI replatform and autonomous production deployment; deliver a canonical starter and incremental adoption path instead.
 
-The stack is pragmatic and intentionally lean. Node 18+ with CommonJS keeps distribution simple for `npx` installs. The onboarding backend uses raw `http` plus shared handlers instead of a heavier web framework. Vector Store provides self-hosted or cloud-addressable vector storage, while OpenAI, Anthropic, Gemini, and Ollama are abstracted behind a single call contract. Tests use Node's built-in runner, which keeps the package lightweight and portable.
+The highest risks are semantic drift (strategy disconnected from UI outputs), token fragmentation across surfaces, accessibility regressions, and non-deterministic generation. These are preventable with contract-level lineage fields, token-only enforcement in branded paths, contrast gates, and repeat-run snapshot checks.
 
-The main architectural risk is identity and runtime drift rather than missing infrastructure. The product is branded as MarkOS, but several runtime paths, manifests, collection names, and comments still carry MARKOS naming. In parallel, the repo supports both local server execution and Vercel-style API wrappers, which means filesystem assumptions and provider behavior need to stay synchronized. Those are roadmap-level concerns, not bootstrap blockers.
+## Stack Additions
 
-## Key Findings
+- Tailwind v4 + PostCSS bridge (`tailwindcss`, `@tailwindcss/postcss`) to support canonical CSS variable theming outputs.
+- shadcn tooling and composition utilities (`shadcn`, `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`) for component contract realization.
+- Schema and compiler safety (`zod`, `culori`, `wcag-contrast`) for deterministic artifacts and accessibility checks.
+- Keep existing foundations unchanged: Next.js 15, React 19, TypeScript, Storybook/Chromatic, existing Node test lanes.
 
-**Stack:** Node 18+ CommonJS CLI and onboarding app, Vector Store vector persistence, provider-agnostic LLM integration, zero external test framework.
-**Architecture:** Local-first protocol engine with immutable templates, gitignored/local client overrides, shared backend handlers, and optional Vercel deployment surface.
-**Critical pitfall:** MarkOS branding sits on top of legacy MARKOS runtime paths and collection names, creating migration risk and operator confusion if left unresolved.
+## Feature Table Stakes
+
+- Structured concept intake for audience pains, needs, expectations (`BRAND-INP-*`).
+- Pain/need to opportunity mapping with explicit trace links (`BRAND-INP-04`, `BRAND-STRAT-01`).
+- Positioning brief and messaging pillars/tone matrix (`BRAND-STRAT-*`).
+- Deterministic identity pack (palette roles, typography hierarchy, visual rules, voice cues) (`BRAND-ID-*`).
+- Token compiler to canonical Next.js + Tailwind v4 + shadcn contract (`BRAND-DS-*`).
+- Starter outputs (theme vars, component manifest, sample scaffolds) (`BRAND-NEXT-*`).
+- Role-ready handoffs and version governance (`BRAND-ROLE-*`, `BRAND-GOV-*`).
+
+## Feature Differentiators
+
+- Evidence-linked strategy graph tying outputs to pain/need source nodes.
+- Strategy-to-token rationale ledger for cross-role traceability.
+- Role-view output slices from one shared artifact chain.
+- Contract-first shadcn mapping manifest before full component-library migration.
+- Deterministic regression snapshots for strategy, identity, and token outputs.
+
+## Architecture Build Order
+
+1. Contracts and repository foundation
+- Add branding contracts, runtime type guards, storage adapters, and F-65 to F-70 flow files.
+
+2. Inputs and strategy services
+- Implement inputs and strategy endpoints with tenant context + role gates.
+
+3. Identity and token compiler
+- Add identity generation and token compile endpoints; extend theme primitives for generated families.
+
+4. UI contract and starter generation
+- Generate shadcn component contracts and Next starter descriptors; add workflow screens.
+
+5. Publish and rollback activation
+- Add active lineage pointer semantics and wire consumers to active brand version.
+
+6. Governance and validation closeout
+- Add telemetry events, evidence packs, contract checks, determinism tests, a11y gates, and tenant isolation coverage.
+
+## Top Pitfalls and Mitigations
+
+- Strategy-to-UI semantic drift
+Mitigation: require `source_strategy_id` lineage on identity/token/component nodes; fail contract tests on missing mappings.
+
+- Token contract fragmentation
+Mitigation: enforce token-only usage in branded paths and block raw style literals via CI lint/scan.
+
+- Accessibility regressions
+Mitigation: contrast matrix checks for semantic pairs and component states; block publish or require explicit governance waiver.
+
+- Non-deterministic outputs
+Mitigation: stable normalization + golden snapshots across repeat runs; isolate and label any allowed stochastic fields.
+
+- Governance/version drift
+Mitigation: one bundle release version with checksum manifest spanning strategy -> identity -> tokens -> UI contract -> starter.
+
+## Requirement-Family Mapping
+
+| Family | Primary Deliverables in v3.4.0 | Primary Build Stage |
+|---|---|---|
+| `BRAND-INP-*` | Intake schema + normalized evidence graph | Stage 1-2 |
+| `BRAND-STRAT-*` | Positioning brief + messaging matrix artifacts | Stage 2 |
+| `BRAND-ID-*` | Identity artifact with accessibility constraints | Stage 3 |
+| `BRAND-DS-*` | Semantic token set + shadcn component contract | Stage 3-4 |
+| `BRAND-NEXT-*` | Next.js starter bundle descriptors + wiring metadata | Stage 4 |
+| `BRAND-ROLE-*` | Role-specific handoff packs and checklists | Stage 4-6 |
+| `BRAND-GOV-*` | Versioned publish/rollback + drift checks + evidence | Stage 5-6 |
 
 ## Implications for Roadmap
 
-Based on research, suggested phase structure:
+- Keep milestone objective implementation-first: produce deterministic, tenant-safe brand artifacts and a runnable starter path.
+- Group work by pipeline dependency (inputs -> strategy -> identity -> tokens -> contracts -> starter -> activation).
+- Treat publish/rollback and governance as first-class scope, not polish, because they protect multi-tenant safety and auditability.
+- Avoid broad UI migration in-milestone; adopt generated contracts incrementally through existing surfaces.
 
-1. **Identity Normalization** - unify MarkOS naming across runtime paths, manifests, local storage, and documentation without breaking existing installs.
-   - Addresses: package/runtime consistency, onboarding messaging, operator trust
-   - Avoids: migration regressions and hidden path mismatches
+## Do First Checklist
 
-2. **Runtime Hardening** - reduce drift between local server mode and Vercel API mode and tighten configuration handling.
-   - Addresses: shared handlers, environment-aware persistence, deployment reliability
-   - Avoids: environment-specific breakage
+- Confirm requirement IDs for F-65 to F-70 and align acceptance criteria to the family mapping table.
+- Draft roadmap phases using the six-stage build order above and assign each phase one primary pitfall gate.
+- Lock deterministic fixture set for repeat-run snapshot testing before implementation starts.
+- Define tenant/RLS and role gate invariants once, then reference them in every branding endpoint contract.
+- Define the minimum shadcn component set and required states up front to prevent scope drift.
 
-3. **Onboarding Quality** - improve extraction, confidence scoring, regeneration, and approval ergonomics.
-   - Addresses: source ingestion, draft quality, approval loop fidelity
-   - Avoids: weak first-run outcomes that undermine protocol adoption
+## Sources
 
-4. **Memory and Multi-Tenant Operations** - formalize Vector Store namespace strategy, migration safety, and cloud/local operating modes.
-   - Addresses: vector isolation, migration compatibility, scale posture
-   - Avoids: data invisibility or cross-project leakage
-
-5. **Execution and Telemetry Expansion** - extend post-onboarding execution loops, winner anchoring, and operational reporting.
-   - Addresses: prompt execution layer, analytics, long-term product differentiation
-   - Avoids: a strong onboarding system with a weak downstream operating loop
-
-**Phase ordering rationale:**
-- Identity and runtime consistency should come before deeper platform expansion because both affect every install and every environment.
-- Onboarding quality should precede advanced scale work because first-run draft quality is the primary adoption lever.
-- Multi-tenant operations and richer execution loops become safer once naming and runtime boundaries are stable.
-
-**Research flags for phases:**
-- Phase 1: Needs careful backward-compatibility research because current runtime still depends on MARKOS-named paths.
-- Phase 2: Needs deployment-specific validation because filesystem behavior differs between local and Vercel contexts.
-- Phase 3: Standard product iteration, but requires prompt-quality fixtures and approval-flow tests.
-- Phase 4: Needs deeper Vector Store migration and tenancy research before shipping broad changes.
-- Phase 5: Standard extension work once lower-level stability issues are settled.
-
-## Confidence Assessment
-
-| Area | Confidence | Notes |
-|------|------------|-------|
-| Stack | HIGH | Verified from package.json, source files, tests, and official docs |
-| Features | HIGH | Verified from README, onboarding code, handlers, and planning/state files |
-| Architecture | HIGH | Verified from protocol lore, runtime code, Vercel config, and tests |
-| Pitfalls | MEDIUM | Strongly supported by codebase review and test output; some migration impact remains forward-looking |
-
-## Gaps to Address
-
-- Vector Store client initialization emits deprecation warnings during tests and should be validated against the latest client guidance.
-- The long-term target for MarkOS path migration remains only partially implemented in runtime comments and manifests.
-- Hosted deployment behavior for approve/write paths should be validated against real serverless filesystem constraints, not only local tests.
-
+- `.planning/research/STACK.md`
+- `.planning/research/FEATURES.md`
+- `.planning/research/ARCHITECTURE.md`
+- `.planning/research/PITFALLS.md`
