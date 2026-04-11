@@ -3,8 +3,26 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const fs = require('node:fs');
 const { createTestEnvironment, runCLI, readManifest } = require('./setup.js');
+const { parseCliArgs } = require('../bin/cli-runtime.cjs');
 
 const INSTALL_SCRIPT = path.resolve(__dirname, '../bin/install.cjs');
+
+test('install parser resolves profile aliases and conflicts deterministically', () => {
+  const explicit = parseCliArgs(['install', '--profile', 'minimal']);
+  assert.equal(explicit.installProfile, 'minimal');
+  assert.equal(explicit.profileConflict, null);
+
+  const aliasCli = parseCliArgs(['install', '--cli-only']);
+  assert.equal(aliasCli.installProfile, 'cli');
+  assert.equal(aliasCli.profileConflict, null);
+
+  const aliasMinimal = parseCliArgs(['install', '--minimal']);
+  assert.equal(aliasMinimal.installProfile, 'minimal');
+  assert.equal(aliasMinimal.profileConflict, null);
+
+  const conflict = parseCliArgs(['install', '--profile', 'full', '--cli-only']);
+  assert.match(conflict.profileConflict || '', /Conflicting profile flags/i);
+});
 
 test('Suite 1: Interactive Install Wizard', async (t) => {
   await t.test('1.0 Node runtime guard rejects versions below 20.16.0', async () => {
@@ -28,21 +46,41 @@ test('Suite 1: Interactive Install Wizard', async (t) => {
   await t.test('1.1 Standalone Clean Install', async () => {
     const env = createTestEnvironment();
     try {
-      const { code, output } = await runCLI(INSTALL_SCRIPT, env.dir, []);
+      const { code, output } = await runCLI(INSTALL_SCRIPT, env.dir, [], {
+        args: ['--yes', '--no-onboarding'],
+      });
       
       assert.equal(code, 0, 'Exit code should be 0');
       assert.match(output, /MarkOS protocol files installed/);
       assert.match(output, /Smart defaults applied/);
+      assert.match(output, /Canonical vault scaffold ready/);
       
       const markosDest = path.join(env.dir, '.agent', 'markos');
       assert.ok(fs.existsSync(markosDest), 'MarkOS directory should safely copy into temp context');
       assert.ok(fs.existsSync(path.join(markosDest, 'VERSION')), 'VERSION file correctly copied');
+
+      const vaultRoot = path.join(env.dir, 'MarkOS-Vault');
+      assert.ok(fs.existsSync(vaultRoot), 'Canonical vault root should be created');
+      assert.ok(fs.existsSync(path.join(vaultRoot, '.obsidian', 'app.json')), 'Obsidian app config scaffold should exist');
+      assert.ok(fs.existsSync(path.join(vaultRoot, 'Home', 'HOME.md')), 'Home entrypoint note should exist');
+      for (const family of ['Strategy', 'Execution', 'Relationships', 'Evidence', 'Reviews', 'Memory']) {
+        assert.ok(fs.existsSync(path.join(vaultRoot, family)), `Vault family ${family} should exist`);
+      }
       
       const manifest = readManifest(env.dir);
       assert.ok(manifest, '.markos-install-manifest.json is missing');
       assert.equal(manifest.project_name, path.basename(env.dir));
       assert.equal(manifest.location, 'project');
       assert.ok(manifest.project_slug, 'Manifest should capture the inferred project slug');
+      assert.equal(manifest.manifest_schema_version, 2);
+      assert.equal(manifest.bootstrap_model, 'vault-first');
+      assert.equal(manifest.legacy_surface_policy, 'migration-only');
+      assert.equal(manifest.install_profile, 'full');
+      assert.equal(manifest.profile_schema_version, 1);
+      assert.equal(manifest.components.onboarding_enabled, false);
+      assert.equal(manifest.components.ui_enabled, false);
+      assert.equal(manifest.vault_root, 'MarkOS-Vault');
+      assert.equal(manifest.vault_home_note, 'MarkOS-Vault/Home/HOME.md');
       assert.ok(manifest.file_hashes, 'Manifest lacks file_hashes map for updates');
       assert.ok(fs.existsSync(path.join(env.dir, '.markos-project.json')), 'Installer should write .markos-project.json');
 
@@ -76,6 +114,36 @@ test('Suite 1: Interactive Install Wizard', async (t) => {
       assert.equal(manifest.location, 'project');
     } finally {
       env.cleanup();
+    }
+  });
+
+  await t.test('1.1.4 profile flags persist explicit component contract in manifest', async () => {
+    const env = createTestEnvironment();
+    const envNoOnboarding = createTestEnvironment();
+    try {
+      const cliInstall = await runCLI(INSTALL_SCRIPT, env.dir, [], {
+        args: ['--yes', '--profile', 'cli'],
+      });
+
+      assert.equal(cliInstall.code, 0, 'CLI profile install should succeed');
+      const manifest = readManifest(env.dir);
+      assert.equal(manifest.install_profile, 'cli');
+      assert.equal(manifest.profile_schema_version, 1);
+      assert.equal(manifest.components.onboarding_enabled, false);
+      assert.equal(manifest.components.ui_enabled, false);
+
+      const noOnboardingInstall = await runCLI(INSTALL_SCRIPT, envNoOnboarding.dir, [], {
+        args: ['--yes', '--profile', 'full', '--no-onboarding'],
+      });
+
+      assert.equal(noOnboardingInstall.code, 0, 'No-onboarding install should succeed');
+      const manifestAfter = readManifest(envNoOnboarding.dir);
+      assert.equal(manifestAfter.install_profile, 'full');
+      assert.equal(manifestAfter.components.onboarding_enabled, false);
+      assert.equal(manifestAfter.components.ui_enabled, false);
+    } finally {
+      env.cleanup();
+      envNoOnboarding.cleanup();
     }
   });
 

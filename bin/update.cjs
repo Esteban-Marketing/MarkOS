@@ -43,9 +43,36 @@ const {
 const PKG_DIR = path.resolve(__dirname, '..');
 const CWD = process.cwd();
 const NEW_VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/markos/VERSION'), 'utf8').trim();
+const VAULT_ROOT_NAME = 'MarkOS-Vault';
+const VAULT_FAMILIES = ['Home', 'Strategy', 'Execution', 'Relationships', 'Evidence', 'Reviews', 'Memory'];
+const PROFILE_SCHEMA_VERSION = 1;
+
+function isValidProfile(profile) {
+  return profile === 'full' || profile === 'cli' || profile === 'minimal';
+}
+
+function buildProfileComponents(profile, previousComponents = null) {
+  const defaults = {
+    onboarding_enabled: profile === 'full',
+    ui_enabled: profile === 'full',
+  };
+
+  if (!previousComponents || typeof previousComponents !== 'object') {
+    return defaults;
+  }
+
+  return {
+    onboarding_enabled: typeof previousComponents.onboarding_enabled === 'boolean' ? previousComponents.onboarding_enabled : defaults.onboarding_enabled,
+    ui_enabled: typeof previousComponents.ui_enabled === 'boolean' ? previousComponents.ui_enabled : defaults.ui_enabled,
+  };
+}
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
+
+function toPortablePath(value) {
+  return String(value).split(path.sep).join('/');
+}
 
 function hashFile(filePath) {
   try {
@@ -58,6 +85,89 @@ function readManifest() {
   try {
     return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   } catch { return null; }
+}
+
+function writeFileIfMissing(filePath, content) {
+  if (fs.existsSync(filePath)) {
+    return false;
+  }
+
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content, 'utf8');
+  return true;
+}
+
+function normalizeVaultManifest(manifest) {
+  const projectSlug = typeof manifest?.project_slug === 'string' && manifest.project_slug.trim()
+    ? manifest.project_slug.trim()
+    : 'markos-client';
+  const projectName = typeof manifest?.project_name === 'string' && manifest.project_name.trim()
+    ? manifest.project_name.trim()
+    : 'MarkOS Project';
+
+  const installProfile = isValidProfile(manifest?.install_profile) ? manifest.install_profile : 'full';
+
+  return {
+    ...manifest,
+    manifest_schema_version: Math.max(Number(manifest?.manifest_schema_version || 0), 2),
+    project_name: projectName,
+    project_slug: projectSlug,
+    bootstrap_model: manifest?.bootstrap_model || 'vault-first',
+    legacy_surface_policy: manifest?.legacy_surface_policy || 'migration-only',
+    install_profile: installProfile,
+    profile_schema_version: Math.max(Number(manifest?.profile_schema_version || 0), PROFILE_SCHEMA_VERSION),
+    components: buildProfileComponents(installProfile, manifest?.components),
+    vault_root: toPortablePath(manifest?.vault_root || VAULT_ROOT_NAME),
+    vault_home_note: toPortablePath(manifest?.vault_home_note || `${VAULT_ROOT_NAME}/Home/HOME.md`),
+  };
+}
+
+function ensureCanonicalVaultContinuity(manifest) {
+  const normalizedManifest = normalizeVaultManifest(manifest);
+  const vaultRoot = path.join(CWD, normalizedManifest.vault_root);
+  const homeNotePath = path.join(CWD, normalizedManifest.vault_home_note);
+  const createdPaths = [];
+
+  if (!fs.existsSync(vaultRoot)) {
+    fs.mkdirSync(vaultRoot, { recursive: true });
+    createdPaths.push(vaultRoot);
+  }
+
+  for (const family of VAULT_FAMILIES) {
+    const familyDir = path.join(vaultRoot, family);
+    if (!fs.existsSync(familyDir)) {
+      fs.mkdirSync(familyDir, { recursive: true });
+      createdPaths.push(familyDir);
+    }
+  }
+
+  const obsidianDir = path.join(vaultRoot, '.obsidian');
+  if (!fs.existsSync(obsidianDir)) {
+    fs.mkdirSync(obsidianDir, { recursive: true });
+    createdPaths.push(obsidianDir);
+  }
+
+  if (writeFileIfMissing(path.join(obsidianDir, 'app.json'), JSON.stringify({ alwaysUpdateLinks: true }, null, 2))) {
+    createdPaths.push(path.join(obsidianDir, 'app.json'));
+  }
+
+  const vaultReadme = `# MarkOS Vault\n\nThis Obsidian vault is the canonical MarkOS operating surface for ${normalizedManifest.project_name}.\n\n## Canonical Families\n\n- Home\n- Strategy\n- Execution\n- Relationships\n- Evidence\n- Reviews\n- Memory\n\n## Update Continuity\n\nThis scaffold is preserved by \`npx markos update\` as the canonical vault-first workspace. Legacy MIR/MSP surfaces remain migration-only and are not recreated as default update targets.\n`;
+  if (writeFileIfMissing(path.join(vaultRoot, 'README.md'), vaultReadme)) {
+    createdPaths.push(path.join(vaultRoot, 'README.md'));
+  }
+
+  const timestamp = new Date().toISOString();
+  const homeNote = `---\nid: home-${normalizedManifest.project_slug}\ntitle: MarkOS Home\nvault_family: Home\nnote_family: home\nstatus: active\nowner: ${normalizedManifest.project_slug}\nreview_cycle: weekly\ncreated_at: ${timestamp}\nupdated_at: ${timestamp}\nsource_mode: native\nsummary: Canonical landing note for the vault-first MarkOS workspace.\n---\n\n# MarkOS Home\n\nUse this vault as the canonical source of truth for strategy, execution, evidence, reviews, relationships, and memory.\n\n## Update Continuity\n\n- Open this folder in Obsidian.\n- Treat legacy MIR/MSP outputs as migration-only surfaces.\n- Use onboarding only as a transitional helper until vault-native writes land.\n`;
+  if (writeFileIfMissing(homeNotePath, homeNote)) {
+    createdPaths.push(homeNotePath);
+  }
+
+  return {
+    manifest: normalizedManifest,
+    createdPaths,
+    vaultRoot,
+    homeNotePath,
+  };
 }
 
 function isLocalOverride(relPath) {
@@ -198,9 +308,16 @@ async function run() {
     process.exit(1);
   }
 
-  const installedVersion = manifest.version;
+  const vaultContinuity = ensureCanonicalVaultContinuity(manifest);
+  const normalizedManifest = vaultContinuity.manifest;
+
+  const installedVersion = normalizedManifest.version;
   console.log(`\n  Installed: v${installedVersion}`);
   console.log(`  Latest:    v${NEW_VERSION}`);
+  console.log(`  Canonical vault: ${path.join(CWD, normalizedManifest.vault_root)}`);
+  if (vaultContinuity.createdPaths.length > 0) {
+    console.log(`  Vault continuity: repaired ${vaultContinuity.createdPaths.length} canonical asset(s)`);
+  }
 
   if (installedVersion === NEW_VERSION) {
     console.log('\n✓ Already up to date.\n');
@@ -208,7 +325,7 @@ async function run() {
     return;
   }
 
-  const installedDir = getInstalledDir(manifest);
+  const installedDir = getInstalledDir(normalizedManifest);
   if (!installedDir || !fs.existsSync(installedDir)) {
     console.error(`\n✗ Installed MarkOS directory not found: ${installedDir}`);
     rl.close();
@@ -219,7 +336,7 @@ async function run() {
   const newFiles = getPkgAgentFiles(pkgAgentDir);
 
   console.log(`\n  Scanning ${newFiles.length} files for changes...\n`);
-  let { applied, skippedOverride, conflicts } = applyPackageUpdates(newFiles, pkgAgentDir, installedDir, manifest);
+  let { applied, skippedOverride, conflicts } = applyPackageUpdates(newFiles, pkgAgentDir, installedDir, normalizedManifest);
 
   console.log(`  ✓ Applied: ${applied} files updated`);
   console.log(`  ⊘ Skipped: ${skippedOverride} files (.markos-local/ compatibility override active)`);
@@ -238,7 +355,7 @@ async function run() {
   // Update VERSION and manifest
   fs.writeFileSync(path.join(installedDir, 'VERSION'), NEW_VERSION);
   const newManifest = {
-    ...manifest,
+    ...normalizedManifest,
     version: NEW_VERSION,
     last_updated: new Date().toISOString(),
     previous_version: installedVersion,
@@ -248,6 +365,7 @@ async function run() {
 
   banner(`MarkOS updated to v${NEW_VERSION} ✓`);
   console.log(`  ${applied} file(s) updated | ${skippedOverride} override(s) preserved\n`);
+  console.log('  Canonical vault continuity preserved; legacy MIR/MSP surfaces remain migration-only.\n');
   rl.close();
 }
 
