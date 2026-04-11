@@ -1,17 +1,17 @@
 # MarkOS (MarkOS Protocol)
 
-## Current Milestone: v3.3.0 — Revenue CRM and Customer Intelligence Core
+## Current Milestone: v3.4.0 — Complete Branding Engine
 
-**Goal:** Establish CRM records and timelines as the operational source of truth, preserve the v3.2 tenant and IAM and governance guarantees, and deliver flexible pipelines, native outbound channels, AI-assisted execution, attribution, and reporting closeout under honest hosted verification.
+**Goal:** Deliver a complete branding engine from concept and pain-point mapping through visual identity and deterministic design-system generation, with canonical Next.js + Tailwind v4 + shadcn/ui implementation outputs and governance-safe version evolution.
 
 **Target features:**
-- Multi-tenant foundation with deterministic tenant context propagation, RLS isolation, and enforceable RBAC across UI/API/jobs/agent runs
-- Plugin-first expansion model with the first production plugin: MarkOS Digital Agency
-- White-label and custom-domain controls that remain versioned, rollback-safe, and tenant-isolated
-- Tenant-bound agent orchestration with approval gates, append-only lineage, and full telemetry for model/prompt/tool/cost outcomes
-- Billing and metering controls that reconcile to invoices and support enterprise trust gates
+- Brand strategy pipeline from raw concept inputs to audience pain/needs/expectation mapping, positioning, and messaging pillars
+- Deterministic visual identity outputs including palette roles, typography hierarchy, visual language rules, and voice cues
+- Token and theme compiler that maps strategy and identity into Tailwind v4 + shadcn/ui-ready contracts
+- Component-rich UI contract and starter implementation assets for Next.js App Router
+- Governance and versioning flow for safe publish/rollback and cross-role actionable handoffs
 
-**Status:** v3.2.0 is repository-complete with only live checklist follow-through remaining from hosted verification. v3.3.0 is the active milestone, with Phases 58-64.3 repository-verified and Phase 65 currently handling hosted reporting closeout and milestone promotion for ATT-01 and REP-01.
+**Status:** v3.4.0 is now active for roadmap definition. This milestone is scoped to branding-system completion and must remain additive to existing MarkOS architecture without replatforming.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -182,4 +182,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-03 after v3.1.0 archive and v3.2.0 kickoff.
+Last updated: 2026-04-11 after v3.4.0 milestone kickoff.

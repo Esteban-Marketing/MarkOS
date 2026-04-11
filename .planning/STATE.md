@@ -1,17 +1,20 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.3.0
-milestone_name: Revenue CRM and Customer Intelligence Core
-status: in_progress
-last_updated: "2026-04-08T00:00:00.000Z"
+milestone: v3.4.0
+milestone_name: Complete Branding Engine
+current_phase: 67
+current_phase_name: Brand Inputs and Human Insight Modeling
+current_plan: 0
+status: defining-requirements
+paused_at: None
+last_updated: "2026-04-11T00:00:00.000Z"
+last_activity: 2026-04-11
 progress:
-  total_phases: 62
-  completed_phases: 59
-  active_phases: 1
-  total_plans: 171
-  completed_plans: 168
-  planned_plans: 3
-  percent: 98
+  total_phases: 38
+  completed_phases: 30
+  total_plans: 105
+  completed_plans: 108
+  percent: 100
 ---
 
 - 2026-04-03: Phase 47 completed with multi-provider BYOK abstraction, legacy wrapper bridge integration, dual-path/e2e verification, and operator/architecture documentation closure.
@@ -81,20 +84,20 @@ progress:
 Current Position
 ----------------
 
-Milestone: v3.3.0 — Revenue CRM and Customer Intelligence Core
-Current Phase: 65
-Current Phase Name: Hosted Reporting Closeout and Milestone Promotion
-Total Phases: 11
-Current Plan: 2
-Total Plans in Phase: 3
-Progress: 91%
-Last Activity: 2026-04-08
-Last Activity Description: Phase 65 Wave 1 is complete, the repo-local Wave 2 baseline is recorded, and hosted verification evidence is still the blocking input before promotion work can continue.
+Milestone: v3.4.0 — Complete Branding Engine
+Current Phase: 67
+Current Phase Name: Brand Inputs and Human Insight Modeling
+Total Phases: TBD
+Current Plan: 0
+Total Plans in Phase: TBD
+Progress: 0%
+Last Activity: 2026-04-11
+Last Activity Description: Milestone kickoff and requirements definition started
 Paused At: None
-Status Detail: CRM milestone delivery through Phase 64.3 remains repository-verified, and the next active work is the narrowly-scoped hosted reporting closeout for ATT-01 and REP-01. Phase 65 planning is complete with locked context, research, three execution waves, and a PASS plan-verification artifact that preserves the boundary between repository proof, hosted proof, and the separate 64.3 user-home instruction follow-through.
-Previous Milestone: v3.2.0 — Multi-Tenant Agency Runtime and Enterprise Governance (REPOSITORY-COMPLETE)
-Next Step: Execute `65-02-PLAN.md` after hosted v3.3 reporting evidence is captured; the separate 64.3 user-home instruction follow-through remains pending outside the Phase 65 repo scope.
-Carry-Over Human Scope: The four-item v3.2 live checklist remains open and should be tracked separately from v3.3 execution planning.
+Status Detail: v3.4.0 focuses on a full branding pipeline from concept and pain-point mapping through identity, tokenization, component contracts, and Next.js starter outputs on canonical Tailwind v4 and shadcn/ui foundations. The workflow is currently in requirements and roadmap definition.
+Previous Milestone: v3.3.0 — Revenue CRM and Customer Intelligence Core
+Next Step: Finalize `REQUIREMENTS.md` v3.4.0 block and generate roadmap phases for execution.
+Carry-Over Human Scope: Hosted closeout and release tasks from v3.3.x remain tracked separately and should not expand v3.4.0 branding scope.
 
 Tooling Snapshot
 ----------------
@@ -228,3 +231,9 @@ Roadmap Evolution
 - 2026-04-06: Phase 64.3 planning completed with four plans and `64.3-PLAN-VERIFY.md` PASS; execution now covers the narrow registry patch, reusable repo-local manifest refresh helper, canonical customization-boundary documentation with inventory visibility, and end-to-end dual-root closure proof including decimal-phase roadmap lookup plus the broader `npm test` gate.
 - 2026-04-06: Phase 64.3 executed and verified passed with canonical `GSD-ALIGN-06` and `GSD-ALIGN-07` registry entries, a reusable manifest refresh helper, fresh shared and localized manifests, a durable `.planning/codebase/GSD-CUSTOMIZATION-BOUNDARY.md` ownership contract, a focused closure bundle including manifest freshness coverage, a green `npm test` gate at 664/664, and a separate manual follow-through artifact for user-home instruction targets.
 - 2026-04-06: Phase 65 planning completed in `.planning/phases/65-hosted-reporting-closeout-and-milestone-promotion/` with a hosted-closeout-only context, planning-grade research, three execution-ready plans (`65-01` through `65-03`), and `65-PLAN-VERIFY.md` PASS; the phase is explicitly limited to hosted evidence capture and honest milestone-promotion logic for `ATT-01` and `REP-01`.
+- 2026-04-10: Phase 66 added for post-closeout npm release hardening, package version alignment to `3.3.0`, distributable validation, full publish-checklist preparation, and a final human-run public npm publish step after Phase 65.
+- 2026-04-10: Phase 66 planning completed in `.planning/phases/66-npm-release-hardening-and-public-publish-readiness/` with a locked post-closeout release context, planning-grade release research, a validation strategy, three execution-ready plans (`66-01` through `66-03`), and `66-PLAN-VERIFY.md` PASS while preserving Phase 65 as the active blocking milestone closeout lane.
+- 2026-04-11: Future milestone `v3.3.1` was added to the live roadmap and requirements as an Obsidian Mind-inspired vault-first replacement for MIR/MSP after Phase 66, with Phases 67 through 72 reserved for taxonomy, bootstrap, onboarding or migration, workflow remap, dashboard or evidence graph, and legacy demotion plus end-to-end validation.
+- 2026-04-11: Phase 67.1 inserted after Phase 67 in the v3.3.1 roadmap as urgent setup-profile work (`Configurable install setup levels with optional onboarding/UI and CLI-only agent mode`) to keep vault taxonomy planning intact and separate from installer-profile scope.
+- 2026-04-11: Phase 67.1 planning completed with context, research, three executable plan files (`67.1-01` through `67.1-03`), Nyquist validation artifact, and `67.1-PLAN-VERIFY.md` PASS; phase is ready for `/gsd:execute-phase 67.1`.
+- 2026-04-11: Phase 67.1 executed across all three plans with deterministic install profile parsing (`full|cli|minimal`), manifest profile/component persistence, update-time legacy normalization, profile-aware status transparency, README/help parity updates, and focused regression proof (`node --test test/install.test.js test/update.test.js` = 18/18 pass).
