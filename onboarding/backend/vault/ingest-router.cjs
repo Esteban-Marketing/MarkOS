@@ -1,5 +1,7 @@
 'use strict';
 
+const { validateAudienceMetadata } = require('./audience-schema.cjs');
+
 function createError(code, message) {
   const error = new Error(message);
   error.code = code;
@@ -31,12 +33,19 @@ function createIngestRouter(options = {}) {
       throw createError('E_INGEST_EVENT_REQUIRED', 'ingest router requires an event payload.');
     }
 
-    const persisted = await persistArtifact(event);
-    const indexed = await indexArtifact(event);
+    const metadata = validateAudienceMetadata(event.metadata);
+
+    const enrichedEvent = {
+      ...event,
+      metadata,
+    };
+
+    const persisted = await persistArtifact(enrichedEvent);
+    const indexed = await indexArtifact(enrichedEvent);
 
     return {
       accepted: true,
-      event,
+      event: enrichedEvent,
       persisted,
       indexed,
     };
