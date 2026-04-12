@@ -68,6 +68,9 @@ function createIngestRouter(options = {}) {
     const enrichedEvent = {
       ...event,
       metadata,
+      // Preserve content_hash for idempotency key derivation — validateAudienceMetadata strips it.
+      content_hash: event.content_hash
+        || (event.metadata && typeof event.metadata.content_hash === 'string' ? event.metadata.content_hash : undefined),
     };
 
     if (applyIngest && appendAudit) {

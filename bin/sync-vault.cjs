@@ -2,6 +2,7 @@
 'use strict';
 
 const fs = require('node:fs');
+const crypto = require('node:crypto');
 const path = require('path');
 
 const { createIngestRouter } = require('../onboarding/backend/vault/ingest-router.cjs');
@@ -57,7 +58,10 @@ function createWatcher(orchestrator, watcherFactory, vaultRoot) {
     try {
       const content = fs.readFileSync(targetPath, 'utf8');
       const fm = parseFrontmatter(content);
-      return extractAudienceMetadata(fm);
+      const audienceMetadata = extractAudienceMetadata(fm);
+      // Derive a stable content_hash from the file body — required by buildIdempotencyKey.
+      const contentHash = crypto.createHash('sha256').update(content).digest('hex').slice(0, 16);
+      return { ...audienceMetadata, content_hash: contentHash };
     } catch (_err) {
       return {};
     }
@@ -103,7 +107,10 @@ async function startVaultSync(options = {}) {
   const activeRevisions = new Map();
   const getActiveRevision = async ({ tenantId: tid, docId }) =>
     activeRevisions.get(`${tid}:${docId}`) || null;
-  const upsertRevision = async ({ revision }) => revision;
+  const upsertRevision = async ({ revision }) => {
+    activeRevisions.set(`${revision.tenant_id}:${revision.doc_id}`, revision);
+    return revision;
+  };
 
   const ingestApply = createIngestApply({ getActiveRevision, upsertRevision });
 
@@ -134,7 +141,12 @@ async function startVaultSync(options = {}) {
   const orchestrator = createSyncOrchestrator({
     tenantId,
     vaultRoot,
-    enqueue: async (event) => router.route({ event }),
+    enqueue: async (event) => {
+      const result = await router.route({ event });
+      // Drain the reindex queue after each ingest so jobs execute promptly.
+      await reindexQueue.drain();
+      return result;
+    },
   });
 
   const watcherFactory = options.watcherFactory || loadChokidar();
