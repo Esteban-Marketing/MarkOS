@@ -19,20 +19,29 @@ async function ensureVectorStores() {
         configured: Boolean(supabaseUrl && supabaseKey),
         url: supabaseUrl || null,
       },
+      pageindex: {
+        configured: Boolean(supabaseUrl && supabaseKey),
+        mode: 'supabase_rls_scoped_query',
+      },
       upstash_vector: {
         configured: Boolean(upstashUrl && upstashToken),
         url: upstashUrl || null,
+        legacy_optional: true,
       },
     },
   };
 
-  if (!report.providers.supabase.configured || !report.providers.upstash_vector.configured) {
+  if (!report.providers.supabase.configured) {
     report.status = 'providers_degraded';
-    report.message = 'One or more vector providers are not configured. Set SUPABASE_* and UPSTASH_VECTOR_* variables.';
-    report.actionable_next_step = 'Add SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, UPSTASH_VECTOR_REST_URL, and UPSTASH_VECTOR_REST_TOKEN to .env for full vector-backed readiness.';
+    report.message = 'Supabase is required for active PageIndex retrieval readiness.';
+    report.actionable_next_step = 'Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY) to .env.';
   } else {
-    report.message = 'All vector providers are configured.';
-    report.actionable_next_step = null;
+    report.message = report.providers.upstash_vector.configured
+      ? 'Supabase/PageIndex retrieval is ready; legacy Upstash compatibility remains configured.'
+      : 'Supabase/PageIndex retrieval is ready; Upstash is not required after hard cutover.';
+    report.actionable_next_step = report.providers.upstash_vector.configured
+      ? null
+      : 'No action required for retrieval. Configure UPSTASH_VECTOR_* only if legacy compatibility writes are needed.';
   }
 
   return report;

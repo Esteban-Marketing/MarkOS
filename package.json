@@ -44,6 +44,7 @@
     "test:patch": "node --test test/update.test.js",
     "test:onboarding": "node --test test/onboarding-server.test.js",
     "test:protocol": "node --test test/protocol.test.js",
+    "verify:phase84:cutover-scan": "node scripts/phase-84/static-cutover-scan.cjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "chromatic": "chromatic --only-changed --exit-zero-on-changes",

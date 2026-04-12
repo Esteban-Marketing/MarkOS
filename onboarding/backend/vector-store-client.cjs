@@ -142,12 +142,16 @@ function getSupabaseKey() {
     || null;
 }
 
-function getUpstashUrl() {
+function getLegacyUpstashUrl() {
   return runtimeConfig.upstash_vector_rest_url || process.env.UPSTASH_VECTOR_REST_URL || null;
 }
 
-function getUpstashToken() {
+function getLegacyUpstashToken() {
   return runtimeConfig.upstash_vector_rest_token || process.env.UPSTASH_VECTOR_REST_TOKEN || null;
+}
+
+function hasLegacyUpstashConfig() {
+  return Boolean(getLegacyUpstashUrl() && getLegacyUpstashToken());
 }
 
 function getSupabaseClient() {
@@ -169,8 +173,8 @@ function getSupabaseClient() {
 }
 
 function getUpstashIndex() {
-  const url = getUpstashUrl();
-  const token = getUpstashToken();
+  const url = getLegacyUpstashUrl();
+  const token = getLegacyUpstashToken();
   if (!url || !token) return null;
 
   if (!_upstashIndex) {
@@ -198,21 +202,27 @@ function setBootReport(report) {
 async function healthCheck() {
   const mode = inferStorageMode();
   const supabaseConfigured = Boolean(getSupabaseUrl() && getSupabaseKey());
-  const upstashConfigured = Boolean(getUpstashUrl() && getUpstashToken());
+  const upstashConfigured = hasLegacyUpstashConfig();
 
   const providers = {
-    supabase: { configured: supabaseConfigured, ok: false },
-    upstash_vector: { configured: upstashConfigured, ok: false },
+    supabase: { configured: supabaseConfigured, ok: false, role: 'active_retrieval' },
+    pageindex: {
+      configured: supabaseConfigured,
+      ok: false,
+      role: 'active_retrieval_contract',
+      mode: 'supabase_rls_scoped_query',
+    },
+    upstash_vector: { configured: upstashConfigured, ok: false, role: 'legacy_optional' },
   };
 
-  if (!supabaseConfigured && !upstashConfigured) {
+  if (!supabaseConfigured) {
     return {
       ok: false,
       mode,
-      status: 'providers_unconfigured',
+      status: 'providers_degraded',
       memory_state: 'degraded',
       providers,
-      error: 'SUPABASE_* and UPSTASH_VECTOR_* variables are not configured.',
+      error: 'SUPABASE_* variables are required for active PageIndex retrieval.',
       boot: _bootReport,
     };
   }
@@ -229,9 +239,11 @@ async function healthCheck() {
         providers.supabase.error = error.message;
       } else {
         providers.supabase.ok = true;
+        providers.pageindex.ok = true;
       }
     } catch (error) {
       providers.supabase.error = error.message;
+      providers.pageindex.error = error.message;
     }
   }
 
@@ -246,15 +258,18 @@ async function healthCheck() {
     }
   }
 
-  const allConfiguredOk = (!supabaseConfigured || providers.supabase.ok)
-    && (!upstashConfigured || providers.upstash_vector.ok);
+  const activeReady = providers.supabase.ok && providers.pageindex.ok;
+  const legacyWarning = upstashConfigured && !providers.upstash_vector.ok;
 
   return {
-    ok: allConfiguredOk,
+    ok: activeReady,
     mode,
-    status: allConfiguredOk ? 'providers_ready' : 'providers_degraded',
-    memory_state: allConfiguredOk ? 'enabled' : 'degraded',
+    status: activeReady ? (legacyWarning ? 'providers_ready_legacy_warning' : 'providers_ready') : 'providers_degraded',
+    memory_state: activeReady ? 'enabled' : 'degraded',
     providers,
+    warning: legacyWarning
+      ? 'Legacy Upstash provider is configured but not reachable; active retrieval remains ready on Supabase/PageIndex.'
+      : null,
     boot: _bootReport,
   };
 }
@@ -357,51 +372,56 @@ async function upsertSeed(slug, seed) {
 }
 
 async function getContext(slug, section, query = 'summary', nResults = 1) {
-  const index = getUpstashIndex();
-  if (!index) return [];
+  const client = getSupabaseClient();
+  if (!client) return [];
 
-  const candidates = getSectionCollectionReadCandidates(slug, section);
-
-  for (const namespaceName of candidates) {
-    try {
-      const namespace = index.namespace(namespaceName);
-      const matches = await namespace.query({
-        data: query,
-        topK: nResults,
-        includeData: true,
-        includeMetadata: true,
-      });
-
-      if (!Array.isArray(matches) || matches.length === 0) continue;
-
-      const docs = matches
-        .map((entry) => {
-          if (typeof entry.data === 'string' && entry.data.trim()) return entry.data;
-          if (entry.metadata && typeof entry.metadata.content === 'string') return entry.metadata.content;
-          return null;
-        })
-        .filter(Boolean);
-
-      if (docs.length > 0) {
-        return docs;
-      }
-    } catch {
-      // Try compatibility namespace candidate.
-    }
+  const normalizedSlug = String(slug || '').trim();
+  const normalizedSection = String(section || '').trim();
+  if (!normalizedSlug || !normalizedSection) {
+    return [];
   }
 
-  return [];
+  const sourcePath = `drafts/seed-${normalizedSection}.md`;
+  const { data, error } = await client
+    .from('markos_artifacts')
+    .select('artifact_id, source_path')
+    .eq('project_slug', normalizedSlug)
+    .ilike('source_path', `%${normalizedSection}%`)
+    .order('updated_at', { ascending: false })
+    .limit(Math.max(1, Number(nResults) || 1));
+
+  if (error || !Array.isArray(data)) {
+    return [];
+  }
+
+  const queryToken = String(query || '').trim().toLowerCase();
+  const prioritized = data
+    .map((row) => ({
+      text: `${row.source_path || sourcePath} (${row.artifact_id || 'artifact'})`,
+      score: queryToken && String(row.source_path || '').toLowerCase().includes(queryToken) ? 1 : 0,
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, Math.max(1, Number(nResults) || 1));
+
+  return prioritized.map((entry) => entry.text);
 }
 
 async function getLiteracyContext(discipline, query = 'summary', filters = {}, topK = 5) {
-  const index = getUpstashIndex();
-  if (!index) return [];
+  const client = getSupabaseClient();
+  if (!client) return [];
 
-  const namespaceName = buildStandardsNamespaceName(discipline);
-  const namespace = index.namespace(namespaceName);
+  const normalizedDiscipline = String(discipline || '').trim();
+  if (!normalizedDiscipline) return [];
+
+  const disciplineCandidates = Array.from(new Set([
+    normalizedDiscipline,
+    normalizeDisciplineLabel(normalizedDiscipline),
+    slugifyDiscipline(normalizedDiscipline),
+  ].filter(Boolean)));
+
   const envelope = {
     mode: 'reason',
-    discipline: String(discipline || '').trim() || null,
+    discipline: normalizedDiscipline,
     audience: String(filters.audience || '').trim() || null,
     filters: {
       pain_point_tags: normalizeFilterList(filters.pain_point_tags || filters.pain_point_tag),
@@ -414,31 +434,88 @@ async function getLiteracyContext(discipline, query = 'summary', filters = {}, t
   };
 
   const adapter = createPageIndexAdapter({
-    resolveDocIds: async () => [namespaceName],
+    resolveDocIds: async ({ envelope: normalizedEnvelope }) => {
+      let resolverQuery = client
+        .from('markos_literacy_chunks')
+        .select('chunk_id, doc_id')
+        .eq('status', 'canonical')
+        .in('discipline', disciplineCandidates)
+        .limit(Math.max(20, Number(topK) * 10 || 50));
+
+      if (normalizedEnvelope.filters.business_model[0]) {
+        resolverQuery = resolverQuery.contains('business_model', [normalizedEnvelope.filters.business_model[0]]);
+      }
+      if (normalizedEnvelope.filters.funnel_stage[0]) {
+        resolverQuery = resolverQuery.eq('funnel_stage', normalizedEnvelope.filters.funnel_stage[0]);
+      }
+      if (normalizedEnvelope.filters.content_type[0]) {
+        resolverQuery = resolverQuery.eq('content_type', normalizedEnvelope.filters.content_type[0]);
+      }
+
+      const { data, error } = await resolverQuery;
+      if (error) {
+        return [];
+      }
+
+      return Array.from(new Set((data || []).map((row) => String(row.chunk_id || row.doc_id || '').trim()).filter(Boolean)));
+    },
     retrieveDocuments: async ({ envelope: normalizedEnvelope }) => {
-      const filter = buildLiteracyFilter({
-        business_model: normalizedEnvelope.filters.business_model[0] || null,
-        funnel_stage: normalizedEnvelope.filters.funnel_stage[0] || null,
-        content_type: normalizedEnvelope.filters.content_type[0] || null,
-        pain_point_tags: normalizedEnvelope.filters.pain_point_tags,
+      let retrievalQuery = client
+        .from('markos_literacy_chunks')
+        .select('chunk_id, doc_id, chunk_text, discipline, sub_discipline, business_model, funnel_stage, content_type, pain_point_tags, source_ref, version, updated_at')
+        .eq('status', 'canonical')
+        .in('discipline', disciplineCandidates)
+        .limit(Math.max(1, Number(topK) || 5));
+
+      if (normalizedEnvelope.filters.business_model[0]) {
+        retrievalQuery = retrievalQuery.contains('business_model', [normalizedEnvelope.filters.business_model[0]]);
+      }
+      if (normalizedEnvelope.filters.funnel_stage[0]) {
+        retrievalQuery = retrievalQuery.eq('funnel_stage', normalizedEnvelope.filters.funnel_stage[0]);
+      }
+      if (normalizedEnvelope.filters.content_type[0]) {
+        retrievalQuery = retrievalQuery.eq('content_type', normalizedEnvelope.filters.content_type[0]);
+      }
+      if (normalizedEnvelope.filters.pain_point_tags.length > 0) {
+        retrievalQuery = retrievalQuery.overlaps('pain_point_tags', normalizedEnvelope.filters.pain_point_tags);
+      }
+
+      const { data, error } = await retrievalQuery;
+      if (error) {
+        return [];
+      }
+
+      const queryTokens = String(query || '').toLowerCase().split(/\s+/).filter(Boolean);
+      const rows = Array.isArray(data) ? data : [];
+      const scored = rows.map((row) => {
+        const text = String(row.chunk_text || '');
+        const haystack = `${text}\n${row.source_ref || ''}`.toLowerCase();
+        const scoreBase = queryTokens.length === 0
+          ? 1
+          : queryTokens.reduce((count, token) => (haystack.includes(token) ? count + 1 : count), 0);
+
+        return {
+          id: String(row.chunk_id || row.doc_id || ''),
+          text,
+          metadata: {
+            discipline: row.discipline || null,
+            sub_discipline: row.sub_discipline || null,
+            business_model: Array.isArray(row.business_model) ? row.business_model : [],
+            funnel_stage: row.funnel_stage || null,
+            content_type: row.content_type || null,
+            pain_point_tags: Array.isArray(row.pain_point_tags) ? row.pain_point_tags : [],
+            tenant_scope: normalizedEnvelope.filters.tenant_scope,
+            source_ref: row.source_ref || null,
+            version: row.version || null,
+            updated_at: row.updated_at || null,
+          },
+          score: scoreBase,
+        };
       });
 
-      const matches = await namespace.query({
-        data: String(query || ''),
-        topK: Math.max(1, Number(topK) || 5),
-        includeData: true,
-        includeMetadata: true,
-        filter,
-      });
-
-      return Array.isArray(matches)
-        ? matches.map((entry) => ({
-          id: entry && entry.id ? entry.id : null,
-          text: typeof entry.data === 'string' ? entry.data : '',
-          metadata: entry && entry.metadata ? entry.metadata : {},
-          score: typeof entry.score === 'number' ? entry.score : 0,
-        }))
-        : [];
+      return scored
+        .sort((a, b) => b.score - a.score)
+        .slice(0, Math.max(1, Number(topK) || 5));
     },
   });
 

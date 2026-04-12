@@ -24,7 +24,7 @@ function createEnvelope(overrides = {}) {
 
 test('84-02 adapter returns normalized retrieval items with provenance metadata', async () => {
   const adapter = createPageIndexAdapter({
-    resolveDocIds: async () => ['doc-1'],
+    resolveDocIds: async () => ['chunk-1'],
     retrieveDocuments: async () => ([
       {
         id: 'chunk-1',
@@ -59,7 +59,7 @@ test('84-02 adapter supports discipline and audience scoped retrieval in one env
   const adapter = createPageIndexAdapter({
     resolveDocIds: async (payload) => {
       observed.push(payload.envelope);
-      return ['doc-1'];
+      return ['chunk-1'];
     },
     retrieveDocuments: async () => ([]),
   });
@@ -82,7 +82,7 @@ test('84-02 adapter supports discipline and audience scoped retrieval in one env
 
 test('84-02 adapter cache key is deterministic from tenant and canonical envelope', async () => {
   const adapter = createPageIndexAdapter({
-    resolveDocIds: async () => ['doc-1'],
+    resolveDocIds: async () => ['chunk-1'],
     retrieveDocuments: async () => ([]),
   });
 

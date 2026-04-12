@@ -35,20 +35,42 @@ function normalizeItem(item, tenantId, envelope) {
   };
 }
 
+function normalizeDocIds(value) {
+  return Array.from(
+    new Set((Array.isArray(value) ? value : []).map((entry) => String(entry || '').trim()).filter(Boolean))
+  );
+}
+
+function reportInvariantBreach(handler, payload) {
+  if (typeof handler === 'function') {
+    handler(payload);
+  }
+}
+
 function createPageIndexAdapter(options = {}) {
   const resolveDocIds = typeof options.resolveDocIds === 'function' ? options.resolveDocIds : async () => [];
   const retrieveDocuments = typeof options.retrieveDocuments === 'function' ? options.retrieveDocuments : async () => [];
   const cache = options.cache || createRetrievalCache();
+  const onInvariantBreach = typeof options.onInvariantBreach === 'function' ? options.onInvariantBreach : null;
 
   async function retrieve({ tenantId, envelope }) {
+    const normalizedTenant = String(tenantId || '').trim();
+    if (!normalizedTenant) {
+      throw createError('E_PAGEINDEX_TENANT_REQUIRED', 'PageIndex retrieval requires tenantId.');
+    }
+
     const normalizedEnvelope = normalizeRetrievalEnvelope(envelope);
+    if (normalizedEnvelope.filters.tenant_scope !== normalizedTenant) {
+      throw createError('E_PAGEINDEX_TENANT_SCOPE_MISMATCH', 'Envelope tenant scope must match tenantId.');
+    }
+
     const cacheKey = buildRetrievalCacheKey({ tenantId, envelope: normalizedEnvelope });
     const cached = cache.get(cacheKey);
     if (cached) {
       return cached;
     }
 
-    const docIds = await resolveDocIds({ tenantId, envelope: normalizedEnvelope });
+    const docIds = normalizeDocIds(await resolveDocIds({ tenantId: normalizedTenant, envelope: normalizedEnvelope }));
     if (!Array.isArray(docIds) || docIds.length === 0) {
       const emptyResult = {
         envelope: normalizedEnvelope,
@@ -61,12 +83,28 @@ function createPageIndexAdapter(options = {}) {
     }
 
     const rawItems = await retrieveDocuments({
-      tenantId,
+      tenantId: normalizedTenant,
       envelope: normalizedEnvelope,
       docIds,
     });
 
-    const normalizedItems = (Array.isArray(rawItems) ? rawItems : [])
+    const allowedDocIds = new Set(docIds);
+    const rawList = Array.isArray(rawItems) ? rawItems : [];
+    const contamination = rawList.filter((item) => {
+      const itemId = String(item && item.id ? item.id : '').trim();
+      return itemId && !allowedDocIds.has(itemId);
+    });
+
+    if (contamination.length > 0) {
+      reportInvariantBreach(onInvariantBreach, {
+        code: 'E_PAGEINDEX_DOC_SCOPE_VIOLATION',
+        tenantId: normalizedTenant,
+        offending_ids: contamination.map((item) => item.id),
+      });
+      throw createError('E_PAGEINDEX_DOC_SCOPE_VIOLATION', 'Retrieved item outside tenant-scoped allow-list.');
+    }
+
+    const normalizedItems = rawList
       .map((item) => normalizeItem(item, tenantId, normalizedEnvelope))
       .filter((item) => item.text.trim().length > 0);
 
