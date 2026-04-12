@@ -25,6 +25,7 @@ function createIngestRouter(options = {}) {
 
   const applyIngest = typeof options.applyIngest === 'function' ? options.applyIngest : null;
   const appendAudit = typeof options.appendAudit === 'function' ? options.appendAudit : null;
+  const enqueueReindex = typeof options.enqueueReindex === 'function' ? options.enqueueReindex : null;
   const persistArtifact = applyIngest && appendAudit
     ? null
     : asFunction(
@@ -74,7 +75,19 @@ function createIngestRouter(options = {}) {
       const audit = await appendAudit(createLineageRecord(enrichedEvent, applied));
 
       const shouldIndex = !applied || (applied.outcome !== 'noop_duplicate' && applied.outcome !== 'noop_stale');
-      const indexed = shouldIndex ? await indexArtifact(enrichedEvent) : { skipped: true, reason: applied.outcome };
+      let indexed = { skipped: true, reason: applied && applied.outcome ? applied.outcome : 'noop' };
+      if (shouldIndex) {
+        if (enqueueReindex) {
+          indexed = await enqueueReindex({
+            event: enrichedEvent,
+            applied,
+            audit,
+            idempotencyKey: applied && applied.idempotency_key ? applied.idempotency_key : buildIdempotencyKey(enrichedEvent),
+          });
+        } else {
+          indexed = await indexArtifact(enrichedEvent);
+        }
+      }
 
       return {
         accepted: true,
