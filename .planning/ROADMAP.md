@@ -671,6 +671,29 @@ Plans:
 **Depends on:** Phase 79
 **Status:** 📋 Planned
 **Gap Closure:** Closes milestone audit warning for publish and rollback being test-only paths.
+
+### Phase 82: Verification Assurance and Traceability Reconciliation
+**Goal:** Close milestone-assurance gaps by producing missing phase verification reports (79, 80), reconciling Nyquist/validation ledgers, and aligning roadmap + requirements traceability to runtime evidence.
+**Requirements Mapped:** BRAND-ID-02, BRAND-GOV-02
+**Depends on:** Phase 80
+**Status:** 📋 Planned
+**Gap Closure:** Closes audit warnings for missing 79/80 verification artifacts and traceability drift.
+**Plans:** 3 plans
+Plans:
+- [ ] 82-01-PLAN.md — Generate and approve 79/80 phase-level VERIFICATION reports from existing validation evidence
+- [ ] 82-02-PLAN.md — Reconcile VALIDATION frontmatter/task states with verification outcomes (Nyquist alignment)
+- [ ] 82-03-PLAN.md — Update roadmap/requirements traceability rows and re-run milestone audit for closure confidence
+
+### Phase 83: Strategy Role Guidance Human UAT Closure
+**Goal:** Complete human qualitative UAT for role-consumable messaging guidance and lock readability/practicality acceptance for strategy outputs.
+**Requirements Mapped:** BRAND-STRAT-02
+**Depends on:** Phase 82
+**Status:** 📋 Planned
+**Gap Closure:** Closes audit partial requirement for Phase 74 human-needed strategy guidance verification.
+**Plans:** 2 plans
+Plans:
+- [ ] 83-01-PLAN.md — Define human UAT protocol and acceptance rubric for strategist/founder/content role outputs
+- [ ] 83-02-PLAN.md — Execute UAT, capture evidence, and promote BRAND-STRAT-02 to complete if accepted
 ---
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
