@@ -647,6 +647,11 @@ Plans:
 **Depends on:** Phase 78
 **Status:** 📋 Planned
 **Gap Closure:** Closes milestone audit blockers for missing lineage fingerprint handoff and bundle creation denial.
+**Plans:** 3 plans
+Plans:
+- [ ] 79-01-PLAN.md — Wave 1 lineage fingerprint handoff helper contract and deterministic unit tests
+- [ ] 79-02-PLAN.md — Wave 2 submit-path governance handoff wiring and integration tests proving gate recovery
+- [ ] 79-03-PLAN.md — Wave 3 runtime-proof and boundary regression gate with validation ledger
 
 ### Phase 80: Publish Readiness Boundary Isolation and Regression Fix
 **Goal:** Re-scope publish readiness diagnostics to the correct phase boundaries so accessibility gates and governance gates remain deterministic and non-overlapping.
