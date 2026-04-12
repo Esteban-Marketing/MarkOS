@@ -1,0 +1,52 @@
+{
+  "token_contract": {
+    "categories": {
+      "color": {
+        "brand.primary": "#0a6cff"
+      },
+      "typography": {
+        "type.body": {
+          "family": "IBM Plex Sans",
+          "size": "1rem"
+        }
+      },
+      "spacing": {
+        "space.4": "1rem"
+      },
+      "radius": {
+        "radius.md": "0.5rem"
+      },
+      "shadow": {
+        "shadow.md": "0 8px 24px rgba(0,0,0,0.18)"
+      },
+      "motion": {
+        "duration.fast": "120ms"
+      }
+    },
+    "tailwind_v4": {
+      "css_variables": {
+        "--color-brand-primary": "#0a6cff",
+        "--space-4": "1rem"
+      },
+      "theme_extensions": {
+        "colors": {
+          "brand": "var(--color-brand-primary)"
+        },
+        "spacing": {
+          "4": "var(--space-4)"
+        }
+      }
+    },
+    "lineage": {
+      "ruleset_version": "76.0.0",
+      "strategy_fingerprint": "strategy-fp-001",
+      "identity_fingerprint": "identity-fp-001",
+      "decisions": [
+        {
+          "decision_id": "D-01",
+          "source_node_ids": ["strategy:positioning:1"]
+        }
+      ]
+    }
+  }
+}
