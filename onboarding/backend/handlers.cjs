@@ -60,6 +60,8 @@ const { validateMessagingRules } = require('./brand-strategy/messaging-rules-sch
 const { synthesizeStrategyArtifact } = require('./brand-strategy/strategy-synthesizer.cjs');
 const { detectContradictions } = require('./brand-strategy/contradiction-detector.cjs');
 const { persistStrategyArtifact } = require('./brand-strategy/strategy-artifact-writer.cjs');
+const { compileMessagingRules } = require('./brand-strategy/messaging-rules-compiler.cjs');
+const { projectRoleViews } = require('./brand-strategy/role-view-projector.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -1469,6 +1471,8 @@ async function handleSubmit(req, res) {
     let brandGraphResult = null;
     let strategySynthesisResult = null;
     let strategyPersistenceResult = null;
+    let compiledMessagingRules = null;
+    let roleViews = null;
     const brandExecutionContext = buildExecutionContext(req, slug || 'submit');
     
     if (seed.brand_input && typeof seed.brand_input === 'object') {
@@ -1495,6 +1499,12 @@ async function handleSubmit(req, res) {
             strategySynthesisResult.artifact,
             { ruleset_version: strategySynthesisResult.metadata.ruleset_version }
           );
+          compiledMessagingRules = compileMessagingRules(
+            strategySynthesisResult.artifact,
+            seed.messaging_rules,
+            { ruleset_version: strategySynthesisResult.metadata.ruleset_version }
+          );
+          roleViews = projectRoleViews(strategySynthesisResult, compiledMessagingRules);
           strategyPersistenceResult = persistStrategyArtifact(
             brandExecutionContext.tenant_id,
             strategySynthesisResult
@@ -1640,6 +1650,8 @@ async function handleSubmit(req, res) {
         } : null,
         strategy_artifact: strategySynthesisResult ? strategySynthesisResult.artifact : null,
         strategy_artifact_metadata: strategySynthesisResult ? strategySynthesisResult.metadata : null,
+        messaging_rules_compiled: compiledMessagingRules,
+        role_views: roleViews,
         strategy_artifact_write: strategyPersistenceResult,
       });
   } catch (err) {
