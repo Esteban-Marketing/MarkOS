@@ -1,6 +1,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const { createPageIndexAdapter } = require('./pageindex/pageindex-client.cjs');
 
 let runtimeConfig = {};
 let _supabaseClient = null;
@@ -69,6 +70,15 @@ function buildLiteracyFilter(filters = {}) {
   }
 
   return parts.join(' AND ');
+}
+
+function normalizeFilterList(value) {
+  if (Array.isArray(value)) {
+    return Array.from(new Set(value.map((entry) => String(entry || '').trim()).filter(Boolean))).sort();
+  }
+
+  const single = String(value || '').trim();
+  return single ? [single] : [];
 }
 
 function getCanonicalCollectionPrefix() {
@@ -389,29 +399,58 @@ async function getLiteracyContext(discipline, query = 'summary', filters = {}, t
 
   const namespaceName = buildStandardsNamespaceName(discipline);
   const namespace = index.namespace(namespaceName);
-  const filter = buildLiteracyFilter(filters);
+  const envelope = {
+    mode: 'reason',
+    discipline: String(discipline || '').trim() || null,
+    audience: String(filters.audience || '').trim() || null,
+    filters: {
+      pain_point_tags: normalizeFilterList(filters.pain_point_tags || filters.pain_point_tag),
+      business_model: normalizeFilterList(filters.business_model),
+      funnel_stage: normalizeFilterList(filters.funnel_stage),
+      content_type: normalizeFilterList(filters.content_type),
+      tenant_scope: String(filters.tenant_scope || filters.tenantId || runtimeConfig.tenant_scope || 'global').trim(),
+    },
+    provenance_required: true,
+  };
+
+  const adapter = createPageIndexAdapter({
+    resolveDocIds: async () => [namespaceName],
+    retrieveDocuments: async ({ envelope: normalizedEnvelope }) => {
+      const filter = buildLiteracyFilter({
+        business_model: normalizedEnvelope.filters.business_model[0] || null,
+        funnel_stage: normalizedEnvelope.filters.funnel_stage[0] || null,
+        content_type: normalizedEnvelope.filters.content_type[0] || null,
+        pain_point_tags: normalizedEnvelope.filters.pain_point_tags,
+      });
+
+      const matches = await namespace.query({
+        data: String(query || ''),
+        topK: Math.max(1, Number(topK) || 5),
+        includeData: true,
+        includeMetadata: true,
+        filter,
+      });
+
+      return Array.isArray(matches)
+        ? matches.map((entry) => ({
+          id: entry && entry.id ? entry.id : null,
+          text: typeof entry.data === 'string' ? entry.data : '',
+          metadata: entry && entry.metadata ? entry.metadata : {},
+          score: typeof entry.score === 'number' ? entry.score : 0,
+        }))
+        : [];
+    },
+  });
 
   try {
-    const matches = await namespace.query({
-      data: String(query || ''),
-      topK: Math.max(1, Number(topK) || 5),
-      includeData: true,
-      includeMetadata: true,
-      filter,
+    const result = await adapter.retrieve({
+      tenantId: envelope.filters.tenant_scope,
+      envelope,
     });
 
-    if (!Array.isArray(matches) || matches.length === 0) {
-      return [];
-    }
-
-    return matches
-      .map((entry) => ({
-        id: entry && entry.id ? entry.id : null,
-        text: typeof entry.data === 'string' ? entry.data : '',
-        metadata: entry.metadata || {},
-        score: typeof entry.score === 'number' ? entry.score : 0,
-      }))
-      .filter((entry) => entry.text.trim().length > 0);
+    return Array.isArray(result.items)
+      ? result.items.filter((entry) => entry.text.trim().length > 0)
+      : [];
   } catch {
     return [];
   }
