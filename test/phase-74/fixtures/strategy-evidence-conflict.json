@@ -1,0 +1,58 @@
+{
+  "strategy_artifact": {
+    "positioning": {
+      "claim": "The product is both low-touch and fully white-glove for every account.",
+      "evidence_node_ids": []
+    },
+    "value_promise": {
+      "claim": "Customers always get instant results.",
+      "evidence_node_ids": ["node-value-conflict-01"]
+    },
+    "differentiators": [
+      {
+        "claim": "No setup needed for complex enterprise governance.",
+        "evidence_node_ids": []
+      }
+    ],
+    "messaging_pillars": [
+      {
+        "pillar": "Guaranteed outcomes",
+        "claims": [
+          {
+            "claim": "Results are guaranteed in every market.",
+            "evidence_node_ids": []
+          }
+        ]
+      }
+    ],
+    "disallowed_claims": [
+      {
+        "claim": "Guaranteed 10x revenue in 30 days.",
+        "evidence_node_ids": []
+      }
+    ],
+    "confidence_notes": [
+      {
+        "claim": "Confidence level omitted from evidence.",
+        "evidence_node_ids": []
+      }
+    ]
+  },
+  "messaging_rules": {
+    "voice_profile": {
+      "tone": "undefined-tone",
+      "formality": "professional",
+      "energy": "balanced"
+    },
+    "channel_rules": {
+      "site": {
+        "tone": "another-unknown"
+      },
+      "email": {},
+      "social": {
+        "do": "not-an-array"
+      },
+      "sales-call": {}
+    }
+  }
+}

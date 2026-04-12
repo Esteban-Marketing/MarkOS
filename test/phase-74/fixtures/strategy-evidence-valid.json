@@ -1,0 +1,82 @@
+{
+  "strategy_artifact": {
+    "positioning": {
+      "claim": "The product is the fastest route from insight to campaign launch for lean teams.",
+      "evidence_node_ids": ["node-positioning-01"]
+    },
+    "value_promise": {
+      "claim": "Teams ship customer-ready messaging in hours instead of weeks.",
+      "evidence_node_ids": ["node-value-01", "node-value-02"]
+    },
+    "differentiators": [
+      {
+        "claim": "Built-in deterministic strategy scaffolding preserves evidence lineage.",
+        "evidence_node_ids": ["node-diff-01"]
+      },
+      {
+        "claim": "Tenant-safe constraints prevent cross-account data bleed.",
+        "evidence_node_ids": ["node-diff-02"]
+      }
+    ],
+    "messaging_pillars": [
+      {
+        "pillar": "Deterministic planning",
+        "claims": [
+          {
+            "claim": "Plans stay reproducible for the same input.",
+            "evidence_node_ids": ["node-pillar-01"]
+          }
+        ]
+      },
+      {
+        "pillar": "Governed execution",
+        "claims": [
+          {
+            "claim": "Policy checks run before write paths.",
+            "evidence_node_ids": ["node-pillar-02"]
+          }
+        ]
+      }
+    ],
+    "disallowed_claims": [
+      {
+        "claim": "Guaranteed 10x revenue in 30 days.",
+        "evidence_node_ids": ["node-risk-01"]
+      }
+    ],
+    "confidence_notes": [
+      {
+        "claim": "Direct win-rate evidence is medium confidence due to sample size.",
+        "evidence_node_ids": ["node-confidence-01"]
+      }
+    ]
+  },
+  "messaging_rules": {
+    "voice_profile": {
+      "tone": "pragmatic",
+      "formality": "professional",
+      "energy": "balanced"
+    },
+    "channel_rules": {
+      "site": {
+        "do": ["Lead with outcomes", "Use concise headlines"],
+        "dont": ["Use hype claims"]
+      },
+      "email": {
+        "tone": "empathetic",
+        "do": ["Reference audience pain explicitly"],
+        "dont": ["Sound robotic"]
+      },
+      "social": {
+        "energy": "high",
+        "do": ["Open with a hook"],
+        "dont": ["Use empty buzzwords"]
+      },
+      "sales-call": {
+        "formality": "executive",
+        "do": ["Confirm budget and timeline"],
+        "dont": ["Make unverifiable commitments"]
+      }
+    }
+  }
+}
