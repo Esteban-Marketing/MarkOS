@@ -570,7 +570,7 @@ Plans:
 
 ## 🚧 v3.4.0 — Complete Branding Engine
 
-**Status:** 🚧 Gap closure follow-on active — Phases 79 through 81 planned from milestone audit (2026-04-12)
+**Status:** 🚧 Gap closure follow-on active — Phase 82 assurance reconciliation completed; Phase 83 human UAT closure remains (2026-04-12)
 
 **Goal:** Deliver an end-to-end, tenant-safe branding engine that converts raw concept and pain-point inputs into deterministic strategy, identity, token, component-contract, and Next.js starter outputs on Tailwind v4 + shadcn/ui + Next.js.
 
@@ -600,7 +600,7 @@ Plans:
 **Goal:** Turn normalized evidence into a strategy artifact with explicit positioning, value promise, differentiators, and role-consumable messaging rules.
 **Requirements Mapped:** BRAND-STRAT-01, BRAND-STRAT-02
 **Depends on:** Phase 73
-**Status:** 📋 Planned
+**Status:** ✅ Complete
 **Plan Intent:** Generate strategy outputs with source lineage per claim and enforce consistent tone or channel rule surfaces for strategist, founder, and content roles.
 **Acceptance Intent:** Every strategy claim is traceable to evidence inputs and role views expose consistent, non-contradictory messaging guidance.
 
@@ -645,7 +645,7 @@ Plans:
 **Goal:** Restore runtime governance bundle creation by wiring required lineage fingerprints across the submit handoff and re-enabling closure gates end-to-end.
 **Requirements Mapped:** BRAND-GOV-01, BRAND-GOV-02
 **Depends on:** Phase 78
-**Status:** 📋 Planned
+**Status:** ✅ Complete
 **Gap Closure:** Closes milestone audit blockers for missing lineage fingerprint handoff and bundle creation denial.
 **Plans:** 3 plans
 Plans:
@@ -657,19 +657,19 @@ Plans:
 **Goal:** Re-scope publish readiness diagnostics to the correct phase boundaries so accessibility gates and governance gates remain deterministic and non-overlapping.
 **Requirements Mapped:** BRAND-ID-02
 **Depends on:** Phase 79
-**Status:** 📋 Planned
+**Status:** ✅ Complete
 **Gap Closure:** Closes milestone audit blocker for Phase 75 publish-blocking regression caused by cross-phase diagnostic bleed.
 **Plans:** 3 plans
 Plans:
-- [ ] 80-01-PLAN.md — Wave 1 boundary contract tests and regression harness updates
-- [ ] 80-02-PLAN.md — Wave 2 submit boundary implementation (accessibility-only publish_readiness lane)
-- [ ] 80-03-PLAN.md — Wave 3 validation ledger and full boundary verification bundle
+- [x] 80-01-PLAN.md — Wave 1 boundary contract tests and regression harness updates
+- [x] 80-02-PLAN.md — Wave 2 submit boundary implementation (accessibility-only publish_readiness lane)
+- [x] 80-03-PLAN.md — Wave 3 validation ledger and full boundary verification bundle
 
 ### Phase 81: Governance Publish and Rollback Operational Surface
 **Goal:** Expose publish and rollback governance operations through operational runtime surfaces with explicit traceability and guardrails.
 **Requirements Mapped:** BRAND-GOV-01
 **Depends on:** Phase 79
-**Status:** 📋 Planned
+**Status:** ✅ Complete
 **Gap Closure:** Closes milestone audit warning for publish and rollback being test-only paths.
 **Plans:** 2 plans
 Plans:
@@ -680,7 +680,7 @@ Plans:
 **Goal:** Close milestone-assurance gaps by producing missing phase verification reports (79, 80), reconciling Nyquist/validation ledgers, and aligning roadmap + requirements traceability to runtime evidence.
 **Requirements Mapped:** BRAND-ID-02, BRAND-GOV-02
 **Depends on:** Phase 80
-**Status:** 📋 Planned
+**Status:** ✅ Complete
 **Gap Closure:** Closes audit warnings for missing 79/80 verification artifacts and traceability drift.
 **Plans:** 3 plans
 Plans:
