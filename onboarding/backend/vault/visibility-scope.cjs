@@ -71,6 +71,8 @@ function projectAuditLineage(claims, records) {
  * Allowed roles for vault retrieval operations (Phase 86+).
  */
 const ALLOWED_RETRIEVAL_ROLES = new Set(['operator', 'admin', 'agent']);
+const ALLOWED_OPERATOR_VIEW_ROLES = new Set(['operator', 'admin']);
+const ALLOWED_AGENT_VIEW_ROLES = new Set(['agent', 'admin']);
 
 /**
  * Check whether a claims object has sufficient tenant + role authority
@@ -115,10 +117,95 @@ function checkRetrievalScope(claims, resourceContext) {
   };
 }
 
+function checkOperatorViewScope(claims, resourceContext) {
+  const claimTenantId = String((claims && claims.tenantId) || '').trim();
+  const claimRole = String((claims && claims.role) || '').trim();
+
+  if (!claimTenantId || !claimRole) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_CLAIMS_MISSING',
+      reason: 'Valid tenant and role claims are required for operator view access.',
+    };
+  }
+
+  if (!ALLOWED_OPERATOR_VIEW_ROLES.has(claimRole)) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_ROLE_DENIED',
+      reason: `Role '${claimRole}' is not permitted to access operator view actions.`,
+    };
+  }
+
+  const resourceTenantId = String((resourceContext && resourceContext.tenantId) || '').trim();
+  if (!resourceTenantId || claimTenantId !== resourceTenantId) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_TENANT_MISMATCH',
+      reason: 'Claims tenant does not match the operator-view resource tenant.',
+    };
+  }
+
+  return {
+    allowed: true,
+    code: null,
+    reason: null,
+  };
+}
+
+function checkAgentViewScope(claims, resourceContext) {
+  const claimTenantId = String((claims && claims.tenantId) || '').trim();
+  const claimRole = String((claims && claims.role) || '').trim();
+  const strictAgentRole = Boolean(resourceContext && resourceContext.strictAgentRole);
+
+  if (!claimTenantId || !claimRole) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_CLAIMS_MISSING',
+      reason: 'Valid tenant and role claims are required for agent view access.',
+    };
+  }
+
+  if (strictAgentRole && claimRole !== 'agent') {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_ROLE_DENIED',
+      reason: `Role '${claimRole}' is not permitted for strict agent-only actions.`,
+    };
+  }
+
+  if (!ALLOWED_AGENT_VIEW_ROLES.has(claimRole)) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_ROLE_DENIED',
+      reason: `Role '${claimRole}' is not permitted to access agent view actions.`,
+    };
+  }
+
+  const resourceTenantId = String((resourceContext && resourceContext.tenantId) || '').trim();
+  if (!resourceTenantId || claimTenantId !== resourceTenantId) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_TENANT_MISMATCH',
+      reason: 'Claims tenant does not match the agent-view resource tenant.',
+    };
+  }
+
+  return {
+    allowed: true,
+    code: null,
+    reason: null,
+  };
+}
+
 module.exports = {
   checkVisibilityScope,
   projectAuditLineage,
   checkRetrievalScope,
+  checkOperatorViewScope,
+  checkAgentViewScope,
   ALLOWED_VISIBILITY_ROLES,
   ALLOWED_RETRIEVAL_ROLES,
+  ALLOWED_OPERATOR_VIEW_ROLES,
+  ALLOWED_AGENT_VIEW_ROLES,
 };
