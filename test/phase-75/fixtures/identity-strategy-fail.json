@@ -1,0 +1,55 @@
+{
+  "identity_artifact": {
+    "semantic_color_roles": {
+      "brand.primary": "#0d9488",
+      "brand.secondary": "#0f766e",
+      "surface.default": "#ffffff",
+      "text.primary": "#0f172a",
+      "state.accent": "#f59e0b"
+    },
+    "typography_hierarchy": {
+      "type.display": {
+        "family": "Sora",
+        "step": "xl",
+        "weight": 700,
+        "line_height": 1.2
+      },
+      "type.heading": {
+        "family": "Sora",
+        "step": "lg",
+        "weight": 600,
+        "line_height": 1.25
+      },
+      "type.body": {
+        "family": "Space Grotesk",
+        "step": "md",
+        "weight": 400,
+        "line_height": 1.5
+      },
+      "type.caption": {
+        "family": "Space Grotesk",
+        "step": "sm",
+        "weight": 500,
+        "line_height": 1.4
+      }
+    },
+    "spacing_intent": {
+      "scale": [4, 8, 12, 16, 24],
+      "rhythm": "4pt-baseline"
+    },
+    "visual_constraints": {
+      "max_palette_size": 8,
+      "corner_radius_policy": "soft-rounded"
+    },
+    "lineage": {
+      "ruleset_version": "75.0.0",
+      "strategy_fingerprint": "sha256:strategy-abc123",
+      "decisions": [
+        {
+          "decision_id": "color-role-brand-primary",
+          "strategy_node_ids": []
+        }
+      ]
+    }
+  }
+}
