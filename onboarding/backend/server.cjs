@@ -59,7 +59,7 @@ const vectorStore  = require('./vector-store-client.cjs');
 
 // Phase 85: ingestion-adjacent scope guard and sync service (LITV-04 / D-07)
 const visibilityScope = require('./vault/visibility-scope.cjs');
-/* createSyncService available via: require('./vault/sync-service.cjs') */
+const auditStore = require('./vault/audit-store.cjs');
 
 const runtime = createRuntimeContext();
 const { config } = runtime;
@@ -124,8 +124,10 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ error: scopeResult.code, reason: scopeResult.reason }));
       return;
     }
+    const allEntries = auditStore.getAll({ tenantId: resourceTenantId });
+    const lineage = visibilityScope.projectAuditLineage({ tenantId, role }, allEntries);
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ ok: true, tenant_id: tenantId, lineage: [] }));
+    res.end(JSON.stringify({ ok: true, tenant_id: tenantId, lineage }));
     return;
   }
 

@@ -1,11 +1,17 @@
 #!/usr/bin/env node
 'use strict';
 
+const fs = require('node:fs');
 const path = require('path');
 
 const { createIngestRouter } = require('../onboarding/backend/vault/ingest-router.cjs');
 const { createSyncOrchestrator } = require('../onboarding/backend/vault/sync-orchestrator.cjs');
-
+const { createIngestApply } = require('../onboarding/backend/vault/ingest-apply.cjs');
+const { createAuditLog } = require('../onboarding/backend/vault/audit-log.cjs');
+const { createReindexQueue } = require('../onboarding/backend/pageindex/reindex-queue.cjs');
+const { createReindexDispatch } = require('../onboarding/backend/pageindex/reindex-dispatch.cjs');
+const auditStore = require('../onboarding/backend/vault/audit-store.cjs');
+const { parseFrontmatter, extractAudienceMetadata } = require('../onboarding/backend/vault/frontmatter-parser.cjs');
 function loadChokidar() {
   try {
     return require('chokidar');
@@ -47,8 +53,24 @@ function createWatcher(orchestrator, watcherFactory, vaultRoot) {
     atomic: true,
   });
 
-  watcher.on('add', (targetPath) => orchestrator.handleFsEvent('add', targetPath));
-  watcher.on('change', (targetPath) => orchestrator.handleFsEvent('change', targetPath));
+  function readMetadata(targetPath) {
+    try {
+      const content = fs.readFileSync(targetPath, 'utf8');
+      const fm = parseFrontmatter(content);
+      return extractAudienceMetadata(fm);
+    } catch (_err) {
+      return {};
+    }
+  }
+
+  watcher.on('add', (targetPath) => {
+    const metadata = readMetadata(targetPath);
+    orchestrator.handleFsEvent('add', targetPath, { metadata });
+  });
+  watcher.on('change', (targetPath) => {
+    const metadata = readMetadata(targetPath);
+    orchestrator.handleFsEvent('change', targetPath, { metadata });
+  });
   watcher.on('unlink', (targetPath) => orchestrator.handleFsEvent('unlink', targetPath));
 
   return watcher;
@@ -63,9 +85,50 @@ async function startVaultSync(options = {}) {
     throw error;
   }
 
-  const router = options.router || createIngestRouter({
-    persistArtifact: async () => ({ ok: true, lane: 'baseline-persist' }),
-    indexArtifact: async () => ({ ok: true, lane: 'baseline-index' }),
+  if (options.router) {
+    // Caller-injected router (test seam)
+    const router = options.router;
+    const orchestrator = createSyncOrchestrator({
+      tenantId,
+      vaultRoot,
+      enqueue: async (event) => router.route({ event }),
+    });
+    const watcherFactory = options.watcherFactory || loadChokidar();
+    const watcher = createWatcher(orchestrator, watcherFactory, vaultRoot);
+    return { tenantId, vaultRoot, watcher, close: async () => watcher.close() };
+  }
+
+  // ── Production pipeline wiring ─────────────────────────────────────────────
+  // In-memory revision store (Phase 85 scope; persistent store deferred to Phase 86+)
+  const activeRevisions = new Map();
+  const getActiveRevision = async ({ tenantId: tid, docId }) =>
+    activeRevisions.get(`${tid}:${docId}`) || null;
+  const upsertRevision = async ({ revision }) => revision;
+
+  const ingestApply = createIngestApply({ getActiveRevision, upsertRevision });
+
+  const auditLog = createAuditLog({
+    append: async (entry) => auditStore.append(entry),
+  });
+
+  // No-op PageIndex dispatch for Phase 85 (real dispatch wired in Phase 86+ retrieval layer)
+  const reindexDispatch = createReindexDispatch({
+    reindexDocument: async () => ({ acknowledged: true, lane: 'phase86-deferred' }),
+  });
+  const reindexQueue = createReindexQueue({ dispatch: (job) => reindexDispatch.dispatch(job) });
+
+  const router = createIngestRouter({
+    applyIngest: (payload) => ingestApply.apply(payload),
+    appendAudit: (entry) => auditLog.append(entry),
+    enqueueReindex: (payload) => reindexQueue.enqueue({
+      tenantId: payload.event && payload.event.tenant_id,
+      docId: payload.event && payload.event.doc_id,
+      idempotencyKey: payload.idempotencyKey,
+      reason: 'change',
+      observedAt: payload.event && payload.event.observed_at,
+    }),
+    // indexArtifact is required by the router contract even when enqueueReindex is provided
+    indexArtifact: async () => ({ ok: true, lane: 'reindex-queued' }),
   });
 
   const orchestrator = createSyncOrchestrator({
