@@ -56,6 +56,8 @@ function createSyncService(options) {
     ? options.now
     : () => new Date().toISOString();
 
+  const lineage = options && options.lineage;
+
   /**
    * Handle a file change event for the given absolute path.
    * Validates audience metadata (if present) before normalizing the sync event.
@@ -78,6 +80,17 @@ function createSyncService(options) {
       metadata,
       enqueuedAt: now(),
     });
+
+    if (lineage && typeof lineage.appendLineageEvent === 'function') {
+      await lineage.appendLineageEvent({
+        tenant_id: tenantId,
+        artifact_id: String((metadata && metadata.artifact_id) || normalized.doc_id || '').trim(),
+        view: 'operator',
+        role: 'operator',
+        action: String((metadata && metadata.action) || 'sync_change').trim(),
+        timestamp: observedAt,
+      });
+    }
 
     return ingestEvent(normalized);
   }

@@ -33,6 +33,7 @@ function createVaultRetriever(options = {}) {
     'E_VAULT_RETRIEVER_ARTIFACTS_REQUIRED',
     'getArtifacts() is required.'
   );
+  const lineage = options.lineage;
 
   /**
    * Internal retrieve pipeline: scope check → tenant filter → apply filter → pack
@@ -50,6 +51,20 @@ function createVaultRetriever(options = {}) {
 
     // Step 3: Apply discipline + audience_tags filter
     const filtered = applyFilter(tenantFiltered, filter || {});
+
+    if (lineage && typeof lineage.appendLineageEvent === 'function') {
+      for (const artifact of filtered) {
+        await lineage.appendLineageEvent({
+          tenant_id: String((artifact && artifact.tenant_id) || (claims && claims.tenantId) || '').trim(),
+          artifact_id: String((artifact && artifact.artifact_id) || (artifact && artifact.doc_id) || '').trim(),
+          view: 'agent',
+          role: String((claims && claims.role) || 'agent').trim(),
+          mode,
+          action: `retrieve_${mode}`,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    }
 
     // Step 4: Build handoff packs for each artifact
     const packs = filtered.map((artifact) =>
