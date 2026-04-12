@@ -1,6 +1,6 @@
 # MarkOS (MarkOS Protocol)
 
-## Current Milestone: v3.4.0 — Complete Branding Engine
+## Current State: v3.4.0 Shipped — Complete Branding Engine
 
 **Goal:** Deliver a complete branding engine from concept and pain-point mapping through visual identity and deterministic design-system generation, with canonical Next.js + Tailwind v4 + shadcn/ui implementation outputs and governance-safe version evolution.
 
@@ -11,7 +11,13 @@
 - Component-rich UI contract and starter implementation assets for Next.js App Router
 - Governance and versioning flow for safe publish/rollback and cross-role actionable handoffs
 
-**Status:** v3.4.0 is now active for roadmap definition. This milestone is scoped to branding-system completion and must remain additive to existing MarkOS architecture without replatforming.
+**Status:** v3.4.0 shipped on 2026-04-12 with milestone audit passed (12/12 requirements). Branding-system scope is now archived and closed.
+
+## Next Milestone Goals
+
+- Define the next active milestone and create a fresh `.planning/REQUIREMENTS.md` through the new-milestone workflow.
+- Preserve v3.4.0 branding determinism, governance, and UAT guarantees as non-regression baselines.
+- Prioritize next-scope selection explicitly (vault-first pivot lane vs CRM lane follow-on) before opening new execution phases.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -182,4 +188,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-11 after v3.4.0 milestone kickoff.
+Last updated: 2026-04-12 after v3.4.0 milestone archive.

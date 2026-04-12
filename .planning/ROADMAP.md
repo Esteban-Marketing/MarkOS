@@ -7,7 +7,7 @@
 - 📦 **v3.2.0 Post-Unification Execution & Adoption** — Repository-complete milestone with hosted follow-through tracked separately from the active v3.3 closeout work
 - 🚧 **v3.3.0 Revenue CRM and Customer Intelligence Core** — Active milestone; Phases 58 through 64 and follow-on Phases 64.1, 64.2, and 64.3 are verified passed, and Phase 65 is the current hosted reporting closeout and milestone-promotion follow-through
 - 📋 **v3.3.1 Obsidian Mind Vault-First Pivot** — Planned future milestone after Phase 66; retires MIR/MSP as canonical structures and moves MarkOS to an Obsidian Mind-inspired vault-first operating model
-- ✅ **v3.4.0 Complete Branding Engine** — Phases 73-78 completed with deterministic branding pipeline delivery and governance closure (2026-04-12)
+- ✅ **v3.4.0 Complete Branding Engine** — Phases 73-83 completed; archived at `.planning/milestones/v3.4.0-ROADMAP.md` (2026-04-12)
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -567,137 +567,14 @@ Plans:
 **Depends on:** Phase 67, Phase 68, Phase 69, Phase 70, Phase 71
 **Status:** 📋 Planned
 
+## ✅ v3.4.0 — Complete Branding Engine (Archived)
 
-## 🚧 v3.4.0 — Complete Branding Engine
+**Status:** ✅ Shipped (2026-04-12)
+**Archive:** `.planning/milestones/v3.4.0-ROADMAP.md`
+**Requirements Archive:** `.planning/milestones/v3.4.0-REQUIREMENTS.md`
+**Audit:** `.planning/v3.4.0-MILESTONE-AUDIT.md` (passed, 12/12 requirements)
+**Summary:** Delivered deterministic branding pipeline coverage from concept ingestion through strategy, identity, token/system compilation, governance publish or rollback, and final human UAT closure.
 
-**Status:** ✅ Complete (2026-04-12) — all branding-engine requirements satisfied after Phase 83 human UAT closure
-
-**Goal:** Deliver an end-to-end, tenant-safe branding engine that converts raw concept and pain-point inputs into deterministic strategy, identity, token, component-contract, and Next.js starter outputs on Tailwind v4 + shadcn/ui + Next.js.
-
-**Milestone framing (out-of-scope guardrails):**
-- No fully autonomous brand generation without human approval
-- No automatic production deployment pipeline in this milestone
-- No paid media execution automation inside branding scope
-- No CRM/outbound expansion unrelated to branding outputs
-- No full app replatform; execution must remain additive
-
-**Requirement families covered:** BRAND-INP-*, BRAND-STRAT-*, BRAND-ID-*, BRAND-DS-*, BRAND-NEXT-*, BRAND-ROLE-*, BRAND-GOV-*
-
-### Phase 73: Brand Inputs and Human Insight Modeling
-**Goal:** Capture structured concept inputs and normalize them into a deterministic, tenant-safe evidence graph that downstream branding stages can trust.
-**Requirements Mapped:** BRAND-INP-01, BRAND-INP-02
-**Depends on:** Phase 66 completion and existing tenant/auth foundations
-**Status:** ✅ Complete
-**Plan Intent:** Lock input schema, validation, lineage fields, and deterministic normalization so repeated submissions produce stable evidence nodes and links.
-**Acceptance Intent:** Operators can submit complete concept records and repeated identical runs yield the same normalized graph for the tenant.
-**Plans:** 3 plans
-Plans:
-- [x] 73-01-PLAN.md — Wave 1 input schema, validation, and lineage fields
-- [x] 73-02-PLAN.md — Wave 2 deterministic normalization and evidence graph compilation
-- [x] 73-03-PLAN.md — Wave 3 tenant-safe persistence and retention enforcement
-
-### Phase 74: Strategy Artifact and Messaging Rules Engine
-**Goal:** Turn normalized evidence into a strategy artifact with explicit positioning, value promise, differentiators, and role-consumable messaging rules.
-**Requirements Mapped:** BRAND-STRAT-01, BRAND-STRAT-02
-**Depends on:** Phase 73
-**Status:** ✅ Complete
-**Plan Intent:** Generate strategy outputs with source lineage per claim and enforce consistent tone or channel rule surfaces for strategist, founder, and content roles.
-**Acceptance Intent:** Every strategy claim is traceable to evidence inputs and role views expose consistent, non-contradictory messaging guidance.
-
-### Phase 75: Deterministic Identity System with Accessibility Gates
-**Goal:** Compile strategy into deterministic visual identity artifacts with publish-blocking accessibility defaults.
-**Requirements Mapped:** BRAND-ID-01, BRAND-ID-02
-**Depends on:** Phase 74
-**Status:** ✅ Complete
-**Plan Intent:** Produce semantic color roles, typography hierarchy, and visual constraints with deterministic outputs and required contrast or readability checks.
-**Acceptance Intent:** Identity generation is stable for fixed inputs and publish readiness is blocked with explicit diagnostics when accessibility thresholds fail.
-
-### Phase 76: Token Compiler and shadcn Component Contract
-**Goal:** Convert strategy and identity outputs into canonical Tailwind v4 tokens plus a deterministic shadcn component-state contract manifest.
-**Requirements Mapped:** BRAND-DS-01, BRAND-DS-02
-**Depends on:** Phase 75
-**Status:** ✅ Complete
-**Plan Intent:** Build a token compiler and component manifest pipeline that maps semantic intent to required component variants and interaction states without manual remapping.
-**Acceptance Intent:** Branded surfaces can consume generated token and component contracts directly, and required primitives or states are fully covered by deterministic metadata.
-
-### Phase 77: Next.js Starter Outputs and Role Handoff Packs
-**Goal:** Emit implementation-ready Next.js starter descriptors and role-specific handoff packs from one shared branding lineage.
-**Requirements Mapped:** BRAND-NEXT-01, BRAND-ROLE-01
-**Depends on:** Phase 76
-**Status:** ✅ Complete
-**Plan Intent:** Generate starter descriptors with theme variables and component bindings, then package role-targeted handoff artifacts for strategy, design, engineering, and marketing execution.
-**Acceptance Intent:** Frontend engineers can apply starter outputs without reinterpretation and each role has actionable next steps from its handoff pack.
-
-### Phase 78: Branding Governance, Publish or Rollback, and Closure Gates
-**Goal:** Enforce single-lineage version governance for branding artifacts with publish or rollback controls and mandatory closure verification gates.
-**Requirements Mapped:** BRAND-GOV-01, BRAND-GOV-02
-**Depends on:** Phase 77
-**Status:** ✅ Complete
-**Plan Intent:** Add bundle-level versioning, active-pointer promotion or rollback workflow, drift evidence, and deterministic tenant-isolation or contract-integrity validation gates.
-**Acceptance Intent:** Operators can safely promote or roll back complete brand bundles with traceability, and closure tests prove determinism, tenant isolation, and contract integrity.
-**Plans:** 3 plans
-Plans:
-- [x] 78-01-PLAN.md — Wave 1 governance schema tests, governance-diagnostics module, and closure-gate runner
-- [x] 78-02-PLAN.md — Immutable bundle registry, active-pointer publish/rollback, and drift auditor
-- [x] 78-03-PLAN.md — Additive handler integration, governance evidence writer, tenant isolation and contract integrity tests
-
-### Phase 79: Governance Lineage Handoff and Runtime Gate Recovery
-**Goal:** Restore runtime governance bundle creation by wiring required lineage fingerprints across the submit handoff and re-enabling closure gates end-to-end.
-**Requirements Mapped:** BRAND-GOV-01, BRAND-GOV-02
-**Depends on:** Phase 78
-**Status:** ✅ Complete
-**Gap Closure:** Closes milestone audit blockers for missing lineage fingerprint handoff and bundle creation denial.
-**Plans:** 3 plans
-Plans:
-- [x] 79-01-PLAN.md — Wave 1 lineage fingerprint handoff helper contract and deterministic unit tests
-- [x] 79-02-PLAN.md — Wave 2 submit-path governance handoff wiring and integration tests proving gate recovery
-- [x] 79-03-PLAN.md — Wave 3 runtime-proof and boundary regression gate with validation ledger
-
-### Phase 80: Publish Readiness Boundary Isolation and Regression Fix
-**Goal:** Re-scope publish readiness diagnostics to the correct phase boundaries so accessibility gates and governance gates remain deterministic and non-overlapping.
-**Requirements Mapped:** BRAND-ID-02
-**Depends on:** Phase 79
-**Status:** ✅ Complete
-**Gap Closure:** Closes milestone audit blocker for Phase 75 publish-blocking regression caused by cross-phase diagnostic bleed.
-**Plans:** 3 plans
-Plans:
-- [x] 80-01-PLAN.md — Wave 1 boundary contract tests and regression harness updates
-- [x] 80-02-PLAN.md — Wave 2 submit boundary implementation (accessibility-only publish_readiness lane)
-- [x] 80-03-PLAN.md — Wave 3 validation ledger and full boundary verification bundle
-
-### Phase 81: Governance Publish and Rollback Operational Surface
-**Goal:** Expose publish and rollback governance operations through operational runtime surfaces with explicit traceability and guardrails.
-**Requirements Mapped:** BRAND-GOV-01
-**Depends on:** Phase 79
-**Status:** ✅ Complete
-**Gap Closure:** Closes milestone audit warning for publish and rollback being test-only paths.
-**Plans:** 2 plans
-Plans:
-- [x] 81-01-PLAN.md — Wave 0 test stubs for all 3 governance routes (RED phase)
-- [x] 81-02-PLAN.md — Wave 1 implementation of brand-publish.js, brand-rollback.js, brand-status.js
-
-### Phase 82: Verification Assurance and Traceability Reconciliation
-**Goal:** Close milestone-assurance gaps by producing missing phase verification reports (79, 80), reconciling Nyquist/validation ledgers, and aligning roadmap + requirements traceability to runtime evidence.
-**Requirements Mapped:** BRAND-ID-02, BRAND-GOV-02
-**Depends on:** Phase 80
-**Status:** ✅ Complete
-**Gap Closure:** Closes audit warnings for missing 79/80 verification artifacts and traceability drift.
-**Plans:** 3 plans
-Plans:
-- [x] 82-01-PLAN.md — Generate and approve 79/80 phase-level VERIFICATION reports from existing validation evidence
-- [x] 82-02-PLAN.md — Reconcile VALIDATION frontmatter/task states with verification outcomes (Nyquist alignment)
-- [x] 82-03-PLAN.md — Update roadmap/requirements traceability rows and re-run milestone audit for closure confidence
-
-### Phase 83: Strategy Role Guidance Human UAT Closure
-**Goal:** Complete human qualitative UAT for role-consumable messaging guidance and lock readability/practicality acceptance for strategy outputs.
-**Requirements Mapped:** BRAND-STRAT-02
-**Depends on:** Phase 82
-**Status:** ✅ Complete
-**Gap Closure:** Closes audit partial requirement for Phase 74 human-needed strategy guidance verification.
-**Plans:** 2 plans
-Plans:
-- [x] 83-01-PLAN.md — Define human UAT protocol and acceptance rubric for strategist/founder/content role outputs
-- [x] 83-02-PLAN.md — Execute UAT, capture evidence, and promote BRAND-STRAT-02 to complete if accepted
 ---
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
@@ -1319,8 +1196,3 @@ Plans:
 3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 <!-- EOF -->
-
-<!-- EOF -->
-
-
-
