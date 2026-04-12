@@ -54,6 +54,9 @@ const {
 // Phase 73: Brand input normalization and graph writing (D-04, D-06)
 const { normalizeBrandInput, verifyDeterminism } = require('./brand-inputs/normalize-brand-input.cjs');
 const { upsertNormalizedSegments, queryEvidenceByTenant } = require('./brand-inputs/evidence-graph-writer.cjs');
+// Phase 74: Strategy artifact and messaging rules schema validation
+const { validateStrategyArtifact } = require('./brand-strategy/strategy-artifact-schema.cjs');
+const { validateMessagingRules } = require('./brand-strategy/messaging-rules-schema.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -1415,6 +1418,47 @@ async function handleSubmit(req, res) {
         failed_rules: validation.failedRules,
         validation_errors: validation.errors,
       });
+    }
+
+    // Phase 74: Additive canonical strategy and messaging schema guards (D-01, D-02, D-05, D-06, D-09)
+    if (seed.strategy_artifact && typeof seed.strategy_artifact === 'object') {
+      const strategyValidation = validateStrategyArtifact(seed.strategy_artifact);
+      if (!strategyValidation.valid) {
+        emitRolloutEndpointTelemetry({
+          endpoint,
+          startedAt,
+          outcomeState: 'failure',
+          statusCode: 400,
+          runtimeMode: runtime.mode,
+          projectSlug: slug,
+        });
+        return json(res, 400, {
+          success: false,
+          error: 'STRATEGY_ARTIFACT_INVALID',
+          message: 'Canonical strategy artifact validation failed',
+          validation_errors: strategyValidation.errors,
+        });
+      }
+    }
+
+    if (seed.messaging_rules && typeof seed.messaging_rules === 'object') {
+      const messagingValidation = validateMessagingRules(seed.messaging_rules);
+      if (!messagingValidation.valid) {
+        emitRolloutEndpointTelemetry({
+          endpoint,
+          startedAt,
+          outcomeState: 'failure',
+          statusCode: 400,
+          runtimeMode: runtime.mode,
+          projectSlug: slug,
+        });
+        return json(res, 400, {
+          success: false,
+          error: 'MESSAGING_RULES_INVALID',
+          message: 'Canonical messaging rules validation failed',
+          validation_errors: messagingValidation.errors,
+        });
+      }
     }
 
     // Phase 73: Brand input normalization and deterministic graph writes (D-04, D-06)
