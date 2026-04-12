@@ -577,6 +577,46 @@ Plans:
 **Summary:** Delivered deterministic branding pipeline coverage from concept ingestion through strategy, identity, token/system compilation, governance publish or rollback, and final human UAT closure.
 
 ---
+
+## 🚧 v3.5.0 — Ultimate Literacy Vault
+
+**Status:** 🚧 Planned milestone — requirements locked, roadmap phases defined
+
+**Goal:** Build a vault-first marketing literacy system with Obsidian Mind as the operator-facing source of truth and PageIndex as the vectorless agentic retrieval engine, replacing legacy Supabase/Upstash retrieval paths.
+
+**Requirements:** VAULT-01, VAULT-02, VAULT-03, LITV-01, LITV-02, LITV-03, LITV-04, ROLEV-01, ROLEV-02, ROLEV-03, ROLEV-04, GOVV-01, GOVV-02, GOVV-03, GOVV-04, GOVV-05
+
+### Phase 84: Vault Foundation (Obsidian Mind + PageIndex Contracts)
+**Goal:** Establish hybrid vault structure (disciplines + semantic cross-cutting indices), deterministic pathing, provenance metadata model, and PageIndex-backed retrieval contracts.
+**Requirements Mapped:** VAULT-01, VAULT-02, VAULT-03
+**Depends on:** Phase 83
+**Status:** 📋 Planned
+
+### Phase 85: Ingestion Pipeline and Bidirectional Obsidian Sync
+**Goal:** Enable Obsidian-driven artifact authoring with automatic backend sync, audit lineage capture, idempotent update behavior, and PageIndex re-indexing.
+**Requirements Mapped:** LITV-01, LITV-02, LITV-03, LITV-04
+**Depends on:** Phase 84
+**Status:** 📋 Planned
+
+### Phase 86: Agentic Retrieval Modes (Reason, Apply, Iterate)
+**Goal:** Implement deterministic retrieval contracts for three agentic modes, including audience/discipline filtering and execution handoff payloads with evidence links.
+**Requirements Mapped:** ROLEV-01, ROLEV-02, ROLEV-03
+**Depends on:** Phase 84, Phase 85
+**Status:** 📋 Planned
+
+### Phase 87: Dual Role Views (Operator + Agent)
+**Goal:** Separate operator vault management surfaces from agent retrieval/execution views while preserving unified artifact lineage and auditable access logs.
+**Requirements Mapped:** ROLEV-04
+**Depends on:** Phase 84, Phase 85, Phase 86
+**Status:** 📋 Planned
+
+### Phase 88: Governance, Verification, and Milestone Closure
+**Goal:** Enforce tenant isolation, capture execution telemetry, validate non-regression against v3.4.0 branding/governance baselines, and close milestone with SLA and sync stability evidence.
+**Requirements Mapped:** GOVV-01, GOVV-02, GOVV-03, GOVV-04, GOVV-05
+**Depends on:** Phase 84, Phase 85, Phase 86, Phase 87
+**Status:** 📋 Planned
+
+---
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
 
