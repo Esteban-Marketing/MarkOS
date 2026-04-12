@@ -1,0 +1,6 @@
+{
+  "bundle": {
+    "tenant_id": "tenant-test-001",
+    "bundle_id": "some-incomplete-hash"
+  }
+}

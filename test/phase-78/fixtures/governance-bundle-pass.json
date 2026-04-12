@@ -1,0 +1,17 @@
+{
+  "bundle": {
+    "tenant_id": "tenant-test-001",
+    "bundle_id": "c2a7e6f812d3b94051c8f2a6e3b0d7f94a1c8e2b5d0f7a3e6c9b2d5f8a1e4c7",
+    "strategy_artifact_id": "strat-art-001",
+    "identity_artifact_id": "ident-art-001",
+    "design_system_artifact_id": "ds-art-001",
+    "starter_artifact_id": "starter-art-001",
+    "publish_readiness": true,
+    "lineage_fingerprints": {
+      "strategy": "fp-strat-abc123",
+      "identity": "fp-ident-abc123",
+      "design_system": "fp-ds-abc123",
+      "starter": "fp-starter-abc123"
+    }
+  }
+}
