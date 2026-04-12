@@ -684,9 +684,9 @@ Plans:
 **Gap Closure:** Closes audit warnings for missing 79/80 verification artifacts and traceability drift.
 **Plans:** 3 plans
 Plans:
-- [ ] 82-01-PLAN.md — Generate and approve 79/80 phase-level VERIFICATION reports from existing validation evidence
-- [ ] 82-02-PLAN.md — Reconcile VALIDATION frontmatter/task states with verification outcomes (Nyquist alignment)
-- [ ] 82-03-PLAN.md — Update roadmap/requirements traceability rows and re-run milestone audit for closure confidence
+- [x] 82-01-PLAN.md — Generate and approve 79/80 phase-level VERIFICATION reports from existing validation evidence
+- [x] 82-02-PLAN.md — Reconcile VALIDATION frontmatter/task states with verification outcomes (Nyquist alignment)
+- [x] 82-03-PLAN.md — Update roadmap/requirements traceability rows and re-run milestone audit for closure confidence
 
 ### Phase 83: Strategy Role Guidance Human UAT Closure
 **Goal:** Complete human qualitative UAT for role-consumable messaging guidance and lock readability/practicality acceptance for strategy outputs.
