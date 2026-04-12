@@ -124,7 +124,7 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ error: scopeResult.code, reason: scopeResult.reason }));
       return;
     }
-    const allEntries = auditStore.getAll({ tenantId: resourceTenantId });
+    const allEntries = await auditStore.getAll({ tenantId: resourceTenantId });
     const lineage = visibilityScope.projectAuditLineage({ tenantId, role }, allEntries);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, tenant_id: tenantId, lineage }));

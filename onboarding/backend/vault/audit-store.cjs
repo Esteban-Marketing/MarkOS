@@ -1,71 +1,61 @@
 'use strict';
 
-/**
- * audit-store.cjs — Module-level in-memory audit entry store.
- *
- * Provides a singleton append-and-query store for audit lineage records created
- * during vault sync operations. Shared between sync-vault.cjs (via createAuditLog)
- * and server.cjs (for the visibility lineage endpoint) within the same process.
- *
- * Phase 85 scope: ingestion-adjacent audit only. Persistent storage (Supabase)
- * is deferred to Phase 86+ when the retrieval layer and role-view requirements land.
- */
-/**
- * Phase 87 Supabase integration stub:
- * When Supabase backing comes online, the in-memory singleton will be replaced with
- * a parameterized Supabase client (supabase.from('audit_lineage').select(...)).
- * Current API (append, getAll, size, clear) remains stable across the migration.
- * See: Phase 86 ROLEV-01/02/03 (read-path read retrieval modes).
- */
+const { createClient } = require('@supabase/supabase-js');
+const {
+  createInMemoryAuditStore,
+  createSupabaseAuditStore,
+} = require('./supabase-audit-store.cjs');
 
-const entries = [];
-
-/**
- * Append a single audit entry to the in-memory store.
- *
- * @param {object} entry  Audit lineage record
- * @returns {object}       The stored entry (with appended_at timestamp)
- */
-function append(entry) {
-  const stored = { ...entry, appended_at: new Date().toISOString() };
-  entries.push(stored);
-  return stored;
+function hasSupabaseConfig() {
+  const url = String(process.env.SUPABASE_URL || '').trim();
+  const key = String(process.env.SUPABASE_SERVICE_ROLE_KEY || '').trim();
+  return Boolean(url && key);
 }
 
-/**
- * Retrieve all stored entries, optionally filtered by tenantId.
- *
- * @param {object} [filter]
- * @param {string} [filter.tenantId]  If provided, only entries matching this tenant are returned
- * @returns {object[]}
- */
-function getAll(filter) {
-  const tenantId = filter && typeof filter.tenantId === 'string' ? filter.tenantId.trim() : '';
-  if (tenantId) {
-    return entries.filter(
-      (entry) => String((entry && entry.tenant_id) || '').trim() === tenantId
-    );
+function createAuditStore(options = {}) {
+  const mode = String(options.mode || '').trim();
+  if (mode === 'in-memory') {
+    return createInMemoryAuditStore();
   }
 
-  return entries.slice();
+  if (options.supabase) {
+    return createSupabaseAuditStore({
+      supabase: options.supabase,
+      tableName: options.tableName,
+    });
+  }
+
+  if (hasSupabaseConfig()) {
+    const client = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+      auth: {
+        persistSession: false,
+      },
+    });
+    return createSupabaseAuditStore({
+      supabase: client,
+      tableName: options.tableName,
+    });
+  }
+
+  return createInMemoryAuditStore();
 }
 
-/**
- * Return the total number of stored entries (for testing and diagnostics).
- *
- * @returns {number}
- */
-function size() {
-  return entries.length;
+const runtimeStore = createAuditStore();
+
+async function append(entry) {
+  return runtimeStore.append(entry);
 }
 
-/**
- * Clear all entries (for testing only — not for production use).
- *
- * @returns {void}
- */
-function clear() {
-  entries.length = 0;
+async function getAll(filter) {
+  return runtimeStore.getAll(filter);
+}
+
+async function size() {
+  return runtimeStore.size();
+}
+
+async function clear() {
+  return runtimeStore.clear();
 }
 
 module.exports = {
@@ -73,4 +63,5 @@ module.exports = {
   getAll,
   size,
   clear,
+  createAuditStore,
 };
