@@ -1,0 +1,43 @@
+{
+  "starter_descriptor": {
+    "app_shell": {
+      "framework": "nextjs",
+      "router": "app-router",
+      "entry_layout": "app/layout.tsx",
+      "supported_routes": [
+        "/"
+      ]
+    },
+    "theme_mappings": {
+      "css_variables": {},
+      "theme_extensions": {
+        "colors": {
+          "brand": "var(--color-brand-primary)"
+        }
+      }
+    },
+    "component_bindings": {
+      "intents": {
+        "primary_cta": {
+          "component": "button",
+          "required_states": [
+            "hover"
+          ]
+        }
+      },
+      "required_primitives": []
+    },
+    "integration_metadata": {
+      "install_steps": [],
+      "dependencies": {
+        "next": "16.2.3"
+      }
+    },
+    "lineage": {
+      "ruleset_version": "77.0.0",
+      "strategy_fingerprint": "strategy-fp-077",
+      "token_contract_fingerprint": "token-fp-077",
+      "component_manifest_fingerprint": "component-fp-077"
+    }
+  }
+}

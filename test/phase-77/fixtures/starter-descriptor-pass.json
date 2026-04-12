@@ -1,0 +1,59 @@
+{
+  "starter_descriptor": {
+    "app_shell": {
+      "framework": "nextjs",
+      "router": "app-router",
+      "entry_layout": "app/layout.tsx",
+      "supported_routes": [
+        "/",
+        "/pricing",
+        "/about"
+      ]
+    },
+    "theme_mappings": {
+      "css_variables": {
+        "--color-brand-primary": "#0a6cff"
+      },
+      "theme_extensions": {
+        "colors": {
+          "brand": "var(--color-brand-primary)"
+        }
+      }
+    },
+    "component_bindings": {
+      "intents": {
+        "primary_cta": {
+          "component": "button",
+          "required_states": [
+            "hover",
+            "focus-visible",
+            "disabled"
+          ]
+        }
+      },
+      "required_primitives": [
+        "button",
+        "card",
+        "input"
+      ]
+    },
+    "integration_metadata": {
+      "install_steps": [
+        "Install dependencies",
+        "Apply theme variables",
+        "Wire starter routes"
+      ],
+      "dependencies": {
+        "next": "16.2.3",
+        "tailwindcss": "4.2.2"
+      }
+    },
+    "lineage": {
+      "ruleset_version": "77.0.0",
+      "strategy_fingerprint": "strategy-fp-077",
+      "identity_fingerprint": "identity-fp-077",
+      "token_contract_fingerprint": "token-fp-077",
+      "component_manifest_fingerprint": "component-fp-077"
+    }
+  }
+}
