@@ -93,3 +93,9 @@ Result:
 | BRAND-ID-02 | COVERED | `test/phase-75/publish-blocking.test.js`, `test/phase-76/contract-diagnostics.test.js`, `test/phase-77/role-pack-integration.test.js`, `test/phase-79/publish-readiness-boundary.test.js`, `test/phase-80/publish-readiness-boundary-regression.test.js` |
 
 No manual-only validation items are required for this phase.
+
+## Reconciliation Note (2026-04-12)
+
+- Validation ledger explicitly aligned with `80-VERIFICATION.md` closure language.
+- Existing command evidence and red-to-green progression history were preserved unchanged.
+- No scope expansion was introduced during reconciliation.
