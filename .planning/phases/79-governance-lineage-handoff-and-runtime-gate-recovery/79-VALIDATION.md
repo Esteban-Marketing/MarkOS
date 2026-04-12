@@ -1,3 +1,13 @@
+---
+phase: 79-governance-lineage-handoff-and-runtime-gate-recovery
+status: verified
+nyquist_compliant: true
+gaps_found: 0
+resolved: 1
+escalated: 0
+updated: 2026-04-12
+---
+
 # Phase 79 Validation Ledger
 
 ## Scope
@@ -72,4 +82,10 @@ Failure details (known carry-forward):
 ## Verdict
 
 - Phase 79 implementation and phase-specific verification targets are complete.
-- One pre-existing cross-phase regression remains open and tracked for Phase 80 remediation.
+- Historical carry-forward regression note is now closed by Phase 80 verification evidence.
+
+## Reconciliation Note (2026-04-12)
+
+- Validation status normalized to `verified` after creation of `79-VERIFICATION.md`.
+- Nyquist flag set to `true` to reflect full phase-level verification coverage.
+- Original command evidence and historical carry-forward context were preserved; only closure state was reconciled.
