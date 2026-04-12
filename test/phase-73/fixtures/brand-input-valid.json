@@ -1,0 +1,124 @@
+{
+  "metadata": {
+    "phase_73_brand_input": true,
+    "generated": "2026-04-11T10:00:00Z",
+    "version": "1.0",
+    "tenant_id": "test-tenant-001",
+    "actor_id": "operator-123"
+  },
+  "brand_profile": {
+    "primary_name": "TechVenture Analytics",
+    "mission_statement": "Democratize AI-powered business intelligence for enterprises",
+    "brand_values": [
+      "Transparency",
+      "Innovation",
+      "Reliability"
+    ],
+    "tone_of_voice": "Professional yet approachable"
+  },
+  "audience_segments": [
+    {
+      "segment_name": "Enterprise Data Teams",
+      "segment_id": "seg-001",
+      "pains": [
+        {
+          "pain": "Fragmented data sources require manual reconciliation",
+          "rationale": "Operators report 40% of time spent on data pipelines"
+        },
+        {
+          "pain": "Lack of real-time insights on business metrics",
+          "rationale": "Decision-making delayed by outdated dashboards"
+        },
+        {
+          "pain": "High cost of maintaining custom ETL pipelines",
+          "rationale": "Engineering resource allocation directly tied to pipeline maintenance"
+        }
+      ],
+      "needs": [
+        {
+          "need": "Unified data platform with minimal setup",
+          "rationale": "Quick time-to-value is critical for budget justification"
+        },
+        {
+          "need": "Real-time data pipeline orchestration",
+          "rationale": "Business outcomes depend on up-to-date information availability"
+        }
+      ],
+      "expectations": [
+        {
+          "expectation": "ROI within 3-6 months of deployment",
+          "rationale": "Enterprise procurement requires demonstrable value"
+        },
+        {
+          "expectation": "Seamless integration with existing Snowflake/BigQuery",
+          "rationale": "Switching costs are prohibitive for established teams"
+        }
+      ],
+      "desired_outcomes": [
+        "Reduce pipeline maintenance overhead by 60%",
+        "Achieve real-time insights dashboard within 2 weeks",
+        "Lower TCO through consolidated platform"
+      ]
+    },
+    {
+      "segment_name": "SMB Analytics Managers",
+      "segment_id": "seg-002",
+      "pains": [
+        {
+          "pain": "Limited resources for analytics infrastructure",
+          "rationale": "Typically 1-2 person analytics teams"
+        },
+        {
+          "pain": "Difficulty securing executive sponsorship for analytics",
+          "rationale": "Hard to justify ROI when data initiatives fail"
+        }
+      ],
+      "needs": [
+        {
+          "need": "Simple, self-service analytics platform",
+          "rationale": "Cannot afford dedicated data engineers"
+        },
+        {
+          "need": "Affordable pricing with transparent costs",
+          "rationale": "Budget constraints mean no enterprise-tier spending"
+        }
+      ],
+      "expectations": [
+        {
+          "expectation": "Onboarding completed in under 1 week without external help",
+          "rationale": "Minimal support availability in startup environments"
+        }
+      ],
+      "desired_outcomes": [
+        "Enable data-driven decision making with minimal setup",
+        "Demonstrate quick wins to secure budget"
+      ]
+    },
+    {
+      "segment_name": "Finance Operations Leaders",
+      "segment_id": "seg-003",
+      "pains": [
+        {
+          "pain": "Manual financial reporting and reconciliation",
+          "rationale": "Close takes 5-10 days, manual error-prone process"
+        }
+      ],
+      "needs": [
+        {
+          "need": "Automated financial consolidation",
+          "rationale": "Accelerate close cycles and improve accuracy"
+        }
+      ],
+      "expectations": [
+        {
+          "expectation": "Compliance with SOX audits and GAAP standards",
+          "rationale": "Financial controls are non-negotiable"
+        }
+      ],
+      "desired_outcomes": [
+        "Close financials in 2 days vs 10 days",
+        "Achieve 99.9% accuracy in consolidations"
+      ]
+    }
+  ]
+}

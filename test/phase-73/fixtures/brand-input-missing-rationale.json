@@ -1,0 +1,64 @@
+{
+  "metadata": {
+    "phase_73_brand_input": true,
+    "generated": "2026-04-11T10:00:00Z",
+    "version": "1.0",
+    "tenant_id": "test-tenant-001",
+    "actor_id": "operator-123"
+  },
+  "brand_profile": {
+    "primary_name": "TechVenture Analytics",
+    "mission_statement": "Democratize AI-powered business intelligence for enterprises",
+    "brand_values": ["Transparency", "Innovation", "Reliability"]
+  },
+  "audience_segments": [
+    {
+      "segment_name": "Enterprise Data Teams",
+      "segment_id": "seg-001",
+      "pains": [
+        {
+          "pain": "Fragmented data sources require manual reconciliation"
+        },
+        {
+          "pain": "Lack of real-time insights on business metrics",
+          "rationale": "Decision-making delayed by outdated dashboards"
+        }
+      ],
+      "needs": [
+        {
+          "need": "Unified data platform with minimal setup",
+          "rationale": "Quick time-to-value is critical"
+        }
+      ],
+      "expectations": [
+        {
+          "expectation": "ROI within 3-6 months of deployment"
+        }
+      ],
+      "desired_outcomes": ["Reduce overhead", "Improve efficiency"]
+    },
+    {
+      "segment_name": "SMB Analytics Managers",
+      "segment_id": "seg-002",
+      "pains": [
+        {
+          "pain": "Limited resources for analytics",
+          "rationale": "Small teams cannot afford dedicated infrastructure"
+        }
+      ],
+      "needs": [
+        {
+          "need": "Simple, self-service platform",
+          "rationale": "Cannot afford engineers"
+        }
+      ],
+      "expectations": [
+        {
+          "expectation": "Onboarding in under 1 week",
+          "rationale": "Limited support availability"
+        }
+      ],
+      "desired_outcomes": ["Enable data-driven decisions"]
+    }
+  ]
+}
