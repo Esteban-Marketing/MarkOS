@@ -4,7 +4,6 @@ const {
   PROJECT_ROOT,
   ONBOARDING_DIR,
   CONFIG_PATH,
-  MIR_TEMPLATES,
   TEMPLATES_DIR,
   LEGACY_LOCAL_DIR,
   COMPATIBILITY_LOCAL_DIRS,
@@ -13,7 +12,6 @@ const {
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const writeMIR = require('./write-mir.cjs');
 const {
   assertRolloutPromotionAllowed,
   createRuntimeContext,
@@ -33,6 +31,9 @@ const {
   evaluateQuotaDimensionAccess,
   validateRequiredSecrets,
 } = require('./runtime-context.cjs');
+const { writeApprovedDrafts } = require('./vault/vault-writer.cjs');
+const { writeRunReport } = require('./vault/run-report.cjs');
+const { planImport, applyImportPlan } = require('./vault/import-engine.cjs');
 const telemetry = require('./agents/telemetry.cjs');
 const { generateSkeletons } = require('./agents/skeleton-generator.cjs');
 const {
@@ -226,6 +227,55 @@ const INTAKE_VALIDATION_RULES = Object.freeze({
       if (!slug) return true; // optional
       return /^[a-z0-9-]+$/.test(slug);
     }
+  },
+  // Phase 73 (D-01, D-02, D-03): Brand input validation rules (optional, additive)
+  R_BRAND_01: {
+    rule: 'brand_input.audience_segments must be array with 2-5 segments (D-01)',
+    check: (seed) => {
+      const segments = seed?.brand_input?.audience_segments;
+      if (!segments) return true; // optional
+      return Array.isArray(segments) && segments.length >= 2 && segments.length <= 5;
+    }
+  },
+  R_BRAND_02: {
+    rule: 'brand_input: each segment must have segment_name and segment_id (D-03)',
+    check: (seed) => {
+      const segments = seed?.brand_input?.audience_segments;
+      if (!segments) return true; // optional
+      return Array.isArray(segments) && segments.every(s => s?.segment_name && s?.segment_id);
+    }
+  },
+  R_BRAND_03: {
+    rule: 'brand_input: all pain/need/expectation items must have required rationale fields (D-02)',
+    check: (seed) => {
+      const segments = seed?.brand_input?.audience_segments;
+      if (!segments) return true; // optional
+      
+      return Array.isArray(segments) && segments.every(segment => {
+        // Check pains have rationale (D-02)
+        if (Array.isArray(segment.pains)) {
+          if (!segment.pains.every(p => p?.pain && p?.rationale)) {
+            return false;
+          }
+        }
+        
+        // Check needs have rationale (D-02)
+        if (Array.isArray(segment.needs)) {
+          if (!segment.needs.every(n => n?.need && n?.rationale)) {
+            return false;
+          }
+        }
+        
+        // Check expectations have rationale (D-02)
+        if (Array.isArray(segment.expectations)) {
+          if (!segment.expectations.every(e => e?.expectation && e?.rationale)) {
+            return false;
+          }
+        }
+        
+        return true;
+      });
+    }
   }
 });
 
@@ -332,6 +382,46 @@ function createOutcome(state, code, message, details = {}) {
     errors: details.errors || [],
     fallback: Boolean(details.fallback),
   };
+}
+
+function summarizeImporterItems(items = []) {
+  const totals = {
+    imported: 0,
+    imported_with_warnings: 0,
+    blocked: 0,
+    skipped: 0,
+  };
+
+  for (const item of items) {
+    const key = item?.outcome || item?.proposed_outcome;
+    if (Object.prototype.hasOwnProperty.call(totals, key)) {
+      totals[key] += 1;
+    }
+  }
+
+  return {
+    ...totals,
+    total: items.length,
+    eligible: totals.imported + totals.imported_with_warnings,
+  };
+}
+
+function normalizeImportItems(items = []) {
+  return items.map((item) => ({
+    ...item,
+    outcome: item.outcome || item.proposed_outcome || 'skipped',
+  }));
+}
+
+function createImporterUnavailableResponse(res, message, code = 'LOCAL_PERSISTENCE_UNAVAILABLE') {
+  return json(res, 501, {
+    success: false,
+    error: code,
+    message,
+    outcome: createOutcome('failure', code, message, {
+      errors: [message],
+    }),
+  });
 }
 
 function walkFiles(rootDir, files = []) {
@@ -995,6 +1085,14 @@ async function handleStatus(req, res) {
     const literacyStatus = await evaluateLiteracyReadiness(null, runtime.config);
 
   const activeRolloutMode = getRolloutMode(process.env);
+  const installProfile = runtime.config.install_profile || 'full';
+  const profileComponents = runtime.config.components || {
+    onboarding_enabled: installProfile === 'full',
+    ui_enabled: installProfile === 'full',
+  };
+  const statusGuidance = profileComponents.onboarding_enabled
+    ? 'Onboarding helper is enabled for this profile and remains transitional during migration.'
+    : 'Onboarding helper is disabled for this profile. Use CLI-only workflows or switch to full profile if onboarding UI is needed.';
 
   let mirGateStatus = { total: 0, complete: 0, gate1Ready: false };
   const mirOutputPath = resolveMirOutputPath(runtime.config);
@@ -1016,6 +1114,12 @@ async function handleStatus(req, res) {
     },
     mir: mirGateStatus,
     runtime_mode: runtime.mode,
+    install_profile: installProfile,
+    profile_schema_version: Number(runtime.config.profile_schema_version || 1),
+    components: profileComponents,
+    onboarding_enabled: profileComponents.onboarding_enabled,
+    ui_enabled: profileComponents.ui_enabled,
+    profile_guidance: statusGuidance,
     local_persistence: runtime.canWriteLocalFiles,
     markosdb: {
       schema_version: MARKOSDB_SCHEMA_VERSION,
@@ -1725,9 +1829,13 @@ async function handleApprove(req, res) {
       }
     }
 
-    let mirOutputPath;
+    let approvalWrite;
     try {
-      mirOutputPath = resolveMirOutputPath(runtime.config);
+      approvalWrite = writeApprovedDrafts({
+        config: runtime.config,
+        projectSlug,
+        approvedDrafts: approvedDrafts || {},
+      });
     } catch (pathErr) {
       telemetry.captureExecutionCheckpoint('execution_failure', {
         checkpoint: 'approve',
@@ -1744,19 +1852,30 @@ async function handleApprove(req, res) {
       return json(res, 400, {
         success: false,
         error: pathErr.message,
-        message: 'Approve/write target path is outside allowed local roots.',
-        outcome: createOutcome('failure', 'MIR_OUTPUT_PATH_OUT_OF_BOUNDS', 'Approve/write target path is outside allowed local roots.', {
+        message: 'Approve/write target path is outside the canonical vault root.',
+        outcome: createOutcome('failure', 'CANONICAL_VAULT_PATH_OUT_OF_BOUNDS', 'Approve/write target path is outside the canonical vault root.', {
           errors: [pathErr.message],
         }),
       });
     }
 
-    fs.mkdirSync(mirOutputPath, { recursive: true });
+    const written = approvalWrite.written;
+    const stateUpdated = false;
+    const mergeEvents = [];
+    const report = writeRunReport({
+      config: runtime.config,
+      projectSlug,
+      mode: 'onboarding_approve',
+      surface: 'browser',
+      items: approvalWrite.items,
+      legacyRoots: [
+        runtime.config?.legacy_outputs?.mir?.output_path || '.markos-local/MIR',
+        runtime.config?.legacy_outputs?.msp?.output_path || '.markos-local/MSP',
+      ],
+    });
 
-    const { written, stateUpdated, errors, mergeEvents } = writeMIR.applyDrafts(mirOutputPath, MIR_TEMPLATES, approvedDrafts);
-
-    console.log(`\n✓ MIR files written: ${written.join(', ')}`);
-    console.log(`  STATE.md updated: ${stateUpdated}`);
+    console.log(`\n✓ Vault notes written: ${written.join(', ')}`);
+    console.log(`  Report note: ${report.report_note_path}`);
 
     const vectorStoreErrors = [];
     for (const [section, content] of Object.entries(approvedDrafts)) {
@@ -1770,15 +1889,20 @@ async function handleApprove(req, res) {
       }
     }
 
-    const combinedErrors = [...errors, ...vectorStoreErrors];
-    const mergeFallbackWarnings = (mergeEvents || [])
-      .filter((event) => event.type === 'header-fallback-append' || event.type === 'raw-fallback-append')
-      .map((event) => {
-        if (event.header) {
-          return `Fallback append used for ${event.file} (${event.header})`;
-        }
-        return `Fallback append used for ${event.file}`;
-      });
+    const writeWarnings = approvalWrite.items.flatMap((item) => {
+      const warnings = [];
+      if (item.outcome === 'blocked') {
+        warnings.push(`${item.source_key}: ${item.reason || 'blocked'}`);
+      }
+      if (item.outcome === 'skipped') {
+        warnings.push(`${item.source_key}: ${item.reason || 'skipped'}`);
+      }
+      if (Array.isArray(item.warnings)) {
+        warnings.push(...item.warnings.map((warning) => `${item.source_key}: ${warning}`));
+      }
+      return warnings;
+    });
+    const combinedErrors = [...approvalWrite.errors, ...vectorStoreErrors];
 
     if (written.length === 0) {
       telemetry.captureExecutionCheckpoint('execution_failure', {
@@ -1799,7 +1923,10 @@ async function handleApprove(req, res) {
         stateUpdated,
         errors: combinedErrors,
         mergeEvents,
-        outcome: createOutcome('failure', 'APPROVE_WRITE_FAILED', 'No drafts were written to local MIR files.', {
+        report_note_path: report.report_note_path,
+        canonical_notes_written: written.length,
+        note_outcomes: approvalWrite.items,
+        outcome: createOutcome('failure', 'APPROVE_WRITE_FAILED', 'No drafts were written to canonical vault notes.', {
           errors: combinedErrors.length > 0 ? combinedErrors : ['No files were written'],
         }),
       });
@@ -1832,7 +1959,7 @@ async function handleApprove(req, res) {
     const readiness = buildExecutionReadiness(approvedDrafts || {});
     const onboardingCompleted = written.length > 0;
 
-    if (combinedErrors.length > 0 || mergeFallbackWarnings.length > 0) {
+    if (combinedErrors.length > 0 || writeWarnings.length > 0) {
       telemetry.captureExecutionCheckpoint('execution_readiness_blocked', {
         checkpoint: 'approve',
         project_slug: projectSlug,
@@ -1853,13 +1980,16 @@ async function handleApprove(req, res) {
         stateUpdated,
         errors: combinedErrors,
         mergeEvents,
+        report_note_path: report.report_note_path,
+        canonical_notes_written: written.length,
+        note_outcomes: approvalWrite.items,
         handoff: {
           onboarding_completed: onboardingCompleted,
           execution_readiness: readiness,
         },
         skeletons: skeletonsSummary,
         outcome: createOutcome('warning', 'APPROVE_PARTIAL_WARNING', 'Drafts were written with warnings.', {
-          warnings: [...mergeFallbackWarnings, ...combinedErrors],
+          warnings: [...writeWarnings, ...combinedErrors],
         }),
       });
     }
@@ -1899,6 +2029,9 @@ async function handleApprove(req, res) {
       stateUpdated,
       errors: [],
       mergeEvents,
+      report_note_path: report.report_note_path,
+      canonical_notes_written: written.length,
+      note_outcomes: approvalWrite.items,
       handoff: {
         onboarding_completed: onboardingCompleted,
         execution_readiness: readiness,
@@ -1924,6 +2057,135 @@ async function handleApprove(req, res) {
       success: false,
       error: err.message,
       outcome: createOutcome('failure', 'APPROVE_EXCEPTION', 'Unhandled approve failure.', {
+        errors: [err.message],
+      }),
+    });
+  }
+}
+
+async function handleImporterScan(req, res) {
+  const runtime = createRuntimeContext();
+  if (!runtime.canWriteLocalFiles) {
+    return createImporterUnavailableResponse(
+      res,
+      'Legacy import requires the local onboarding server because it must scan local MIR and MSP files.'
+    );
+  }
+
+  try {
+    const body = await readBody(req);
+    const explicitSlug = body?.slug || body?.project_slug;
+    const projectSlug = resolveProjectSlug(
+      runtime,
+      explicitSlug || resolveRequestedProjectSlug({
+        explicitSlug,
+        requestUrl: req.url,
+        config: runtime.config,
+      })
+    );
+
+    const plan = planImport({
+      config: runtime.config,
+      projectSlug,
+    });
+    const items = normalizeImportItems(plan.items || []);
+    const totals = summarizeImporterItems(items);
+    const hasBlocked = totals.blocked > 0;
+    const hasWarnings = totals.imported_with_warnings > 0;
+
+    return json(res, 200, {
+      success: true,
+      slug: projectSlug,
+      phase: 'scan',
+      legacy_roots: plan.legacy_roots,
+      items,
+      totals,
+      legacy_files_preserved: true,
+      report_note_path: null,
+      outcome: createOutcome(
+        hasBlocked || hasWarnings ? 'warning' : 'success',
+        hasBlocked || hasWarnings ? 'IMPORT_SCAN_REVIEW_REQUIRED' : 'IMPORT_SCAN_READY',
+        hasBlocked || hasWarnings
+          ? 'Legacy scan completed. Review warnings and blocked items before applying import.'
+          : 'Legacy scan completed. Import plan is ready to apply.'
+      ),
+    });
+  } catch (err) {
+    return json(res, 500, {
+      success: false,
+      error: err.message,
+      outcome: createOutcome('failure', 'IMPORT_SCAN_EXCEPTION', 'Legacy import scan failed.', {
+        errors: [err.message],
+      }),
+    });
+  }
+}
+
+async function handleImporterApply(req, res) {
+  const runtime = createRuntimeContext();
+  if (!runtime.canWriteLocalFiles) {
+    return createImporterUnavailableResponse(
+      res,
+      'Legacy import requires the local onboarding server because it must read legacy files and write canonical vault notes.'
+    );
+  }
+
+  try {
+    const body = await readBody(req);
+    const explicitSlug = body?.slug || body?.project_slug;
+    const projectSlug = resolveProjectSlug(
+      runtime,
+      explicitSlug || resolveRequestedProjectSlug({
+        explicitSlug,
+        requestUrl: req.url,
+        config: runtime.config,
+      })
+    );
+
+    const plan = planImport({
+      config: runtime.config,
+      projectSlug,
+    });
+    const applied = applyImportPlan({
+      config: runtime.config,
+      projectSlug,
+      plan,
+      surface: 'browser',
+    });
+    const items = normalizeImportItems(applied.items || []);
+    const totals = summarizeImporterItems(items);
+    const warnings = items.flatMap((item) => {
+      const itemWarnings = Array.isArray(item.warnings) ? item.warnings.map((warning) => `${item.source_path || item.source_key}: ${warning}`) : [];
+      if (item.outcome === 'blocked' && item.reason) {
+        itemWarnings.unshift(`${item.source_path || item.source_key}: ${item.reason}`);
+      }
+      return itemWarnings;
+    });
+    const hasReviewItems = totals.blocked > 0 || totals.imported_with_warnings > 0;
+
+    return json(res, 200, {
+      success: true,
+      slug: projectSlug,
+      phase: 'apply',
+      legacy_roots: applied.legacy_roots,
+      items,
+      totals,
+      legacy_files_preserved: true,
+      report_note_path: applied.report_note_path,
+      outcome: createOutcome(
+        hasReviewItems ? 'warning' : 'success',
+        hasReviewItems ? 'IMPORT_APPLY_REVIEW_REQUIRED' : 'IMPORT_APPLY_OK',
+        hasReviewItems
+          ? 'Import applied with warnings or blocked items. Review the report note before continuing.'
+          : 'Import applied successfully. Canonical vault notes and a durable report note were written.',
+        warnings.length > 0 ? { warnings } : {}
+      ),
+    });
+  } catch (err) {
+    return json(res, 500, {
+      success: false,
+      error: err.message,
+      outcome: createOutcome('failure', 'IMPORT_APPLY_EXCEPTION', 'Legacy import apply failed.', {
         errors: [err.message],
       }),
     });
@@ -2249,6 +2511,8 @@ module.exports = {
   handleSubmit,
   handleRegenerate,
   handleApprove,
+  handleImporterScan,
+  handleImporterApply,
   handleMarkosdbMigration,
   handleLinearSync,
   handleCampaignResult,

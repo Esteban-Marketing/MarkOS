@@ -128,6 +128,79 @@
         "monthly_output": { "type": "string" },
         "best_format": { "type": "string" }
       }
+    },
+    "brand_input": {
+      "type": "object",
+      "description": "Phase 73 brand inputs and human insight modeling (optional, additive to existing onboarding data)",
+      "properties": {
+        "brand_profile": {
+          "type": "object",
+          "description": "Primary brand identity (D-01, D-03)",
+          "properties": {
+            "primary_name": { "type": "string", "description": "Brand name" },
+            "mission_statement": { "type": "string", "description": "Mission/purpose" },
+            "brand_values": { "type": "array", "items": { "type": "string" }, "description": "Core values" },
+            "tone_of_voice": { "type": "string", "description": "Communication style" }
+          },
+          "required": ["primary_name"]
+        },
+        "audience_segments": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 5,
+          "description": "2-5 audience segments with structured pains, needs, expectations (D-01, D-02, D-03)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "segment_name": { "type": "string", "description": "Segment name" },
+              "segment_id": { "type": "string", "description": "Unique segment identifier" },
+              "pains": {
+                "type": "array",
+                "description": "Pain points with required rationale (D-02)",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "pain": { "type": "string" },
+                    "rationale": { "type": "string", "description": "Why this pain matters (required, D-02)" }
+                  },
+                  "required": ["pain", "rationale"]
+                }
+              },
+              "needs": {
+                "type": "array",
+                "description": "Needs with required rationale (D-02)",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "need": { "type": "string" },
+                    "rationale": { "type": "string", "description": "Why this need is critical (required, D-02)" }
+                  },
+                  "required": ["need", "rationale"]
+                }
+              },
+              "expectations": {
+                "type": "array",
+                "description": "Expectations with required rationale (D-02)",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "expectation": { "type": "string" },
+                    "rationale": { "type": "string", "description": "Why this expectation matters (required, D-02)" }
+                  },
+                  "required": ["expectation", "rationale"]
+                }
+              },
+              "desired_outcomes": {
+                "type": "array",
+                "description": "Desired business outcomes (D-03)",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["segment_name", "segment_id"]
+          }
+        }
+      }
     }
   }
 }
+
