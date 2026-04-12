@@ -57,6 +57,9 @@ const { upsertNormalizedSegments, queryEvidenceByTenant } = require('./brand-inp
 // Phase 74: Strategy artifact and messaging rules schema validation
 const { validateStrategyArtifact } = require('./brand-strategy/strategy-artifact-schema.cjs');
 const { validateMessagingRules } = require('./brand-strategy/messaging-rules-schema.cjs');
+const { synthesizeStrategyArtifact } = require('./brand-strategy/strategy-synthesizer.cjs');
+const { detectContradictions } = require('./brand-strategy/contradiction-detector.cjs');
+const { persistStrategyArtifact } = require('./brand-strategy/strategy-artifact-writer.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -1464,6 +1467,8 @@ async function handleSubmit(req, res) {
     // Phase 73: Brand input normalization and deterministic graph writes (D-04, D-06)
     let brandNormalizationResult = null;
     let brandGraphResult = null;
+    let strategySynthesisResult = null;
+    let strategyPersistenceResult = null;
     const brandExecutionContext = buildExecutionContext(req, slug || 'submit');
     
     if (seed.brand_input && typeof seed.brand_input === 'object') {
@@ -1480,16 +1485,33 @@ async function handleSubmit(req, res) {
             brandExecutionContext.tenant_id,
             brandNormalizationResult
           );
+
+          // Phase 74: deterministic strategy synthesis + explicit conflict annotations + tenant-safe persistence.
+          strategySynthesisResult = synthesizeStrategyArtifact(
+            brandExecutionContext.tenant_id,
+            brandNormalizationResult
+          );
+          strategySynthesisResult.artifact.conflict_annotations = detectContradictions(
+            strategySynthesisResult.artifact,
+            { ruleset_version: strategySynthesisResult.metadata.ruleset_version }
+          );
+          strategyPersistenceResult = persistStrategyArtifact(
+            brandExecutionContext.tenant_id,
+            strategySynthesisResult
+          );
         }
         
         console.log(`✓ Phase 73: Brand input normalized for tenant ${brandExecutionContext.tenant_id}`);
         console.log(`  Determinism verified: ${determinismCheck.match ? 'PASS' : 'FAIL'}`);
         console.log(`  Graph writes: ${brandGraphResult?.segments_upserted?.length || 0} segments, ${brandGraphResult?.edges_created?.length || 0} edges`);
+        console.log(`  Phase 74 strategy artifact: ${strategyPersistenceResult?.artifact_id || 'not-written'}`);
       } catch (brandErr) {
         console.error('Phase 73 brand normalization error:', redactSensitive(brandErr.message));
         // Don't fail the submission on brand normalization error - log it but continue
         brandNormalizationResult = null;
         brandGraphResult = null;
+        strategySynthesisResult = null;
+        strategyPersistenceResult = null;
       }
     }
 
@@ -1616,6 +1638,9 @@ async function handleSubmit(req, res) {
           segments_upserted_count: brandGraphResult.segments_upserted.length,
           edges_created_count: brandGraphResult.edges_created.length,
         } : null,
+        strategy_artifact: strategySynthesisResult ? strategySynthesisResult.artifact : null,
+        strategy_artifact_metadata: strategySynthesisResult ? strategySynthesisResult.metadata : null,
+        strategy_artifact_write: strategyPersistenceResult,
       });
   } catch (err) {
     console.error('[POST /submit] Error:', redactSensitive(err.message));
