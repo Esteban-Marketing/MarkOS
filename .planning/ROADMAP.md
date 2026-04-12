@@ -632,8 +632,8 @@ Plans:
 **Acceptance Intent:** Operators can safely promote or roll back complete brand bundles with traceability, and closure tests prove determinism, tenant isolation, and contract integrity.
 **Plans:** 3 plans
 Plans:
-- [ ] 78-01-PLAN.md — Wave 0 governance schema tests, governance-diagnostics module, and closure-gate runner
-- [ ] 78-02-PLAN.md — Immutable bundle registry, active-pointer publish/rollback, and drift auditor
+- [x] 78-01-PLAN.md — Wave 1 governance schema tests, governance-diagnostics module, and closure-gate runner
+- [x] 78-02-PLAN.md — Immutable bundle registry, active-pointer publish/rollback, and drift auditor
 - [ ] 78-03-PLAN.md — Additive handler integration, governance evidence writer, tenant isolation and contract integrity tests
 ---
 <details>
