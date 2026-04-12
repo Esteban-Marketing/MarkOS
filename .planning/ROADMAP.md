@@ -696,8 +696,8 @@ Plans:
 **Gap Closure:** Closes audit partial requirement for Phase 74 human-needed strategy guidance verification.
 **Plans:** 2 plans
 Plans:
-- [ ] 83-01-PLAN.md — Define human UAT protocol and acceptance rubric for strategist/founder/content role outputs
-- [ ] 83-02-PLAN.md — Execute UAT, capture evidence, and promote BRAND-STRAT-02 to complete if accepted
+- [x] 83-01-PLAN.md — Define human UAT protocol and acceptance rubric for strategist/founder/content role outputs
+- [x] 83-02-PLAN.md — Execute UAT, capture evidence, and promote BRAND-STRAT-02 to complete if accepted
 ---
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
