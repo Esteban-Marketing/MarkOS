@@ -13,10 +13,10 @@
 
 ### Ingestion and Curation
 
-- [ ] **LITV-01**: Operators can edit and organize vault artifacts through Obsidian Mind interface with automatic bidirectional sync to backend (no manual publish steps).
-- [ ] **LITV-02**: Obsidian edits trigger backend indexing, audit trail recording, and PageIndex re-indexing without operator intervention.
-- [ ] **LITV-03**: Repeated ingestion/edits are idempotent; conflict resolution is last-write-wins with full audit recovery path.
-- [ ] **LITV-04**: Ingestion accepts audience-tagged artifacts and enforces metadata validation before indexing.
+- [x] **LITV-01**: Operators can edit and organize vault artifacts through Obsidian Mind interface with automatic bidirectional sync to backend (no manual publish steps).
+- [x] **LITV-02**: Obsidian edits trigger backend indexing, audit trail recording, and PageIndex re-indexing without operator intervention.
+- [x] **LITV-03**: Repeated ingestion/edits are idempotent; conflict resolution is last-write-wins with full audit recovery path.
+- [x] **LITV-04**: Ingestion accepts audience-tagged artifacts and enforces metadata validation before indexing.
 
 ### Retrieval and Role Handoffs
 
@@ -60,10 +60,10 @@
 | VAULT-01 | 84 | Complete |
 | VAULT-02 | 84 | Complete |
 | VAULT-03 | 84 | Complete |
-| LITV-01 | TBA | Pending |
-| LITV-02 | TBA | Pending |
-| LITV-03 | TBA | Pending |
-| LITV-04 | TBA | Pending |
+| LITV-01 | 85 | Complete |
+| LITV-02 | 85 | Complete |
+| LITV-03 | 85 | Complete |
+| LITV-04 | 85 | Complete |
 | ROLEV-01 | TBA | Pending |
 | ROLEV-02 | TBA | Pending |
 | ROLEV-03 | TBA | Pending |
