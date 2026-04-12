@@ -590,7 +590,7 @@ Plans:
 **Goal:** Establish hybrid vault structure (disciplines + semantic cross-cutting indices), deterministic pathing, provenance metadata model, and PageIndex-backed retrieval contracts.
 **Requirements Mapped:** VAULT-01, VAULT-02, VAULT-03
 **Depends on:** Phase 83
-**Status:** 📋 Planned
+**Status:** ✅ Verified PASS (2026-04-12) — wave execution complete with 22/22 Phase 84 tests passing and closure evidence captured in `.planning/phases/84-vault-foundation-obsidian-mind-pageindex-contracts/84-VERIFICATION.md`
 
 ### Phase 85: Ingestion Pipeline and Bidirectional Obsidian Sync
 **Goal:** Enable Obsidian-driven artifact authoring with automatic backend sync, audit lineage capture, idempotent update behavior, and PageIndex re-indexing.
