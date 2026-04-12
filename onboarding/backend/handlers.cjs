@@ -62,6 +62,9 @@ const { detectContradictions } = require('./brand-strategy/contradiction-detecto
 const { persistStrategyArtifact } = require('./brand-strategy/strategy-artifact-writer.cjs');
 const { compileMessagingRules } = require('./brand-strategy/messaging-rules-compiler.cjs');
 const { projectRoleViews } = require('./brand-strategy/role-view-projector.cjs');
+const { compileIdentityArtifact } = require('./brand-identity/identity-compiler.cjs');
+const { evaluateAccessibilityGates } = require('./brand-identity/accessibility-gates.cjs');
+const { persistIdentityArtifact } = require('./brand-identity/identity-artifact-writer.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -1473,6 +1476,15 @@ async function handleSubmit(req, res) {
     let strategyPersistenceResult = null;
     let compiledMessagingRules = null;
     let roleViews = null;
+    let compiledIdentityArtifact = null;
+    let accessibilityGateReport = null;
+    let identityArtifactWrite = null;
+    let publishReadiness = {
+      status: 'not_evaluated',
+      blocked: false,
+      reason_codes: [],
+      diagnostics: [],
+    };
     const brandExecutionContext = buildExecutionContext(req, slug || 'submit');
     
     if (seed.brand_input && typeof seed.brand_input === 'object') {
@@ -1509,6 +1521,32 @@ async function handleSubmit(req, res) {
             brandExecutionContext.tenant_id,
             strategySynthesisResult
           );
+
+          // Phase 75: deterministic identity compilation and publish accessibility gating.
+          compiledIdentityArtifact = compileIdentityArtifact(strategySynthesisResult);
+          accessibilityGateReport = evaluateAccessibilityGates(compiledIdentityArtifact);
+          identityArtifactWrite = persistIdentityArtifact(
+            brandExecutionContext.tenant_id,
+            compiledIdentityArtifact
+          );
+
+          const blockedDiagnostics = (accessibilityGateReport.diagnostics || []).filter(
+            (entry) => entry && entry.blocking
+          );
+          const diagnostics = blockedDiagnostics.length > 0
+            ? blockedDiagnostics
+            : (accessibilityGateReport.diagnostics || []);
+          const reasonCodes = [...new Set(diagnostics
+            .map((entry) => entry && entry.reason_code)
+            .filter((code) => typeof code === 'string' && code.length > 0))]
+            .sort((a, b) => a.localeCompare(b));
+
+          publishReadiness = {
+            status: accessibilityGateReport.gate_status === 'blocked' ? 'blocked' : 'ready',
+            blocked: accessibilityGateReport.gate_status === 'blocked',
+            reason_codes: reasonCodes,
+            diagnostics,
+          };
         }
         
         console.log(`✓ Phase 73: Brand input normalized for tenant ${brandExecutionContext.tenant_id}`);
@@ -1522,6 +1560,28 @@ async function handleSubmit(req, res) {
         brandGraphResult = null;
         strategySynthesisResult = null;
         strategyPersistenceResult = null;
+        compiledIdentityArtifact = null;
+        identityArtifactWrite = null;
+        accessibilityGateReport = {
+          gate_status: 'blocked',
+          checks: [],
+          diagnostics: [
+            {
+              check_id: 'identity.pipeline',
+              required_ratio: null,
+              observed_ratio: null,
+              blocking: true,
+              message: 'Identity compilation and accessibility gate evaluation failed',
+              reason_code: 'IDENTITY_PIPELINE_ERROR',
+            },
+          ],
+        };
+        publishReadiness = {
+          status: 'blocked',
+          blocked: true,
+          reason_codes: ['IDENTITY_PIPELINE_ERROR'],
+          diagnostics: accessibilityGateReport.diagnostics,
+        };
       }
     }
 
@@ -1653,6 +1713,11 @@ async function handleSubmit(req, res) {
         messaging_rules_compiled: compiledMessagingRules,
         role_views: roleViews,
         strategy_artifact_write: strategyPersistenceResult,
+        identity_artifact: compiledIdentityArtifact ? compiledIdentityArtifact.artifact : null,
+        identity_artifact_metadata: compiledIdentityArtifact ? compiledIdentityArtifact.metadata : null,
+        identity_artifact_write: identityArtifactWrite,
+        accessibility_gate_report: accessibilityGateReport,
+        publish_readiness: publishReadiness,
       });
   } catch (err) {
     console.error('[POST /submit] Error:', redactSensitive(err.message));
