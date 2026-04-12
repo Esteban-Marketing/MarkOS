@@ -15,7 +15,7 @@ requirements:
 
 This file is an index only. Executable plans are split into parser-ready files:
 
-- 78-01-PLAN.md — Wave 1: Wave 0 governance schema tests, governance-diagnostics module, and closure-gate runner schema validators.
+- 78-01-PLAN.md — Wave 1: governance schema tests, governance-diagnostics module, and closure-gate runner schema validators.
 - 78-02-PLAN.md — Wave 2: Immutable bundle registry, active-pointer publish/rollback module, and deterministic drift auditor.
 - 78-03-PLAN.md — Wave 3: Additive handler integration, governance evidence writer, tenant isolation tests, and contract integrity verification.
 

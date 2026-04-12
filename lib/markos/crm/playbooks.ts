@@ -1,5 +1,3 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
 const crypto = require('node:crypto');
@@ -46,12 +44,12 @@ function transitionRun(run, toState, store, actorId, reason) {
   return run;
 }
 
-function assertReplaySafePlaybookAction(input: Record<string, unknown> = {}) {
+function assertReplaySafePlaybookAction(input = {}) {
   const store = getCrmStore({ crmStore: input.crmStore || input.store });
-  const playbook: Record<string, unknown> =
-    input.playbook && typeof input.playbook === 'object' ? input.playbook as Record<string, unknown> : {};
-  const step: Record<string, unknown> =
-    input.step && typeof input.step === 'object' ? input.step as Record<string, unknown> : {};
+  const playbook =
+    input.playbook && typeof input.playbook === 'object' ? input.playbook : {};
+  const step =
+    input.step && typeof input.step === 'object' ? input.step : {};
   return recordSideEffect({
     ledger: store.copilotSideEffectLedger,
     run_id: playbook.run_id,
@@ -63,7 +61,7 @@ function assertReplaySafePlaybookAction(input: Record<string, unknown> = {}) {
   });
 }
 
-function buildCopilotPlaybookRun(input: Record<string, unknown> = {}) {
+function buildCopilotPlaybookRun(input = {}) {
   const store = getCrmStore({ crmStore: input.crmStore || input.store });
   const tenantId = toTrimmedString(input.tenant_id);
   const actorId = toTrimmedString(input.actor_id);
@@ -148,18 +146,18 @@ function applySafeRecordUpdate(store, context, step) {
   return updateCrmEntity(store, { tenant_id: context.tenant_id, entity_id: record.entity_id }, { attributes: nextAttributes });
 }
 
-function applyApprovedPlaybookStep(input: Record<string, unknown> = {}) {
+function applyApprovedPlaybookStep(input = {}) {
   const store = getCrmStore({ crmStore: input.crmStore || input.store });
-  const playbook: Record<string, unknown> =
-    input.playbook && typeof input.playbook === 'object' ? input.playbook as Record<string, unknown> : {};
-  const step: Record<string, unknown> =
-    input.step && typeof input.step === 'object' ? input.step as Record<string, unknown> : {};
-  const context: Record<string, unknown> =
-    input.context && typeof input.context === 'object' ? input.context as Record<string, unknown> : {};
+  const playbook =
+    input.playbook && typeof input.playbook === 'object' ? input.playbook : {};
+  const step =
+    input.step && typeof input.step === 'object' ? input.step : {};
+  const context =
+    input.context && typeof input.context === 'object' ? input.context : {};
   const actionKey = typeof step.action_key === 'string' ? step.action_key : '';
-  const proposedChanges: Record<string, unknown> =
+  const proposedChanges =
     step.proposed_changes && typeof step.proposed_changes === 'object'
-      ? step.proposed_changes as Record<string, unknown>
+      ? step.proposed_changes
       : {};
   if (!SAFE_PLAYBOOK_ACTIONS.has(actionKey)) {
     throw new Error('CRM_COPILOT_PLAYBOOK_STEP_INVALID');

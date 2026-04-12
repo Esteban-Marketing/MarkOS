@@ -1,5 +1,3 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
 const { listCrmEntities } = require('./entities.ts');
@@ -33,11 +31,14 @@ function ensureExecutionStore(store) {
 }
 
 function toTimestamp(value, fallback = 0) {
-  const resolved = value
-    ? Date.parse(String(value))
-    : typeof fallback === 'number'
-      ? fallback
-      : Date.parse(String(fallback || 0));
+  let resolved;
+  if (value) {
+    resolved = Date.parse(String(value));
+  } else if (typeof fallback === 'number') {
+    resolved = fallback;
+  } else {
+    resolved = Date.parse(String(fallback || 0));
+  }
   if (Number.isNaN(resolved)) {
     return 0;
   }
@@ -69,26 +70,24 @@ function resolveRiskLevel(urgencyScore) {
   return 'low';
 }
 
-function normalizeExecutionSignals(input: Record<string, unknown> = {}) {
-  const record: Record<string, unknown> =
-    input.record && typeof input.record === 'object' ? input.record as Record<string, unknown> : {};
-  const recordAttributes: Record<string, unknown> =
-    record.attributes && typeof record.attributes === 'object' ? record.attributes as Record<string, unknown> : {};
+function normalizeExecutionSignals(input = {}) {
+  const record = input.record && typeof input.record === 'object' ? input.record : {};
+  const recordAttributes = record.attributes && typeof record.attributes === 'object' ? record.attributes : {};
   const nowIso = input.now || new Date().toISOString();
   const nowTs = toTimestamp(nowIso, Date.now());
-  const tasks: Array<Record<string, unknown>> = Array.isArray(input.tasks)
-    ? input.tasks.filter((task): task is Record<string, unknown> => Boolean(task) && typeof task === 'object')
+  const tasks = Array.isArray(input.tasks)
+    ? input.tasks.filter((task) => Boolean(task) && typeof task === 'object')
     : [];
-  const timeline: Array<Record<string, unknown>> = Array.isArray(input.timeline)
-    ? input.timeline.filter((entry): entry is Record<string, unknown> => Boolean(entry) && typeof entry === 'object')
+  const timeline = Array.isArray(input.timeline)
+    ? input.timeline.filter((entry) => Boolean(entry) && typeof entry === 'object')
     : [];
-  const normalizedTasks: Array<Record<string, unknown> & { attributes: Record<string, unknown> }> = tasks.map((task) => ({
+  const normalizedTasks = tasks.map((task) => ({
     ...task,
-    attributes: task.attributes && typeof task.attributes === 'object' ? task.attributes as Record<string, unknown> : {},
+    attributes: task.attributes && typeof task.attributes === 'object' ? task.attributes : {},
   }));
-  const normalizedTimeline: Array<Record<string, unknown> & { payload_json: Record<string, unknown> }> = timeline.map((entry) => ({
+  const normalizedTimeline = timeline.map((entry) => ({
     ...entry,
-    payload_json: entry.payload_json && typeof entry.payload_json === 'object' ? entry.payload_json as Record<string, unknown> : {},
+    payload_json: entry.payload_json && typeof entry.payload_json === 'object' ? entry.payload_json : {},
   }));
   const taskDueTimestamps = normalizedTasks
     .map((task) => toTimestamp(task.attributes?.due_at, 0))
@@ -139,8 +138,6 @@ function normalizeExecutionSignals(input: Record<string, unknown> = {}) {
     next_due_at: taskDueTimestamps.length > 0 ? new Date(Math.min(...taskDueTimestamps)).toISOString() : null,
   });
 }
-
-type ExecutionSignals = ReturnType<typeof normalizeExecutionSignals>;
 
 function resolveQueueTab(signals) {
   if (signals.approval_needed) {
@@ -210,17 +207,8 @@ function buildSourceSignals(record, signals) {
   ]);
 }
 
-type BoundedAction = {
-  action_key: string;
-  label: string;
-  safe: boolean;
-  allowed_fields?: string[];
-  approval_required?: boolean;
-  suggestion_only?: boolean;
-};
-
 function buildBoundedActions(signals) {
-  const actions: BoundedAction[] = [
+  const actions = [
     { action_key: 'create_task', label: 'Create Task', safe: true },
     { action_key: 'append_note', label: 'Add Note', safe: true },
     { action_key: 'update_record', label: 'Update Record', safe: true, allowed_fields: ['stage_key', 'owner_actor_id', 'priority', 'status'] },
@@ -265,12 +253,11 @@ function buildDraftSuggestion(record, signals) {
   });
 }
 
-function buildExecutionRecommendation(input: Record<string, unknown> = {}) {
-  const record: Record<string, unknown> =
-    input.record && typeof input.record === 'object' ? input.record as Record<string, unknown> : {};
-  const signals: ExecutionSignals =
+function buildExecutionRecommendation(input = {}) {
+  const record = input.record && typeof input.record === 'object' ? input.record : {};
+  const signals =
     input.signals && typeof input.signals === 'object'
-      ? input.signals as ExecutionSignals
+      ? input.signals
       : normalizeExecutionSignals(input);
   const queueTab = resolveQueueTab(signals);
   const urgencyScore = computeUrgencyScore(signals);
@@ -300,8 +287,6 @@ function buildExecutionRecommendation(input: Record<string, unknown> = {}) {
   });
 }
 
-type ExecutionRecommendationRecord = ReturnType<typeof buildExecutionRecommendation>;
-
 function readRecommendationLifecycle(store, recommendationId) {
   const targetStore = ensureExecutionStore(store);
   return targetStore.executionRecommendations.find((row) => row.recommendation_id === recommendationId) || null;
@@ -320,7 +305,7 @@ function applyRecommendationLifecycle(recommendation, lifecycle) {
   });
 }
 
-function buildExecutionRecommendations(input: Record<string, unknown> = {}) {
+function buildExecutionRecommendations(input = {}) {
   const store = ensureExecutionStore(input.crmStore || input.store || { entities: [], activities: [], identityLinks: [] });
   const tenantId = String(input.tenant_id || '').trim();
   if (!tenantId) {
@@ -364,12 +349,12 @@ function queueTabWeight(queueTab) {
   }[queueTab] || 0;
 }
 
-function rankExecutionQueue(input: Record<string, unknown> = {}) {
+function rankExecutionQueue(input = {}) {
   const scope = input.scope === 'team' ? 'team' : 'personal';
   const queueTab = input.queue_tab ? String(input.queue_tab).trim() : 'all';
   const actorId = String(input.actor_id || '').trim() || null;
-  const recommendations: ExecutionRecommendationRecord[] = Array.isArray(input.recommendations)
-    ? input.recommendations.slice() as ExecutionRecommendationRecord[]
+  const recommendations = Array.isArray(input.recommendations)
+    ? input.recommendations.slice()
     : [];
   return recommendations
     .filter((recommendation) => {
@@ -395,14 +380,14 @@ function rankExecutionQueue(input: Record<string, unknown> = {}) {
     });
 }
 
-function buildQueueTabs(recommendations: ExecutionRecommendationRecord[]) {
+function buildQueueTabs(recommendations) {
   return EXECUTION_QUEUE_TABS.map((tab) => ({
     tab_key: tab,
     count: recommendations.filter((item) => item.queue_tab === tab).length,
   }));
 }
 
-function buildExecutionQueues(input: Record<string, unknown> = {}) {
+function buildExecutionQueues(input = {}) {
   const recommendations = buildExecutionRecommendations(input);
   const actorId = String(input.actor_id || '').trim() || null;
   const personal = rankExecutionQueue({ recommendations, scope: 'personal', actor_id: actorId, queue_tab: input.queue_tab || 'all' });
@@ -415,7 +400,7 @@ function buildExecutionQueues(input: Record<string, unknown> = {}) {
   });
 }
 
-function upsertRecommendationLifecycle(store, input: Record<string, unknown> = {}) {
+function upsertRecommendationLifecycle(store, input = {}) {
   const targetStore = ensureExecutionStore(store);
   const recommendationId = String(input.recommendation_id || '').trim();
   if (!recommendationId) {
@@ -439,10 +424,10 @@ function upsertRecommendationLifecycle(store, input: Record<string, unknown> = {
   return next;
 }
 
-function listDraftSuggestions(input: Record<string, unknown> = {}) {
+function listDraftSuggestions(input = {}) {
   const store = input.crmStore ? ensureExecutionStore(input.crmStore) : null;
-  const recommendations: ExecutionRecommendationRecord[] = Array.isArray(input.recommendations)
-    ? input.recommendations as ExecutionRecommendationRecord[]
+  const recommendations = Array.isArray(input.recommendations)
+    ? input.recommendations
     : buildExecutionRecommendations(input);
   return recommendations
     .filter((recommendation) => recommendation.suggestion_artifact)
@@ -464,7 +449,7 @@ function listDraftSuggestions(input: Record<string, unknown> = {}) {
     }));
 }
 
-function upsertDraftLifecycle(store, input: Record<string, unknown> = {}) {
+function upsertDraftLifecycle(store, input = {}) {
   const targetStore = ensureExecutionStore(store);
   const suggestionId = String(input.suggestion_id || '').trim();
   if (!suggestionId) {
@@ -486,7 +471,7 @@ function upsertDraftLifecycle(store, input: Record<string, unknown> = {}) {
   return next;
 }
 
-function buildExecutionWorkspaceSnapshot(input: Record<string, unknown> = {}) {
+function buildExecutionWorkspaceSnapshot(input = {}) {
   const store = ensureExecutionStore(input.crmStore || input.store || { entities: [], activities: [], identityLinks: [] });
   const tenantId = String(input.tenant_id || '').trim();
   const actorId = String(input.actor_id || '').trim() || null;

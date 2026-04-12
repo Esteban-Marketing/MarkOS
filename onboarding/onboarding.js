@@ -1,5 +1,5 @@
 // onboarding.js — MarkOS Client Onboarding v2.0
-// Handles 7-step form flow + AI draft generation + MIR publish
+// Handles the form flow, AI draft generation, and canonical vault writes
 
 'use strict';
 
@@ -9,6 +9,7 @@ const LEGACY_STORAGE_KEY = 'markos-onboarding-draft'; // legacy fallback, do not
 const PRIVACY_DISMISSED_KEY = 'markos_privacy_dismissed';
 const LEGACY_PRIVACY_DISMISSED_KEY = 'markos_privacy_dismissed'; // legacy fallback, do not remove
 const DEFAULT_PROJECT_SLUG = 'markos-client';
+const DEFAULT_PUBLISH_LABEL = 'Write Approved Notes to Vault';
 const TOTAL_STEPS  = 3;
 let currentStep    = 0; // Starts at Step 0 (Omni-Input Gate)
 let lastSeed       = null;   // seed built on step 6 submit
@@ -19,6 +20,7 @@ let omniExtractedText = '';  // raw text extracted from Step 0
 let executionLoopCompleted = false;
 let interviewQuestionCount = 0;
 let interviewAutoProceedTriggered = false;
+let serverConfig = {};
 
 const INTERVIEW_MAX_QUESTIONS = 5;
 const TRACKING_ENDPOINT = '/api/tracking/ingest';
@@ -69,6 +71,26 @@ function showOutcomeStatus(outcome, fallbackMessage) {
   if (!gateStatusBar) return;
   gateStatusBar.style.display = 'block';
   gateStatusBar.textContent = getOutcomeMessage(outcome, fallbackMessage);
+}
+
+function getImporterOutcomeTotals(noteOutcomes = []) {
+  return noteOutcomes.reduce((totals, item) => {
+    const key = item?.outcome;
+    if (Object.prototype.hasOwnProperty.call(totals, key)) {
+      totals[key] += 1;
+    }
+    return totals;
+  }, {
+    imported: 0,
+    imported_with_warnings: 0,
+    blocked: 0,
+    skipped: 0,
+  });
+}
+
+function setPublishButtonState(label, disabled = false) {
+  btnPublish.textContent = label;
+  btnPublish.disabled = disabled;
 }
 
 function getStoredItem(primaryKey, fallbackKey) {
@@ -144,6 +166,7 @@ async function loadConfig() {
     const res = await fetch('/config');
     if (res.ok) {
       const config = await res.json();
+      serverConfig = config;
       trackingEnabled = Boolean(config.posthog_api_key || config.posthog_host);
       await captureTrackingEvent('onboarding_page_view', { page_url: window.location.href });
       await captureTrackingEvent('onboarding_started', { page_url: window.location.href });
@@ -524,21 +547,21 @@ function updatePublishBar() {
   const approved = Object.keys(approvedDrafts).length;
 
   if (approved === 0) {
-    publishSummary.textContent = `Approve sections to publish to your MIR. (0 / ${total} approved)`;
-    btnPublish.disabled = true;
+    publishSummary.textContent = `Approve sections to write canonical vault notes. (0 / ${total} approved)`;
+    setPublishButtonState(DEFAULT_PUBLISH_LABEL, true);
   } else if (approved < total) {
-    publishSummary.textContent = `${approved} of ${total} sections approved. Approve all to publish, or publish partial.`;
-    btnPublish.disabled = false;
+    publishSummary.textContent = `${approved} of ${total} sections approved. Write vault notes now or approve the rest first.`;
+    setPublishButtonState(DEFAULT_PUBLISH_LABEL, false);
   } else {
-    publishSummary.textContent = `All ${total} sections approved! Ready to activate your MIR.`;
-    btnPublish.disabled = false;
+    publishSummary.textContent = `All ${total} sections approved. Ready to write canonical vault notes.`;
+    setPublishButtonState(DEFAULT_PUBLISH_LABEL, false);
   }
 }
 
 // ── Publish ───────────────────────────────────────────────────────────────────
 async function handlePublish() {
-  btnPublish.disabled    = true;
-  btnPublish.textContent = '⏳ Publishing...';
+  setPublishButtonState('Writing Vault Notes...', true);
+  publishSummary.textContent = 'Writing canonical vault notes and report note...';
 
   try {
     const response = await fetch('/approve', {
@@ -552,7 +575,15 @@ async function handlePublish() {
     if (result.success) {
       const written = result.written || [];
       const readinessStatus = result.handoff?.execution_readiness?.status || 'blocked';
-      showOutcomeStatus(result.outcome, `${written.length} MIR files written. STATE.md updated.`);
+      const noteOutcomes = result.note_outcomes || [];
+      const totals = getImporterOutcomeTotals(noteOutcomes);
+      const wroteWithWarnings = totals.imported_with_warnings > 0 || totals.blocked > 0 || totals.skipped > 0 || (result.outcome?.state === 'warning');
+      showOutcomeStatus(
+        result.outcome,
+        wroteWithWarnings
+          ? `${written.length} vault notes written with warnings. Review the report note before continuing.`
+          : `${written.length} vault notes written. A durable report note was saved in Memory/Migration Reports.`
+      );
 
       await captureTrackingEvent('approval_completed', {
         project_slug: lastSlug,
@@ -574,17 +605,20 @@ async function handlePublish() {
 
       executionLoopCompleted = readinessStatus === 'ready';
 
-      setTimeout(() => showCompletionScreen(written), 1200);
+      setTimeout(() => showCompletionScreen(result), 1200);
     } else {
-      btnPublish.disabled    = false;
-      btnPublish.textContent = '🚀 Publish & Activate MIR';
+      const blocked = result.outcome?.code === 'APPROVE_WRITE_FAILED' || result.outcome?.code === 'CANONICAL_VAULT_PATH_OUT_OF_BOUNDS';
+      publishSummary.textContent = blocked
+        ? 'Vault write blocked by destination conflicts. Review blocked items before retrying.'
+        : 'We could not complete the vault write. Review the errors and try again.';
+      setPublishButtonState(blocked ? 'Resolve Blockers to Continue' : DEFAULT_PUBLISH_LABEL, false);
       showOutcomeStatus(result.outcome, result.error || 'Publish encountered errors.');
       const errors = (result.errors || []).join('\n');
       alert(`Publish encountered errors:\n${errors}`);
     }
   } catch (err) {
-    btnPublish.disabled    = false;
-    btnPublish.textContent = '🚀 Publish & Activate MIR';
+    setPublishButtonState(DEFAULT_PUBLISH_LABEL, false);
+    publishSummary.textContent = 'We could not complete the vault write. Review blocked items, keep legacy files unchanged, fix the conflicts, and rerun the action.';
     showOutcomeStatus(null, `Failure: ${err.message}`);
     alert(`Publish failed: ${err.message}`);
   }
@@ -713,15 +747,36 @@ window.updateSeedValue = function(path, newValue) {
     scoreCur[keys[keys.length - 1]] = { score: 'Green', source: 'Manual' };
 };
 
-function showCompletionScreen(written) {
+function showCompletionScreen(result) {
   document.querySelectorAll('.step-section').forEach(el => el.style.display = 'none');
   navButtons.style.display   = 'none';
   publishBar.style.display   = 'none';
   progressFill.style.width   = '100%';
   currentStepNum.innerText   = 7;
 
+  const written = result?.written || [];
+  const noteOutcomes = result?.note_outcomes || [];
+  const outcomeTotals = getImporterOutcomeTotals(noteOutcomes);
+  const completionMessage = serverConfig.completion_message
+    || `${written.length} vault notes written. A durable onboarding report was saved in Memory/Migration Reports.`;
+  const canonicalVaultRoot = serverConfig.canonical_vault?.root_path
+    || serverConfig.vault_root_path
+    || 'MarkOS-Vault';
+  const reportNotePath = result?.report_note_path || 'MarkOS-Vault/Memory/Migration Reports';
+  const title = outcomeTotals.imported_with_warnings > 0 || outcomeTotals.blocked > 0 || outcomeTotals.skipped > 0 || result?.outcome?.state === 'warning'
+    ? 'Vault Notes Ready with Warnings'
+    : 'Vault Notes Ready';
+
+  document.getElementById('completionTitle').textContent = title;
+
   document.getElementById('completionMessage').textContent =
-    `${written.length} MIR files populated with AI-generated content. Your agents are now context-aware and can begin executing marketing plans.`;
+    `${completionMessage} Legacy MIR and MSP folders remain reference-only and were not rewritten by this action. Open ${canonicalVaultRoot} in Obsidian to continue from the canonical workspace.`;
+  document.getElementById('completionDetails').innerHTML = [
+    `<div><strong>Canonical notes:</strong> ${written.length}</div>`,
+    `<div><strong>Report note:</strong> ${escapeHtml(reportNotePath)}</div>`,
+    `<div><strong>Warnings:</strong> ${outcomeTotals.imported_with_warnings}</div>`,
+    `<div><strong>Blocked:</strong> ${outcomeTotals.blocked}</div>`
+  ].join('');
 
   completionScreen.style.display = 'block';
   document.getElementById('btnCloseWindow').style.display = 'inline-block';

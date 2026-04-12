@@ -1,5 +1,3 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
 function ensureStore(store) {

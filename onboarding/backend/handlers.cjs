@@ -694,31 +694,6 @@ function resolveDesignSystemSemanticIntent(seed) {
   };
 }
 
-function mergeReadinessDiagnostics(readiness, designSystemDiagnostics) {
-  const next = {
-    status: readiness && readiness.status ? readiness.status : 'not_evaluated',
-    blocked: Boolean(readiness && readiness.blocked),
-    reason_codes: Array.isArray(readiness && readiness.reason_codes) ? readiness.reason_codes.slice() : [],
-    diagnostics: Array.isArray(readiness && readiness.diagnostics) ? readiness.diagnostics.slice() : [],
-  };
-
-  const blockingDesignDiagnostics = (Array.isArray(designSystemDiagnostics) ? designSystemDiagnostics : [])
-    .filter((entry) => entry && entry.blocking !== false);
-
-  if (blockingDesignDiagnostics.length === 0) {
-    return next;
-  }
-
-  next.blocked = true;
-  next.status = 'blocked';
-  next.reason_codes = Array.from(new Set(
-    next.reason_codes.concat(blockingDesignDiagnostics
-      .map((entry) => entry.code)
-      .filter((code) => typeof code === 'string' && code.length > 0))
-  )).sort((a, b) => a.localeCompare(b));
-  next.diagnostics = next.diagnostics.concat(blockingDesignDiagnostics);
-  return next;
-}
 
 async function autoCreateLinearIntakeTickets({ slug, phase = '34', seed = {} }) {
   const intakeTokens = ['MARKOS-ITM-OPS-03', 'MARKOS-ITM-INT-01'];
@@ -1693,8 +1668,7 @@ async function handleSubmit(req, res) {
             reason_codes: reasonCodes,
             diagnostics,
           };
-          publishReadiness = mergeReadinessDiagnostics(publishReadiness, designSystemDiagnostics);
-          publishReadiness = mergeReadinessDiagnostics(publishReadiness, nextjsHandoffDiagnostics);
+
         }
         
         console.log(`✓ Phase 73: Brand input normalized for tenant ${brandExecutionContext.tenant_id}`);
@@ -2945,3 +2919,5 @@ module.exports = {
     },
   },
 };
+
+

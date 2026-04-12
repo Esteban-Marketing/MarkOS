@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarkOS Legacy Importer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="onboarding.css">
+</head>
+<body>
+    <div class="onboarding-wrapper importer-wrapper">
+        <header class="onboarding-header">
+            <img src="" alt="Logo" class="onboarding-logo" id="brandLogo">
+            <h1 class="onboarding-title" id="importerTitle">Legacy Importer</h1>
+            <p class="step-indicator" id="importerSubtitle">Scan MIR and MSP markdown, then import eligible notes into the canonical vault.</p>
+        </header>
+
+        <main class="onboarding-card importer-shell">
+            <section class="importer-banner">
+                <h2 class="step-title">One-Way Migration</h2>
+                <p class="form-helper">This helper reads compatibility files from MIR and MSP, previews the canonical vault destinations, and writes only to eligible vault notes. Legacy files remain untouched.</p>
+            </section>
+
+            <section class="importer-stage">
+                <div class="importer-stage-header">
+                    <div>
+                        <h2 class="step-title">Project Scope</h2>
+                        <p class="form-helper">Use the same project slug as onboarding so imported report notes stay grouped with the rest of the migration record.</p>
+                    </div>
+                    <div class="importer-steps">
+                        <span class="importer-step active" id="stepScan">1. Scan</span>
+                        <span class="importer-step" id="stepApply">2. Apply</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="projectSlug">Project Slug</label>
+                    <input type="text" id="projectSlug" class="form-input" placeholder="markos-client">
+                    <p class="form-helper" id="vaultRootHint">Canonical vault root: MarkOS-Vault</p>
+                </div>
+                <div class="importer-actions">
+                    <button type="button" class="btn-primary" id="btnScanImport">Scan Legacy Files</button>
+                    <button type="button" class="btn-secondary" id="btnApplyImport" disabled>Apply Import</button>
+                    <a class="btn-secondary" href="index.html">Back to Onboarding</a>
+                </div>
+                <p class="importer-footer-note" id="importerStatus">Ready to scan for legacy notes.</p>
+            </section>
+
+            <section class="importer-report d-none" id="reportCard">
+                <h2 class="step-title">Migration Report</h2>
+                <p class="form-helper" id="reportNotePath">A durable report note will appear here after import is applied.</p>
+            </section>
+
+            <section class="importer-results d-none" id="resultsCard">
+                <h2 class="step-title">Import Preview</h2>
+                <div class="importer-summary-grid" id="summaryGrid"></div>
+                <div class="importer-result-list" id="resultList"></div>
+            </section>
+
+            <section class="importer-completion d-none" id="completionCard">
+                <h2 class="step-title">Import Complete</h2>
+                <p class="form-helper" id="completionCopy">Canonical notes were updated and the report note was recorded.</p>
+            </section>
+        </main>
+    </div>
+
+    <script src="importer.js"></script>
+</body>
+</html>

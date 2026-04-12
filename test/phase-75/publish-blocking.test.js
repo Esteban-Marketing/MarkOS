@@ -177,6 +177,7 @@ test('75-03-01: submit blocks publish readiness when required accessibility chec
               assert.equal(payload.publish_readiness.status, 'blocked');
               assert.equal(payload.publish_readiness.blocked, true);
               assert.deepEqual(payload.publish_readiness.reason_codes, ['ACCESSIBILITY_CONTRAST_BELOW_THRESHOLD']);
+              assert.equal(payload.publish_readiness.reason_codes.some((code) => /^TOKEN_|^COMPONENT_|^STARTER_|^ROLE_|^LINEAGE_|^BRAND_GOV_/.test(code)), false);
               assert.equal(payload.accessibility_gate_report.gate_status, 'blocked');
               assert.equal(payload.accessibility_gate_report.diagnostics.length, 1);
               assert.deepEqual(callOrder, ['compile', 'gates', 'persist']);
@@ -187,3 +188,4 @@ test('75-03-01: submit blocks publish readiness when required accessibility chec
     });
   });
 });
+

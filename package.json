@@ -1,6 +1,6 @@
 {
   "name": "markos",
-  "version": "2.0.0",
+  "version": "3.3.0",
   "description": "MarkOS — the Marketing Operating System. Protocol-grade marketing infrastructure for AI-ready teams.",
   "keywords": [
     "marketing",
@@ -31,7 +31,7 @@
   "scripts": {
     "dev": "node bin/dev-server.cjs",
     "test": "node --test test/**/*.test.js",
-    "vercel-build": "node scripts/vercel-build.cjs",
+    "release:smoke": "node scripts/npm-pack-smoke-check.cjs",
     "gsd:refresh-manifests": "node tools/gsd-refresh-manifest.cjs",
     "build:llm": "tsc -p tsconfig.llm.json --noEmit",
     "test:llm": "node --test test/llm-adapter/**/*.test.js",
@@ -50,7 +50,7 @@
     "test:ui-a11y": "node --test test/ui-a11y/**/*.test.js",
     "test:ui-security": "node --test test/ui-security/**/*.test.js",
     "test:ui-all": "npm run build-storybook && npm run test:ui-a11y && npm run test:ui-security",
-    "prepublishOnly": "node -e \"console.log('Publishing markos v' + require('./package.json').version)\""
+    "prepublishOnly": "node -e \"console.log('Publishing MarkOS v' + require('./package.json').version + ' (human-run npm publish required)')\""
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",

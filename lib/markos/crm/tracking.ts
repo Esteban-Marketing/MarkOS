@@ -1,5 +1,3 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
 const HIGH_SIGNAL_AUTHENTICATED_EVENTS = new Set([
@@ -14,7 +12,7 @@ function toTrimmedString(value, fallback = '') {
   return typeof value === 'string' ? value.trim() : fallback;
 }
 
-function buildTrackedEntryPayload(input: Record<string, unknown> = {}) {
+function buildTrackedEntryPayload(input = {}) {
   return Object.freeze({
     destination: toTrimmedString(input.destination, toTrimmedString(input.to, toTrimmedString(input.fallback_destination))),
     utm_source: input.utm_source || null,
@@ -29,7 +27,7 @@ function buildTrackedEntryPayload(input: Record<string, unknown> = {}) {
   });
 }
 
-function normalizeTrackedActivity(input: Record<string, unknown> = {}) {
+function normalizeTrackedActivity(input = {}) {
   const eventName = toTrimmedString(input.event_name);
   if (!eventName) {
     throw new Error('TRACKING_EVENT_NAME_REQUIRED');
@@ -45,7 +43,7 @@ function normalizeTrackedActivity(input: Record<string, unknown> = {}) {
   }
 
   let activityFamily = 'web_activity';
-  let payload: Readonly<Record<string, unknown>> = Object.freeze({
+  let payload = Object.freeze({
     ...(input.payload && typeof input.payload === 'object' ? input.payload : {}),
     event_name: eventName,
   });

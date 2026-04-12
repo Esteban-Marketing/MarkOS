@@ -5,6 +5,8 @@
 
 > Marketing, structured.
 
+Current release line: `v3.3.0`
+
 You've tried prompting your way to a marketing strategy. It doesn't work without structure.
 
 **MarkOS is the missing operating system** — protocol-grade marketing infrastructure for AI-ready teams, installed in one command.
@@ -22,7 +24,7 @@ Most AI marketing tools give you outputs. MarkOS gives you a system.
 | Without MarkOS | With MarkOS |
 |---|---|
 | Prompt → hope for consistency | Protocol → always on-brand |
-| Scattered docs and Notion pages | Structured MIR intelligence layer |
+| Scattered docs and Notion pages | Structured vault-first knowledge layer |
 | Different agents, no shared context | Supabase + Upstash vector memory + override resolution |
 | Re-explain your brand every session | One-command deploy, persistent context |
 
@@ -43,7 +45,16 @@ npx markos
 Useful overrides:
 
 ```bash
-# Skip auto-launching onboarding after install
+# Explicit setup profile selection (default remains full when omitted)
+npx markos --profile full
+npx markos --profile cli
+npx markos --profile minimal
+
+# Alias flags
+npx markos --cli-only
+npx markos --minimal
+
+# Skip auto-launching the transitional onboarding helper after install
 npx markos --no-onboarding
 
 # Accept defaults non-interactively
@@ -51,18 +62,31 @@ npx markos --yes --project-name "Acme Client"
 
 # Run secure database provisioning setup (Supabase + Upstash)
 npx markos db:setup
+
+# Open the canonical vault in Obsidian at the Home note
+npx markos vault:open
 ```
+
+Setup profile contract:
+- `full` keeps onboarding and UI helper surfaces enabled.
+- `cli` disables onboarding/UI helper surfaces and keeps a CLI-only operator path.
+- `minimal` keeps the same disabled onboarding/UI behavior with the smallest helper surface.
+- `--no-onboarding` is a component override that disables onboarding/UI regardless of profile.
+- Existing installs without profile metadata normalize to `full` during update for backward-safe behavior.
 
 In ~60 seconds you get:
 - `.agent/markos/` — versioned protocol engine (templates, agents, `MARKOS-INDEX.md`)
+- `MarkOS-Vault/` — canonical Obsidian vault scaffold with Home, Strategy, Execution, Relationships, Evidence, Reviews, and Memory families
 - `onboarding/` — web onboarding app (copied on first install when missing)
 - `.markos-install-manifest.json` — idempotent install marker for `npx markos update`
-- Optional: launch the onboarding form to drive drafts into `.markos-local/` after approval
+- Optional: launch the transitional onboarding helper for migration-era drafting while the vault-native write path remains deferred
 
 Installer completion states:
-- `ready` — local onboarding handoff is available with full baseline dependencies.
-- `degraded` — install succeeded, but one or more optional runtime dependencies (for example AI keys or vector providers) still need configuration.
-- `blocked` — install finished copying files, but automatic onboarding handoff cannot proceed until a required local runtime issue is fixed.
+- `ready` — canonical vault scaffold exists and Obsidian was detected for the primary operating model.
+- `degraded` — core vault bootstrap succeeded, but one or more optional enhancements or runtime dependencies still need configuration.
+- `blocked` — core files were installed, but Obsidian was not detected or another required local issue prevents the vault-first contract from completing.
+
+Onboarding availability is separate from canonical readiness. The helper remains transitional and still publishes legacy MIR/MSP outputs until the vault-native write path lands.
 
 This repository also ships **`.protocol-lore/`** (agent boot and navigation); it is not part of the published npm `files` list, but it is authoritative when working from source.
 
@@ -75,29 +99,51 @@ npx markos update
 # Guided DB provisioning with migration + security audit gates:
 npx markos db:setup
 
-# Run the onboarding form to fill your brand intelligence:
+# Open the canonical vault root in Obsidian
+npx markos vault:open --root
+
+# Run the transitional onboarding helper to draft migration-era legacy outputs:
 node onboarding/backend/server.cjs
 # Then open http://localhost:4242
 ```
+
+`npx markos update` preserves local protocol edits, carries forward vault-first manifest metadata, repairs the canonical `MarkOS-Vault` scaffold when an older install is missing it, and does not recreate MIR/MSP-era defaults as canonical targets.
 
 `db:setup` prerequisites: valid Supabase service-role credentials and Upstash Vector REST credentials. The command validates both providers, applies pending migrations safely, verifies RLS + namespace isolation, and prints a structured health snapshot.
 
 ---
 
-## Three Layers
+## Vault-First Bootstrap
 
 ```text
-MIR  (Marketing Intelligence Repository)
-  └─ Brand voice, audience profiles, competitive landscape, product facts
-     Ground truth. Never generated without approval. You own this.
+MarkOS-Vault/
+  ├─ Home
+  ├─ Strategy
+  ├─ Execution
+  ├─ Relationships
+  ├─ Evidence
+  ├─ Reviews
+  └─ Memory
 
-MSP  (Marketing Strategy Plan)
-  └─ Channel strategy, campaign blueprints, KPI frameworks
-     Derived from MIR. Executable by AI agents.
+.agent/markos/
+  └─ Protocol engine, agents, command registry, and workflow docs
 
-ITM  (Issue Task Templates)
-  └─ Pre-baked Linear.app tickets for every common marketing job
-     Drop into your project management system. Run.
+Legacy onboarding outputs
+  └─ Temporary migration-era MIR/MSP write path until vault-native onboarding lands
+```
+
+MIR and MSP are now legacy migration concepts, not the canonical install target for fresh setups.
+
+The onboarding helper can still draft into legacy MIR/MSP outputs during migration, but those outputs are not a canonical substitute for the vault.
+
+Use `npx markos vault:open` to launch the canonical vault in Obsidian. The default target is `MarkOS-Vault/Home/HOME.md`; pass `--root` if you want to focus the vault without opening the Home note directly.
+
+Vault-native navigation commands:
+
+```bash
+npx markos vault:execution   # Execution family
+npx markos vault:evidence    # Evidence family
+npx markos vault:review      # Reviews family
 ```
 
 ---
@@ -201,26 +247,6 @@ Tests use Node's built-in test runner. Zero external test framework dependencies
 
 ---
 
-## Hobby Deployment Gate
-
-Vercel Hobby deployments are limited to 12 Serverless Functions. This repository includes a build-time gate so you can ship a reduced route set without deleting routes from source.
-
-Default behavior:
-- `npm run vercel-build` builds the full app locally.
-- Set `MARKOS_DEPLOY_PROFILE=hobby` to keep only the hosted onboarding API surface.
-
-Useful environment variables:
-
-```bash
-MARKOS_DEPLOY_PROFILE=hobby
-MARKOS_SERVERLESS_BUDGET=12
-MARKOS_ALLOWED_SERVERLESS_ROUTES=api/config.js,api/status.js,api/submit.js,api/regenerate.js,api/approve.js
-```
-
-The commented allowlist lives in `vercel.function-gate.config.cjs`.
-
----
-
 ## LLM BYOK (Phase 47)
 
 MarkOS now includes a unified multi-provider LLM adapter layer with BYOK support for Anthropic, OpenAI, and Gemini.
@@ -283,16 +309,15 @@ MarkOS detects and installs alongside existing GSD without touching any GSD file
 
 Place client overrides in `.markos-local/` — this is the canonical override path for MarkOS v3+.
 
-  - **MIR overrides**: `.markos-local/MIR/` (JIT-cloned on first POST /approve)
-  - **Onboarding config**: `onboarding/onboarding-config.json` (port, auto_open_browser, vector_endpoint)
-  - **Project state**: `.markos-project.json` (written once, never regenerated)
+- **MIR overrides**: `.markos-local/MIR/` (JIT-cloned on first POST /approve)
+- **Onboarding config**: `onboarding/onboarding-config.json` (port, auto_open_browser, vector_endpoint)
+- **Project state**: `.markos-project.json` (written once, never regenerated)
 
 See `.agent/markos/MARKOS-INDEX.md` for full documentation on the current protocol layout.
 
 ---
 
 ## Compatibility Surfaces
-
 
 MarkOS is the canonical product name. The following legacy identifiers remain intentionally supported for compatibility only (not user-facing):
 
@@ -434,8 +459,6 @@ Telemetry is intentionally narrow and checkpoint-based:
 These events are designed for operational decisions (ready vs blocked, completed vs abandoned) and failure diagnosis, not broad usage volume tracking.
 
 ---
-
 ## License
 
 MIT
-

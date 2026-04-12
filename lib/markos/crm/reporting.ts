@@ -1,10 +1,12 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
-const { listCrmEntities } = require('./entities.ts');
-const { buildCrmTimeline } = require('./timeline.ts');
-const { normalizeExecutionSignals } = require('./execution.ts');
+const crmEntities = require('./entities.ts');
+const crmTimeline = require('./timeline.ts');
+const crmExecution = require('./execution.ts');
+
+const { listCrmEntities } = crmEntities;
+const { buildCrmTimeline } = crmTimeline;
+const { normalizeExecutionSignals } = crmExecution;
 
 function toTimestamp(value) {
   const resolved = Date.parse(value || 0);
@@ -15,13 +17,13 @@ function toTrimmedString(value) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function normalizeCrmStore(input: Record<string, unknown>) {
+function normalizeCrmStore(input) {
   return input.crmStore && typeof input.crmStore === 'object'
-    ? input.crmStore as Record<string, unknown>
+    ? input.crmStore
     : {};
 }
 
-function normalizeContacts(input: Record<string, unknown> = {}) {
+function normalizeContacts(input = {}) {
   const crmStore = normalizeCrmStore(input);
   if (Array.isArray(input.contacts)) {
     return input.contacts;
@@ -32,7 +34,7 @@ function normalizeContacts(input: Record<string, unknown> = {}) {
   return [];
 }
 
-function normalizeActivities(input: Record<string, unknown> = {}) {
+function normalizeActivities(input = {}) {
   const crmStore = normalizeCrmStore(input);
   if (Array.isArray(input.activities)) {
     return input.activities.filter((entry) => entry?.tenant_id === input.tenant_id);
@@ -42,7 +44,7 @@ function normalizeActivities(input: Record<string, unknown> = {}) {
     : [];
 }
 
-function normalizeIdentityLinks(input: Record<string, unknown> = {}) {
+function normalizeIdentityLinks(input = {}) {
   const crmStore = normalizeCrmStore(input);
   let links = [];
   if (Array.isArray(input.identity_links)) {
@@ -53,7 +55,7 @@ function normalizeIdentityLinks(input: Record<string, unknown> = {}) {
   return links.filter((entry) => entry?.tenant_id === input.tenant_id);
 }
 
-function normalizeOutboundMessages(input: Record<string, unknown> = {}) {
+function normalizeOutboundMessages(input = {}) {
   const crmStore = normalizeCrmStore(input);
   let messages = [];
   if (Array.isArray(input.outbound_messages)) {
@@ -64,9 +66,9 @@ function normalizeOutboundMessages(input: Record<string, unknown> = {}) {
   return messages.filter((entry) => entry?.tenant_id === input.tenant_id);
 }
 
-function collectTenantIds(input: Record<string, unknown> = {}) {
+function collectTenantIds(input = {}) {
   const crmStore = normalizeCrmStore(input);
-  const tenantIds = new Set<string>();
+  const tenantIds = new Set();
   [crmStore.entities, crmStore.activities, crmStore.identityLinks, crmStore.outboundMessages]
     .filter(Array.isArray)
     .forEach((rows) => {
@@ -131,7 +133,7 @@ function deriveRiskLevel(signals) {
   return 'low';
 }
 
-function buildReadinessReport(input: Record<string, unknown> = {}) {
+function buildReadinessReport(input = {}) {
   const tenantId = toTrimmedString(input.tenant_id);
   const contacts = normalizeContacts({ ...input, tenant_id: tenantId });
   const activities = normalizeActivities({ ...input, tenant_id: tenantId });
@@ -190,9 +192,7 @@ function buildReadinessReport(input: Record<string, unknown> = {}) {
   });
 }
 
-type ReportingReadinessReport = ReturnType<typeof buildReadinessReport>;
-
-function buildReportingCockpitData(input: Record<string, unknown> = {}) {
+function buildReportingCockpitData(input = {}) {
   const tenantId = toTrimmedString(input.tenant_id);
   const store = Object.keys(normalizeCrmStore(input)).length > 0
     ? normalizeCrmStore(input)
@@ -238,16 +238,14 @@ function buildReportingCockpitData(input: Record<string, unknown> = {}) {
   });
 }
 
-type ReportingCockpitData = ReturnType<typeof buildReportingCockpitData>;
-
-function buildExecutiveSummary(input: Record<string, unknown> = {}) {
-  const readiness: ReportingReadinessReport =
+function buildExecutiveSummary(input = {}) {
+  const readiness =
     input.readiness && typeof input.readiness === 'object'
-      ? input.readiness as ReportingReadinessReport
+      ? input.readiness
       : buildReadinessReport(input);
-  const cockpit: ReportingCockpitData =
+  const cockpit =
     input.cockpit && typeof input.cockpit === 'object'
-      ? input.cockpit as ReportingCockpitData
+      ? input.cockpit
       : buildReportingCockpitData(input);
   return Object.freeze({
     readiness_status: readiness.status,
@@ -258,7 +256,7 @@ function buildExecutiveSummary(input: Record<string, unknown> = {}) {
   });
 }
 
-function buildCentralReportingRollup(input: Record<string, unknown> = {}) {
+function buildCentralReportingRollup(input = {}) {
   const tenantIds = collectTenantIds(input);
   const tenants = tenantIds.map((tenantId) => {
     const readiness = buildReadinessReport({ ...input, tenant_id: tenantId });

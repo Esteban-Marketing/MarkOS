@@ -28,3 +28,14 @@ test('TRK-03: browser contract names page-view, key interaction, and form lifecy
   assert.match(script, /onboarding_completed/);
   assert.match(script, /onboarding_step_completed/);
 });
+
+test('TRK-04: onboarding browser copy frames publish as transitional instead of canonical MIR activation', () => {
+  const script = fs.readFileSync(onboardingScriptPath, 'utf8');
+  const html = fs.readFileSync(onboardingHtmlPath, 'utf8');
+
+  assert.match(html, /Publish Transitional Drafts/);
+  assert.match(html, /transitional migration outputs/i);
+  assert.doesNotMatch(html, /Publish &amp; Activate MIR/);
+  assert.match(script, /legacy migration files written/);
+  assert.match(script, /canonical vault scaffold remains your primary MarkOS workspace/i);
+});

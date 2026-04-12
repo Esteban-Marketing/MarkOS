@@ -15,9 +15,9 @@
         <div class="loading-message" id="loadingMessage">Generating AI drafts...</div>
         <div class="loading-steps" id="loadingSteps">
             Storing intelligence in Supabase + Upstash Vector<br>
-            Running MIR agent — Company Profile<br>
-            Running MIR agent — Audience Persona<br>
-            Running MSP agent — Brand Voice
+            Running legacy draft agent — Company Profile<br>
+            Running legacy draft agent — Audience Persona<br>
+            Running legacy draft agent — Brand Voice
         </div>
     </div>
 
@@ -145,7 +145,10 @@
                 <div id="tabContentDrafts" class="tab-content">
                     <div class="draft-review-header">
                         <h2 class="step-title">AI Draft Review</h2>
-                        <p class="draft-review-subtext">Review, edit, and approve AI-generated content before publishing to your MIR repository.</p>
+                        <p class="draft-review-subtext">Review, edit, and approve AI-generated content before writing canonical vault notes.</p>
+                        <div class="draft-toolbar">
+                            <a class="btn-secondary importer-link-btn" href="importer.html">Open Legacy Importer</a>
+                        </div>
                     </div>
 
                     <div class="draft-grid" id="draftGrid">
@@ -157,8 +160,8 @@
                     </div>
 
                     <div class="publish-bar d-none" id="publishBar">
-                        <div class="publish-summary" id="publishSummary">Approve all sections above to enable publishing.</div>
-                        <button class="btn-publish" id="btnPublish" disabled>🚀 Publish &amp; Activate MIR</button>
+                        <div class="publish-summary" id="publishSummary">Approve all sections above to enable vault writes.</div>
+                        <button class="btn-publish" id="btnPublish" disabled>Write Approved Notes to Vault</button>
                         <div class="gate-status-bar" id="gateStatusBar" role="status" aria-live="polite"></div>
                     </div>
                 </div>
@@ -175,9 +178,11 @@
                 <div class="completion-icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 </div>
-                <h2 class="completion-title" id="completionTitle">MarkOS Intelligence Activated</h2>
-                <p class="completion-message" id="completionMessage">MIR templates populated. MarkOS agents are now context-aware and ready to execute.</p>
+                <h2 class="completion-title" id="completionTitle">Vault Notes Ready</h2>
+                <p class="completion-message" id="completionMessage">Canonical vault notes were written successfully.</p>
+                <div class="completion-details" id="completionDetails"></div>
                 <div class="mt-lg d-flex gap-md justify-center flex-wrap" id="completionActions">
+                    <a class="btn-secondary importer-link-btn" href="importer.html">Open Legacy Importer</a>
                     <button class="btn-primary d-none" id="btnCloseWindow" onclick="window.close()">Close Window</button>
                 </div>
             </section>

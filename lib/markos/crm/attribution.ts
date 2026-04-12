@@ -1,5 +1,3 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
 const { buildCrmTimeline } = require('./timeline.ts');
@@ -23,12 +21,18 @@ function toTimestamp(value) {
   return Number.isNaN(resolved) ? 0 : resolved;
 }
 
-function buildEligibleTimeline(input: Record<string, unknown> = {}) {
+function buildEligibleTimeline(input = {}) {
+  let activities = [];
+  if (Array.isArray(input.timeline)) {
+    activities = input.timeline;
+  } else if (Array.isArray(input.activities)) {
+    activities = input.activities;
+  }
   const timeline = buildCrmTimeline({
     tenant_id: input.tenant_id,
     record_kind: input.record_kind,
     record_id: input.record_id,
-    activities: Array.isArray(input.timeline) ? input.timeline : Array.isArray(input.activities) ? input.activities : [],
+    activities,
     identity_links: Array.isArray(input.identity_links) ? input.identity_links : [],
   });
 
@@ -70,7 +74,7 @@ function normalizeWeights(entries) {
   }));
 }
 
-function computeRevenueContribution(input: Record<string, unknown> = {}) {
+function computeRevenueContribution(input = {}) {
   const revenueAmount = toMoney(input.revenue_amount);
   const weight = Number(input.weight || 0);
   return Object.freeze({
@@ -81,7 +85,7 @@ function computeRevenueContribution(input: Record<string, unknown> = {}) {
   });
 }
 
-function buildAttributionEvidence(input: Record<string, unknown> = {}) {
+function buildAttributionEvidence(input = {}) {
   const weights = Array.isArray(input.weights) ? input.weights : [];
   return Object.freeze(weights.map((entry) => Object.freeze({
     source_event_ref: entry.source_event_ref,
@@ -92,17 +96,18 @@ function buildAttributionEvidence(input: Record<string, unknown> = {}) {
   })));
 }
 
-function buildWeightedAttributionModel(input: Record<string, unknown> = {}) {
+function buildWeightedAttributionModel(input = {}) {
   const eligibleTimeline = buildEligibleTimeline(input);
   const selectedTouches = selectWeightedTouches(eligibleTimeline);
   const weights = normalizeWeights(selectedTouches);
   const revenueAmount = toMoney(input.revenue_amount);
   const identityLinks = Array.isArray(input.identity_links) ? input.identity_links : [];
-  const timelineEntries = Array.isArray(input.timeline)
-    ? input.timeline
-    : Array.isArray(input.activities)
-      ? input.activities
-      : [];
+  let timelineEntries = [];
+  if (Array.isArray(input.timeline)) {
+    timelineEntries = input.timeline;
+  } else if (Array.isArray(input.activities)) {
+    timelineEntries = input.activities;
+  }
   const contributions = weights.map((entry) => computeRevenueContribution({
     revenue_amount: revenueAmount,
     weight: entry.weight,

@@ -4,15 +4,17 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  * PURPOSE:
  *   HTTP interface for the client onboarding form. Handles local file serving,
- *   AI draft generation via the Orchestrator, and persistent MIR/MSP writing.
+ *   AI draft generation via the Orchestrator, and the transitional legacy write path.
  *
  * ENDPOINTS:
  *   GET  /              → serves `onboarding/index.html`
  *   GET  /config        → returns `onboarding-config.json` + environment status
- *   GET  /status        → returns vector memory heartbeat + MIR STATE.md progress
+ *   GET  /status        → returns vector memory heartbeat + legacy draft publish progress
  *   POST /submit        → PERSISTS seed JSON → RUNS AI AGENTS → returns draft snippets
  *   POST /regenerate    → re-runs a specific agent for a single section
- *   POST /approve       → triggers `write-mir.cjs` to write drafts to `.markos-local/`
+ *   POST /approve       → writes approved drafts into the canonical vault and records a durable migration report note
+ *   POST /api/importer/scan  → previews one-way legacy import outcomes
+ *   POST /api/importer/apply → applies one-way legacy import into canonical vault notes
  *
  * INITIALIZATION SEQUENCE:
  *   1. Load `.env` from project root.
@@ -27,7 +29,7 @@
  *
  * RELATED FILES:
  *   onboarding/backend/agents/orchestrator.cjs  (Parallel draft generation)
- *   onboarding/backend/write-mir.cjs            (Fuzzy MIR file management)
+ *   onboarding/backend/vault/vault-writer.cjs   (Canonical vault draft persistence)
  *   onboarding/backend/vector-store-client.cjs  (Vector storage)
  *   bin/ensure-vector.cjs                       (Provider health bootstrap)
  * ═══════════════════════════════════════════════════════════════════════════════
@@ -54,7 +56,6 @@ try {
 
 const orchestrator = require('./agents/orchestrator.cjs');
 const vectorStore  = require('./vector-store-client.cjs');
-const writeMIR     = require('./write-mir.cjs');
 
 const runtime = createRuntimeContext();
 const { config } = runtime;
@@ -97,6 +98,8 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/api/competitor-discovery')) return handlers.handleCompetitorDiscovery(req, res);
   if (req.method === 'POST' && req.url.startsWith('/regenerate')) return handlers.handleRegenerate(req, res);
   if (req.method === 'POST' && req.url.startsWith('/approve')) return handlers.handleApprove(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/api/importer/scan')) return handlers.handleImporterScan(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/api/importer/apply')) return handlers.handleImporterApply(req, res);
   if (req.method === 'POST' && req.url.startsWith('/migrate/local-to-cloud')) return handlers.handleMarkosdbMigration(req, res);
   if (req.method === 'POST' && req.url.startsWith('/linear/sync')) return handlers.handleLinearSync(req, res);
   if (req.method === 'POST' && req.url.startsWith('/campaign/result')) return handlers.handleCampaignResult(req, res);
@@ -148,12 +151,15 @@ bootDB.then((bootReport) => {
     const addr = server.address();
     const url  = `http://127.0.0.1:${addr.port}`;
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(` MarkOS Onboarding v2.0 → ${url}`);
+    console.log(` MarkOS Transitional Onboarding v2.0 → ${url}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log(' ✓ Supabase + Upstash vector integration active');
     console.log(' ✓ OpenAI AI draft generation ready');
+    console.log(` ✓ Canonical vault remains ${config.canonical_vault?.root_path || config.vault_root_path || 'MarkOS-Vault'}`);
+    console.log(' ✓ Onboarding approval writes canonical vault notes and a durable Memory report');
+    console.log(' ✓ Legacy Importer available at /importer.html for one-way MIR/MSP migration');
     console.log(' Ensure OPENAI_API_KEY is set in .env');
-    console.log(' Complete the form → get AI drafts → publish\n');
+    console.log(' Complete the form → review drafts → write approved notes to the canonical vault\n');
 
     if (config.auto_open_browser) {
       const cmd = process.platform === 'win32' ? `start ${url}` :

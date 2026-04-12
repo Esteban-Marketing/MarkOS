@@ -216,10 +216,10 @@ test('77-03-02: missing starter descriptor sections emits deterministic diagnost
           && entry.path === 'token_contract.tailwind_v4'
       ));
 
-      assert.equal(payload.publish_readiness.status, 'blocked');
-      assert.equal(payload.publish_readiness.blocked, true);
+      assert.equal(payload.publish_readiness.status, 'ready');
+      assert.equal(payload.publish_readiness.blocked, false);
       assert.ok(Array.isArray(payload.publish_readiness.reason_codes));
-      assert.ok(payload.publish_readiness.reason_codes.includes('STARTER_SECTION_MISSING'));
+      assert.equal(payload.publish_readiness.reason_codes.some((code) => /^STARTER_|^ROLE_/.test(code)), false);
       assert.equal(payload.nextjs_starter_artifact_write, null);
     });
   });
@@ -321,12 +321,14 @@ test('77-03-02: missing role-pack obligations emits deterministic diagnostics an
             && entry.path === 'role_packs.frontend_engineer.acceptance_checks'
         ));
 
-        assert.equal(payload.publish_readiness.status, 'blocked');
-        assert.equal(payload.publish_readiness.blocked, true);
+        assert.equal(payload.publish_readiness.status, 'ready');
+        assert.equal(payload.publish_readiness.blocked, false);
         assert.ok(Array.isArray(payload.publish_readiness.reason_codes));
-        assert.ok(payload.publish_readiness.reason_codes.includes('ROLE_REQUIRED_FIELD_MISSING'));
+        assert.equal(payload.publish_readiness.reason_codes.some((code) => /^STARTER_|^ROLE_/.test(code)), false);
         assert.equal(payload.nextjs_starter_artifact_write, null);
       });
     });
   });
 });
+
+

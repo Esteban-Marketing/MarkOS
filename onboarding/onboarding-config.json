@@ -2,13 +2,38 @@
   "port": 4242,
   "auto_open_browser": true,
   "output_path": "../onboarding-seed.json",
-  "form_title": "Client Intelligence Onboarding",
-  "completion_message": "MIR templates populated. AI agents are now context-aware.",
+  "form_title": "Vault-First Client Intelligence Onboarding",
+  "completion_message": "Vault notes written. A durable onboarding report was saved in Memory/Migration Reports.",
   "logo_url": "",
   "primary_color": "#6366f1",
   "vector_endpoint": "",
   "project_slug": "markos-client",
+  "bootstrap_model": "vault-first",
+  "legacy_output_mode": "migration-only",
+  "onboarding_role": "transitional-migration-helper",
+  "vault_root_path": "MarkOS-Vault",
+  "vault_home_note_path": "MarkOS-Vault/Home/HOME.md",
+  "canonical_vault": {
+    "root_path": "MarkOS-Vault",
+    "home_note_path": "MarkOS-Vault/Home/HOME.md",
+    "bootstrap_model": "vault-first",
+    "canonical": true
+  },
   "mir_output_path": ".markos-local/MIR",
   "msp_output_path": ".markos-local/MSP",
+  "legacy_outputs": {
+    "mode": "migration-only",
+    "canonical": false,
+    "mir": {
+      "output_path": ".markos-local/MIR",
+      "classification": "migration-only",
+      "canonical": false
+    },
+    "msp": {
+      "output_path": ".markos-local/MSP",
+      "classification": "migration-only",
+      "canonical": false
+    }
+  },
   "ollama_model": "llama3:8b"
 }

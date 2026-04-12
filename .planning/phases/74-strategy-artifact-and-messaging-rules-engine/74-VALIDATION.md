@@ -3,7 +3,7 @@ phase: 74
 slug: strategy-artifact-and-messaging-rules-engine
 status: complete
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-04-12
 ---
 
@@ -38,10 +38,10 @@ created: 2026-04-12
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 74-01-01 | 01 | 1 | BRAND-STRAT-01 | T-74-01 | Claims require lineage fields and deterministic ordering | unit | `node --test test/phase-74/strategy-artifact-schema.test.js` | ❌ W0 | pending |
-| 74-01-02 | 01 | 1 | BRAND-STRAT-02 | T-74-02 | Tone enums and channel-rule bounds are enforced | unit | `node --test test/phase-74/messaging-rules-schema.test.js` | ❌ W0 | pending |
-| 74-02-01 | 02 | 2 | BRAND-STRAT-01 | T-74-03 | Contradictions annotated, not suppressed | unit | `node --test test/phase-74/strategy-contradiction.test.js` | ❌ W0 | pending |
-| 74-02-02 | 02 | 2 | BRAND-STRAT-01 | T-74-04 | Deterministic synthesis with stable fingerprints | unit | `node --test test/phase-74/strategy-determinism.test.js` | ❌ W0 | pending |
+| 74-01-01 | 01 | 1 | BRAND-STRAT-01 | T-74-01 | Claims require lineage fields and deterministic ordering | unit | `node --test test/phase-74/strategy-artifact-schema.test.js` | ✅ | pass |
+| 74-01-02 | 01 | 1 | BRAND-STRAT-02 | T-74-02 | Tone enums and channel-rule bounds are enforced | unit | `node --test test/phase-74/messaging-rules-schema.test.js` | ✅ | pass |
+| 74-02-01 | 02 | 2 | BRAND-STRAT-01 | T-74-03 | Contradictions annotated, not suppressed | unit | `node --test test/phase-74/strategy-contradiction.test.js` | ✅ | pass |
+| 74-02-02 | 02 | 2 | BRAND-STRAT-01 | T-74-04 | Deterministic synthesis with stable fingerprints | unit | `node --test test/phase-74/strategy-determinism.test.js` | ✅ | pass |
 | 74-03-01 | 03 | 3 | BRAND-STRAT-02 | T-74-05 | Role projections stay consistent with canonical artifact | integration | `node --test test/phase-74/role-view-projection.test.js` | ✅ | pass |
 | 74-03-02 | 03 | 3 | BRAND-STRAT-02 | T-74-06 | End-to-end rule consistency across channels | integration | `node --test test/phase-74/channel-rule-consistency.test.js` | ✅ | pass |
 
@@ -49,9 +49,9 @@ created: 2026-04-12
 
 ## Wave 0 Requirements
 
-- [ ] `test/phase-74/strategy-artifact-schema.test.js` - schema and lineage stubs
-- [ ] `test/phase-74/messaging-rules-schema.test.js` - rule-bound stubs
-- [ ] `test/phase-74/fixtures/*.json` - deterministic evidence fixtures
+- [x] `test/phase-74/strategy-artifact-schema.test.js` - schema and lineage stubs
+- [x] `test/phase-74/messaging-rules-schema.test.js` - rule-bound stubs
+- [x] `test/phase-74/fixtures/*.json` - deterministic evidence fixtures
 
 ---
 
@@ -66,14 +66,9 @@ created: 2026-04-12
 ## Validation Sign-Off
 
 - [x] All tasks have automated verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
 - [x] Sampling continuity: no 3 consecutive tasks without automated verify
 - [x] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
 - [x] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
 - [x] Feedback latency < 30s
 - [x] `nyquist_compliant: true` set in frontmatter
 

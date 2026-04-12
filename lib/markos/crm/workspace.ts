@@ -1,5 +1,3 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
 const { assertWorkspaceViewType } = require('./contracts.ts');
@@ -22,7 +20,7 @@ function normalizeSort(sort) {
   });
 }
 
-function createWorkspaceState(input: Record<string, unknown> = {}) {
+function createWorkspaceState(input = {}) {
   const filters = input.filters && typeof input.filters === 'object'
     ? { ...input.filters }
     : {};
@@ -93,7 +91,7 @@ function buildTableRows(state) {
   return getWorkspaceRecords(state);
 }
 
-function buildRecordDetailModel(input: Record<string, unknown> = {}) {
+function buildRecordDetailModel(input = {}) {
   const state = normalizeWorkspaceState(input.state);
   const recordId = toTrimmedString(input.record_id, toTrimmedString(state.selected_record));
   const records = Array.isArray(state.records) ? state.records : [];
@@ -106,11 +104,11 @@ function buildRecordDetailModel(input: Record<string, unknown> = {}) {
   };
 }
 
-function buildCalendarEntries(input: Record<string, unknown> = {}) {
+function buildCalendarEntries(input = {}) {
   const state = normalizeWorkspaceState(input.state);
-  const objectDefinition: Record<string, unknown> =
+  const objectDefinition =
     input.object_definition && typeof input.object_definition === 'object'
-      ? input.object_definition as Record<string, unknown>
+      ? input.object_definition
       : {};
   if (objectDefinition.calendar_enabled !== true || !objectDefinition.calendar_date_field_key) {
     return [];
@@ -132,11 +130,11 @@ function buildCalendarEntries(input: Record<string, unknown> = {}) {
     });
 }
 
-function buildFunnelRows(input: Record<string, unknown> = {}) {
+function buildFunnelRows(input = {}) {
   const state = normalizeWorkspaceState(input.state);
-  const pipeline: Record<string, unknown> =
+  const pipeline =
     input.pipeline && typeof input.pipeline === 'object'
-      ? input.pipeline as Record<string, unknown>
+      ? input.pipeline
       : { stages: [] };
   const records = getWorkspaceRecords(state);
   const stages = Array.isArray(pipeline.stages) && pipeline.stages.length > 0
@@ -154,7 +152,7 @@ function buildFunnelRows(input: Record<string, unknown> = {}) {
   });
 }
 
-function serializeWorkspaceFilters(filters: Record<string, unknown> = {}) {
+function serializeWorkspaceFilters(filters = {}) {
   return Object.keys(filters)
     .sort((left, right) => left.localeCompare(right))
     .filter((key) => filters[key] !== undefined && filters[key] !== null && toTrimmedString(filters[key]).length > 0)
@@ -162,13 +160,13 @@ function serializeWorkspaceFilters(filters: Record<string, unknown> = {}) {
     .join('&');
 }
 
-function applyWorkspaceMutation(state, mutation: Record<string, unknown> = {}) {
+function applyWorkspaceMutation(state, mutation = {}) {
   const normalizedState = normalizeWorkspaceState(state);
   const mutationFilters = mutation.filters && typeof mutation.filters === 'object'
-    ? mutation.filters as Record<string, unknown>
+    ? mutation.filters
     : {};
   const mutationRecord = mutation.record && typeof mutation.record === 'object'
-    ? mutation.record as Record<string, unknown>
+    ? mutation.record
     : null;
   if (mutation.type === 'set_view') {
     return createWorkspaceState({ ...normalizedState, view_type: mutation.view_type });

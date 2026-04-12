@@ -14,6 +14,7 @@ const {
 } = require('./path-constants.cjs');
 
 const MARKOS_LOCAL_ROOT = path.join(PROJECT_ROOT, '.markos-local');
+const INSTALL_MANIFEST_PATH = path.join(PROJECT_ROOT, '.markos-install-manifest.json');
 
 const MARKOSDB_ACCESS_MATRIX = Object.freeze({
   config_read: { auth_required_in_hosted_mode: true, local_fallback_allowed: true },
@@ -236,13 +237,42 @@ function redactSensitive(value) {
 }
 
 function loadRuntimeConfig(env = process.env) {
+  let installManifest = null;
+  try {
+    installManifest = JSON.parse(fs.readFileSync(INSTALL_MANIFEST_PATH, 'utf8'));
+  } catch {}
+
+  const installProfile = ['full', 'cli', 'minimal'].includes(installManifest?.install_profile)
+    ? installManifest.install_profile
+    : 'full';
+
+  const installComponents = {
+    onboarding_enabled: typeof installManifest?.components?.onboarding_enabled === 'boolean'
+      ? installManifest.components.onboarding_enabled
+      : installProfile === 'full',
+    ui_enabled: typeof installManifest?.components?.ui_enabled === 'boolean'
+      ? installManifest.components.ui_enabled
+      : installProfile === 'full',
+  };
+
   let config = {
     port: 4242,
     auto_open_browser: true,
     output_path: '../onboarding-seed.json',
     vector_endpoint: env.UPSTASH_VECTOR_REST_URL || null,
     project_slug: 'markos-client',
+    bootstrap_model: 'vault-first',
+    legacy_output_mode: 'migration-only',
+    onboarding_role: 'transitional-migration-helper',
+    install_profile: installProfile,
+    profile_schema_version: Number(installManifest?.profile_schema_version || 1),
+    components: installComponents,
+    onboarding_enabled: installComponents.onboarding_enabled,
+    ui_enabled: installComponents.ui_enabled,
+    vault_root_path: 'MarkOS-Vault',
+    vault_home_note_path: 'MarkOS-Vault/Home/HOME.md',
     mir_output_path: null,
+    msp_output_path: null,
     posthog_api_key: getTelemetryPreference(env) !== 'false' ? env.POSTHOG_API_KEY : null,
     posthog_host: env.POSTHOG_HOST || 'https://us.i.posthog.com',
   };
@@ -251,6 +281,55 @@ function loadRuntimeConfig(env = process.env) {
     const raw = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
     config = { ...config, ...raw };
   } catch (error) {}
+
+  const canonicalVault = {
+    root_path: config.canonical_vault?.root_path || config.vault_root_path || 'MarkOS-Vault',
+    home_note_path: config.canonical_vault?.home_note_path || config.vault_home_note_path || 'MarkOS-Vault/Home/HOME.md',
+    bootstrap_model: config.canonical_vault?.bootstrap_model || config.bootstrap_model || 'vault-first',
+    canonical: true,
+    dependency_contract: 'obsidian-required',
+  };
+
+  const legacyOutputs = {
+    mode: config.legacy_outputs?.mode || config.legacy_output_mode || 'migration-only',
+    canonical: false,
+    mir: {
+      output_path: config.legacy_outputs?.mir?.output_path || config.mir_output_path || '.markos-local/MIR',
+      classification: config.legacy_outputs?.mir?.classification || 'migration-only',
+      canonical: false,
+    },
+    msp: {
+      output_path: config.legacy_outputs?.msp?.output_path || config.msp_output_path || '.markos-local/MSP',
+      classification: config.legacy_outputs?.msp?.classification || 'migration-only',
+      canonical: false,
+    },
+  };
+
+  config = {
+    ...config,
+    bootstrap_model: canonicalVault.bootstrap_model,
+    legacy_output_mode: legacyOutputs.mode,
+    install_profile: config.install_profile || installProfile,
+    profile_schema_version: Number(config.profile_schema_version || installManifest?.profile_schema_version || 1),
+    components: {
+      onboarding_enabled: typeof config.components?.onboarding_enabled === 'boolean'
+        ? config.components.onboarding_enabled
+        : installComponents.onboarding_enabled,
+      ui_enabled: typeof config.components?.ui_enabled === 'boolean'
+        ? config.components.ui_enabled
+        : installComponents.ui_enabled,
+    },
+    onboarding_enabled: typeof config.components?.onboarding_enabled === 'boolean'
+      ? config.components.onboarding_enabled
+      : installComponents.onboarding_enabled,
+    ui_enabled: typeof config.components?.ui_enabled === 'boolean'
+      ? config.components.ui_enabled
+      : installComponents.ui_enabled,
+    vault_root_path: canonicalVault.root_path,
+    vault_home_note_path: canonicalVault.home_note_path,
+    canonical_vault: canonicalVault,
+    legacy_outputs: legacyOutputs,
+  };
 
   return config;
 }

@@ -1,5 +1,3 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
 const {
@@ -34,7 +32,7 @@ function listLinkedEntities(store, tenantId, recordKind, recordId) {
   return entities.filter((entry) => entry.linked_record_id === recordId);
 }
 
-function buildCrmWorkspaceSnapshot(input: Record<string, unknown> = {}) {
+function buildCrmWorkspaceSnapshot(input = {}) {
   const tenantId = String(input.tenant_id || '').trim();
   const recordKind = String(input.record_kind || 'deal').trim();
   const viewType = input.view_type || 'kanban';

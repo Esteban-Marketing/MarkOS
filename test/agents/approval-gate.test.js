@@ -181,7 +181,8 @@ test('53-02-03: approve handler is wired to awaiting_approval gate before side e
 
   assert.match(handlersSource, /handleApprove[\s\S]*assertAwaitingApproval\(/);
   assert.match(handlersSource, /handleApprove[\s\S]*recordApprovalDecision\(/);
-  assert.match(handlersSource, /writeMIR\.applyDrafts/);
+  assert.match(handlersSource, /writeApprovedDrafts\(/);
+  assert.match(handlersSource, /writeRunReport\(/);
 });
 
 test('SEC-01 governance evidence: approvals family cites immutable approval decision provenance', () => {

@@ -1,9 +1,10 @@
 'use strict';
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const crypto = require('crypto');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const { execFileSync } = require('node:child_process');
 
 const MIN_NODE_VERSION = '20.16.0';
 
@@ -64,12 +65,140 @@ function isInteractiveSession({ env = process.env, stdin = process.stdin, stdout
   return !isCIEnvironment(env) && Boolean(stdin.isTTY && stdout.isTTY);
 }
 
+const COMMAND_ALIASES = Object.freeze({
+  update: Object.freeze({ command: 'update' }),
+  'db:setup': Object.freeze({ command: 'db:setup' }),
+  'llm:config': Object.freeze({ command: 'llm:config' }),
+  'llm:status': Object.freeze({ command: 'llm:status' }),
+  'llm:providers': Object.freeze({ command: 'llm:providers', providers: true }),
+  'import:legacy': Object.freeze({ command: 'import:legacy' }),
+  'vault:open': Object.freeze({ command: 'vault:open' }),
+  'vault:execution': Object.freeze({ command: 'vault:open', vaultFamily: 'execution' }),
+  'vault:evidence': Object.freeze({ command: 'vault:open', vaultFamily: 'evidence' }),
+  'vault:review': Object.freeze({ command: 'vault:open', vaultFamily: 'reviews' }),
+  'vault:reviews': Object.freeze({ command: 'vault:open', vaultFamily: 'reviews' }),
+});
+
+const VALUE_FLAGS = Object.freeze({
+  '--project-name': 'projectName',
+  '--project-slug': 'projectSlug',
+  '--slug': 'projectSlug',
+  '--provider': 'provider',
+  '--month': 'month',
+  '--export': 'exportFormat',
+});
+
+const BOOLEAN_FLAGS = Object.freeze({
+  '--yes': Object.freeze({ key: 'yes', value: true }),
+  '-y': Object.freeze({ key: 'yes', value: true }),
+  '--no-onboarding': Object.freeze({ key: 'noOnboarding', value: true }),
+  '--project': Object.freeze({ key: 'scope', value: 'project' }),
+  '--global': Object.freeze({ key: 'scope', value: 'global' }),
+  '--help': Object.freeze({ key: 'help', value: true }),
+  '-h': Object.freeze({ key: 'help', value: true }),
+  '--test': Object.freeze({ key: 'test', value: true }),
+  '--providers': Object.freeze({ key: 'providers', value: true }),
+  '--apply': Object.freeze({ key: 'apply', value: true }),
+  '--scan': Object.freeze({ key: 'apply', value: false }),
+  '--root': Object.freeze({ key: 'vaultOpenTarget', value: 'root' }),
+  '--home': Object.freeze({ key: 'vaultOpenTarget', value: 'home' }),
+  '--cli-only': Object.freeze({ key: 'cliOnly', value: true }),
+  '--minimal': Object.freeze({ key: 'minimalOnly', value: true }),
+});
+
+const SUPPORTED_INSTALL_PROFILES = Object.freeze(['full', 'cli', 'minimal']);
+
+function normalizeInstallProfile(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  const normalized = String(value).trim().toLowerCase();
+  return SUPPORTED_INSTALL_PROFILES.includes(normalized) ? normalized : null;
+}
+
+function setInstallProfile(parsed, profile, source) {
+  if (!profile) {
+    parsed.profileConflict = parsed.profileConflict || `Unsupported profile from ${source}.`;
+    return;
+  }
+
+  if (!parsed.installProfile) {
+    parsed.installProfile = profile;
+    parsed.installProfileSource = source;
+    return;
+  }
+
+  if (parsed.installProfile !== profile) {
+    parsed.profileConflict = parsed.profileConflict || `Conflicting profile flags: ${parsed.installProfileSource} and ${source}.`;
+  }
+}
+
+function applyCommandAlias(parsed, token) {
+  const alias = COMMAND_ALIASES[token];
+  if (!alias) {
+    return false;
+  }
+
+  Object.assign(parsed, alias);
+  return true;
+}
+
+function applyInlineFlag(parsed, token) {
+  const inlineFlags = [
+    ['--provider=', 'provider'],
+    ['--month=', 'month'],
+    ['--export=', 'exportFormat'],
+  ];
+
+  if (token.startsWith('--profile=')) {
+    const requested = token.slice('--profile='.length);
+    setInstallProfile(parsed, normalizeInstallProfile(requested), '--profile');
+    return true;
+  }
+
+  for (const [prefix, key] of inlineFlags) {
+    if (token.startsWith(prefix)) {
+      parsed[key] = token.slice(prefix.length) || null;
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function applyValueFlag(parsed, token, tokens, index) {
+  if (token === '--profile') {
+    setInstallProfile(parsed, normalizeInstallProfile(tokens[index + 1]), '--profile');
+    return true;
+  }
+
+  const key = VALUE_FLAGS[token];
+  if (!key) {
+    return false;
+  }
+
+  parsed[key] = tokens[index + 1] || null;
+  return true;
+}
+
+function applyBooleanFlag(parsed, token) {
+  const flag = BOOLEAN_FLAGS[token];
+  if (!flag) {
+    return false;
+  }
+
+  parsed[flag.key] = flag.value;
+  return true;
+}
+
 function parseCliArgs(argv = process.argv.slice(2)) {
   const parsed = {
     command: 'install',
     yes: false,
     noOnboarding: false,
     projectName: null,
+    projectSlug: null,
     scope: null,
     help: false,
     provider: null,
@@ -77,73 +206,55 @@ function parseCliArgs(argv = process.argv.slice(2)) {
     month: null,
     exportFormat: null,
     providers: false,
+    apply: false,
+    vaultOpenTarget: 'home',
+    vaultFamily: null,
+    installProfile: null,
+    installProfileSource: null,
+    profileConflict: null,
+    cliOnly: false,
+    minimalOnly: false,
   };
 
   const tokens = [...argv];
-  if (tokens[0] === 'install') {
-    tokens.shift();
-  } else if (tokens[0] === 'update') {
-    parsed.command = 'update';
-    tokens.shift();
-  } else if (tokens[0] === 'db:setup') {
-    parsed.command = 'db:setup';
-    tokens.shift();
-  } else if (tokens[0] === 'llm:config') {
-    parsed.command = 'llm:config';
-    tokens.shift();
-  } else if (tokens[0] === 'llm:status') {
-    parsed.command = 'llm:status';
-    tokens.shift();
-  } else if (tokens[0] === 'llm:providers') {
-    parsed.command = 'llm:providers';
-    parsed.providers = true;
+  if (tokens[0] === 'install' || applyCommandAlias(parsed, tokens[0])) {
     tokens.shift();
   }
 
   for (let index = 0; index < tokens.length; index++) {
     const token = tokens[index];
-    if (token === '--yes' || token === '-y') {
-      parsed.yes = true;
-    } else if (token === '--no-onboarding') {
-      parsed.noOnboarding = true;
-    } else if (token === '--project-name') {
-      parsed.projectName = tokens[index + 1] || null;
-      index += 1;
-    } else if (token === '--project') {
-      parsed.scope = 'project';
-    } else if (token === '--global') {
-      parsed.scope = 'global';
-    } else if (token === '--help' || token === '-h') {
-      parsed.help = true;
-    } else if (token === '--test') {
-      parsed.test = true;
-    } else if (token === '--providers') {
-      parsed.providers = true;
-    } else if (token.startsWith('--provider=')) {
-      parsed.provider = token.slice('--provider='.length) || null;
-    } else if (token === '--provider') {
-      parsed.provider = tokens[index + 1] || null;
-      index += 1;
-    } else if (token.startsWith('--month=')) {
-      parsed.month = token.slice('--month='.length) || null;
-    } else if (token === '--month') {
-      parsed.month = tokens[index + 1] || null;
-      index += 1;
-    } else if (token.startsWith('--export=')) {
-      parsed.exportFormat = token.slice('--export='.length) || null;
-    } else if (token === '--export') {
-      parsed.exportFormat = tokens[index + 1] || null;
+    if (applyBooleanFlag(parsed, token)) {
+      continue;
+    }
+    if (applyInlineFlag(parsed, token)) {
+      continue;
+    }
+
+    if (applyValueFlag(parsed, token, tokens, index)) {
       index += 1;
     }
+  }
+
+  if (parsed.cliOnly) {
+    setInstallProfile(parsed, 'cli', '--cli-only');
+  }
+
+  if (parsed.minimalOnly) {
+    setInstallProfile(parsed, 'minimal', '--minimal');
   }
 
   return parsed;
 }
 
 function printInstallUsage() {
-  console.log('Usage: npx markos [install] [--yes] [--project-name <name>] [--no-onboarding] [--project|--global]');
+  console.log('Usage: npx markos [install] [--yes] [--project-name <name>] [--profile <full|cli|minimal>] [--cli-only|--minimal] [--no-onboarding] [--project|--global]');
   console.log('       npx markos update');
   console.log('       npx markos db:setup');
+  console.log('       npx markos import:legacy [--project-slug <slug>] [--scan|--apply]');
+  console.log('       npx markos vault:open [--home|--root]');
+  console.log('       npx markos vault:execution');
+  console.log('       npx markos vault:evidence');
+  console.log('       npx markos vault:review');
   console.log('       npx markos llm:config [--provider <anthropic|openai|gemini>] [--test]');
   console.log('       npx markos llm:status [--month <YYYY-MM>] [--export <csv>] [--providers]');
   console.log('       npx markos llm:providers');
@@ -166,8 +277,8 @@ function slugify(value) {
   const slug = String(value || 'markos-project')
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-+|-+$/g, '')
     .slice(0, 64);
   return slug || 'markos-project';
 }
@@ -217,6 +328,104 @@ function resolveScopeTarget(cwd, scope) {
   return scope === 'global' ? os.homedir() : cwd;
 }
 
+function firstExistingPath(candidates = []) {
+  for (const candidate of candidates) {
+    if (!candidate) {
+      continue;
+    }
+    try {
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    } catch {}
+  }
+  return null;
+}
+
+function findCommandOnPath(commandName) {
+  const locator = process.platform === 'win32' ? 'where' : 'which';
+  try {
+    const output = execFileSync(locator, [commandName], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+
+    if (!output) {
+      return null;
+    }
+
+    return output.split(/\r?\n/)[0].trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+function detectObsidianInstall(env = process.env) {
+  const overridePath = firstExistingPath([
+    env.MARKOS_OBSIDIAN_PATH,
+    env.OBSIDIAN_PATH,
+  ]);
+
+  if (overridePath) {
+    return { available: true, path: overridePath, source: 'env-override' };
+  }
+
+  let candidates;
+  if (process.platform === 'win32') {
+    candidates = [
+      env.LOCALAPPDATA && path.join(env.LOCALAPPDATA, 'Programs', 'Obsidian', 'Obsidian.exe'),
+      env['ProgramFiles'] && path.join(env['ProgramFiles'], 'Obsidian', 'Obsidian.exe'),
+      env['ProgramFiles(x86)'] && path.join(env['ProgramFiles(x86)'], 'Obsidian', 'Obsidian.exe'),
+    ];
+  } else if (process.platform === 'darwin') {
+    candidates = [
+      '/Applications/Obsidian.app',
+      path.join(os.homedir(), 'Applications', 'Obsidian.app'),
+    ];
+  } else {
+    candidates = [
+      '/usr/bin/obsidian',
+      '/usr/local/bin/obsidian',
+      '/snap/bin/obsidian',
+    ];
+  }
+
+  const installedPath = firstExistingPath(candidates);
+  if (installedPath) {
+    return { available: true, path: installedPath, source: 'common-install-path' };
+  }
+
+  const pathCommand = findCommandOnPath('obsidian');
+  if (pathCommand) {
+    return { available: true, path: pathCommand, source: 'path-command' };
+  }
+
+  return { available: false, path: null, source: 'not-detected' };
+}
+
+function detectQmdSupport(env = process.env) {
+  const overridePath = firstExistingPath([
+    env.MARKOS_QMD_PATH,
+    env.QMD_PATH,
+  ]);
+
+  if (overridePath) {
+    return { available: true, path: overridePath, source: 'env-override', command: 'qmd' };
+  }
+
+  const qmdCommand = findCommandOnPath('qmd');
+  if (qmdCommand) {
+    return { available: true, path: qmdCommand, source: 'path-command', command: 'qmd' };
+  }
+
+  const quartoCommand = findCommandOnPath('quarto');
+  if (quartoCommand) {
+    return { available: true, path: quartoCommand, source: 'path-command', command: 'quarto' };
+  }
+
+  return { available: false, path: null, source: 'not-detected', command: null };
+}
+
 // ---------------------------------------------------------------------------
 // Plugin Runtime Boot (Phase 52 — PLG-DA-01, D-01)
 // ---------------------------------------------------------------------------
@@ -261,8 +470,11 @@ module.exports = {
   isInteractiveSession,
   loadProjectEnv,
   parseCliArgs,
+  normalizeInstallProfile,
   printInstallUsage,
   resolveScopeTarget,
   slugify,
   bootPluginRuntime,
+  detectObsidianInstall,
+  detectQmdSupport,
 };

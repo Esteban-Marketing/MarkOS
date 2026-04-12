@@ -423,7 +423,8 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
     const mspFillerPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'msp-filler.cjs');
     const llmPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'llm-adapter.cjs');
     const telemetryPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'telemetry.cjs');
-    const writeMirPath = path.join(env.dir, 'onboarding', 'backend', 'write-mir.cjs');
+    const vaultWriterPath = path.join(env.dir, 'onboarding', 'backend', 'vault', 'vault-writer.cjs');
+    const runReportPath = path.join(env.dir, 'onboarding', 'backend', 'vault', 'run-report.cjs');
 
     await withMockedModule(mirFillerPath, {
       generateCompanyProfile: async () => ({
@@ -463,40 +464,44 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       });
     });
 
-    await withMockedModule(writeMirPath, {
-      applyDrafts: () => ({
-        written: ['Core_Strategy/01_COMPANY/PROFILE.md'],
-        stateUpdated: true,
+    await withMockedModule(vaultWriterPath, {
+      writeApprovedDrafts: () => ({
+        written: ['MarkOS-Vault/Strategy/company.md'],
+        items: [{ source_key: 'company_profile', outcome: 'imported', destination_path: 'MarkOS-Vault/Strategy/company.md', warnings: [], errors: [] }],
         errors: [],
-        mergeEvents: [{ file: 'Core_Strategy/01_COMPANY/PROFILE.md', type: 'header-fallback-append', header: 'New Header' }],
       }),
     }, async () => {
-      const emittedCheckpoints = [];
-      await withMockedModule(vectorStorePath, {
-        configure: () => {},
-        storeDraft: async () => ({ ok: false, error: 'mock returned vector persistence error' }),
+      await withMockedModule(runReportPath, {
+        writeRunReport: () => ({ report_note_path: 'MarkOS-Vault/Memory/Migration Reports/mock.md' }),
       }, async () => {
-        await withMockedModule(telemetryPath, {
-          captureExecutionCheckpoint: (eventName, properties) => emittedCheckpoints.push({ eventName, properties }),
+        const emittedCheckpoints = [];
+        await withMockedModule(vectorStorePath, {
+          configure: () => {},
+          storeDraft: async () => ({ ok: false, error: 'mock returned vector persistence error' }),
         }, async () => {
-          const handlers = loadFreshModule(handlersPath);
-          const approveReq = createJsonRequest({
-            slug: 'acme-slug',
-            approvedDrafts: { company_profile: '## New Header\n\nDraft body' }
-          }, '/approve');
-          const approveRes = createMockResponse();
+          await withMockedModule(telemetryPath, {
+            captureExecutionCheckpoint: (eventName, properties) => emittedCheckpoints.push({ eventName, properties }),
+          }, async () => {
+            const handlers = loadFreshModule(handlersPath);
+            const approveReq = createJsonRequest({
+              slug: 'acme-slug',
+              approvedDrafts: { company_profile: '## New Header\n\nDraft body' }
+            }, '/approve');
+            const approveRes = createMockResponse();
 
-          await handlers.handleApprove(approveReq, approveRes);
-          assert.equal(approveRes.statusCode, 200);
+            await handlers.handleApprove(approveReq, approveRes);
+            assert.equal(approveRes.statusCode, 200);
 
-          const approvePayload = JSON.parse(approveRes.body);
-          assert.equal(approvePayload.success, true);
-          assert.equal(approvePayload.outcome.state, 'warning');
-          assert.equal(approvePayload.outcome.code, 'APPROVE_PARTIAL_WARNING');
-          assert.match((approvePayload.outcome.warnings || []).join(' '), /mock returned vector persistence error/);
-          assert.equal(approvePayload.handoff.execution_readiness.status, 'blocked');
-          assert.ok((approvePayload.handoff.execution_readiness.blocking_checks || []).length > 0, 'Blocked readiness should include blocking checks');
-          assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_readiness_blocked'), 'Approve warning path should emit execution_readiness_blocked');
+            const approvePayload = JSON.parse(approveRes.body);
+            assert.equal(approvePayload.success, true);
+            assert.equal(approvePayload.outcome.state, 'warning');
+            assert.equal(approvePayload.outcome.code, 'APPROVE_PARTIAL_WARNING');
+            assert.match((approvePayload.outcome.warnings || []).join(' '), /mock returned vector persistence error/);
+            assert.equal(approvePayload.report_note_path, 'MarkOS-Vault/Memory/Migration Reports/mock.md');
+            assert.equal(approvePayload.handoff.execution_readiness.status, 'blocked');
+            assert.ok((approvePayload.handoff.execution_readiness.blocking_checks || []).length > 0, 'Blocked readiness should include blocking checks');
+            assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_readiness_blocked'), 'Approve warning path should emit execution_readiness_blocked');
+          });
         });
       });
     });
@@ -565,7 +570,8 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
   await t.test('3.9 Approve success emits readiness-ready and loop-completed checkpoints', async () => {
     const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
     const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
-    const writeMirPath = path.join(env.dir, 'onboarding', 'backend', 'write-mir.cjs');
+    const vaultWriterPath = path.join(env.dir, 'onboarding', 'backend', 'vault', 'vault-writer.cjs');
+    const runReportPath = path.join(env.dir, 'onboarding', 'backend', 'vault', 'run-report.cjs');
     const telemetryPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'telemetry.cjs');
 
     const requiredCatalogs = [
@@ -584,53 +590,56 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
 
     const emittedCheckpoints = [];
 
-    await withMockedModule(writeMirPath, {
-      applyDrafts: () => ({
-        written: ['Core_Strategy/01_COMPANY/PROFILE.md'],
-        stateUpdated: true,
+    await withMockedModule(vaultWriterPath, {
+      writeApprovedDrafts: () => ({
+        written: ['MarkOS-Vault/Strategy/company.md'],
+        items: [{ source_key: 'company_profile', outcome: 'imported', destination_path: 'MarkOS-Vault/Strategy/company.md', warnings: [], errors: [] }],
         errors: [],
-        mergeEvents: [],
       }),
     }, async () => {
-      await withMockedModule(vectorStorePath, {
-        configure: () => {},
-        storeDraft: async () => ({ ok: true }),
+      await withMockedModule(runReportPath, {
+        writeRunReport: () => ({ report_note_path: 'MarkOS-Vault/Memory/Migration Reports/mock.md' }),
       }, async () => {
-        await withMockedModule(telemetryPath, {
-          captureExecutionCheckpoint: (eventName, properties) => emittedCheckpoints.push({ eventName, properties }),
+        await withMockedModule(vectorStorePath, {
+          configure: () => {},
+          storeDraft: async () => ({ ok: true }),
         }, async () => {
-          const handlers = loadFreshModule(handlersPath);
-          const approveReq = createJsonRequest({
-            slug: 'acme-slug',
-            approvedDrafts: {
-              company_profile: 'ok',
-              mission_values: 'ok',
-              audience: 'ok',
-              competitive: 'ok',
-              brand_voice: 'ok',
-              channel_strategy: 'ok',
-            }
-          }, '/approve');
-          const approveRes = createMockResponse();
+          await withMockedModule(telemetryPath, {
+            captureExecutionCheckpoint: (eventName, properties) => emittedCheckpoints.push({ eventName, properties }),
+          }, async () => {
+            const handlers = loadFreshModule(handlersPath);
+            const approveReq = createJsonRequest({
+              slug: 'acme-slug',
+              approvedDrafts: {
+                company_profile: 'ok',
+                mission_values: 'ok',
+                audience: 'ok',
+                competitive: 'ok',
+                brand_voice: 'ok',
+                channel_strategy: 'ok',
+              }
+            }, '/approve');
+            const approveRes = createMockResponse();
 
-          await handlers.handleApprove(approveReq, approveRes);
-          assert.equal(approveRes.statusCode, 200);
+            await handlers.handleApprove(approveReq, approveRes);
+            assert.equal(approveRes.statusCode, 200);
 
-          const payload = JSON.parse(approveRes.body);
-          assert.equal(payload.success, true);
-          assert.equal(payload.handoff.execution_readiness.status, 'ready');
-          assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'approval_completed'));
-          assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_readiness_ready'));
-          assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_loop_completed'));
+            const payload = JSON.parse(approveRes.body);
+            assert.equal(payload.success, true);
+            assert.equal(payload.report_note_path, 'MarkOS-Vault/Memory/Migration Reports/mock.md');
+            assert.equal(payload.handoff.execution_readiness.status, 'ready');
+            assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'approval_completed'));
+            assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_readiness_ready'));
+            assert.ok(emittedCheckpoints.some((entry) => entry.eventName === 'execution_loop_completed'));
+          });
         });
       });
     });
   });
 
-  await t.test('3.10 Approve rejects out-of-bounds MIR output paths and allows in-root custom paths', async () => {
+  await t.test('3.10 Approve rejects out-of-bounds canonical vault paths and allows in-root custom vault paths', async () => {
     const handlersPath = path.join(env.dir, 'onboarding', 'backend', 'handlers.cjs');
     const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
-    const writeMirPath = path.join(env.dir, 'onboarding', 'backend', 'write-mir.cjs');
     const configPath = path.join(env.dir, 'onboarding', 'onboarding-config.json');
 
     const outsideDirName = `phase28-outside-${Date.now()}`;
@@ -639,7 +648,7 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       auto_open_browser: false,
       port: 4242,
       output_path: '../mock-onboarding-seed.json',
-      mir_output_path: `../${outsideDirName}`,
+      vault_root_path: `../${outsideDirName}`,
     }));
 
     await withMockedModule(vectorStorePath, {
@@ -657,57 +666,44 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
       assert.equal(rejectRes.statusCode, 400);
 
       const rejectPayload = JSON.parse(rejectRes.body);
-      assert.equal(rejectPayload.error, 'MIR_OUTPUT_PATH_OUT_OF_BOUNDS');
-      assert.equal(rejectPayload.outcome?.code, 'MIR_OUTPUT_PATH_OUT_OF_BOUNDS');
-      assert.ok(!fs.existsSync(outsideDirPath), 'Out-of-bounds MIR path should not be created');
+      assert.equal(rejectPayload.error, 'CANONICAL_VAULT_PATH_OUT_OF_BOUNDS');
+      assert.equal(rejectPayload.outcome?.code, 'CANONICAL_VAULT_PATH_OUT_OF_BOUNDS');
+      assert.ok(!fs.existsSync(outsideDirPath), 'Out-of-bounds vault path should not be created');
     });
 
-    const customInRootPath = '.markos-local/custom-mir-output';
+    const customInRootPath = 'Custom-MarkOS-Vault';
     fs.writeFileSync(configPath, JSON.stringify({
       auto_open_browser: false,
       port: 4242,
       output_path: '../mock-onboarding-seed.json',
-      mir_output_path: customInRootPath,
+      vault_root_path: customInRootPath,
     }));
 
-    let capturedMirOutputPath = null;
-
-    await withMockedModule(writeMirPath, {
-      applyDrafts: (mirOutputPath) => {
-        capturedMirOutputPath = mirOutputPath;
-        return {
-          written: ['Core_Strategy/01_COMPANY/PROFILE.md'],
-          stateUpdated: true,
-          errors: [],
-          mergeEvents: [],
-        };
-      },
+    await withMockedModule(vectorStorePath, {
+      configure: () => {},
+      storeDraft: async () => ({ ok: true }),
     }, async () => {
-      await withMockedModule(vectorStorePath, {
-        configure: () => {},
-        storeDraft: async () => ({ ok: true }),
-      }, async () => {
-        const handlers = loadFreshModule(handlersPath);
-        const allowReq = createJsonRequest({
-          slug: 'acme-slug',
-          approvedDrafts: {
-            company_profile: 'ok',
-            mission_values: 'ok',
-            audience: 'ok',
-            competitive: 'ok',
-            brand_voice: 'ok',
-            channel_strategy: 'ok',
-          },
-        }, '/approve');
-        const allowRes = createMockResponse();
+      const handlers = loadFreshModule(handlersPath);
+      const allowReq = createJsonRequest({
+        slug: 'acme-slug',
+        approvedDrafts: {
+          company_profile: 'ok',
+          mission_values: 'ok',
+          audience: 'ok',
+          competitive: 'ok',
+          brand_voice: 'ok',
+          channel_strategy: 'ok',
+        },
+      }, '/approve');
+      const allowRes = createMockResponse();
 
-        await handlers.handleApprove(allowReq, allowRes);
-        assert.equal(allowRes.statusCode, 200);
+      await handlers.handleApprove(allowReq, allowRes);
+      assert.equal(allowRes.statusCode, 200);
 
-        const allowPayload = JSON.parse(allowRes.body);
-        assert.equal(allowPayload.success, true);
-        assert.equal(capturedMirOutputPath, path.resolve(env.dir, customInRootPath));
-      });
+      const allowPayload = JSON.parse(allowRes.body);
+      assert.equal(allowPayload.success, true);
+      assert.ok(fs.existsSync(path.resolve(env.dir, customInRootPath, 'Strategy', 'company.md')));
+      assert.equal((allowPayload.written || [])[0].startsWith(`${customInRootPath}/`), true);
     });
   });
 
@@ -1032,7 +1028,8 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
     const telemetryPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'telemetry.cjs');
     const vectorStorePath = path.join(env.dir, 'onboarding', 'backend', 'vector-store-client.cjs');
     const orchestratorPath = path.join(env.dir, 'onboarding', 'backend', 'agents', 'orchestrator.cjs');
-    const writeMirPath = path.join(env.dir, 'onboarding', 'backend', 'write-mir.cjs');
+    const vaultWriterPath = path.join(env.dir, 'onboarding', 'backend', 'vault', 'vault-writer.cjs');
+    const runReportPath = path.join(env.dir, 'onboarding', 'backend', 'vault', 'run-report.cjs');
     const linearClientPath = path.join(env.dir, 'onboarding', 'backend', 'linear-client.cjs');
 
     const emitted = [];
@@ -1049,65 +1046,73 @@ test('Suite 3: Web-Based Onboarding Engine', async (t) => {
         await withMockedModule(orchestratorPath, {
           orchestrate: async () => ({ drafts: {}, vectorStoreResults: [], errors: [] }),
         }, async () => {
-          await withMockedModule(writeMirPath, {
-            applyDrafts: () => ({ written: ['Core_Strategy/01_COMPANY/PROFILE.md'], stateUpdated: true, errors: [], mergeEvents: [] }),
+          await withMockedModule(vaultWriterPath, {
+            writeApprovedDrafts: () => ({
+              written: ['MarkOS-Vault/Strategy/company.md'],
+              items: [{ source_key: 'company_profile', outcome: 'imported', destination_path: 'MarkOS-Vault/Strategy/company.md', warnings: [], errors: [] }],
+              errors: [],
+            }),
           }, async () => {
-            await withMockedModule(linearClientPath, {
-              getTeamId: async () => 'team-1',
-              getUserId: async () => null,
-              createIssue: async () => ({ identifier: 'MKT-1', id: 'issue-1', title: 'ok', url: 'https://linear.app/test/MKT-1' }),
+            await withMockedModule(runReportPath, {
+              writeRunReport: () => ({ report_note_path: 'MarkOS-Vault/Memory/Migration Reports/mock.md' }),
             }, async () => {
-              const linearTemplatesDir = path.join(env.dir, '.agent', 'markos', 'templates', 'LINEAR-TASKS');
-              fs.mkdirSync(linearTemplatesDir, { recursive: true });
-              fs.writeFileSync(path.join(linearTemplatesDir, '_CATALOG.md'), [
-                '| TOKEN_ID | File | Category | Triggers | Gate | Status |',
-                '|----------|------|----------|----------|------|--------|',
-                '| MARKOS-ITM-OPS-01 | `LINEAR-TASKS/MARKOS-ITM-OPS-01-campaign-launch.md` | Campaign Ops | N/A | Gate 1 + Gate 2 | active |',
-                '',
-              ].join('\n'));
-              fs.writeFileSync(path.join(linearTemplatesDir, 'MARKOS-ITM-OPS-01-campaign-launch.md'), '**Linear Title format:** `[MARKOS] Launch: {campaign_name} — Go/No-Go`\n');
+              await withMockedModule(linearClientPath, {
+                getTeamId: async () => 'team-1',
+                getUserId: async () => null,
+                createIssue: async () => ({ identifier: 'MKT-1', id: 'issue-1', title: 'ok', url: 'https://linear.app/test/MKT-1' }),
+              }, async () => {
+                const linearTemplatesDir = path.join(env.dir, '.agent', 'markos', 'templates', 'LINEAR-TASKS');
+                fs.mkdirSync(linearTemplatesDir, { recursive: true });
+                fs.writeFileSync(path.join(linearTemplatesDir, '_CATALOG.md'), [
+                  '| TOKEN_ID | File | Category | Triggers | Gate | Status |',
+                  '|----------|------|----------|----------|------|--------|',
+                  '| MARKOS-ITM-OPS-01 | `LINEAR-TASKS/MARKOS-ITM-OPS-01-campaign-launch.md` | Campaign Ops | N/A | Gate 1 + Gate 2 | active |',
+                  '',
+                ].join('\n'));
+                fs.writeFileSync(path.join(linearTemplatesDir, 'MARKOS-ITM-OPS-01-campaign-launch.md'), '**Linear Title format:** `[MARKOS] Launch: {campaign_name} — Go/No-Go`\n');
 
-              const handlers = loadFreshModule(handlersPath);
+                const handlers = loadFreshModule(handlersPath);
 
-              const oldLinearApiKey = process.env.LINEAR_API_KEY;
-              process.env.LINEAR_API_KEY = 'linear_test_key';
+                const oldLinearApiKey = process.env.LINEAR_API_KEY;
+                process.env.LINEAR_API_KEY = 'linear_test_key';
 
-              const submitRes = createMockResponse();
-              await handlers.handleSubmit(createJsonRequest({ seed: { company: { name: 'Acme' } }, project_slug: 'acme' }, '/submit'), submitRes);
-              assert.equal(submitRes.statusCode, 200);
+                const submitRes = createMockResponse();
+                await handlers.handleSubmit(createJsonRequest({ seed: { company: { name: 'Acme' } }, project_slug: 'acme' }, '/submit'), submitRes);
+                assert.equal(submitRes.statusCode, 200);
 
-              const approveRes = createMockResponse();
-              await handlers.handleApprove(createJsonRequest({ slug: 'acme', approvedDrafts: { company_profile: 'ok' } }, '/approve'), approveRes);
-              assert.equal(approveRes.statusCode, 200);
+                const approveRes = createMockResponse();
+                await handlers.handleApprove(createJsonRequest({ slug: 'acme', approvedDrafts: { company_profile: 'ok' } }, '/approve'), approveRes);
+                assert.equal(approveRes.statusCode, 200);
 
-              const linearRes = createMockResponse();
-              await handlers.handleLinearSync(createJsonRequest({ slug: 'acme', tasks: [{ token: 'MARKOS-ITM-OPS-01' }] }, '/linear/sync'), linearRes);
-              assert.equal(linearRes.statusCode, 200);
+                const linearRes = createMockResponse();
+                await handlers.handleLinearSync(createJsonRequest({ slug: 'acme', tasks: [{ token: 'MARKOS-ITM-OPS-01' }] }, '/linear/sync'), linearRes);
+                assert.equal(linearRes.statusCode, 200);
 
-              const campaignRes = createMockResponse();
-              await handlers.handleCampaignResult(createJsonRequest({ slug: 'acme', discipline: 'Paid_Media', asset: 'A', metric: 'CTR', value: '1.1%', outcome: 'success' }, '/campaign/result'), campaignRes);
-              assert.equal(campaignRes.statusCode, 200);
+                const campaignRes = createMockResponse();
+                await handlers.handleCampaignResult(createJsonRequest({ slug: 'acme', discipline: 'Paid_Media', asset: 'A', metric: 'CTR', value: '1.1%', outcome: 'success' }, '/campaign/result'), campaignRes);
+                assert.equal(campaignRes.statusCode, 200);
 
-              const expectedEndpoints = new Set(['/submit', '/approve', '/linear/sync', '/campaign/result']);
-              const seenEndpoints = new Set(emitted.map((entry) => entry.endpoint));
+                const expectedEndpoints = new Set(['/submit', '/approve', '/linear/sync', '/campaign/result']);
+                const seenEndpoints = new Set(emitted.map((entry) => entry.endpoint));
 
-              for (const endpoint of expectedEndpoints) {
-                assert.ok(seenEndpoints.has(endpoint), `Missing rollout telemetry for ${endpoint}`);
-              }
+                for (const endpoint of expectedEndpoints) {
+                  assert.ok(seenEndpoints.has(endpoint), `Missing rollout telemetry for ${endpoint}`);
+                }
 
-              for (const entry of emitted) {
-                assert.equal(typeof entry.properties.duration_ms, 'number');
-                assert.ok(entry.properties.duration_ms >= 0);
-                assert.ok(entry.properties.runtime_mode === 'local' || entry.properties.runtime_mode === 'hosted');
-                assert.ok(Object.prototype.hasOwnProperty.call(entry.properties, 'status_code'));
-                assert.ok(Object.prototype.hasOwnProperty.call(entry.properties, 'outcome_state'));
-              }
+                for (const entry of emitted) {
+                  assert.equal(typeof entry.properties.duration_ms, 'number');
+                  assert.ok(entry.properties.duration_ms >= 0);
+                  assert.ok(entry.properties.runtime_mode === 'local' || entry.properties.runtime_mode === 'hosted');
+                  assert.ok(Object.prototype.hasOwnProperty.call(entry.properties, 'status_code'));
+                  assert.ok(Object.prototype.hasOwnProperty.call(entry.properties, 'outcome_state'));
+                }
 
-              if (oldLinearApiKey === undefined) {
-                delete process.env.LINEAR_API_KEY;
-              } else {
-                process.env.LINEAR_API_KEY = oldLinearApiKey;
-              }
+                if (oldLinearApiKey === undefined) {
+                  delete process.env.LINEAR_API_KEY;
+                } else {
+                  process.env.LINEAR_API_KEY = oldLinearApiKey;
+                }
+              });
             });
           });
         });

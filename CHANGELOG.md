@@ -1,5 +1,13 @@
 # Changelog — MarkOS
 
+## v3.3.0 — 2026-04-10
+
+### Revenue CRM and Customer Intelligence Core
+- Added the full v3.3 CRM delivery line through canonical entities, first-party tracking and identity stitching, pipeline and workspace surfaces, native outbound execution, CRM-grounded copilot operations, and reporting closeout artifacts.
+- Aligned the public package release line to `3.3.0` so npm metadata, repo version surfaces, and release-facing documentation tell the same story.
+- Added repeatable packed-artifact validation via `npm run release:smoke` to verify the publishable tarball contains the intended MarkOS runtime surfaces and CLI entrypoint before human publish.
+- Added a durable Phase 66 publish checklist and verification ledger so the final `npm publish` and registry verification steps remain explicit and honest.
+
 ## v2.3.0 — 2026-03-31
 
 ### Codebase Documentation Intelligence (Phase 33 Complete)

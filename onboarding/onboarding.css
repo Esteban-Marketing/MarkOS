@@ -384,6 +384,20 @@ h1.onboarding-title {
   margin-bottom: 2rem;
 }
 
+.completion-details {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem auto 0;
+  max-width: 560px;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .onboarding-wrapper {
@@ -404,6 +418,20 @@ h1.onboarding-title {
     color: var(--text-muted, #6b7280);
     font-size: 0.9rem;
     margin: 0;
+}
+
+.draft-toolbar {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.importer-link-btn {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 /* Loading overlay */
@@ -665,3 +693,163 @@ h1.onboarding-title {
 .spark-loading { display: none; padding: 1rem; text-align: center; color: var(--text-muted); }
 
 .chat-input-area { align-items: center; }
+
+.importer-wrapper {
+  max-width: 840px;
+}
+
+.importer-shell {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.importer-banner,
+.importer-report,
+.importer-stage,
+.importer-results,
+.importer-footer,
+.importer-completion {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.importer-stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.importer-steps {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.importer-step {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+}
+
+.importer-step.active {
+  color: white;
+  border-color: var(--primary);
+  background: var(--primary-gradient);
+}
+
+.importer-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.importer-summary-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.importer-summary-card strong {
+  display: block;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.importer-result-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.importer-row {
+  border: 1px solid var(--border);
+  border-left: 4px solid #94a3b8;
+  border-radius: 12px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.importer-row.outcome-imported { border-left-color: #22c55e; }
+.importer-row.outcome-imported_with_warnings { border-left-color: #f59e0b; }
+.importer-row.outcome-blocked { border-left-color: #ef4444; }
+.importer-row.outcome-skipped { border-left-color: #94a3b8; }
+
+.importer-row-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr auto;
+  gap: 1rem;
+  align-items: start;
+}
+
+.importer-path-block {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.importer-path-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.importer-path-value {
+  word-break: break-word;
+  font-size: 0.92rem;
+}
+
+.outcome-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.outcome-badge.imported { background: #166534; color: #f8fafc; }
+.outcome-badge.imported_with_warnings { background: #92400e; color: #f8fafc; }
+.outcome-badge.blocked { background: #991b1b; color: #f8fafc; }
+.outcome-badge.skipped { background: #475569; color: #f8fafc; }
+
+.importer-reason {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.importer-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.importer-footer-note {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 768px) {
+  .importer-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .importer-row-grid {
+    grid-template-columns: 1fr;
+  }
+}

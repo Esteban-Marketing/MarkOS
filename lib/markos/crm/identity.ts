@@ -1,5 +1,3 @@
-import type { Stats } from 'node:fs';
-
 'use strict';
 
 const ALLOWED_LINK_STATUSES = new Set(['candidate', 'accepted', 'review', 'rejected']);

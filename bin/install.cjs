@@ -34,6 +34,8 @@ const {
   banner,
   buildFileHashes,
   copyRecursive,
+  detectObsidianInstall,
+  detectQmdSupport,
   detectExistingMarkOS,
   detectGSD,
   hasAnyAiKey,
@@ -45,12 +47,46 @@ const {
   printInstallUsage,
   resolveScopeTarget,
   slugify,
+  normalizeInstallProfile,
 } = require('./cli-runtime.cjs');
 
 // ── Environment Settings ───────────────────────────────────────────────────
 const PKG_DIR = path.resolve(__dirname, '..');
 const VERSION = fs.readFileSync(path.join(PKG_DIR, '.agent/markos/VERSION'), 'utf8').trim();
 const CWD = process.cwd();
+const VAULT_ROOT_NAME = 'MarkOS-Vault';
+const VAULT_FAMILIES = ['Home', 'Strategy', 'Execution', 'Relationships', 'Evidence', 'Reviews', 'Memory'];
+const PROFILE_SCHEMA_VERSION = 1;
+
+function isValidProfile(profile) {
+  return profile === 'full' || profile === 'cli' || profile === 'minimal';
+}
+
+function resolveInstallProfile(cli) {
+  if (cli.profileConflict) {
+    throw new Error(cli.profileConflict);
+  }
+
+  const explicitProfile = normalizeInstallProfile(cli.installProfile);
+  return explicitProfile || 'full';
+}
+
+function buildProfileComponents(profile, noOnboarding) {
+  const base = {
+    onboarding_enabled: profile === 'full',
+    ui_enabled: profile === 'full',
+  };
+
+  if (noOnboarding) {
+    return {
+      ...base,
+      onboarding_enabled: false,
+      ui_enabled: false,
+    };
+  }
+
+  return base;
+}
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
@@ -58,6 +94,10 @@ const rl = readline.createInterface({ input: process.stdin, output: process.stdo
  * Prompts the user with a question and returns the answer as a Promise.
  */
 const ask = (q) => new Promise(resolve => rl.question(q, resolve));
+
+function toPortablePath(value) {
+  return String(value).split(path.sep).join('/');
+}
 
 function applyGitignoreProtections(projectDir) {
   const gitignorePath = path.join(projectDir, '.gitignore');
@@ -172,14 +212,80 @@ function installProtocolFiles({ pkgDir, cwd, agentDir, hasGSD }) {
   return { markosDest };
 }
 
-function writeInstallManifest({ cwd, markosDest, isGlobal, projectName, projectSlug }) {
+function writeFileIfMissing(filePath, content) {
+  if (fs.existsSync(filePath)) {
+    return false;
+  }
+
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  fs.writeFileSync(filePath, content, 'utf8');
+  return true;
+}
+
+function ensureCanonicalVaultBootstrap(projectDir, projectName, projectSlug) {
+  const vaultRoot = path.join(projectDir, VAULT_ROOT_NAME);
+  const createdPaths = [];
+
+  if (!fs.existsSync(vaultRoot)) {
+    fs.mkdirSync(vaultRoot, { recursive: true });
+    createdPaths.push(vaultRoot);
+  }
+
+  for (const family of VAULT_FAMILIES) {
+    const familyDir = path.join(vaultRoot, family);
+    if (!fs.existsSync(familyDir)) {
+      fs.mkdirSync(familyDir, { recursive: true });
+      createdPaths.push(familyDir);
+    }
+  }
+
+  const obsidianDir = path.join(vaultRoot, '.obsidian');
+  if (!fs.existsSync(obsidianDir)) {
+    fs.mkdirSync(obsidianDir, { recursive: true });
+    createdPaths.push(obsidianDir);
+  }
+
+  if (writeFileIfMissing(path.join(obsidianDir, 'app.json'), JSON.stringify({ alwaysUpdateLinks: true }, null, 2))) {
+    createdPaths.push(path.join(obsidianDir, 'app.json'));
+  }
+
+  const vaultReadme = `# MarkOS Vault\n\nThis Obsidian vault is the canonical MarkOS operating surface for ${projectName}.\n\n## Canonical Families\n\n- Home\n- Strategy\n- Execution\n- Relationships\n- Evidence\n- Reviews\n- Memory\n\n## Current Boundary\n\nThis bootstrap creates the canonical vault scaffold and Home entrypoint now. Onboarding and importer behavior remain on the legacy path until the vault-native write flow lands in a later phase.\n\n## Project Metadata\n\n- Project name: ${projectName}\n- Project slug: ${projectSlug}\n`;
+
+  if (writeFileIfMissing(path.join(vaultRoot, 'README.md'), vaultReadme)) {
+    createdPaths.push(path.join(vaultRoot, 'README.md'));
+  }
+
+  const timestamp = new Date().toISOString();
+  const homeNote = `---\nid: home-${projectSlug}\ntitle: MarkOS Home\nvault_family: Home\nnote_family: home\nstatus: active\nowner: ${projectSlug}\nreview_cycle: weekly\ncreated_at: ${timestamp}\nupdated_at: ${timestamp}\nsource_mode: native\nsummary: Canonical landing note for the vault-first MarkOS workspace.\n---\n\n# MarkOS Home\n\nUse this vault as the canonical source of truth for strategy, execution, evidence, reviews, relationships, and memory.\n\n## First Run\n\n- Open this folder in Obsidian.\n- Confirm the top-level vault families exist and remain the primary operating structure.\n- Use onboarding as a migration-era helper only; its write path is still being rewritten.\n`;
+
+  const homeNotePath = path.join(vaultRoot, 'Home', 'HOME.md');
+  if (writeFileIfMissing(homeNotePath, homeNote)) {
+    createdPaths.push(homeNotePath);
+  }
+
+  return {
+    vaultRoot,
+    homeNotePath,
+    createdPaths,
+  };
+}
+
+function writeInstallManifest({ cwd, markosDest, isGlobal, projectName, projectSlug, vaultBootstrap, installProfile, components }) {
   const manifestPath = path.join(cwd, '.markos-install-manifest.json');
   const manifest = {
+    manifest_schema_version: 2,
     version: VERSION,
     installed: new Date().toISOString(),
     location: isGlobal ? 'global' : 'project',
     project_name: projectName,
     project_slug: projectSlug,
+    bootstrap_model: 'vault-first',
+    legacy_surface_policy: 'migration-only',
+    install_profile: installProfile,
+    profile_schema_version: PROFILE_SCHEMA_VERSION,
+    components,
+    vault_root: toPortablePath(path.relative(cwd, vaultBootstrap.vaultRoot)),
+    vault_home_note: toPortablePath(path.relative(cwd, vaultBootstrap.homeNotePath)),
     file_hashes: buildFileHashes(markosDest)
   };
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
@@ -197,13 +303,24 @@ async function handleExistingInstall({ isInteractive, autoUpdate }) {
   return choice.trim() === '' || choice.trim().toLowerCase() === 'y';
 }
 
-function printInstallSummary({ markosDest, projectName, projectSlug, readiness }) {
+function printInstallSummary({ markosDest, projectName, projectSlug, readiness, vaultBootstrap, obsidianReport, qmdReport }) {
+  const obsidianStatus = obsidianReport.available
+    ? `detected (${obsidianReport.path})`
+    : 'not detected';
+  const qmdStatus = qmdReport.available
+    ? `available (${qmdReport.command})`
+    : 'optional enhancement not detected';
+
   banner(`MarkOS v${VERSION} installed ✓`);
   console.log(`\n  Protocol:   ${markosDest}`);
+  console.log(`  Vault:      ${vaultBootstrap.vaultRoot}`);
+  console.log(`  Home note:  ${vaultBootstrap.homeNotePath}`);
   console.log(`  Project:    ${projectName}`);
   console.log(`  Slug:       ${projectSlug}`);
   console.log('  Update:     npx markos update');
   console.log(`  Readiness:  ${readiness.readiness}`);
+  console.log(`  Obsidian:   ${obsidianStatus}`);
+  console.log(`  QMD:        ${qmdStatus}`);
   console.log('  Docs:       .agent/markos/MARKOS-INDEX.md');
   if (readiness.warnings.length > 0) {
     for (const warning of readiness.warnings) {
@@ -213,6 +330,11 @@ function printInstallSummary({ markosDest, projectName, projectSlug, readiness }
   if (readiness.nextStep) {
     console.log(`  Next step:  ${readiness.nextStep}`);
   }
+  if (readiness.installProfile) {
+    console.log(`  Profile:    ${readiness.installProfile}`);
+    const components = readiness.components || {};
+    console.log(`  Components: onboarding=${components.onboarding_enabled ? 'enabled' : 'disabled'}, ui=${components.ui_enabled ? 'enabled' : 'disabled'}`);
+  }
   console.log('');
 }
 
@@ -220,6 +342,11 @@ function buildInstallContext(cli) {
   const isInteractive = isInteractiveSession();
   const isCI = isCIEnvironment();
   const scope = cli.scope || 'project';
+  const installProfile = resolveInstallProfile(cli);
+  if (!isValidProfile(installProfile)) {
+    throw new Error('Unsupported install profile. Use --profile full|cli|minimal.');
+  }
+  const components = buildProfileComponents(installProfile, cli.noOnboarding);
 
   return {
     cli,
@@ -231,8 +358,10 @@ function buildInstallContext(cli) {
     projectNameSource: cli.projectName ? 'flag override' : 'cwd inference',
     scope,
     isGlobal: scope === 'global',
-    launchOnboarding: !cli.noOnboarding && isInteractive && !isCI,
+    launchOnboarding: components.onboarding_enabled && isInteractive && !isCI,
     targetDir: resolveScopeTarget(CWD, scope),
+    installProfile,
+    components,
   };
 }
 
@@ -245,12 +374,18 @@ async function performFreshInstall(context) {
     console.log('✓ Project slug initialized (.markos-project.json)');
   }
 
+  const vaultBootstrap = ensureCanonicalVaultBootstrap(CWD, context.projectName, projectConfig.projectSlug);
+  console.log(`✓ Canonical vault scaffold ready (${path.relative(CWD, vaultBootstrap.vaultRoot)})`);
+
   writeInstallManifest({
     cwd: CWD,
     markosDest,
     isGlobal: context.isGlobal,
     projectName: context.projectName,
     projectSlug: projectConfig.projectSlug,
+    vaultBootstrap,
+    installProfile: context.installProfile,
+    components: context.components,
   });
 
   const gitignoreResult = applyGitignoreProtections(CWD);
@@ -263,17 +398,27 @@ async function performFreshInstall(context) {
   const { ensureVectorStores } = require('./ensure-vector.cjs');
   const vectorReport = await ensureVectorStores();
   const onboardingServerPath = path.join(CWD, 'onboarding', 'backend', 'server.cjs');
+  const obsidianReport = detectObsidianInstall();
+  const qmdReport = detectQmdSupport();
   const readiness = summarizeReadiness({
+    vaultBootstrap,
+    obsidianReport,
+    qmdReport,
     hasAiKeys: hasAnyAiKey(CWD),
     vectorReport,
     launchOnboarding: context.launchOnboarding,
     onboardingServerPath,
+    installProfile: context.installProfile,
+    components: context.components,
   });
 
   return {
     markosDest,
     onboardingServerPath,
     projectConfig,
+    vaultBootstrap,
+    obsidianReport,
+    qmdReport,
     readiness,
   };
 }
@@ -284,29 +429,52 @@ function completeInstall(context, installResult) {
     projectName: context.projectName,
     projectSlug: installResult.projectConfig.projectSlug,
     readiness: installResult.readiness,
+    vaultBootstrap: installResult.vaultBootstrap,
+    obsidianReport: installResult.obsidianReport,
+    qmdReport: installResult.qmdReport,
   });
 
   if (context.launchOnboarding && installResult.readiness.readiness !== 'blocked') {
-    console.log('🚀 Starting MarkOS onboarding...\n');
+    console.log('🚀 Starting the transitional MarkOS onboarding helper...\n');
     rl.close();
     require(installResult.onboardingServerPath);
     return;
   }
 
-  console.log('Run `node onboarding/backend/server.cjs` to fully launch the system later.\n');
+  console.log('Run `node onboarding/backend/server.cjs` to launch the transitional onboarding helper later.\n');
   rl.close();
 }
 
-function summarizeReadiness({ hasAiKeys, vectorReport, launchOnboarding, onboardingServerPath }) {
+function summarizeReadiness({ vaultBootstrap, obsidianReport, qmdReport, hasAiKeys, vectorReport, launchOnboarding, onboardingServerPath, installProfile, components }) {
   const warnings = [];
   let readiness = 'ready';
+  const onboardingAvailable = fs.existsSync(onboardingServerPath);
 
-  if (!hasAiKeys) {
-    readiness = 'degraded';
-    warnings.push('No AI provider key detected in environment or .env; onboarding can start, but AI draft generation will stay degraded until a key is added.');
+  if (!vaultBootstrap || !fs.existsSync(vaultBootstrap.vaultRoot) || !fs.existsSync(vaultBootstrap.homeNotePath)) {
+    readiness = 'blocked';
+    warnings.push('Canonical vault bootstrap is incomplete; rerun `npx markos` to recreate MarkOS-Vault and the Home entrypoint.');
   }
 
-  if (vectorReport.status !== 'providers_ready') {
+  if (!obsidianReport.available) {
+    readiness = 'blocked';
+    warnings.push('Obsidian was not detected. MarkOS-Vault was created, but the primary vault-first workflow is blocked until Obsidian is installed or MARKOS_OBSIDIAN_PATH is set.');
+  }
+
+  if (onboardingAvailable) {
+    warnings.push('Onboarding is available only as a transitional migration helper. Its approved drafts still write to legacy MIR/MSP outputs and do not define canonical vault readiness.');
+  }
+
+  if (!qmdReport.available && readiness !== 'blocked') {
+    readiness = 'degraded';
+    warnings.push('Optional QMD enhancement was not detected. Core vault bootstrap is usable, but richer markdown workflows stay unavailable until qmd or quarto is installed.');
+  }
+
+  if (!hasAiKeys && readiness !== 'blocked') {
+    readiness = 'degraded';
+    warnings.push('No AI provider key detected in environment or .env; vault bootstrap succeeded, but AI draft generation will stay degraded until a key is added.');
+  }
+
+  if (vectorReport.status !== 'providers_ready' && readiness !== 'blocked') {
     readiness = 'degraded';
     warnings.push(vectorReport.message);
   }
@@ -317,11 +485,23 @@ function summarizeReadiness({ hasAiKeys, vectorReport, launchOnboarding, onboard
   }
 
   const nextSteps = [];
+  if (!obsidianReport.available) {
+    nextSteps.push('Install Obsidian, then rerun `npx markos vault:open` to open the canonical vault.');
+  }
+  if (obsidianReport.available) {
+    nextSteps.push('Run `npx markos vault:open` to open the canonical Home note in Obsidian.');
+  }
+  if (!qmdReport.available) {
+    nextSteps.push('Install `qmd` or `quarto` if you want the optional QMD enhancement path.');
+  }
   if (!hasAiKeys) {
     nextSteps.push('Add one of OPENAI_API_KEY, ANTHROPIC_API_KEY, or GEMINI_API_KEY to .env for full AI drafting.');
   }
   if (vectorReport.actionable_next_step) {
     nextSteps.push(vectorReport.actionable_next_step);
+  }
+  if (onboardingAvailable) {
+    nextSteps.push('Use `node onboarding/backend/server.cjs` only if you need the transitional legacy drafting helper before the vault-native write path lands.');
   }
   if (launchOnboarding && !fs.existsSync(onboardingServerPath)) {
     nextSteps.push('Re-run `npx markos` to restore the onboarding app, or start `node onboarding/backend/server.cjs` once the file exists.');
@@ -331,6 +511,8 @@ function summarizeReadiness({ hasAiKeys, vectorReport, launchOnboarding, onboard
     readiness,
     warnings,
     nextStep: nextSteps[0] || null,
+    installProfile,
+    components,
   };
 }
 
@@ -352,6 +534,23 @@ async function run() {
     rl.close();
     const { runDbSetupCLI } = require('./db-setup.cjs');
     await runDbSetupCLI();
+    return;
+  }
+
+  if (cli.command === 'import:legacy') {
+    rl.close();
+    const { runImportLegacyCLI } = require('./import-legacy.cjs');
+    await runImportLegacyCLI({ cli, cwd: CWD });
+    return;
+  }
+
+  if (cli.command === 'vault:open') {
+    rl.close();
+    const { runVaultOpenCLI } = require('./vault-open.cjs');
+    const result = await runVaultOpenCLI({ cli, cwd: CWD });
+    if (!result.ok) {
+      process.exitCode = 1;
+    }
     return;
   }
 
@@ -401,11 +600,14 @@ async function run() {
 
   console.log('\n✓ Smart defaults applied');
   console.log(`  Install to: ${path.join(context.targetDir, '.agent')}`);
+  console.log(`  Canonical vault: ${path.join(CWD, VAULT_ROOT_NAME)}`);
   console.log(`  Project: ${context.projectName}`);
   console.log(`  Project name source: ${context.projectNameSource}`);
   console.log(`  Mode: ${context.isInteractive ? 'interactive' : 'non-interactive'}`);
   console.log(`  GSD co-existence: ${context.hasGSD ? 'Yes (non-destructive)' : 'N/A'}`);
   console.log(`  Onboarding auto-launch: ${context.launchOnboarding ? 'Yes' : 'No'}`);
+  console.log(`  Setup profile: ${context.installProfile}`);
+  console.log(`  Components: onboarding=${context.components.onboarding_enabled ? 'enabled' : 'disabled'}, ui=${context.components.ui_enabled ? 'enabled' : 'disabled'}`);
 
   banner('Installing MarkOS...');
 
@@ -413,4 +615,10 @@ async function run() {
   completeInstall(context, installResult);
 }
 
-run().catch(e => { console.error(e); rl.close(); process.exit(1); });
+if (require.main === module) {
+  run().catch(e => { console.error(e); rl.close(); process.exit(1); });
+}
+
+module.exports = {
+  run,
+};

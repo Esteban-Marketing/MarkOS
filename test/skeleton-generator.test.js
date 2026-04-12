@@ -91,7 +91,8 @@ function createRuntimeContextMock(outputRoot) {
 }
 
 const handlersPath = path.join(__dirname, '..', 'onboarding', 'backend', 'handlers.cjs');
-const writeMirPath = path.join(__dirname, '..', 'onboarding', 'backend', 'write-mir.cjs');
+const vaultWriterPath = path.join(__dirname, '..', 'onboarding', 'backend', 'vault', 'vault-writer.cjs');
+const runReportPath = path.join(__dirname, '..', 'onboarding', 'backend', 'vault', 'run-report.cjs');
 const vectorStorePath = path.join(__dirname, '..', 'onboarding', 'backend', 'vector-store-client.cjs');
 const telemetryPath = path.join(__dirname, '..', 'onboarding', 'backend', 'agents', 'telemetry.cjs');
 const runtimeContextPath = path.join(__dirname, '..', 'onboarding', 'backend', 'runtime-context.cjs');
@@ -201,41 +202,44 @@ test('handleApprove response includes skeletons block', async () => {
 		const runtimeMock = createRuntimeContextMock(dir);
 
 		await withMockedModule(runtimeContextPath, runtimeMock, async () => {
-			await withMockedModule(writeMirPath, {
-				applyDrafts: () => ({
-					written: ['Core_Strategy/01_COMPANY/PROFILE.md'],
-					stateUpdated: true,
+			await withMockedModule(vaultWriterPath, {
+				writeApprovedDrafts: () => ({
+					written: ['MarkOS-Vault/Strategy/company.md'],
+					items: [{ source_key: 'company_profile', outcome: 'imported', destination_path: 'MarkOS-Vault/Strategy/company.md', warnings: [], errors: [] }],
 					errors: [],
-					mergeEvents: [],
 				}),
 			}, async () => {
-				await withMockedModule(vectorStorePath, {
-					configure: () => {},
-					storeDraft: async () => ({ ok: true }),
+				await withMockedModule(runReportPath, {
+					writeRunReport: () => ({ report_note_path: 'MarkOS-Vault/Memory/Migration Reports/mock.md' }),
 				}, async () => {
-					await withMockedModule(telemetryPath, {
-						captureExecutionCheckpoint: () => {},
-						captureRolloutEndpointEvent: () => {},
+					await withMockedModule(vectorStorePath, {
+						configure: () => {},
+						storeDraft: async () => ({ ok: true }),
 					}, async () => {
-						await withMockedModule(skeletonGeneratorPath, {
-							generateSkeletons: async () => ([
-								{ discipline: 'Paid_Media', files: ['.markos-local/MSP/Paid_Media/SKELETONS/_SKELETON-saas.md'], error: null },
-							]),
+						await withMockedModule(telemetryPath, {
+							captureExecutionCheckpoint: () => {},
+							captureRolloutEndpointEvent: () => {},
 						}, async () => {
-							const handlers = loadFreshModule(handlersPath);
-							const req = createJsonRequest({
-								slug: 'acme',
-								approvedDrafts: { company_profile: 'ok' },
-							}, '/approve');
-							const res = createMockResponse();
+							await withMockedModule(skeletonGeneratorPath, {
+								generateSkeletons: async () => ([
+									{ discipline: 'Paid_Media', files: ['.markos-local/MSP/Paid_Media/SKELETONS/_SKELETON-saas.md'], error: null },
+								]),
+							}, async () => {
+								const handlers = loadFreshModule(handlersPath);
+								const req = createJsonRequest({
+									slug: 'acme',
+									approvedDrafts: { company_profile: 'ok' },
+								}, '/approve');
+								const res = createMockResponse();
 
-							await handlers.handleApprove(req, res);
-							assert.equal(res.statusCode, 200);
-							const payload = JSON.parse(res.body);
-							assert.ok(payload.skeletons);
-							assert.ok(Array.isArray(payload.skeletons.generated));
-							assert.ok(Array.isArray(payload.skeletons.failed));
-							assert.equal(payload.skeletons.failed.length, 0);
+								await handlers.handleApprove(req, res);
+								assert.equal(res.statusCode, 200);
+								const payload = JSON.parse(res.body);
+								assert.ok(payload.skeletons);
+								assert.ok(Array.isArray(payload.skeletons.generated));
+								assert.ok(Array.isArray(payload.skeletons.failed));
+								assert.equal(payload.skeletons.failed.length, 0);
+							});
 						});
 					});
 				});
@@ -252,39 +256,42 @@ test('skeleton generation failure does not affect HTTP 200 response', async () =
 		const runtimeMock = createRuntimeContextMock(dir);
 
 		await withMockedModule(runtimeContextPath, runtimeMock, async () => {
-			await withMockedModule(writeMirPath, {
-				applyDrafts: () => ({
-					written: ['Core_Strategy/01_COMPANY/PROFILE.md'],
-					stateUpdated: true,
+			await withMockedModule(vaultWriterPath, {
+				writeApprovedDrafts: () => ({
+					written: ['MarkOS-Vault/Strategy/company.md'],
+					items: [{ source_key: 'company_profile', outcome: 'imported', destination_path: 'MarkOS-Vault/Strategy/company.md', warnings: [], errors: [] }],
 					errors: [],
-					mergeEvents: [],
 				}),
 			}, async () => {
-				await withMockedModule(vectorStorePath, {
-					configure: () => {},
-					storeDraft: async () => ({ ok: true }),
+				await withMockedModule(runReportPath, {
+					writeRunReport: () => ({ report_note_path: 'MarkOS-Vault/Memory/Migration Reports/mock.md' }),
 				}, async () => {
-					await withMockedModule(telemetryPath, {
-						captureExecutionCheckpoint: () => {},
-						captureRolloutEndpointEvent: () => {},
+					await withMockedModule(vectorStorePath, {
+						configure: () => {},
+						storeDraft: async () => ({ ok: true }),
 					}, async () => {
-						await withMockedModule(skeletonGeneratorPath, {
-							generateSkeletons: async () => {
-								throw new Error('forced failure');
-							},
+						await withMockedModule(telemetryPath, {
+							captureExecutionCheckpoint: () => {},
+							captureRolloutEndpointEvent: () => {},
 						}, async () => {
-							const handlers = loadFreshModule(handlersPath);
-							const req = createJsonRequest({
-								slug: 'acme',
-								approvedDrafts: { company_profile: 'ok' },
-							}, '/approve');
-							const res = createMockResponse();
+							await withMockedModule(skeletonGeneratorPath, {
+								generateSkeletons: async () => {
+									throw new Error('forced failure');
+								},
+							}, async () => {
+								const handlers = loadFreshModule(handlersPath);
+								const req = createJsonRequest({
+									slug: 'acme',
+									approvedDrafts: { company_profile: 'ok' },
+								}, '/approve');
+								const res = createMockResponse();
 
-							await handlers.handleApprove(req, res);
-							assert.equal(res.statusCode, 200);
-							const payload = JSON.parse(res.body);
-							assert.deepEqual(payload.skeletons.failed, ['all']);
-							assert.ok(Array.isArray(payload.skeletons.generated));
+								await handlers.handleApprove(req, res);
+								assert.equal(res.statusCode, 200);
+								const payload = JSON.parse(res.body);
+								assert.deepEqual(payload.skeletons.failed, ['all']);
+								assert.ok(Array.isArray(payload.skeletons.generated));
+							});
 						});
 					});
 				});
