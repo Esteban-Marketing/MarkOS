@@ -65,6 +65,9 @@ const { projectRoleViews } = require('./brand-strategy/role-view-projector.cjs')
 const { compileIdentityArtifact } = require('./brand-identity/identity-compiler.cjs');
 const { evaluateAccessibilityGates } = require('./brand-identity/accessibility-gates.cjs');
 const { persistIdentityArtifact } = require('./brand-identity/identity-artifact-writer.cjs');
+const { compileTokenContract } = require('./brand-design-system/token-compiler.cjs');
+const { compileComponentContractManifest } = require('./brand-design-system/component-contract-compiler.cjs');
+const { persistDesignSystemArtifacts } = require('./brand-design-system/design-system-artifact-writer.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -663,6 +666,48 @@ function shouldApplyIntakeValidation(seed = {}) {
     seed?.content?.content_maturity ||
     seed?.project_slug
   );
+}
+
+function resolveDesignSystemSemanticIntent(seed) {
+  if (!seed || typeof seed !== 'object' || !seed.design_system_semantic_intent || typeof seed.design_system_semantic_intent !== 'object') {
+    return {};
+  }
+
+  const intent = seed.design_system_semantic_intent;
+  return {
+    tone: typeof intent.tone === 'string' ? intent.tone : undefined,
+    emphasis: typeof intent.emphasis === 'string' ? intent.emphasis : undefined,
+    density: typeof intent.density === 'string' ? intent.density : undefined,
+    feedback_state: typeof intent.feedback_state === 'string' ? intent.feedback_state : undefined,
+    required_primitives: Array.isArray(intent.required_primitives) ? intent.required_primitives.slice() : undefined,
+    required_states: Array.isArray(intent.required_states) ? intent.required_states.slice() : undefined,
+  };
+}
+
+function mergeReadinessDiagnostics(readiness, designSystemDiagnostics) {
+  const next = {
+    status: readiness && readiness.status ? readiness.status : 'not_evaluated',
+    blocked: Boolean(readiness && readiness.blocked),
+    reason_codes: Array.isArray(readiness && readiness.reason_codes) ? readiness.reason_codes.slice() : [],
+    diagnostics: Array.isArray(readiness && readiness.diagnostics) ? readiness.diagnostics.slice() : [],
+  };
+
+  const blockingDesignDiagnostics = (Array.isArray(designSystemDiagnostics) ? designSystemDiagnostics : [])
+    .filter((entry) => entry && entry.blocking !== false);
+
+  if (blockingDesignDiagnostics.length === 0) {
+    return next;
+  }
+
+  next.blocked = true;
+  next.status = 'blocked';
+  next.reason_codes = Array.from(new Set(
+    next.reason_codes.concat(blockingDesignDiagnostics
+      .map((entry) => entry.code)
+      .filter((code) => typeof code === 'string' && code.length > 0))
+  )).sort((a, b) => a.localeCompare(b));
+  next.diagnostics = next.diagnostics.concat(blockingDesignDiagnostics);
+  return next;
 }
 
 async function autoCreateLinearIntakeTickets({ slug, phase = '34', seed = {} }) {
@@ -1479,6 +1524,10 @@ async function handleSubmit(req, res) {
     let compiledIdentityArtifact = null;
     let accessibilityGateReport = null;
     let identityArtifactWrite = null;
+    let tokenContractCompilation = null;
+    let componentContractCompilation = null;
+    let designSystemDiagnostics = [];
+    let designSystemArtifactWrite = null;
     let publishReadiness = {
       status: 'not_evaluated',
       blocked: false,
@@ -1530,6 +1579,33 @@ async function handleSubmit(req, res) {
             compiledIdentityArtifact
           );
 
+          tokenContractCompilation = compileTokenContract(
+            strategySynthesisResult,
+            compiledIdentityArtifact
+          );
+          componentContractCompilation = compileComponentContractManifest({
+            token_contract: tokenContractCompilation.token_contract,
+            strategy_result: strategySynthesisResult,
+            identity_result: compiledIdentityArtifact,
+            semantic_intent: resolveDesignSystemSemanticIntent(seed),
+          });
+
+          designSystemDiagnostics = []
+            .concat(Array.isArray(tokenContractCompilation.diagnostics) ? tokenContractCompilation.diagnostics : [])
+            .concat(Array.isArray(componentContractCompilation.diagnostics) ? componentContractCompilation.diagnostics : []);
+
+          if (tokenContractCompilation.token_contract && componentContractCompilation.component_contract_manifest) {
+            designSystemArtifactWrite = persistDesignSystemArtifacts(
+              brandExecutionContext.tenant_id,
+              {
+                token_contract: tokenContractCompilation.token_contract,
+                token_contract_metadata: tokenContractCompilation.metadata,
+                component_contract_manifest: componentContractCompilation.component_contract_manifest,
+                component_contract_metadata: componentContractCompilation.metadata,
+              }
+            );
+          }
+
           const blockedDiagnostics = (accessibilityGateReport.diagnostics || []).filter(
             (entry) => entry && entry.blocking
           );
@@ -1547,6 +1623,7 @@ async function handleSubmit(req, res) {
             reason_codes: reasonCodes,
             diagnostics,
           };
+          publishReadiness = mergeReadinessDiagnostics(publishReadiness, designSystemDiagnostics);
         }
         
         console.log(`✓ Phase 73: Brand input normalized for tenant ${brandExecutionContext.tenant_id}`);
@@ -1562,6 +1639,10 @@ async function handleSubmit(req, res) {
         strategyPersistenceResult = null;
         compiledIdentityArtifact = null;
         identityArtifactWrite = null;
+        tokenContractCompilation = null;
+        componentContractCompilation = null;
+        designSystemDiagnostics = [];
+        designSystemArtifactWrite = null;
         accessibilityGateReport = {
           gate_status: 'blocked',
           checks: [],
@@ -1716,6 +1797,12 @@ async function handleSubmit(req, res) {
         identity_artifact: compiledIdentityArtifact ? compiledIdentityArtifact.artifact : null,
         identity_artifact_metadata: compiledIdentityArtifact ? compiledIdentityArtifact.metadata : null,
         identity_artifact_write: identityArtifactWrite,
+        token_contract: tokenContractCompilation ? tokenContractCompilation.token_contract : null,
+        token_contract_metadata: tokenContractCompilation ? tokenContractCompilation.metadata : null,
+        component_contract_manifest: componentContractCompilation ? componentContractCompilation.component_contract_manifest : null,
+        component_contract_metadata: componentContractCompilation ? componentContractCompilation.metadata : null,
+        design_system_diagnostics: designSystemDiagnostics,
+        design_system_artifact_write: designSystemArtifactWrite,
         accessibility_gate_report: accessibilityGateReport,
         publish_readiness: publishReadiness,
       });
