@@ -72,6 +72,12 @@ const { compileStarterDescriptor } = require('./brand-nextjs/starter-descriptor-
 const { projectRoleHandoffPacks } = require('./brand-nextjs/role-handoff-pack-projector.cjs');
 const { persistStarterArtifacts } = require('./brand-nextjs/starter-artifact-writer.cjs');
 
+// Phase 78: Branding governance, publish/rollback, and closure gates (D-01 through D-10)
+const { createBundle, getBundle, setVerificationEvidence } = require('./brand-governance/bundle-registry.cjs');
+const { runClosureGates } = require('./brand-governance/closure-gates.cjs');
+const { auditDrift } = require('./brand-governance/drift-auditor.cjs');
+const { writeGovernanceEvidence } = require('./brand-governance/governance-artifact-writer.cjs');
+
 const { readBody, json } = require('./utils.cjs');
 
 // Phase 51-03: IAM v3.2 authorization integration
@@ -1826,6 +1832,52 @@ async function handleSubmit(req, res) {
         });
       }
 
+      // Phase 78: Governance artifact emission — additive integration per D-07, D-08, D-09
+      let brandingGovernanceResult = { error: 'governance_unavailable', machine_readable: true };
+      try {
+        const tenantId = brandExecutionContext.tenant_id;
+
+        // Extract canonical artifact IDs from persisted artifact writes (per D-01, D-06)
+        const canonicalArtifacts = {
+          strategy_artifact_id: strategyPersistenceResult?.artifact_id || null,
+          identity_artifact_id: identityArtifactWrite?.artifact_id || null,
+          design_system_artifact_id: designSystemArtifactWrite?.artifact_id || null,
+          starter_artifact_id: starterArtifactWrite?.artifact_id || null,
+        };
+
+        // Create governance lineage bundle (immutable, tenant-scoped per D-06)
+        const bundleResult = createBundle(tenantId, canonicalArtifacts);
+        if (bundleResult.denied) {
+          console.warn(`[Phase 78] Bundle creation denied: ${bundleResult.reason_code}`);
+          brandingGovernanceResult = {
+            error: 'bundle_creation_denied',
+            reason_code: bundleResult.reason_code,
+            machine_readable: true,
+          };
+        } else {
+          const bundle = bundleResult;
+
+          // Run closure gates (determinism, tenant isolation, contract integrity per D-05, D-06)
+          const gateResults = runClosureGates(tenantId, bundle, {});
+
+          // Audit drift against active pointer per D-04, D-08
+          const driftSummary = auditDrift(tenantId, canonicalArtifacts);
+
+          // Write governance evidence envelope (deterministic, machine-readable per D-08, D-10)
+          const evidenceEnvelope = writeGovernanceEvidence(tenantId, bundle.bundle_id, gateResults, driftSummary);
+
+          // Set verification evidence hash on bundle registry (rollback enablement per D-03)
+          setVerificationEvidence(tenantId, bundle.bundle_id, evidenceEnvelope.evidence_hash);
+
+          brandingGovernanceResult = evidenceEnvelope;
+          console.log(`✓ Phase 78 governance: bundle ${bundle.bundle_id.slice(0, 8)}... verified for tenant ${tenantId}`);
+        }
+      } catch (govErr) {
+        console.error('[Phase 78] Governance error:', redactSensitive(govErr.message));
+        // Governance errors do not fail the submission per D-07 (fallback gracefully)
+        brandingGovernanceResult = { error: 'governance_unavailable', machine_readable: true };
+      }
+
       json(res, 200, {
         success: true,
         seed_path: seedPath,
@@ -1879,6 +1931,8 @@ async function handleSubmit(req, res) {
         nextjs_starter_artifact_write: starterArtifactWrite,
         accessibility_gate_report: accessibilityGateReport,
         publish_readiness: publishReadiness,
+        // Phase 78: Machine-readable governance evidence envelope (D-08, D-10) — additive only, no existing fields mutated per D-07, D-09
+        branding_governance: brandingGovernanceResult,
       });
   } catch (err) {
     console.error('[POST /submit] Error:', redactSensitive(err.message));
