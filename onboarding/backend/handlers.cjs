@@ -68,6 +68,9 @@ const { persistIdentityArtifact } = require('./brand-identity/identity-artifact-
 const { compileTokenContract } = require('./brand-design-system/token-compiler.cjs');
 const { compileComponentContractManifest } = require('./brand-design-system/component-contract-compiler.cjs');
 const { persistDesignSystemArtifacts } = require('./brand-design-system/design-system-artifact-writer.cjs');
+const { compileStarterDescriptor } = require('./brand-nextjs/starter-descriptor-compiler.cjs');
+const { projectRoleHandoffPacks } = require('./brand-nextjs/role-handoff-pack-projector.cjs');
+const { persistStarterArtifacts } = require('./brand-nextjs/starter-artifact-writer.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -1528,6 +1531,10 @@ async function handleSubmit(req, res) {
     let componentContractCompilation = null;
     let designSystemDiagnostics = [];
     let designSystemArtifactWrite = null;
+    let starterDescriptorResult = null;
+    let roleHandoffPackResult = null;
+    let nextjsHandoffDiagnostics = [];
+    let starterArtifactWrite = null;
     let publishReadiness = {
       status: 'not_evaluated',
       blocked: false,
@@ -1604,6 +1611,62 @@ async function handleSubmit(req, res) {
                 component_contract_metadata: componentContractCompilation.metadata,
               }
             );
+
+            starterDescriptorResult = compileStarterDescriptor({
+              strategy_result: strategySynthesisResult,
+              identity_result: compiledIdentityArtifact,
+              token_contract: tokenContractCompilation.token_contract,
+              component_contract_manifest: componentContractCompilation.component_contract_manifest,
+            });
+
+            if (starterDescriptorResult && starterDescriptorResult.starter_descriptor) {
+              roleHandoffPackResult = projectRoleHandoffPacks(
+                starterDescriptorResult.starter_descriptor,
+                {
+                  ruleset_version: starterDescriptorResult.metadata
+                    ? starterDescriptorResult.metadata.ruleset_version
+                    : undefined,
+                }
+              );
+            } else {
+              roleHandoffPackResult = {
+                role_pack_contract: null,
+                metadata: {
+                  ruleset_version: starterDescriptorResult
+                    && starterDescriptorResult.metadata
+                    && starterDescriptorResult.metadata.ruleset_version
+                    ? starterDescriptorResult.metadata.ruleset_version
+                    : null,
+                  deterministic_fingerprint: null,
+                },
+                diagnostics: [],
+              };
+            }
+
+            nextjsHandoffDiagnostics = []
+              .concat(Array.isArray(starterDescriptorResult && starterDescriptorResult.diagnostics)
+                ? starterDescriptorResult.diagnostics
+                : [])
+              .concat(Array.isArray(roleHandoffPackResult && roleHandoffPackResult.diagnostics)
+                ? roleHandoffPackResult.diagnostics
+                : []);
+
+            if (
+              starterDescriptorResult
+              && starterDescriptorResult.starter_descriptor
+              && roleHandoffPackResult
+              && roleHandoffPackResult.role_pack_contract
+            ) {
+              starterArtifactWrite = persistStarterArtifacts(
+                brandExecutionContext.tenant_id,
+                {
+                  starter_descriptor: starterDescriptorResult.starter_descriptor,
+                  starter_metadata: starterDescriptorResult.metadata,
+                  role_handoff_packs: roleHandoffPackResult.role_pack_contract,
+                  role_handoff_metadata: roleHandoffPackResult.metadata,
+                }
+              );
+            }
           }
 
           const blockedDiagnostics = (accessibilityGateReport.diagnostics || []).filter(
@@ -1624,6 +1687,7 @@ async function handleSubmit(req, res) {
             diagnostics,
           };
           publishReadiness = mergeReadinessDiagnostics(publishReadiness, designSystemDiagnostics);
+          publishReadiness = mergeReadinessDiagnostics(publishReadiness, nextjsHandoffDiagnostics);
         }
         
         console.log(`✓ Phase 73: Brand input normalized for tenant ${brandExecutionContext.tenant_id}`);
@@ -1643,6 +1707,10 @@ async function handleSubmit(req, res) {
         componentContractCompilation = null;
         designSystemDiagnostics = [];
         designSystemArtifactWrite = null;
+        starterDescriptorResult = null;
+        roleHandoffPackResult = null;
+        nextjsHandoffDiagnostics = [];
+        starterArtifactWrite = null;
         accessibilityGateReport = {
           gate_status: 'blocked',
           checks: [],
@@ -1803,6 +1871,12 @@ async function handleSubmit(req, res) {
         component_contract_metadata: componentContractCompilation ? componentContractCompilation.metadata : null,
         design_system_diagnostics: designSystemDiagnostics,
         design_system_artifact_write: designSystemArtifactWrite,
+        nextjs_starter_descriptor: starterDescriptorResult ? starterDescriptorResult.starter_descriptor : null,
+        nextjs_starter_descriptor_metadata: starterDescriptorResult ? starterDescriptorResult.metadata : null,
+        role_handoff_packs: roleHandoffPackResult ? roleHandoffPackResult.role_pack_contract : null,
+        role_handoff_packs_metadata: roleHandoffPackResult ? roleHandoffPackResult.metadata : null,
+        nextjs_handoff_diagnostics: nextjsHandoffDiagnostics,
+        nextjs_starter_artifact_write: starterArtifactWrite,
         accessibility_gate_report: accessibilityGateReport,
         publish_readiness: publishReadiness,
       });
