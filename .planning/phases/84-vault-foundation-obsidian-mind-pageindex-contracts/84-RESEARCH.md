@@ -223,6 +223,78 @@ Proof artifacts required for hard cutover completion
 3. Legacy removal diff evidence (no retrieval path dependence on Upstash).
 4. Readiness check evidence replacing vector readiness with PageIndex readiness.
 
+## Phase-84-Safe Contract Shape (PageIndex metadata search closed beta)
+
+Recommendation (HIGH): lock Phase 84 to a strict two-step retrieval contract and treat direct metadata filtering in PageIndex as unavailable until GA evidence is produced.
+
+Contract constraints
+1. Supabase is the authoritative metadata filter plane under RLS. It returns an allow-list of `doc_id` values for the tenant and filter envelope.
+2. PageIndex call sites may only receive `doc_id` values produced by Step 1; no direct user-provided `doc_id` passthrough.
+3. If Step 1 returns zero `doc_id` values, the adapter returns empty results with provenance and does not issue a broad PageIndex retrieval.
+4. Envelope-to-filter mapping must be deterministic: same envelope + tenant must produce the same SQL predicate structure.
+5. Closed-beta metadata search must be represented as a feature flag defaulting to off; Phase 84 behavior must be correct with the flag disabled.
+
+Acceptance evidence
+1. Contract tests prove no adapter branch performs PageIndex metadata query expansion when closed-beta flag is false.
+2. Integration trace shows exact `doc_id` set passed to PageIndex equals Supabase allow-list output.
+3. Negative test proves unknown envelope keys are rejected before SQL or provider invocation.
+
+## Tenant Isolation Invariants and Negative Tests
+
+Isolation invariants (HIGH)
+1. Tenant binding invariant: every retrieval request must carry a non-empty tenant scope, and tenant scope is used in Supabase prefilter under RLS.
+2. Doc ownership invariant: every `doc_id` sent to PageIndex must be pre-authorized for the tenant in current request context.
+3. No fallback invariant: if scoped prefilter fails or returns empty, adapter must fail closed (error/empty) rather than broaden query.
+4. Provenance invariant: every returned chunk/citation includes source identifiers sufficient to audit tenant-bounded origin.
+
+Negative test design (unit + integration, D-08)
+1. Missing tenant scope: reject envelope and assert no Supabase/PageIndex calls occur.
+2. Cross-tenant injection attempt: request from tenant A including tenant B `doc_id` candidate must be filtered out before provider call.
+3. Mixed allow-list contamination: Supabase result intentionally includes one foreign `doc_id`; adapter must drop it and log invariant violation.
+4. Empty allow-list behavior: ensure adapter returns empty deterministic payload, not unscoped semantic search.
+5. Replay across tenants: same query envelope replayed under tenant B must never return citations tied to tenant A.
+6. Provenance omission: provider response missing required provenance fields must fail normalization contract.
+
+## Open Unknowns and Decision Gates
+
+1. PageIndex scoped retrieval limits
+- Unknown: maximum safe `doc_id` list size and latency envelope for Phase 84 traffic profile.
+- Decision gate: run load probe with realistic allow-list cardinalities and set a hard cap + chunking policy before implementation lock.
+
+2. Closed-beta metadata timeline
+- Unknown: whether metadata filtering GA lands during Phase 84 execution window.
+- Decision gate: proceed assuming unavailable; only switch if official GA docs are published and parity tests pass without relaxing isolation invariants.
+
+3. Provenance normalization minimum schema
+- Unknown: final minimal required field set for governance consumers when provider responses vary.
+- Decision gate: freeze required provenance keys in adapter schema and reject partial payloads before phase sign-off.
+
+4. Supabase prefilter query performance at scale
+- Unknown: index sufficiency for tenant + discipline + audience + tags composite filters.
+- Decision gate: execute EXPLAIN on canonical filter queries and add/adjust indexes before cutover acceptance.
+
+5. Health/readiness contract naming
+- Unknown: final provider status shape after Upstash removal (`upstash_vector` key removed vs retained as deprecated false marker).
+- Decision gate: lock one shape and update runbooks/tests to prevent hidden compatibility coupling.
+
+## Cutover Acceptance Checklist
+
+Hard-cutover gates (must all pass)
+1. Static dependency gate: repository search finds no runtime retrieval path importing `@upstash/vector` or invoking `getUpstashIndex` in active retrieval modules.
+2. Runtime independence gate: retrieval integration suite passes with `UPSTASH_VECTOR_REST_URL` and `UPSTASH_VECTOR_REST_TOKEN` unset.
+3. Health contract gate: readiness output no longer reports Upstash as required for retrieval-ready status.
+4. Provider invocation gate: integration traces confirm only PageIndex adapter is called for reason/apply/iterate retrieval flows.
+5. Contract parity gate: required retrieval scenarios produce equivalent semantic outcomes under new envelope semantics and deterministic provenance outputs.
+6. Isolation gate: full tenant-isolation matrix (unit + integration) passes, including all negative tests listed above.
+7. Failure semantics gate: when prefilter fails, system fails closed and emits diagnosable error code (no hidden fallback to legacy provider).
+8. Artifact gate: cutover evidence bundle stored in phase artifacts includes static scan output, test results, and trace excerpts.
+
+Minimal rollback strategy (compatible with D-05 immediate cutover)
+1. Rollback is commit-based, not runtime dual-run: maintain a single emergency revert commit that restores last known-good retrieval path.
+2. Keep a frozen pre-cutover tag and migration evidence bundle so rollback is deterministic and auditable.
+3. Define rollback trigger thresholds (for example: sustained retrieval error rate or tenant isolation invariant breach) before go-live.
+4. Rollback execution must be one command + redeploy; no partial provider switching in production runtime.
+5. Post-rollback requirement: open incident and produce forward-fix plan before reattempting cutover.
 ## Sources
 
 Primary (HIGH)
@@ -247,3 +319,4 @@ Confidence notes
 - Standard Stack: MEDIUM-HIGH (official docs + npm version checks, but Phase 84-specific internal adapter shape is project-defined).
 - Architecture Patterns: HIGH for deterministic pathing and RLS posture; MEDIUM for PageIndex metadata filtering details due closed-beta status.
 - Migration/Cutover risks: HIGH confidence on risk categories from current codebase and lock decisions.
+
