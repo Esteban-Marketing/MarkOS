@@ -64,10 +64,10 @@
 | LITV-02 | 85 | Complete |
 | LITV-03 | 85 | Complete |
 | LITV-04 | 85 | Complete |
-| ROLEV-01 | TBA | Pending |
-| ROLEV-02 | TBA | Pending |
-| ROLEV-03 | TBA | Pending |
-| ROLEV-04 | TBA | Pending |
+| ROLEV-01 | 86 | Complete |
+| ROLEV-02 | 86 | Complete |
+| ROLEV-03 | 86 | Complete |
+| ROLEV-04 | 87 | Complete |
 | GOVV-01 | TBA | Pending |
 | GOVV-02 | TBA | Pending |
 | GOVV-03 | TBA | Pending |
@@ -76,12 +76,12 @@
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 3
-- Unmapped: 13
+- Mapped to phases: 7
+- Unmapped: 9
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-12 after Phase 84 execution and verification*
+*Last updated: 2026-04-12 after Phase 87 execution and verification*
 
 **Milestone:** v3.1.0 — Operator Surface Unification  
 **Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.  

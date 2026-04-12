@@ -1,8 +1,8 @@
 ---
 phase: 87
 slug: dual-role-views-operator-agent
-status: in-review
-nyquist_compliant: false
+status: complete
+nyquist_compliant: true
 wave_0_complete: true
 created: 2026-04-12
 ---
@@ -58,6 +58,6 @@ Per-phase validation contract for Phase 87 execution feedback sampling.
 - [x] Role-view isolation checks include both role and tenant boundaries
 - [x] Unified lineage checks cover operator + agent event sources
 - [x] No 3 consecutive tasks without test run
-- [ ] `nyquist_compliant: true` set at completion
+- [x] `nyquist_compliant: true` set at completion
 
-Approval: pending (phase tests green; full `npm test` still has unrelated pre-existing failures outside Phase 87 scope)
+Approval: complete (Phase 87 verification PASS for scoped requirements; repository-wide `npm test` has unrelated pre-existing failures outside Phase 87 scope)

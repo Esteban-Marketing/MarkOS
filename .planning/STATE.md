@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v3.3.0
 milestone_name: Revenue CRM and Customer Intelligence Core
-current_phase: 86
-current_phase_name: agentic-retrieval-modes-reason-apply-iterate
+current_phase: 87
+current_phase_name: dual-role-views-operator-agent
 current_plan: All complete
 status: complete
 paused_at: None
-last_updated: "2026-04-12T21:48:49.983Z"
-last_activity: 2025-01-15 -- Phase 86 execution complete (ROLEV-01/02/03, 23/23 tests)
+last_updated: "2026-04-12T22:30:00.000Z"
+last_activity: 2026-04-12 -- Phase 87 execution complete (ROLEV-04, 18/18 phase-87 tests)
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 10
-  completed_plans: 10
-  percent: 70
+  completed_phases: 4
+  total_plans: 14
+  completed_plans: 14
+  percent: 80
 ---
 
 > Milestone note (2026-04-12): Phase 85 execution complete and verified PASS (7/7 must-haves, 33/33 tests, E2E probe PASS). LITV-01..04 complete. Next step: Phase 86 — Agentic Retrieval Modes (ROLEV-01..03).

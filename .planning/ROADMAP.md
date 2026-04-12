@@ -602,13 +602,13 @@ Plans:
 **Goal:** Implement deterministic retrieval contracts for three agentic modes, including audience/discipline filtering and execution handoff payloads with evidence links.
 **Requirements Mapped:** ROLEV-01, ROLEV-02, ROLEV-03
 **Depends on:** Phase 84, Phase 85
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — 23/23 phase tests pass (`test/phase-86/*.test.js`)
 
 ### Phase 87: Dual Role Views (Operator + Agent)
 **Goal:** Separate operator vault management surfaces from agent retrieval/execution views while preserving unified artifact lineage and auditable access logs.
 **Requirements Mapped:** ROLEV-04
 **Depends on:** Phase 84, Phase 85, Phase 86
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — 18/18 phase tests pass (`test/phase-87/*.test.js`)
 
 ### Phase 88: Governance, Verification, and Milestone Closure
 **Goal:** Enforce tenant isolation, capture execution telemetry, validate non-regression against v3.4.0 branding/governance baselines, and close milestone with SLA and sync stability evidence.
