@@ -47,6 +47,15 @@ function makeGoodPayload() {
   };
 }
 
+function makeGateFailPayload() {
+  return {
+    strategy_artifact_id: 'strat-81-fail',
+    identity_artifact_id: 'ident-81-fail',
+    design_system_artifact_id: 'ds-81-fail',
+    starter_artifact_id: 'starter-81-fail',
+    lineage_fingerprints: {},
+  };
+}
 const routePath = path.resolve(__dirname, '../../api/governance/brand-publish.js');
 const runtimeContextPath = path.resolve(__dirname, '../../onboarding/backend/runtime-context.cjs');
 
@@ -76,7 +85,7 @@ test('brand-publish: success returns 200 with published + traceability_entry', a
 
 test('brand-publish: gate failure returns 422 with denied payload pass-through', async () => {
   const tenantId = 'tenant-alpha-001';
-  const bundle = createBundle(tenantId, makeGoodPayload());
+  const bundle = createBundle(tenantId, makeGateFailPayload());
 
   const handler = loadFreshModule(routePath);
   const req = createJsonRequest({ bundle_id: bundle.bundle_id, actor_id: 'actor-81', reason: 'promote' }, '/api/governance/brand-publish');
