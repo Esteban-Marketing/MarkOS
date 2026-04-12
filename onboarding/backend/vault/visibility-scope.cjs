@@ -67,7 +67,58 @@ function projectAuditLineage(claims, records) {
   );
 }
 
+/**
+ * Allowed roles for vault retrieval operations (Phase 86+).
+ */
+const ALLOWED_RETRIEVAL_ROLES = new Set(['operator', 'admin', 'agent']);
+
+/**
+ * Check whether a claims object has sufficient tenant + role authority
+ * to retrieve vault artifacts (Phase 86+ retrieval scope).
+ *
+ * Returns { allowed: boolean, code: string|null, reason: string|null }.
+ * Fails closed on any missing or mismatched claim.
+ */
+function checkRetrievalScope(claims, resourceContext) {
+  const claimTenantId = String((claims && claims.tenantId) || '').trim();
+  const claimRole = String((claims && claims.role) || '').trim();
+
+  if (!claimTenantId || !claimRole) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_CLAIMS_MISSING',
+      reason: 'Valid tenant and role claims are required for retrieval access.',
+    };
+  }
+
+  if (!ALLOWED_RETRIEVAL_ROLES.has(claimRole)) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_ROLE_DENIED',
+      reason: `Role '${claimRole}' is not permitted to retrieve vault artifacts.`,
+    };
+  }
+
+  const resourceTenantId = String((resourceContext && resourceContext.tenantId) || '').trim();
+  if (!resourceTenantId || claimTenantId !== resourceTenantId) {
+    return {
+      allowed: false,
+      code: 'E_SCOPE_TENANT_MISMATCH',
+      reason: 'Claims tenant does not match the resource tenant.',
+    };
+  }
+
+  return {
+    allowed: true,
+    code: null,
+    reason: null,
+  };
+}
+
 module.exports = {
   checkVisibilityScope,
   projectAuditLineage,
+  checkRetrievalScope,
+  ALLOWED_VISIBILITY_ROLES,
+  ALLOWED_RETRIEVAL_ROLES,
 };

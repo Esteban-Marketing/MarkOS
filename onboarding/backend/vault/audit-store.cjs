@@ -10,6 +10,13 @@
  * Phase 85 scope: ingestion-adjacent audit only. Persistent storage (Supabase)
  * is deferred to Phase 86+ when the retrieval layer and role-view requirements land.
  */
+/**
+ * Phase 87 Supabase integration stub:
+ * When Supabase backing comes online, the in-memory singleton will be replaced with
+ * a parameterized Supabase client (supabase.from('audit_lineage').select(...)).
+ * Current API (append, getAll, size, clear) remains stable across the migration.
+ * See: Phase 86 ROLEV-01/02/03 (read-path read retrieval modes).
+ */
 
 const entries = [];
 
