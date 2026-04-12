@@ -51,6 +51,10 @@ const {
   normalizeRelativeArtifactPath,
 } = require('./markosdb-contracts.cjs');
 
+// Phase 73: Brand input normalization and graph writing (D-04, D-06)
+const { normalizeBrandInput, verifyDeterminism } = require('./brand-inputs/normalize-brand-input.cjs');
+const { upsertNormalizedSegments, queryEvidenceByTenant } = require('./brand-inputs/evidence-graph-writer.cjs');
+
 const { readBody, json } = require('./utils.cjs');
 
 // Phase 51-03: IAM v3.2 authorization integration
@@ -1413,6 +1417,38 @@ async function handleSubmit(req, res) {
       });
     }
 
+    // Phase 73: Brand input normalization and deterministic graph writes (D-04, D-06)
+    let brandNormalizationResult = null;
+    let brandGraphResult = null;
+    const brandExecutionContext = buildExecutionContext(req, slug || 'submit');
+    
+    if (seed.brand_input && typeof seed.brand_input === 'object') {
+      try {
+        // Call normalization pipeline (D-04: hybrid normalization with canonical fingerprints)
+        brandNormalizationResult = normalizeBrandInput(brandExecutionContext.tenant_id, seed.brand_input);
+        
+        // Verify determinism on same input (replay stability check)
+        const determinismCheck = verifyDeterminism(brandExecutionContext.tenant_id, seed.brand_input);
+        
+        // Write normalized segments into evidence graph (D-06: tenant-safe idempotent upserts)
+        if (brandNormalizationResult) {
+          brandGraphResult = await upsertNormalizedSegments(
+            brandExecutionContext.tenant_id,
+            brandNormalizationResult
+          );
+        }
+        
+        console.log(`✓ Phase 73: Brand input normalized for tenant ${brandExecutionContext.tenant_id}`);
+        console.log(`  Determinism verified: ${determinismCheck.match ? 'PASS' : 'FAIL'}`);
+        console.log(`  Graph writes: ${brandGraphResult?.segments_upserted?.length || 0} segments, ${brandGraphResult?.edges_created?.length || 0} edges`);
+      } catch (brandErr) {
+        console.error('Phase 73 brand normalization error:', redactSensitive(brandErr.message));
+        // Don't fail the submission on brand normalization error - log it but continue
+        brandNormalizationResult = null;
+        brandGraphResult = null;
+      }
+    }
+
     // Determine slug
     const crypto = require('crypto');
     let querySlug = null;
@@ -1526,6 +1562,16 @@ async function handleSubmit(req, res) {
           disciplines_available: literacyResult.disciplines_available,
           gaps: literacyResult.gaps,
         },
+        // Phase 73: Brand normalization and graph results (D-04, D-06)
+        brand_normalization: brandNormalizationResult ? {
+          content_fingerprint: brandNormalizationResult.content_fingerprint,
+          normalized_segments_count: brandNormalizationResult.normalized_segments.length,
+        } : null,
+        brand_graph_writes: brandGraphResult ? {
+          profile_upserted: brandGraphResult.profile_upserted,
+          segments_upserted_count: brandGraphResult.segments_upserted.length,
+          edges_created_count: brandGraphResult.edges_created.length,
+        } : null,
       });
   } catch (err) {
     console.error('[POST /submit] Error:', redactSensitive(err.message));
