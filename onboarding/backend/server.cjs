@@ -90,6 +90,8 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && req.url === '/config') return handlers.handleConfig(req, res);
   if (req.method === 'GET' && req.url === '/status') return handlers.handleStatus(req, res);
   if (req.method === 'GET' && req.url.startsWith('/api/literacy/coverage')) return handlers.handleLiteracyCoverage(req, res);
+  if (req.method === 'POST' && req.url.startsWith('/api/vault/role-view/operator')) return handlers.handleRoleViewOperator(req, res);
+  if (req.method === 'GET' && req.url.startsWith('/api/vault/role-view/agent/')) return handlers.handleRoleViewAgent(req, res);
   if (req.method === 'GET' && (req.url.startsWith('/api/tracking/redirect') || req.url.startsWith('/tracking/redirect'))) return trackingRedirectHandler(req, res);
   if (req.method === 'POST' && (req.url.startsWith('/api/tracking/identify') || req.url.startsWith('/tracking/identify'))) return trackingIdentifyHandler(req, res);
   if (req.method === 'POST' && (req.url.startsWith('/api/tracking/ingest') || req.url.startsWith('/tracking/ingest'))) return trackingIngestHandler(req, res);

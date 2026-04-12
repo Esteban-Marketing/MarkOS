@@ -78,6 +78,10 @@ const { runClosureGates } = require('./brand-governance/closure-gates.cjs');
 const { auditDrift } = require('./brand-governance/drift-auditor.cjs');
 const { writeGovernanceEvidence } = require('./brand-governance/governance-artifact-writer.cjs');
 const { buildCanonicalArtifactsFromWrites } = require('./brand-governance/lineage-handoff.cjs');
+const { createVaultRetriever } = require('./vault/vault-retriever.cjs');
+const auditStore = require('./vault/audit-store.cjs');
+const { createLineageLogger } = require('./vault/lineage-log.cjs');
+const { checkOperatorViewScope, checkAgentViewScope } = require('./vault/role-views.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -2886,6 +2890,140 @@ async function handleLiteracyQuery(req, res) {
   });
 }
 
+const OPERATOR_ALLOWED_ACTIONS = new Set([
+  'set_publish_flag',
+  'set_workflow_state',
+  'set_governance_marker',
+]);
+
+function resolveRoleViewContext(req) {
+  const tenantId = String((req && req.headers && req.headers['x-tenant-id']) || '').trim();
+  const role = String((req && req.headers && req.headers['x-role']) || '').trim();
+  const resourceTenantId = String(
+    (req && req.headers && req.headers['x-resource-tenant-id']) || tenantId
+  ).trim();
+
+  return {
+    tenantId,
+    role,
+    resourceTenantId,
+  };
+}
+
+function createRoleViewDeps(overrides = {}) {
+  const store = overrides.auditStore || auditStore;
+  const lineage = overrides.lineage || createLineageLogger({
+    append: async (entry) => store.append(entry),
+  });
+
+  return {
+    auditStore: store,
+    lineage,
+    retriever: overrides.retriever || createVaultRetriever({
+      getArtifacts: async () => store.getAll(),
+      lineage,
+    }),
+  };
+}
+
+async function handleRoleViewOperator(req, res, overrides) {
+  const context = resolveRoleViewContext(req);
+  const scope = checkOperatorViewScope(
+    { tenantId: context.tenantId, role: context.role },
+    { tenantId: context.resourceTenantId }
+  );
+  if (!scope.allowed) {
+    return json(res, 403, { success: false, error: scope.code, reason: scope.reason });
+  }
+
+  const body = await readBody(req);
+  const action = String(body.action || '').trim();
+  const artifactId = String(body.artifact_id || '').trim();
+
+  if (!OPERATOR_ALLOWED_ACTIONS.has(action)) {
+    return json(res, 400, {
+      success: false,
+      error: 'E_OPERATOR_ACTION_INVALID',
+      reason: 'Operator action is not allowed for role-view management.',
+    });
+  }
+
+  if (!artifactId) {
+    return json(res, 400, {
+      success: false,
+      error: 'E_ARTIFACT_ID_REQUIRED',
+      reason: 'artifact_id is required for operator role-view actions.',
+    });
+  }
+
+  const deps = createRoleViewDeps(overrides);
+  await deps.lineage.appendLineageEvent({
+    tenant_id: context.resourceTenantId,
+    artifact_id: artifactId,
+    view: 'operator',
+    role: context.role,
+    action,
+    mode: 'manage',
+    timestamp: new Date().toISOString(),
+  });
+
+  return json(res, 200, {
+    success: true,
+    view: 'operator',
+    tenant_id: context.resourceTenantId,
+    management: {
+      action,
+      artifact_id: artifactId,
+      status: 'accepted',
+    },
+  });
+}
+
+async function handleRoleViewAgent(req, res, overrides) {
+  const context = resolveRoleViewContext(req);
+  const scope = checkAgentViewScope(
+    { tenantId: context.tenantId, role: context.role },
+    { tenantId: context.resourceTenantId, strictAgentRole: true }
+  );
+  if (!scope.allowed) {
+    return json(res, 403, { success: false, error: scope.code, reason: scope.reason });
+  }
+
+  const routePath = String((req && req.url) || '').split('?')[0];
+  const mode = String(routePath.split('/').pop() || '').trim();
+  if (!['reason', 'apply', 'iterate'].includes(mode)) {
+    return json(res, 400, {
+      success: false,
+      error: 'E_AGENT_MODE_INVALID',
+      reason: 'Agent role-view mode must be reason, apply, or iterate.',
+    });
+  }
+
+  const deps = createRoleViewDeps(overrides);
+  const method = mode === 'reason'
+    ? 'retrieveReason'
+    : mode === 'apply'
+      ? 'retrieveApply'
+      : 'retrieveIterate';
+
+  const items = await deps.retriever[method]({
+    tenantId: context.resourceTenantId,
+    claims: {
+      tenantId: context.tenantId,
+      role: context.role,
+    },
+    filter: {},
+  });
+
+  return json(res, 200, {
+    success: true,
+    view: 'agent',
+    mode,
+    tenant_id: context.resourceTenantId,
+    items,
+  });
+}
+
 module.exports = {
   handleConfig,
   handleStatus,
@@ -2907,6 +3045,8 @@ module.exports = {
     validateIntake,
   handleCompetitorDiscovery,
   handleCorsPreflight,
+  handleRoleViewOperator,
+  handleRoleViewAgent,
   handleLiteracyHealth,
   handleLiteracyQuery,
   __testing: {
