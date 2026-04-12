@@ -13,11 +13,20 @@
 
 **Status:** v3.4.0 shipped on 2026-04-12 with milestone audit passed (12/12 requirements). Branding-system scope is now archived and closed.
 
+## Current Milestone: v3.5.0 — Ultimate Literacy Vault
+
+**Goal:** Establish a vault-first literacy operating model that keeps the standards layer durable, searchable, and role-actionable while preserving non-regression guarantees from shipped branding and governance surfaces.
+
+**Target features:**
+- Define a canonical vault structure and retrieval contract for literacy artifacts.
+- Add durable ingestion and organization workflows that preserve provenance and decision context.
+- Deliver role-aware retrieval views and execution handoffs for strategy, content, and operator workflows.
+
 ## Next Milestone Goals
 
-- Define the next active milestone and create a fresh `.planning/REQUIREMENTS.md` through the new-milestone workflow.
+- Define scoped v3.5.0 requirements and phase mapping before opening implementation plans.
 - Preserve v3.4.0 branding determinism, governance, and UAT guarantees as non-regression baselines.
-- Prioritize next-scope selection explicitly (vault-first pivot lane vs CRM lane follow-on) before opening new execution phases.
+- Keep vault-first scope additive and avoid broad CRM/outbound expansion during this milestone.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -188,4 +197,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-12 after v3.4.0 milestone archive.
+Last updated: 2026-04-12 after v3.5.0 milestone kickoff.
