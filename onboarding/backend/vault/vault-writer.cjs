@@ -11,6 +11,7 @@ const {
   normalizeRelativePath,
 } = require('./destination-map.cjs');
 const { formatCanonicalNote, extractSummary, sanitizeMarkdownBody } = require('./note-format.cjs');
+const { normalizeProvenance, validateProvenance } = require('./provenance-contract.cjs');
 
 function normalizeAbsolutePathForCompare(targetPath) {
   const resolved = path.resolve(targetPath);
@@ -40,7 +41,7 @@ function resolveCanonicalVaultRoot(config) {
   };
 }
 
-function buildCanonicalMetadata({ destination, projectSlug, sourceMode, legacyOrigin, timestamp, summary, metadata = {} }) {
+function buildCanonicalMetadata({ destination, projectSlug, sourceMode, legacyOrigin, timestamp, summary, metadata = {}, provenance }) {
   const createdAt = metadata.created_at || timestamp;
   const updatedAt = metadata.updated_at || timestamp;
   const finalSourceMode = sourceMode || destination.source_mode || 'generated';
@@ -57,6 +58,9 @@ function buildCanonicalMetadata({ destination, projectSlug, sourceMode, legacyOr
     updated_at: updatedAt,
     source_mode: finalSourceMode,
     summary: metadata.summary || summary || extractSummary(metadata.body || ''),
+    provenance,
+    audience: provenance?.joins?.audience || [],
+    pain_point_tags: provenance?.joins?.pain_point_tags || [],
     legacy_origin: legacyOrigin || undefined,
     migrated_at: finalSourceMode === 'imported' ? (metadata.migrated_at || timestamp) : undefined,
     ...metadata,
@@ -72,6 +76,7 @@ function prepareCanonicalEntry({
   sourceMode = 'generated',
   title = null,
   metadata = {},
+  provenance = null,
   warnings = [],
   timestamp = new Date().toISOString(),
 }) {
@@ -114,6 +119,15 @@ function prepareCanonicalEntry({
     throw new Error('CANONICAL_DESTINATION_OUT_OF_BOUNDS');
   }
 
+  const canonicalProvenance = provenance
+    ? validateProvenance(provenance)
+    : validateProvenance(normalizeProvenance(null, {
+      timestamp,
+      sourceMode,
+      projectSlug,
+      actorId: projectSlug,
+    }));
+
   const canonicalMetadata = buildCanonicalMetadata({
     destination,
     projectSlug,
@@ -122,6 +136,7 @@ function prepareCanonicalEntry({
     timestamp,
     summary: extractSummary(cleanBody),
     metadata: { ...metadata, body: cleanBody },
+    provenance: canonicalProvenance,
   });
   delete canonicalMetadata.body;
 
@@ -201,7 +216,7 @@ function commitPreparedEntry(prepared) {
   };
 }
 
-function writeApprovedDrafts({ config, projectSlug, approvedDrafts = {} }) {
+function writeApprovedDrafts({ config, projectSlug, approvedDrafts = {}, provenance = null }) {
   const items = [];
   const errors = [];
 
@@ -212,6 +227,7 @@ function writeApprovedDrafts({ config, projectSlug, approvedDrafts = {} }) {
       sectionKey,
       content,
       sourceMode: 'generated',
+      provenance,
     });
     const result = commitPreparedEntry(prepared);
     items.push(result);

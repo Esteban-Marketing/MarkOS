@@ -1,6 +1,13 @@
 'use strict';
 
 const { buildNoteId } = require('./note-id.cjs');
+const { buildSemanticIndexManifests } = require('./semantic-index-manifest.cjs');
+
+const DISCIPLINE_REGISTRY = Object.freeze({
+  strategy: Object.freeze({ key: 'strategy', title: 'Strategy' }),
+  execution: Object.freeze({ key: 'execution', title: 'Execution' }),
+  memory: Object.freeze({ key: 'memory', title: 'Memory' }),
+});
 
 const SECTION_REGISTRY = Object.freeze({
   company_profile: Object.freeze({
@@ -50,6 +57,51 @@ const LEGACY_SOURCE_MAP = Object.freeze({
   'MSP:Strategy/00_MASTER-PLAN/CHANNEL-STRATEGY.md': 'channel_strategy',
 });
 
+function createContractError(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+
+function normalizeSlug(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-');
+}
+
+function normalizeStableSlug(value) {
+  const raw = String(value || '').trim();
+  const normalized = normalizeSlug(raw);
+
+  if (!normalized) {
+    throw createContractError('E_UNSTABLE_SLUG', 'Slug must normalize to a non-empty canonical token.');
+  }
+
+  if (raw !== normalized) {
+    throw createContractError('E_UNSTABLE_SLUG', 'Slug must already be canonical and stable.');
+  }
+
+  return normalized;
+}
+
+function normalizeDiscipline(value) {
+  const key = String(value || '').trim().toLowerCase();
+  const discipline = DISCIPLINE_REGISTRY[key];
+
+  if (!discipline) {
+    throw createContractError('E_UNKNOWN_DISCIPLINE', `Discipline is not recognized: ${value}`);
+  }
+
+  return discipline;
+}
+
+function getDisciplineRoot(value) {
+  return normalizeDiscipline(value).title;
+}
+
 function normalizeRelativePath(value) {
   return String(value || '')
     .replace(/\\/g, '/')
@@ -62,26 +114,75 @@ function getCanonicalVaultRootPath(config) {
   return normalizeRelativePath(config?.canonical_vault?.root_path || config?.vault_root_path || 'MarkOS-Vault');
 }
 
-function buildDestination(sectionKey, entry, options = {}) {
-  const sourceMode = options.sourceMode || 'generated';
-  const canonicalRoot = getCanonicalVaultRootPath(options.config);
-  const destinationPath = `${canonicalRoot}/${entry.relative_path}`;
+function resolveDeterministicDestination({
+  config,
+  discipline,
+  sectionKey,
+  slug,
+  projectSlug,
+  sourceMode = 'generated',
+  legacyOrigin = null,
+  audience = [],
+  funnel = [],
+  concepts = [],
+}) {
+  const entry = SECTION_REGISTRY[sectionKey];
+  if (!entry) {
+    throw createContractError('E_UNKNOWN_SECTION', `Section is not recognized: ${sectionKey}`);
+  }
 
-  return {
+  const resolvedDiscipline = normalizeDiscipline(discipline || entry.vault_family);
+  const canonicalSlug = normalizeStableSlug(slug || entry.note_family);
+  const canonicalRoot = getCanonicalVaultRootPath(config);
+  const disciplineRootPath = `${canonicalRoot}/Disciplines/${resolvedDiscipline.title}`;
+  const destinationPath = `${disciplineRootPath}/${canonicalSlug}.md`;
+
+  const destination = {
     section_key: sectionKey,
     title: entry.title,
-    vault_family: entry.vault_family,
+    vault_family: resolvedDiscipline.title,
     note_family: entry.note_family,
-    relative_path: entry.relative_path,
+    discipline: resolvedDiscipline.key,
+    discipline_root: resolvedDiscipline.title,
+    canonical_slug: canonicalSlug,
+    relative_path: `Disciplines/${resolvedDiscipline.title}/${canonicalSlug}.md`,
     destination_path: destinationPath,
+    discipline_root_path: disciplineRootPath,
     source_mode: sourceMode,
+    canonical_root: canonicalRoot,
     note_id: buildNoteId({
-      vaultFamily: entry.vault_family,
+      vaultFamily: resolvedDiscipline.title,
       noteFamily: entry.note_family,
-      projectSlug: options.projectSlug,
+      projectSlug,
+      suffix: canonicalSlug,
     }),
-    legacy_origin: options.legacyOrigin || null,
+    legacy_origin: legacyOrigin,
   };
+
+  return {
+    ...destination,
+    semantic_manifests: buildSemanticIndexManifests({
+      destination,
+      audience,
+      funnel,
+      concepts,
+    }),
+  };
+}
+
+function buildDestination(sectionKey, entry, options = {}) {
+  return resolveDeterministicDestination({
+    config: options.config,
+    discipline: options.discipline || entry.vault_family,
+    sectionKey,
+    slug: options.slug || entry.note_family,
+    projectSlug: options.projectSlug,
+    sourceMode: options.sourceMode || 'generated',
+    legacyOrigin: options.legacyOrigin || null,
+    audience: options.audience || [],
+    funnel: options.funnel || [],
+    concepts: options.concepts || [],
+  });
 }
 
 function getDestinationForSection(sectionKey, options = {}) {
@@ -126,10 +227,13 @@ function listSupportedLegacyMappings() {
 }
 
 module.exports = {
+  DISCIPLINE_REGISTRY,
   SECTION_REGISTRY,
   LEGACY_SOURCE_MAP,
   normalizeRelativePath,
   getCanonicalVaultRootPath,
+  getDisciplineRoot,
+  resolveDeterministicDestination,
   getLegacySourceKey,
   getDestinationForSection,
   getDestinationForLegacySource,
