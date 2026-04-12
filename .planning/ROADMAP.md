@@ -671,6 +671,10 @@ Plans:
 **Depends on:** Phase 79
 **Status:** 📋 Planned
 **Gap Closure:** Closes milestone audit warning for publish and rollback being test-only paths.
+**Plans:** 2 plans
+Plans:
+- [ ] 81-01-PLAN.md — Wave 0 test stubs for all 3 governance routes (RED phase)
+- [ ] 81-02-PLAN.md — Wave 1 implementation of brand-publish.js, brand-rollback.js, brand-status.js
 
 ### Phase 82: Verification Assurance and Traceability Reconciliation
 **Goal:** Close milestone-assurance gaps by producing missing phase verification reports (79, 80), reconciling Nyquist/validation ledgers, and aligning roadmap + requirements traceability to runtime evidence.
