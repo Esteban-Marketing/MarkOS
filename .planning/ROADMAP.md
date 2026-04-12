@@ -570,7 +570,7 @@ Plans:
 
 ## 🚧 v3.4.0 — Complete Branding Engine
 
-**Status:** ✅ Complete — Phases 73 through 78 delivered with deterministic branding pipeline (2026-04-12)
+**Status:** 🚧 Gap closure follow-on active — Phases 79 through 81 planned from milestone audit (2026-04-12)
 
 **Goal:** Deliver an end-to-end, tenant-safe branding engine that converts raw concept and pain-point inputs into deterministic strategy, identity, token, component-contract, and Next.js starter outputs on Tailwind v4 + shadcn/ui + Next.js.
 
@@ -640,6 +640,27 @@ Plans:
 - [x] 78-01-PLAN.md — Wave 1 governance schema tests, governance-diagnostics module, and closure-gate runner
 - [x] 78-02-PLAN.md — Immutable bundle registry, active-pointer publish/rollback, and drift auditor
 - [x] 78-03-PLAN.md — Additive handler integration, governance evidence writer, tenant isolation and contract integrity tests
+
+### Phase 79: Governance Lineage Handoff and Runtime Gate Recovery
+**Goal:** Restore runtime governance bundle creation by wiring required lineage fingerprints across the submit handoff and re-enabling closure gates end-to-end.
+**Requirements Mapped:** BRAND-GOV-01, BRAND-GOV-02
+**Depends on:** Phase 78
+**Status:** 📋 Planned
+**Gap Closure:** Closes milestone audit blockers for missing lineage fingerprint handoff and bundle creation denial.
+
+### Phase 80: Publish Readiness Boundary Isolation and Regression Fix
+**Goal:** Re-scope publish readiness diagnostics to the correct phase boundaries so accessibility gates and governance gates remain deterministic and non-overlapping.
+**Requirements Mapped:** BRAND-ID-02
+**Depends on:** Phase 79
+**Status:** 📋 Planned
+**Gap Closure:** Closes milestone audit blocker for Phase 75 publish-blocking regression caused by cross-phase diagnostic bleed.
+
+### Phase 81: Governance Publish and Rollback Operational Surface
+**Goal:** Expose publish and rollback governance operations through operational runtime surfaces with explicit traceability and guardrails.
+**Requirements Mapped:** BRAND-GOV-01
+**Depends on:** Phase 79
+**Status:** 📋 Planned
+**Gap Closure:** Closes milestone audit warning for publish and rollback being test-only paths.
 ---
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
