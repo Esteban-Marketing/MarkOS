@@ -1,0 +1,75 @@
+{
+  "role_pack_contract": {
+    "descriptor_reference": "starter:77:fp-001",
+    "role_packs": {
+      "strategist": {
+        "immediate_next_actions": [
+          "Review value proposition mapping"
+        ],
+        "immutable_constraints": [
+          "Do not change canonical positioning language"
+        ],
+        "acceptance_checks": [
+          "All page narratives align with strategy claims"
+        ],
+        "lineage": {
+          "descriptor_fingerprint": "starter-fp-001",
+          "source_artifacts": [
+            "strategy",
+            "identity"
+          ]
+        }
+      },
+      "designer": {
+        "immediate_next_actions": [],
+        "immutable_constraints": [
+          "Preserve approved accessibility contrast"
+        ],
+        "acceptance_checks": [
+          "Color and typography tokens map to canonical intent"
+        ],
+        "lineage": {
+          "descriptor_fingerprint": "starter-fp-001",
+          "source_artifacts": [
+            "token_contract",
+            "component_manifest"
+          ]
+        }
+      },
+      "founder_operator": {
+        "immediate_next_actions": [
+          "Confirm release checklist and ownership"
+        ],
+        "immutable_constraints": [
+          "No launch without readiness checks green"
+        ],
+        "acceptance_checks": [
+          "Delivery plan includes role owners and due dates"
+        ],
+        "lineage": {
+          "descriptor_fingerprint": "starter-fp-001",
+          "source_artifacts": []
+        }
+      },
+      "frontend_engineer": {
+        "immediate_next_actions": [
+          "Implement app shell and route scaffolding"
+        ],
+        "immutable_constraints": [
+          "Do not rename required component bindings"
+        ],
+        "acceptance_checks": [
+          "App routes and primitives match descriptor requirements"
+        ],
+        "lineage": {
+          "descriptor_fingerprint": "starter-fp-001",
+          "source_artifacts": [
+            "token_contract",
+            "component_manifest",
+            "strategy"
+          ]
+        }
+      }
+    }
+  }
+}
