@@ -3,19 +3,11 @@
 ## Milestones
 
 - ✅ **v1.0 Initial Protocol** — Phases 1-7 (shipped 2026-03-23)
-- ✅ **v1.1 MARKOS Hardening** — Phases 8-9 (shipped 2026-03-25)
-- ✅ **v1.2 Future Integrations (Legacy Execution Track)** — Phases 10-16 (delivered)
-- 📋 **v2.0 MarkOS Rebrand** — Phases 17-22 (deferred; superseded by v2.1 sequencing)
-- ✅ **v2.1 Product Hardening & Identity Convergence** — Phases 23-27 (shipped 2026-03-28)
-- ✅ **v2.2 Platform Engineering** — Phases 28-32 shipped (2026-03-31)
-- ✅ **v2.3 Codebase Documentation Intelligence** — Phase 33 completed (2026-03-31) → **ARCHIVED**
-- ✅ **v2.4 Beta Client Onboarding** — Phases 34, 36, 37 shipped (2026-04-01) → **ARCHIVED** (`.planning/milestones/v2.4-ROADMAP.md`)
-- ✅ **v2.5 Enhancement & Optimization Process** — Phase 35 completed (2026-04-01) → **ARCHIVED**
-- 📦 **v2.6 Post-Deployment Operations & Beta Activation** — Historical planning track; superseded by the v3.x execution line after Phase 38 shipped (2026-04-01)
-- � **v3.0 MarkOS Literacy System** — Phases 39-44 in execution; Phases 43-44 completed (roadmap at `.planning/milestones/v3.0-LITERACY-SYSTEM-ROADMAP.md`)
 - ✅ **v3.1.0 Operator Surface Unification** — Phases 45-50 completed (2026-04-03) → **ARCHIVED** (`.planning/milestones/v3.1.0-phases/`)
 - 📦 **v3.2.0 Post-Unification Execution & Adoption** — Repository-complete milestone with hosted follow-through tracked separately from the active v3.3 closeout work
 - 🚧 **v3.3.0 Revenue CRM and Customer Intelligence Core** — Active milestone; Phases 58 through 64 and follow-on Phases 64.1, 64.2, and 64.3 are verified passed, and Phase 65 is the current hosted reporting closeout and milestone-promotion follow-through
+- 📋 **v3.3.1 Obsidian Mind Vault-First Pivot** — Planned future milestone after Phase 66; retires MIR/MSP as canonical structures and moves MarkOS to an Obsidian Mind-inspired vault-first operating model
+- 🚧 **v3.4.0 Complete Branding Engine** — Active milestone with Phases 73-78 planned for deterministic branding pipeline delivery and governance closure
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -497,6 +489,152 @@ Plans:
 - [ ] 65-02-PLAN.md — Wave 2 hosted verification capture: execute and record the hosted reporting shell, readiness, attribution drill-down, and live verification checks
 - [ ] 65-03-PLAN.md — Wave 3 milestone promotion: update closure matrices and milestone records, then record any remaining external follow-through honestly
 
+### Phase 66: npm release hardening and public publish readiness
+**Goal:** Prepare the public MarkOS npm release after v3.3.0 closeout by aligning package versioning to `3.3.0`, hardening the publish path, validating the distributable artifact, and leaving one explicit human-run publish checklist for the final npm push.
+**Requirements Mapped:** DX-01, DX-02, OPS-READY-01, CI-01, RBD-01, RBD-02
+**Depends on:** Phase 65
+**Status:** 📋 Planned
+
+**Plans:** 3 plans
+
+Plans:
+- [ ] 66-01-PLAN.md — Wave 1 release contract: align package version, publish metadata, and public release notes to the v3.3.0 milestone boundary
+- [ ] 66-02-PLAN.md — Wave 2 distributable validation: prove the packed artifact and `npx markos` install path work from the publishable package contents
+- [ ] 66-03-PLAN.md — Wave 3 publish checklist and verification: create the final human-run npm publish workflow, registry verification checklist, and release verdict ledger
+
+---
+
+## 📋 v3.3.1 — Obsidian Mind Vault-First Pivot
+
+**Status:** 📋 Planned future milestone — begins only after Phase 66 finishes the v3.3.0 release lane
+
+**Goal:** Replace the MIR/MSP-first MarkOS operating model with a vault-first system inspired by Obsidian Mind, making the local Obsidian vault the canonical source of context, workflows, memory, dashboards, and operator support.
+
+**Requirements:** VAULT-01, VAULT-02, VAULT-03, BOOT-01, BOOT-02, BOOT-03, BOOT-04, MIG-01, MIG-02, MIG-03, FLOW-01, FLOW-02, FLOW-03, GRAPH-01, GRAPH-02, GRAPH-03, CUT-01, CUT-02
+
+### Phase 67: Vault Taxonomy and Replacement Contract
+**Goal:** Define the canonical MarkOS vault taxonomy that replaces MIR/MSP, lock the compatibility boundary, and specify how legacy artifacts import into the new structure.
+**Requirements Mapped:** VAULT-01, VAULT-02, VAULT-03, MIG-01
+**Depends on:** Phase 66
+**Status:** 📋 Planned
+
+### Phase 67.1: Configurable install setup levels with optional onboarding/UI and CLI-only agent mode (INSERTED)
+
+**Goal:** Add deterministic setup profiles (`full`, `cli`, `minimal`) for install and update flows with optional onboarding/UI surfaces, first-class CLI-only mode, and backward-compatible manifest normalization.
+**Requirements Mapped:** BOOT-01, BOOT-04
+**Depends on:** Phase 67
+**Status:** ✅ Complete (2026-04-11)
+**Plans:** 3 plans
+
+Plans:
+- [x] 67.1-01-PLAN.md — Wave 1 profile contract and install persistence: CLI profile parsing/aliases, deterministic precedence, manifest profile metadata, and legacy-safe default behavior
+- [x] 67.1-02-PLAN.md — Wave 2 update normalization and runtime transparency: profile migration-on-update, optional onboarding/UI runtime gating, and status/readiness profile exposure
+- [x] 67.1-03-PLAN.md — Wave 3 docs/testing/validation closure: CLI help + README profile parity, install/update profile matrix regressions, and phase validation ledger
+
+### Phase 68: Vault-First Installer and Bootstrap Rewrite
+**Goal:** Rework `npx markos` and update or bootstrap flows around vault-first setup, Obsidian dependency checks, optional QMD enablement, and project bootstrap into the new knowledge structure.
+**Requirements Mapped:** BOOT-01, BOOT-02, BOOT-03, BOOT-04
+**Depends on:** Phase 67
+**Status:** 📋 Planned
+
+### Phase 69: Vault-Native Onboarding and Legacy Importer
+**Goal:** Replace publish-to-MIR onboarding behavior with vault-native authoring while providing a one-way importer for existing `.markos-local/MIR` and `.markos-local/MSP` users.
+**Requirements Mapped:** MIG-01, MIG-02, MIG-03
+**Depends on:** Phase 67, Phase 68
+**Status:** 📋 Planned
+**Plans:** 3 plans
+
+Plans:
+- [ ] 69-01-PLAN.md - Wave 1 shared vault authoring engine, importer planning or apply core, and durable Memory report notes
+- [ ] 69-02-PLAN.md - Wave 2 browser surfaces: onboarding vault-write rewrite and helper importer UI or routes
+- [ ] 69-03-PLAN.md - Wave 2 CLI importer command, entrypoint delegation, and focused regression coverage
+
+### Phase 70: Command, Hook, and Agent Surface Remap
+**Goal:** Replace the current MarkOS-first protocol surface with an Obsidian Mind-native operating surface plus explicit marketing overlays.
+**Requirements Mapped:** FLOW-01, FLOW-02, FLOW-03
+**Depends on:** Phase 67, Phase 68, Phase 69
+**Status:** 📋 Planned
+
+### Phase 71: Bases, Evidence, and Marketing Performance Graph
+**Goal:** Adapt Obsidian Mind dashboard, evidence, and performance-review concepts to MarkOS marketing execution, campaign memory, and operator reporting.
+**Requirements Mapped:** GRAPH-01, GRAPH-02, GRAPH-03, VAULT-03
+**Depends on:** Phase 67, Phase 70
+**Status:** 📋 Planned
+
+### Phase 72: Legacy Surface Demotion, Documentation Rewrite, and Milestone Validation
+**Goal:** Demote MIR/MSP-era surfaces to legacy or migration status, rewrite public and internal docs around the vault-first product, and validate the new milestone end-to-end.
+**Requirements Mapped:** CUT-01, CUT-02, VAULT-02, BOOT-04, FLOW-03
+**Depends on:** Phase 67, Phase 68, Phase 69, Phase 70, Phase 71
+**Status:** 📋 Planned
+
+
+## 🚧 v3.4.0 — Complete Branding Engine
+
+**Status:** 🚧 Active milestone — roadmap initialized with Phases 73 through 78
+
+**Goal:** Deliver an end-to-end, tenant-safe branding engine that converts raw concept and pain-point inputs into deterministic strategy, identity, token, component-contract, and Next.js starter outputs on Tailwind v4 + shadcn/ui + Next.js.
+
+**Milestone framing (out-of-scope guardrails):**
+- No fully autonomous brand generation without human approval
+- No automatic production deployment pipeline in this milestone
+- No paid media execution automation inside branding scope
+- No CRM/outbound expansion unrelated to branding outputs
+- No full app replatform; execution must remain additive
+
+**Requirement families covered:** BRAND-INP-*, BRAND-STRAT-*, BRAND-ID-*, BRAND-DS-*, BRAND-NEXT-*, BRAND-ROLE-*, BRAND-GOV-*
+
+### Phase 73: Brand Inputs and Human Insight Modeling
+**Goal:** Capture structured concept inputs and normalize them into a deterministic, tenant-safe evidence graph that downstream branding stages can trust.
+**Requirements Mapped:** BRAND-INP-01, BRAND-INP-02
+**Depends on:** Phase 66 completion and existing tenant/auth foundations
+**Status:** 📋 Planned
+**Plan Intent:** Lock input schema, validation, lineage fields, and deterministic normalization so repeated submissions produce stable evidence nodes and links.
+**Acceptance Intent:** Operators can submit complete concept records and repeated identical runs yield the same normalized graph for the tenant.
+
+### Phase 74: Strategy Artifact and Messaging Rules Engine
+**Goal:** Turn normalized evidence into a strategy artifact with explicit positioning, value promise, differentiators, and role-consumable messaging rules.
+**Requirements Mapped:** BRAND-STRAT-01, BRAND-STRAT-02
+**Depends on:** Phase 73
+**Status:** 📋 Planned
+**Plan Intent:** Generate strategy outputs with source lineage per claim and enforce consistent tone or channel rule surfaces for strategist, founder, and content roles.
+**Acceptance Intent:** Every strategy claim is traceable to evidence inputs and role views expose consistent, non-contradictory messaging guidance.
+
+### Phase 75: Deterministic Identity System with Accessibility Gates
+**Goal:** Compile strategy into deterministic visual identity artifacts with publish-blocking accessibility defaults.
+**Requirements Mapped:** BRAND-ID-01, BRAND-ID-02
+**Depends on:** Phase 74
+**Status:** ✅ Complete
+**Plan Intent:** Produce semantic color roles, typography hierarchy, and visual constraints with deterministic outputs and required contrast or readability checks.
+**Acceptance Intent:** Identity generation is stable for fixed inputs and publish readiness is blocked with explicit diagnostics when accessibility thresholds fail.
+
+### Phase 76: Token Compiler and shadcn Component Contract
+**Goal:** Convert strategy and identity outputs into canonical Tailwind v4 tokens plus a deterministic shadcn component-state contract manifest.
+**Requirements Mapped:** BRAND-DS-01, BRAND-DS-02
+**Depends on:** Phase 75
+**Status:** ✅ Complete
+**Plan Intent:** Build a token compiler and component manifest pipeline that maps semantic intent to required component variants and interaction states without manual remapping.
+**Acceptance Intent:** Branded surfaces can consume generated token and component contracts directly, and required primitives or states are fully covered by deterministic metadata.
+
+### Phase 77: Next.js Starter Outputs and Role Handoff Packs
+**Goal:** Emit implementation-ready Next.js starter descriptors and role-specific handoff packs from one shared branding lineage.
+**Requirements Mapped:** BRAND-NEXT-01, BRAND-ROLE-01
+**Depends on:** Phase 76
+**Status:** ✅ Complete
+**Plan Intent:** Generate starter descriptors with theme variables and component bindings, then package role-targeted handoff artifacts for strategy, design, engineering, and marketing execution.
+**Acceptance Intent:** Frontend engineers can apply starter outputs without reinterpretation and each role has actionable next steps from its handoff pack.
+
+### Phase 78: Branding Governance, Publish or Rollback, and Closure Gates
+**Goal:** Enforce single-lineage version governance for branding artifacts with publish or rollback controls and mandatory closure verification gates.
+**Requirements Mapped:** BRAND-GOV-01, BRAND-GOV-02
+**Depends on:** Phase 77
+**Status:** 📋 Planned
+**Plan Intent:** Add bundle-level versioning, active-pointer promotion or rollback workflow, drift evidence, and deterministic tenant-isolation or contract-integrity validation gates.
+**Acceptance Intent:** Operators can safely promote or roll back complete brand bundles with traceability, and closure tests prove determinism, tenant isolation, and contract integrity.
+**Plans:** 3 plans
+Plans:
+- [ ] 78-01-PLAN.md — Wave 0 governance schema tests, governance-diagnostics module, and closure-gate runner
+- [ ] 78-02-PLAN.md — Immutable bundle registry, active-pointer publish/rollback, and drift auditor
+- [ ] 78-03-PLAN.md — Additive handler integration, governance evidence writer, tenant isolation and contract integrity tests
 ---
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
@@ -1100,8 +1238,6 @@ Plans:
 - [x] 29-02: Winners catalog write path + `/campaign/result`
 - [x] 29-03: Interview cap (5 questions) + auto-proceed UX
 
----
-
 ### Phase 30: MarkOSDB Migration (P1.5/P2)
 **Goal:** Build concrete migration from local compatibility artifacts into Supabase + Upstash cloud-canonical contracts.
 **Requirements Mapped:** MDB-01, MDB-02, MDB-03
@@ -1122,3 +1258,5 @@ Plans:
 <!-- EOF -->
 
 <!-- EOF -->
+
+
