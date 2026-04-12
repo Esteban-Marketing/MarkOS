@@ -77,6 +77,7 @@ const { createBundle, getBundle, setVerificationEvidence } = require('./brand-go
 const { runClosureGates } = require('./brand-governance/closure-gates.cjs');
 const { auditDrift } = require('./brand-governance/drift-auditor.cjs');
 const { writeGovernanceEvidence } = require('./brand-governance/governance-artifact-writer.cjs');
+const { buildCanonicalArtifactsFromWrites } = require('./brand-governance/lineage-handoff.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -1837,13 +1838,13 @@ async function handleSubmit(req, res) {
       try {
         const tenantId = brandExecutionContext.tenant_id;
 
-        // Extract canonical artifact IDs from persisted artifact writes (per D-01, D-06)
-        const canonicalArtifacts = {
-          strategy_artifact_id: strategyPersistenceResult?.artifact_id || null,
-          identity_artifact_id: identityArtifactWrite?.artifact_id || null,
-          design_system_artifact_id: designSystemArtifactWrite?.artifact_id || null,
-          starter_artifact_id: starterArtifactWrite?.artifact_id || null,
-        };
+        // Phase 79: metadata-first lineage handoff (D-01, D-02, D-03)
+        const canonicalArtifacts = buildCanonicalArtifactsFromWrites({
+          strategyPersistenceResult,
+          identityArtifactWrite,
+          designSystemArtifactWrite,
+          starterArtifactWrite,
+        });
 
         // Create governance lineage bundle (immutable, tenant-scoped per D-06)
         const bundleResult = createBundle(tenantId, canonicalArtifacts);
