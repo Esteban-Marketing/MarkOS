@@ -634,7 +634,7 @@ Plans:
 Plans:
 - [x] 78-01-PLAN.md — Wave 1 governance schema tests, governance-diagnostics module, and closure-gate runner
 - [x] 78-02-PLAN.md — Immutable bundle registry, active-pointer publish/rollback, and drift auditor
-- [ ] 78-03-PLAN.md — Additive handler integration, governance evidence writer, tenant isolation and contract integrity tests
+- [x] 78-03-PLAN.md — Additive handler integration, governance evidence writer, tenant isolation and contract integrity tests
 ---
 <details>
 <summary>v1.0 — Initial Protocol (Completed 2026-03-23)</summary>
