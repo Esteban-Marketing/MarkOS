@@ -7,7 +7,7 @@
 - 📦 **v3.2.0 Post-Unification Execution & Adoption** — Repository-complete milestone with hosted follow-through tracked separately from the active v3.3 closeout work
 - 🚧 **v3.3.0 Revenue CRM and Customer Intelligence Core** — Active milestone; Phases 58 through 64 and follow-on Phases 64.1, 64.2, and 64.3 are verified passed, and Phase 65 is the current hosted reporting closeout and milestone-promotion follow-through
 - 📋 **v3.3.1 Obsidian Mind Vault-First Pivot** — Planned future milestone after Phase 66; retires MIR/MSP as canonical structures and moves MarkOS to an Obsidian Mind-inspired vault-first operating model
-- 🚧 **v3.4.0 Complete Branding Engine** — Active milestone with Phases 73-78 planned for deterministic branding pipeline delivery and governance closure
+- ✅ **v3.4.0 Complete Branding Engine** — Phases 73-78 completed with deterministic branding pipeline delivery and governance closure (2026-04-12)
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -570,7 +570,7 @@ Plans:
 
 ## 🚧 v3.4.0 — Complete Branding Engine
 
-**Status:** 🚧 Active milestone — roadmap initialized with Phases 73 through 78
+**Status:** ✅ Complete — Phases 73 through 78 delivered with deterministic branding pipeline (2026-04-12)
 
 **Goal:** Deliver an end-to-end, tenant-safe branding engine that converts raw concept and pain-point inputs into deterministic strategy, identity, token, component-contract, and Next.js starter outputs on Tailwind v4 + shadcn/ui + Next.js.
 
@@ -587,9 +587,14 @@ Plans:
 **Goal:** Capture structured concept inputs and normalize them into a deterministic, tenant-safe evidence graph that downstream branding stages can trust.
 **Requirements Mapped:** BRAND-INP-01, BRAND-INP-02
 **Depends on:** Phase 66 completion and existing tenant/auth foundations
-**Status:** 📋 Planned
+**Status:** ✅ Complete
 **Plan Intent:** Lock input schema, validation, lineage fields, and deterministic normalization so repeated submissions produce stable evidence nodes and links.
 **Acceptance Intent:** Operators can submit complete concept records and repeated identical runs yield the same normalized graph for the tenant.
+**Plans:** 3 plans
+Plans:
+- [x] 73-01-PLAN.md — Wave 1 input schema, validation, and lineage fields
+- [x] 73-02-PLAN.md — Wave 2 deterministic normalization and evidence graph compilation
+- [x] 73-03-PLAN.md — Wave 3 tenant-safe persistence and retention enforcement
 
 ### Phase 74: Strategy Artifact and Messaging Rules Engine
 **Goal:** Turn normalized evidence into a strategy artifact with explicit positioning, value promise, differentiators, and role-consumable messaging rules.
@@ -627,7 +632,7 @@ Plans:
 **Goal:** Enforce single-lineage version governance for branding artifacts with publish or rollback controls and mandatory closure verification gates.
 **Requirements Mapped:** BRAND-GOV-01, BRAND-GOV-02
 **Depends on:** Phase 77
-**Status:** 📋 Planned
+**Status:** ✅ Complete
 **Plan Intent:** Add bundle-level versioning, active-pointer promotion or rollback workflow, drift evidence, and deterministic tenant-isolation or contract-integrity validation gates.
 **Acceptance Intent:** Operators can safely promote or roll back complete brand bundles with traceability, and closure tests prove determinism, tenant isolation, and contract integrity.
 **Plans:** 3 plans
