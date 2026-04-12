@@ -1,0 +1,109 @@
+{
+  "component_contract_manifest": {
+    "primitives": [
+      {
+        "component": "button",
+        "required_variants": ["default"],
+        "required_states": ["hover", "focus-visible", "active", "disabled"],
+        "token_bindings": {
+          "background": "color.brand.primary"
+        },
+        "mapping_rationale": "Primary action control.",
+        "lineage": {
+          "decision_id": "D-04",
+          "source_node_ids": ["strategy:messaging:cta"],
+          "source_kind": "strategy_claim"
+        }
+      },
+      {
+        "component": "input",
+        "required_variants": ["default"],
+        "required_states": ["hover", "focus-visible", "active", "disabled", "loading"],
+        "token_bindings": {
+          "border": "color.surface.border"
+        },
+        "mapping_rationale": "Canonical text capture control.",
+        "lineage": {
+          "decision_id": "D-05",
+          "source_node_ids": ["identity:type:body"],
+          "source_kind": "identity_decision"
+        }
+      },
+      {
+        "component": "select",
+        "required_variants": ["default"],
+        "required_states": ["hover", "focus-visible", "active", "disabled", "loading"],
+        "token_bindings": {
+          "border": "color.surface.border"
+        },
+        "mapping_rationale": "Canonical enumerated choice control.",
+        "lineage": {
+          "decision_id": "D-05",
+          "source_node_ids": ["strategy:offer:selection"],
+          "source_kind": "strategy_claim"
+        }
+      },
+      {
+        "component": "textarea",
+        "required_variants": ["default"],
+        "required_states": ["hover", "focus-visible", "active", "disabled", "loading"],
+        "token_bindings": {
+          "border": "color.surface.border"
+        },
+        "mapping_rationale": "Long-form text input control.",
+        "lineage": {
+          "decision_id": "D-05",
+          "source_node_ids": ["strategy:voice:longform"],
+          "source_kind": "strategy_claim"
+        }
+      },
+      {
+        "component": "card",
+        "required_variants": ["default"],
+        "required_states": ["hover", "focus-visible", "active", "disabled", "loading"],
+        "token_bindings": {
+          "background": "color.surface.default"
+        },
+        "mapping_rationale": "Primary surface grouping primitive.",
+        "lineage": {
+          "decision_id": "D-06",
+          "source_node_ids": ["identity:surface:default"],
+          "source_kind": "identity_decision"
+        }
+      },
+      {
+        "component": "badge",
+        "required_variants": ["default"],
+        "required_states": ["hover", "focus-visible", "active", "disabled", "loading"],
+        "token_bindings": {
+          "background": "color.state.accent"
+        },
+        "mapping_rationale": "Compact status and categorization marker.",
+        "lineage": {
+          "decision_id": "D-06",
+          "source_node_ids": ["strategy:feedback:status"],
+          "source_kind": "strategy_claim"
+        }
+      },
+      {
+        "component": "alert",
+        "required_variants": ["default"],
+        "required_states": ["hover", "focus-visible", "active", "disabled", "loading"],
+        "token_bindings": {
+          "background": "color.state.warning"
+        },
+        "mapping_rationale": "Critical feedback and warning surface.",
+        "lineage": {
+          "decision_id": "D-06",
+          "source_node_ids": ["strategy:risk:alerts"],
+          "source_kind": "strategy_claim"
+        }
+      }
+    ],
+    "lineage": {
+      "ruleset_version": "76.0.0",
+      "strategy_fingerprint": "strategy-fp-001",
+      "decisions": []
+    }
+  }
+}
