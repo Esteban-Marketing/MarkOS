@@ -659,6 +659,11 @@ Plans:
 **Depends on:** Phase 79
 **Status:** 📋 Planned
 **Gap Closure:** Closes milestone audit blocker for Phase 75 publish-blocking regression caused by cross-phase diagnostic bleed.
+**Plans:** 3 plans
+Plans:
+- [ ] 80-01-PLAN.md — Wave 1 boundary contract tests and regression harness updates
+- [ ] 80-02-PLAN.md — Wave 2 submit boundary implementation (accessibility-only publish_readiness lane)
+- [ ] 80-03-PLAN.md — Wave 3 validation ledger and full boundary verification bundle
 
 ### Phase 81: Governance Publish and Rollback Operational Surface
 **Goal:** Expose publish and rollback governance operations through operational runtime surfaces with explicit traceability and guardrails.
@@ -1289,5 +1294,6 @@ Plans:
 <!-- EOF -->
 
 <!-- EOF -->
+
 
 
