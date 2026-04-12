@@ -57,6 +57,10 @@ try {
 const orchestrator = require('./agents/orchestrator.cjs');
 const vectorStore  = require('./vector-store-client.cjs');
 
+// Phase 85: ingestion-adjacent scope guard and sync service (LITV-04 / D-07)
+const visibilityScope = require('./vault/visibility-scope.cjs');
+/* createSyncService available via: require('./vault/sync-service.cjs') */
+
 const runtime = createRuntimeContext();
 const { config } = runtime;
 const trackingIngestHandler = require('../../api/tracking/ingest.js');
@@ -105,6 +109,25 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/campaign/result')) return handlers.handleCampaignResult(req, res);
   if (req.method === 'GET' && req.url.startsWith('/admin/literacy/health')) return handlers.handleLiteracyHealth(req, res);
   if (req.method === 'POST' && req.url.startsWith('/admin/literacy/query')) return handlers.handleLiteracyQuery(req, res);
+
+  // Phase 85: ingestion-adjacent sync visibility endpoint — scope-checked, fail-closed (D-07)
+  if (req.method === 'GET' && req.url.startsWith('/api/vault/sync/visibility')) {
+    const tenantId = String(req.headers['x-tenant-id'] || '').trim();
+    const role = String(req.headers['x-role'] || '').trim();
+    const resourceTenantId = String(req.headers['x-resource-tenant-id'] || tenantId).trim();
+    const scopeResult = visibilityScope.checkVisibilityScope(
+      { tenantId, role },
+      { tenantId: resourceTenantId }
+    );
+    if (!scopeResult.allowed) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: scopeResult.code, reason: scopeResult.reason }));
+      return;
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, tenant_id: tenantId, lineage: [] }));
+    return;
+  }
 
 
   // ── Static File Serving ────────────────────────────────────────────────────
