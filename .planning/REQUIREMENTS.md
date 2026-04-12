@@ -865,7 +865,7 @@ These narrow requirements track the decimal GSD alignment work inserted after Ph
 | BRAND-INP-01 | Phase 73 | Complete |
 | BRAND-INP-02 | Phase 73 | Complete |
 | BRAND-STRAT-01 | Phase 74 | Complete |
-| BRAND-STRAT-02 | Phase 83 | Pending |
+| BRAND-STRAT-02 | Phase 83 | Complete |
 | BRAND-ID-01 | Phase 75 | Complete |
 | BRAND-ID-02 | Phase 82 | Complete |
 | BRAND-DS-01 | Phase 76 | Complete |
