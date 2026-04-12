@@ -7,27 +7,31 @@
 
 ### Vault Foundation
 
-- [ ] **VAULT-01**: Operators can store literacy artifacts in a canonical vault structure with deterministic pathing and metadata.
-- [ ] **VAULT-02**: Every stored artifact preserves provenance fields (source, timestamp, actor, transformation lineage).
-- [ ] **VAULT-03**: Vault indexing supports deterministic retrieval keys for strategy, content, and operations surfaces.
+- [ ] **VAULT-01**: Vault structure is hybrid (disciplines + semantic cross-cutting indices) under Obsidian Mind with deterministic path conventions and PageIndex backend integration.
+- [ ] **VAULT-02**: Every stored artifact preserves complete provenance (source, timestamp, actor, transformation lineage) and is indexable by audience persona and pain-point.
+- [ ] **VAULT-03**: PageIndex retrieval layer supports both discipline-scoped and audience-scoped queries with caching and agentic orchestration primitives.
 
 ### Ingestion and Curation
 
-- [ ] **LITV-01**: Operators can ingest literacy assets through a governed pipeline with validation and normalization checks.
-- [ ] **LITV-02**: Ingestion records include explicit acceptance states (accepted, warning, rejected) with actionable diagnostics.
-- [ ] **LITV-03**: Repeated ingestion of identical content is idempotent and does not create duplicate active records.
+- [ ] **LITV-01**: Operators can edit and organize vault artifacts through Obsidian Mind interface with automatic bidirectional sync to backend (no manual publish steps).
+- [ ] **LITV-02**: Obsidian edits trigger backend indexing, audit trail recording, and PageIndex re-indexing without operator intervention.
+- [ ] **LITV-03**: Repeated ingestion/edits are idempotent; conflict resolution is last-write-wins with full audit recovery path.
+- [ ] **LITV-04**: Ingestion accepts audience-tagged artifacts and enforces metadata validation before indexing.
 
 ### Retrieval and Role Handoffs
 
-- [ ] **ROLEV-01**: Strategist, content, and operator roles can query vault artifacts with role-tailored response contracts.
-- [ ] **ROLEV-02**: Retrieval responses include evidence links back to stored artifacts and provenance metadata.
-- [ ] **ROLEV-03**: Retrieval contracts expose deterministic handoff payloads for downstream execution workflows.
+- [ ] **ROLEV-01**: Agents can retrieve vault artifacts in three modes: (1) Retrieve+Reason (raw artifact for LLM customization), (2) Retrieve+Apply (actionable template), (3) Retrieve+Iterate (with outcome verification).
+- [ ] **ROLEV-02**: Retrieval queries support both discipline-scoped and audience-scoped filters; results include artifact ID, provenance, and audience context.
+- [ ] **ROLEV-03**: Execution handoff payloads are deterministic and include reasoning context for agent multi-step loops and outcome verification.
+- [ ] **ROLEV-04**: Operator role-views expose Obsidian-driven artifact management; agent role-views use PageIndex retrieval with auditable execution logs.
 
 ### Governance and Regression Safety
 
-- [ ] **GOVV-01**: Vault operations enforce tenant isolation and access boundaries consistent with existing IAM contracts.
-- [ ] **GOVV-02**: Validation suites enforce non-regression of v3.4.0 branding determinism and governance surfaces.
-- [ ] **GOVV-03**: Milestone closeout requires explicit verification evidence for determinism, isolation, and contract integrity.
+- [ ] **GOVV-01**: Vault operations enforce tenant isolation via Supabase RLS + PageIndex query scoping; no cross-tenant leakage.
+- [ ] **GOVV-02**: Execution telemetry includes vault artifact ID, retrieval mode, outcome vs. archived evidence, and anomaly flags for agent actions.
+- [ ] **GOVV-03**: v3.4.0 branding determinism, governance publish/rollback, and UAT guarantees remain non-negotiable baselines (vault is retrieval layer, not generative).
+- [ ] **GOVV-04**: High-risk agent executions use hardened verification (log reasoning, compare outcome to vault evidence) but not human approval gates (agents have on-demand access).
+- [ ] **GOVV-05**: Milestone closeout requires proof of: PageIndex SLAs met, Obsidian sync stable, tenant isolation verified, v3.4 non-regression confirmed.
 
 ## v2 Requirements (Deferred)
 
@@ -59,22 +63,25 @@
 | LITV-01 | TBA | Pending |
 | LITV-02 | TBA | Pending |
 | LITV-03 | TBA | Pending |
+| LITV-04 | TBA | Pending |
 | ROLEV-01 | TBA | Pending |
 | ROLEV-02 | TBA | Pending |
 | ROLEV-03 | TBA | Pending |
+| ROLEV-04 | TBA | Pending |
 | GOVV-01 | TBA | Pending |
 | GOVV-02 | TBA | Pending |
 | GOVV-03 | TBA | Pending |
+| GOVV-04 | TBA | Pending |
+| GOVV-05 | TBA | Pending |
 
 **Coverage:**
-- v1 requirements: 12 total
+- v1 requirements: 16 total
 - Mapped to phases: 0
-- Unmapped: 12
+- Unmapped: 16
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-12 after v3.5.0 milestone kickoff*
-# Milestone v3.1.0 Requirements
+*Last updated: 2026-04-12 after context-locking and requirement refinement*
 
 **Milestone:** v3.1.0 — Operator Surface Unification  
 **Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.  
