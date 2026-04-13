@@ -1,5 +1,19 @@
 # Milestones
 
+## v3.5.0 Ultimate Literacy Vault (Shipped: 2026-04-13)
+
+**Phases completed:** 16 phases, 58 plans, 35 tasks
+
+**Key accomplishments:**
+
+- Established vault-first literacy foundation with deterministic Obsidian Mind and PageIndex contracts (Phase 84).
+- Delivered bidirectional vault ingestion and sync with audit lineage and idempotent update behavior (Phase 85).
+- Shipped governed agent retrieval modes (reason/apply/iterate) with deterministic handoff payloads (Phase 86).
+- Implemented dual operator and agent role views with auditable access boundaries (Phase 87).
+- Closed governance verification with tenant isolation, telemetry linkage, and v3.4 non-regression evidence gates (Phase 88).
+
+---
+
 ## v3.2.0 Multi-Tenant Agency Runtime and Enterprise Governance (Started: 2026-04-03)
 
 **Status:** Active
