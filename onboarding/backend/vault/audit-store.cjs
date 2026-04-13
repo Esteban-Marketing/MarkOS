@@ -14,14 +14,18 @@ function hasSupabaseConfig() {
 function createAuditStore(options = {}) {
   const mode = String(options.mode || '').trim();
   if (mode === 'in-memory') {
-    return createInMemoryAuditStore();
+    const memoryStore = createInMemoryAuditStore();
+    memoryStore.__durable = false;
+    return memoryStore;
   }
 
   if (options.supabase) {
-    return createSupabaseAuditStore({
+    const supabaseStore = createSupabaseAuditStore({
       supabase: options.supabase,
       tableName: options.tableName,
     });
+    supabaseStore.__durable = true;
+    return supabaseStore;
   }
 
   if (hasSupabaseConfig()) {
@@ -37,19 +41,42 @@ function createAuditStore(options = {}) {
         persistSession: false,
       },
     });
-    return createSupabaseAuditStore({
+    const supabaseStore = createSupabaseAuditStore({
       supabase: client,
       tableName: options.tableName,
     });
+    supabaseStore.__durable = true;
+    return supabaseStore;
   }
 
-  return createInMemoryAuditStore();
+  const memoryStore = createInMemoryAuditStore();
+  memoryStore.__durable = false;
+  return memoryStore;
 }
 
 const runtimeStore = createAuditStore();
 
+function isDurableStore(store = runtimeStore) {
+  return Boolean(store && store.__durable === true);
+}
+
 async function append(entry) {
   return runtimeStore.append(entry);
+}
+
+async function appendClosureRecord(entry, options = {}) {
+  const store = options.store || runtimeStore;
+  const requireDurable = options.requireDurable !== false;
+  if (requireDurable && !isDurableStore(store)) {
+    const error = new Error('Durable governance persistence is required for closure records.');
+    error.code = 'E_AUDIT_DURABLE_REQUIRED';
+    throw error;
+  }
+
+  return store.append({
+    ...entry,
+    type: 'milestone_closure_bundle',
+  });
 }
 
 async function getAll(filter) {
@@ -66,8 +93,10 @@ async function clear() {
 
 module.exports = {
   append,
+  appendClosureRecord,
   getAll,
   size,
   clear,
   createAuditStore,
+  isDurableStore,
 };
