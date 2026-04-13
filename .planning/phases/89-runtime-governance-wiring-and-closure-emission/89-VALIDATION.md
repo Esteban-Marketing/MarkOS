@@ -21,16 +21,16 @@ created: 2026-04-13
 | **Config file** | none - CLI pattern in package scripts |
 | **Quick run command** | `node --test test/phase-89/*.test.js` |
 | **Full suite command** | `node --test test/**/*.test.js` |
-| **Estimated runtime** | ~120 seconds |
+| **Estimated runtime** | ~120 seconds full suite / <30 seconds smoke |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** Run `node --test test/phase-89/*.test.js`
+- **After every task commit:** Run the task-specific smoke command from the verification map (`node --test --test-name-pattern "smoke" ...`)
 - **After every plan wave:** Run `node --test test/phase-88/*.test.js; node --test test/phase-89/*.test.js`
 - **Before `/gsd-verify-work`:** Full suite must be green or explicitly documented as deferred with rationale
-- **Max feedback latency:** 120 seconds
+- **Max feedback latency:** 30 seconds (task smoke), broader suites at wave boundaries
 
 ---
 
@@ -38,9 +38,9 @@ created: 2026-04-13
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 89-01-01 | 01 | 1 | GOVV-02 | T-89-01 | Runtime role-view paths emit schema-valid governance telemetry and block invalid payload emission | integration | `node --test test/phase-89/runtime-governance-telemetry-wiring.test.js` | ❌ W0 | ⬜ pending |
-| 89-01-02 | 01 | 1 | GOVV-03 | T-89-02 | Hardened verification is invoked in live closeout flow and fails closed on anomaly/missing evidence | integration | `node --test test/phase-89/runtime-governance-closeout-verification.test.js` | ❌ W0 | ⬜ pending |
-| 89-01-03 | 01 | 1 | GOVV-05 | T-89-03 | Closure bundle emission returns deterministic refs and persists dual-write evidence (disk + Supabase) | integration | `node --test test/phase-89/runtime-closure-emission-persistence.test.js` | ❌ W0 | ⬜ pending |
+| 89-01-01 | 01 | 1 | GOVV-02 | T-89-01 | Runtime role-view paths emit schema-valid governance telemetry and block invalid payload emission | integration-smoke | `node --test --test-name-pattern "smoke" test/phase-89/runtime-governance-telemetry-wiring.test.js` | ❌ W0 | ⬜ pending |
+| 89-01-02 | 01 | 1 | GOVV-03 | T-89-02 | Hardened verification is invoked in live closeout flow and fails closed on anomaly/missing evidence | integration-smoke | `node --test --test-name-pattern "smoke" test/phase-89/runtime-governance-closeout-verification.test.js` | ❌ W0 | ⬜ pending |
+| 89-02-01 | 02 | 2 | GOVV-05 | T-89-03 | Closure bundle emission returns deterministic refs and persists dual-write evidence (disk + Supabase) | integration-smoke | `node --test --test-name-pattern "smoke" test/phase-89/runtime-closure-emission-persistence.test.js` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending - ✅ green - ❌ red - ⚠️ flaky*
 
@@ -70,7 +70,7 @@ created: 2026-04-13
 - [ ] Sampling continuity: no 3 consecutive tasks without automated verify
 - [ ] Wave 0 covers all MISSING references
 - [ ] No watch-mode flags
-- [ ] Feedback latency < 120s
+- [ ] Feedback latency <= 30s for task smoke verifies
 - [ ] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** pending
