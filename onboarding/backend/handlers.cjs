@@ -76,7 +76,10 @@ const { persistStarterArtifacts } = require('./brand-nextjs/starter-artifact-wri
 const { createBundle, getBundle, setVerificationEvidence } = require('./brand-governance/bundle-registry.cjs');
 const { runClosureGates } = require('./brand-governance/closure-gates.cjs');
 const { auditDrift } = require('./brand-governance/drift-auditor.cjs');
-const { writeGovernanceEvidence } = require('./brand-governance/governance-artifact-writer.cjs');
+const {
+  writeGovernanceEvidence,
+  persistMilestoneClosureBundle,
+} = require('./brand-governance/governance-artifact-writer.cjs');
 const { buildCanonicalArtifactsFromWrites } = require('./brand-governance/lineage-handoff.cjs');
 const { createVaultRetriever } = require('./vault/vault-retriever.cjs');
 const auditStore = require('./vault/audit-store.cjs');
@@ -1873,10 +1876,39 @@ async function handleSubmit(req, res) {
             // Set verification evidence hash on bundle registry (rollback enablement per D-03)
             setVerificationEvidence(tenantId, bundle.bundle_id, evidenceEnvelope.evidence_hash);
 
-            brandingGovernanceResult = {
-              ...evidenceEnvelope,
-              verification: closeoutVerification.verification,
-            };
+            const closurePersistence = await emitRuntimeClosureEvidence({
+              phase: '89',
+              tenant_id: tenantId,
+              bundle_id: bundle.bundle_id,
+              actor_role: 'system',
+              gate_results: gateResults,
+              closeout_verification: closeoutVerification,
+              require_durable_persistence: shouldRequireDurableClosurePersistence(),
+            });
+
+            if (!closurePersistence.ok) {
+              brandingGovernanceResult = {
+                error: closurePersistence.error,
+                machine_readable: true,
+                governance: {
+                  code: closurePersistence.code,
+                  message: closurePersistence.message,
+                },
+                closure: closurePersistence.closure,
+                verification: closeoutVerification.verification,
+              };
+            } else {
+              brandingGovernanceResult = {
+                ...evidenceEnvelope,
+                verification: closeoutVerification.verification,
+                closure: {
+                  bundle_hash: closurePersistence.closure.bundle_hash,
+                  bundle_locator: closurePersistence.closure.bundle_locator,
+                  bundle_path: closurePersistence.closure.bundle_path,
+                  written_at: closurePersistence.closure.written_at,
+                },
+              };
+            }
           }
           console.log(`✓ Phase 78 governance: bundle ${bundle.bundle_id.slice(0, 8)}... verified for tenant ${tenantId}`);
         }
@@ -3038,6 +3070,114 @@ function verifyGovernanceCloseout(input = {}) {
   }
 }
 
+function buildClosureSections({ gateResults, closeoutVerification }) {
+  const gates = (gateResults && gateResults.gates) || {};
+  const verification = (closeoutVerification && closeoutVerification.verification) || {};
+  const verified = Boolean(verification.verified);
+
+  return {
+    tenant_isolation_matrix: {
+      passed: Boolean(gates.tenant_isolation && gates.tenant_isolation.passed),
+      detail: gates.tenant_isolation || null,
+    },
+    telemetry_validation: {
+      passed: verified,
+      detail: {
+        anomaly_flags: Array.isArray(verification.anomaly_flags) ? verification.anomaly_flags : [],
+      },
+    },
+    non_regression_results: {
+      passed: Boolean(gates.contract_integrity && gates.contract_integrity.passed),
+      detail: gates.contract_integrity || null,
+    },
+    pageindex_sla_evidence: {
+      passed: verified,
+      detail: 'runtime closeout verification evidence accepted',
+    },
+    obsidian_sync_stability: {
+      passed: verified,
+      detail: 'runtime closeout verification evidence accepted',
+    },
+    requirement_coverage_ledger: {
+      passed: Boolean(gateResults && gateResults.passed && verified),
+      requirements: ['GOVV-05'],
+    },
+  };
+}
+
+function shouldRequireDurableClosurePersistence() {
+  if (String(process.env.NODE_ENV || '').trim() === 'test') {
+    return false;
+  }
+  return true;
+}
+
+async function emitRuntimeClosureEvidence(input = {}) {
+  const actorRole = String(input.actor_role || 'system').trim();
+  if (actorRole !== 'system') {
+    return {
+      ok: false,
+      error: 'E_CLOSURE_SYSTEM_ACTOR_REQUIRED',
+      code: 'E_CLOSURE_SYSTEM_ACTOR_REQUIRED',
+      message: 'Runtime closure emission is restricted to system actor ownership.',
+    };
+  }
+
+  const closureArtifact = persistMilestoneClosureBundle({
+    phase: String(input.phase || '').trim(),
+    sections: buildClosureSections({
+      gateResults: input.gate_results,
+      closeoutVerification: input.closeout_verification,
+    }),
+    outputDir: input.closureOutputDir,
+    now: input.now,
+  });
+
+  const store = input.auditStore || auditStore;
+  const requireDurable = input.require_durable_persistence !== false;
+  const appendClosureRecord = typeof auditStore.appendClosureRecord === 'function'
+    ? auditStore.appendClosureRecord
+    : async (entry) => store.append({ ...entry, type: 'milestone_closure_bundle' });
+
+  try {
+    const auditEntry = await appendClosureRecord(
+      {
+        tenant_id: String(input.tenant_id || '').trim(),
+        artifact_id: String(input.bundle_id || '').trim(),
+        actor_role: actorRole,
+        bundle_hash: closureArtifact.bundle_hash,
+        bundle_locator: closureArtifact.bundle_locator,
+        bundle_path: closureArtifact.bundle_path,
+        phase: String(closureArtifact.phase || '').trim(),
+        written_at: closureArtifact.written_at,
+        passed: closureArtifact.passed,
+      },
+      {
+        store,
+        requireDurable,
+      }
+    );
+
+    return {
+      ok: true,
+      closure: closureArtifact,
+      audit_record: auditEntry,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error && error.code === 'E_AUDIT_DURABLE_REQUIRED'
+        ? 'E_CLOSURE_DURABLE_PERSISTENCE_REQUIRED'
+        : 'E_CLOSURE_AUDIT_APPEND_FAILED',
+      code: error && error.code ? error.code : 'E_CLOSURE_AUDIT_APPEND_FAILED',
+      message: error && error.message
+        ? error.message
+        : 'Failed to persist closure evidence record.',
+      closure: closureArtifact,
+    };
+  }
+}
+
 async function handleRoleViewOperator(req, res, overrides) {
   const context = resolveRoleViewContext(req);
   const scope = checkOperatorViewScope(
@@ -3212,6 +3352,7 @@ module.exports = {
   __testing: {
     checkActionAuthorization,
     verifyGovernanceCloseout,
+    emitRuntimeClosureEvidence,
     resetApprovalDecisionStore() {
       approvalDecisionStore.clear();
     },

@@ -1,6 +1,8 @@
 'use strict';
 
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 /**
  * Recursively stable-sort an object's keys (alphabetical).
@@ -122,8 +124,48 @@ function writeMilestoneClosureBundle({ phase, sections }) {
   });
 }
 
+function persistMilestoneClosureBundle({ phase, sections, outputDir, now }) {
+  const bundle = writeMilestoneClosureBundle({ phase, sections });
+  const writeRoot = String(outputDir || path.join(process.cwd(), '.markos-local', 'governance', 'closure-bundles')).trim();
+  if (!writeRoot) {
+    throw createError('E_CLOSURE_OUTPUT_DIR_REQUIRED', 'outputDir is required for milestone closure persistence');
+  }
+
+  fs.mkdirSync(writeRoot, { recursive: true });
+
+  const filename = `phase-${bundle.phase}-${bundle.bundle_hash}.json`;
+  const bundlePath = path.join(writeRoot, filename);
+  const writtenAt = String(now || bundle.written_at);
+
+  fs.writeFileSync(
+    bundlePath,
+    JSON.stringify(
+      {
+        phase: bundle.phase,
+        passed: bundle.passed,
+        sections: bundle.sections,
+        bundle_hash: bundle.bundle_hash,
+        written_at: writtenAt,
+      },
+      null,
+      2
+    ),
+    'utf8'
+  );
+
+  const bundleLocator = path.relative(process.cwd(), bundlePath).replace(/\\/g, '/');
+
+  return Object.freeze({
+    ...bundle,
+    written_at: writtenAt,
+    bundle_path: bundlePath,
+    bundle_locator: bundleLocator,
+  });
+}
+
 module.exports = {
   writeGovernanceEvidence,
   writeMilestoneClosureBundle,
+  persistMilestoneClosureBundle,
   MANDATORY_CLOSURE_SECTIONS,
 };
