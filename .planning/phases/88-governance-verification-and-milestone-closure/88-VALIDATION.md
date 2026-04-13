@@ -1,10 +1,11 @@
 ---
 phase: 88
 slug: governance-verification-and-milestone-closure
-status: draft
+status: in_progress
 nyquist_compliant: false
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-04-12
+updated: 2026-04-13
 ---
 
 # Phase 88 - Validation Strategy
@@ -28,38 +29,44 @@ created: 2026-04-12
 
 | Task ID | Plan | Wave | Requirement | Automated Command | Status |
 |---------|------|------|-------------|-------------------|--------|
-| 88-01-01 | 01 | 1 | GOVV-01 | `node --test test/phase-88/tenant-isolation-matrix.test.js` | pending |
-| 88-01-02 | 01 | 1 | GOVV-01 | `node --test test/phase-88/tenant-isolation-matrix.test.js` | pending |
-| 88-02-01 | 02 | 1 | GOVV-02 | `node --test test/phase-88/governance-telemetry-schema.test.js` | pending |
-| 88-02-02 | 02 | 1 | GOVV-02 | `node --test test/phase-88/governance-telemetry-schema.test.js` | pending |
-| 88-03-01 | 03 | 2 | GOVV-04 | `node --test test/phase-88/hardened-verification.test.js` | pending |
-| 88-03-02 | 03 | 2 | GOVV-04 | `node --test test/phase-88/hardened-verification.test.js` | pending |
-| 88-04-01 | 04 | 3 | GOVV-03 | `node --test test/phase-88/v34-non-regression-gate.test.js` | pending |
-| 88-04-02 | 04 | 3 | GOVV-03 | `node --test test/phase-88/v34-non-regression-gate.test.js` | pending |
-| 88-05-01 | 05 | 4 | GOVV-05 | `node --test test/phase-88/milestone-closure-bundle.test.js` | pending |
-| 88-05-02 | 05 | 4 | GOVV-05 | `node --test test/phase-88/milestone-closure-bundle.test.js` | pending |
-| 88-05-03 | 05 | 4 | GOVV-05 | `node -e "/* validation ledger existence check */"` | pending |
+| 88-01-01 | 01 | 1 | GOVV-01 | `node --test test/phase-88/tenant-isolation-matrix.test.js` | pass |
+| 88-01-02 | 01 | 1 | GOVV-01 | `node --test test/phase-88/tenant-isolation-matrix.test.js` | pass |
+| 88-02-01 | 02 | 1 | GOVV-02 | `node --test test/phase-88/governance-telemetry-schema.test.js` | pass |
+| 88-02-02 | 02 | 1 | GOVV-02 | `node --test test/phase-88/governance-telemetry-schema.test.js` | pass |
+| 88-03-01 | 03 | 2 | GOVV-04 | `node --test test/phase-88/hardened-verification.test.js` | pass |
+| 88-03-02 | 03 | 2 | GOVV-04 | `node --test test/phase-88/hardened-verification.test.js` | pass |
+| 88-04-01 | 04 | 3 | GOVV-03 | `node --test test/phase-88/v34-non-regression-gate.test.js` | pass |
+| 88-04-02 | 04 | 3 | GOVV-03 | `node --test test/phase-88/v34-non-regression-gate.test.js` | pass |
+| 88-05-01 | 05 | 4 | GOVV-05 | `node --test test/phase-88/milestone-closure-bundle.test.js` | pass |
+| 88-05-02 | 05 | 4 | GOVV-05 | `node --test test/phase-88/milestone-closure-bundle.test.js` | pass |
+| 88-05-03 | 05 | 4 | GOVV-05 | `node -e "const fs=require('node:fs');const p='.planning/phases/88-governance-verification-and-milestone-closure/88-VALIDATION.md';if(!fs.existsSync(p))process.exit(1);const t=fs.readFileSync(p,'utf8');if(!/GOVV-01/.test(t)||!/GOVV-05/.test(t)||!/nyquist/i.test(t))process.exit(1);console.log('ok')"` | pass |
 
 ## Wave 0 Requirements
 
-- [ ] `test/phase-88/tenant-isolation-matrix.test.js`
-- [ ] `test/phase-88/governance-telemetry-schema.test.js`
-- [ ] `test/phase-88/hardened-verification.test.js`
-- [ ] `test/phase-88/v34-non-regression-gate.test.js`
-- [ ] `test/phase-88/milestone-closure-bundle.test.js`
+- [x] `test/phase-88/tenant-isolation-matrix.test.js`
+- [x] `test/phase-88/governance-telemetry-schema.test.js`
+- [x] `test/phase-88/hardened-verification.test.js`
+- [x] `test/phase-88/v34-non-regression-gate.test.js`
+- [x] `test/phase-88/milestone-closure-bundle.test.js`
 
 ## Regression Gates
 
-- `node --test "test/phase-87/*.test.js"`
-- `npm test`
+- [x] `node --test "test/phase-87/*.test.js"`
+- [ ] `npm test` (blocked by unrelated pre-existing suite failures outside phase-88 scope)
+
+## Known External Failures (Current `npm test`)
+
+- `test/vault-writer.test.js` (canonical destination path assertions)
+- `test/vector-store-client.test.js` (namespace fallback + health expectation mismatches)
+- additional unrelated failures under billing/crm-outbound suites
 
 ## Validation Sign-Off
 
-- [ ] GOVV-01 strict tenant isolation matrix passed
-- [ ] GOVV-02 full telemetry schema validation passed
-- [ ] GOVV-03 hard non-regression gate passed
-- [ ] GOVV-04 hardened verification behavior passed
-- [ ] GOVV-05 single closure bundle completeness passed
-- [ ] `nyquist_compliant: true` set at completion
+- [x] GOVV-01 strict tenant isolation matrix passed
+- [x] GOVV-02 full telemetry schema validation passed
+- [x] GOVV-03 hard non-regression gate passed
+- [x] GOVV-04 hardened verification behavior passed
+- [x] GOVV-05 single closure bundle completeness passed
+- [ ] `nyquist_compliant: true` set at completion (pending full-suite gate resolution)
 
 Approval: pending

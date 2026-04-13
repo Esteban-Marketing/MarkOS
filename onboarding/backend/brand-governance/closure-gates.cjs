@@ -41,9 +41,9 @@ function computeBundleId(bundle) {
  * All gates run regardless of prior failures (never short-circuit) so evidence is complete.
  * Fail-closed: returned passed is false when any single gate fails per D-05.
  *
- * Gate 1 — Determinism: recompute sha256(stableSort(bundle payload minus bundle_id)) and compare.
- * Gate 2 — Tenant isolation: request tenant_id must match bundle.tenant_id.
- * Gate 3 — Contract integrity: every lineage_fingerprints lane must be present and non-null.
+ * Gate 1 - Determinism: recompute sha256(stableSort(bundle payload minus bundle_id)) and compare.
+ * Gate 2 - Tenant isolation: request tenant_id must match bundle.tenant_id.
+ * Gate 3 - Contract integrity: every lineage_fingerprints lane must be present and non-null.
  *
  * @param {string} tenant_id   - Requesting tenant identifier
  * @param {object} bundle      - Governance lineage bundle envelope
@@ -64,7 +64,7 @@ function runClosureGates(tenant_id, bundle, _context) {
     contract_integrity: { passed: false, reason_code: null, detail: null },
   };
 
-  // Gate 1: Determinism — bundle_id must match computed digest
+  // Gate 1: Determinism - bundle_id must match computed digest
   const expectedId = computeBundleId(bundle);
   if (bundle.bundle_id === expectedId) {
     gates.determinism.passed = true;
@@ -77,7 +77,7 @@ function runClosureGates(tenant_id, bundle, _context) {
     gates.determinism.detail = diag.detail;
   }
 
-  // Gate 2: Tenant isolation — requesting tenant must match bundle owner
+  // Gate 2: Tenant isolation - requesting tenant must match bundle owner
   if (tenant_id === bundle.tenant_id) {
     gates.tenant_isolation.passed = true;
   } else {
@@ -89,7 +89,7 @@ function runClosureGates(tenant_id, bundle, _context) {
     gates.tenant_isolation.detail = diag.detail;
   }
 
-  // Gate 3: Contract integrity — all lineage_fingerprints lanes must be present and non-null
+  // Gate 3: Contract integrity - all lineage_fingerprints lanes must be present and non-null
   const REQUIRED_LANES = ['strategy', 'identity', 'design_system', 'starter'];
   const fp = bundle.lineage_fingerprints;
   const missingLanes = REQUIRED_LANES.filter((lane) => !fp || fp[lane] == null);
@@ -109,4 +109,22 @@ function runClosureGates(tenant_id, bundle, _context) {
   return { passed, gates };
 }
 
-module.exports = { runClosureGates, computeBundleId };
+function runV34NonRegressionGate(input = {}) {
+  const checks = {
+    brandingDeterminism: Boolean(input.brandingDeterminism),
+    governancePublishRollback: Boolean(input.governancePublishRollback),
+    uatBaseline: Boolean(input.uatBaseline),
+  };
+
+  const failed = Object.entries(checks)
+    .filter(([, value]) => !value)
+    .map(([key]) => key);
+
+  return {
+    passed: failed.length === 0,
+    checks,
+    failed,
+  };
+}
+
+module.exports = { runClosureGates, computeBundleId, runV34NonRegressionGate };

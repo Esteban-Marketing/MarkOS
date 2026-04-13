@@ -82,6 +82,7 @@ const { createVaultRetriever } = require('./vault/vault-retriever.cjs');
 const auditStore = require('./vault/audit-store.cjs');
 const { createLineageLogger } = require('./vault/lineage-log.cjs');
 const { checkOperatorViewScope, checkAgentViewScope } = require('./vault/role-views.cjs');
+const { verifyHighRiskExecution } = require('./vault/hardened-verification.cjs');
 
 const { readBody, json } = require('./utils.cjs');
 
@@ -3057,7 +3058,9 @@ module.exports = {
     getApprovalDecisionStoreSize() {
       return approvalDecisionStore.size;
     },
+    verifyHighRiskExecution,
   },
 };
+
 
 

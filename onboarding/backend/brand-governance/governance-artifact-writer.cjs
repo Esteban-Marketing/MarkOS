@@ -18,6 +18,12 @@ function stableSortObject(value) {
     }, {});
 }
 
+function createError(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+
 /**
  * Write governance evidence envelope: a machine-readable, deterministic artifact
  * containing gate results, drift evidence, and machine-readable audit trail per D-08 and D-10.
@@ -69,6 +75,55 @@ function writeGovernanceEvidence(tenant_id, bundle_id, gateResults, driftSummary
   return envelope;
 }
 
+const MANDATORY_CLOSURE_SECTIONS = [
+  'tenant_isolation_matrix',
+  'telemetry_validation',
+  'non_regression_results',
+  'pageindex_sla_evidence',
+  'obsidian_sync_stability',
+  'requirement_coverage_ledger',
+];
+
+function writeMilestoneClosureBundle({ phase, sections }) {
+  const normalizedPhase = String(phase || '').trim();
+  if (!normalizedPhase) {
+    throw createError('E_CLOSURE_PHASE_REQUIRED', 'phase is required for milestone closure bundle');
+  }
+
+  const payloadSections = sections && typeof sections === 'object' ? sections : {};
+  const missing = MANDATORY_CLOSURE_SECTIONS.filter((name) => !(name in payloadSections));
+  if (missing.length > 0) {
+    throw createError(
+      'E_CLOSURE_SECTION_MISSING',
+      `Missing mandatory closure sections: ${missing.join(', ')}`
+    );
+  }
+
+  const sectionPasses = MANDATORY_CLOSURE_SECTIONS.every((name) => {
+    const entry = payloadSections[name];
+    return Boolean(entry && entry.passed === true);
+  });
+
+  const hashPayload = stableSortObject({
+    phase: normalizedPhase,
+    sections: payloadSections,
+  });
+  const bundle_hash = crypto
+    .createHash('sha256')
+    .update(JSON.stringify(hashPayload))
+    .digest('hex');
+
+  return Object.freeze({
+    phase: normalizedPhase,
+    passed: sectionPasses,
+    sections: Object.freeze(payloadSections),
+    bundle_hash,
+    written_at: new Date().toISOString(),
+  });
+}
+
 module.exports = {
   writeGovernanceEvidence,
+  writeMilestoneClosureBundle,
+  MANDATORY_CLOSURE_SECTIONS,
 };

@@ -8,6 +8,7 @@ try {
 }
 const crypto = require('node:crypto');
 const { redactSensitive } = require('../runtime-context.cjs');
+const { normalizeGovernanceTelemetryEvent } = require('../vault/telemetry-schema.cjs');
 
 let client = null;
 
@@ -40,8 +41,8 @@ if (PostHog && getTelemetryPreference() !== 'false' && process.env.POSTHOG_API_K
 
 /**
  * Capture a server-side analytics event
- * @param {string} eventName 
- * @param {object} properties 
+ * @param {string} eventName
+ * @param {object} properties
  */
 function capture(eventName, properties = {}) {
   if (!client) return;
@@ -64,7 +65,7 @@ function capture(eventName, properties = {}) {
   client.capture({
     distinctId: distinctId,
     event: eventName,
-    properties: payload
+    properties: payload,
   });
 }
 
@@ -81,6 +82,15 @@ function captureTrackingEvent(eventName, properties = {}) {
     telemetry_scope: 'tracking',
     ...properties,
   });
+}
+
+function captureGovernanceEvent(eventName, properties = {}) {
+  const normalized = normalizeGovernanceTelemetryEvent(properties);
+  capture(eventName, {
+    telemetry_scope: 'governance',
+    ...normalized,
+  });
+  return normalized;
 }
 
 function captureRolloutEndpointEvent(endpoint, properties = {}) {
@@ -200,6 +210,7 @@ module.exports = {
   capture,
   captureExecutionCheckpoint,
   captureTrackingEvent,
+  captureGovernanceEvent,
   captureProviderAttempt,
   captureRunClose,
   captureRolloutEndpointEvent,
