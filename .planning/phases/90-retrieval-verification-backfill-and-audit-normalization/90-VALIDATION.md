@@ -1,9 +1,9 @@
 ---
 phase: 90
 slug: retrieval-verification-backfill-and-audit-normalization
-status: draft
+status: in_progress
 nyquist_compliant: true
-wave_0_complete: false
+wave_0_complete: true
 created: 2026-04-13
 ---
 
@@ -39,9 +39,9 @@ created: 2026-04-13
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 90-01-01 | 01 | 1 | ROLEV-01 | T-90-01 | Retrieval modes evidence re-verified with tenant-safe behavior and mode-correct payload contracts | integration | `node --test test/phase-86/vault-retriever.test.js` | ✅ | ⬜ pending |
-| 90-01-02 | 01 | 1 | ROLEV-02 | T-90-02 | Discipline/audience filter semantics re-verified and linked to closure evidence | unit/integration | `node --test test/phase-86/retrieval-filter.test.js test/phase-86/vault-retriever.test.js` | ✅ | ⬜ pending |
-| 90-01-03 | 01 | 1 | ROLEV-03 | T-90-03 | Handoff payload determinism and verification context re-verified for closure normalization | unit/integration | `node --test test/phase-86/handoff-pack.test.js test/phase-86/vault-retriever.test.js` | ✅ | ⬜ pending |
+| 90-01-01 | 01 | 1 | ROLEV-01 | T-90-01 | Retrieval modes evidence re-verified with tenant-safe behavior and mode-correct payload contracts | integration | `node --test test/phase-86/vault-retriever.test.js` | ✅ | ✅ green |
+| 90-01-02 | 01 | 1 | ROLEV-02 | T-90-02 | Discipline/audience filter semantics re-verified and linked to closure evidence | unit/integration | `node --test test/phase-86/retrieval-filter.test.js test/phase-86/vault-retriever.test.js` | ✅ | ✅ green |
+| 90-01-03 | 01 | 1 | ROLEV-03 | T-90-03 | Handoff payload determinism and verification context re-verified for closure normalization | unit/integration | `node --test test/phase-86/handoff-pack.test.js test/phase-86/vault-retriever.test.js` | ✅ | ✅ green |
 | 90-02-01 | 02 | 2 | ROLEV-01 | T-90-05 | Requirement status promotion is blocked unless each ROLEV row has complete state plus fresh evidence-link anchors to Phase 90 artifacts | docs/audit | `node -e "const fs=require('fs'); const text=fs.readFileSync('.planning/REQUIREMENTS.md','utf8'); const patterns=[/\| ROLEV-01 \| 90 \| Complete \|.*90-VERIFICATION\.md#.*90-NORMALIZATION\.md#/m,/\| ROLEV-02 \| 90 \| Complete \|.*90-VERIFICATION\.md#.*90-NORMALIZATION\.md#/m,/\| ROLEV-03 \| 90 \| Complete \|.*90-VERIFICATION\.md#.*90-NORMALIZATION\.md#/m]; const failed=patterns.map((pattern,index)=>pattern.test(text)?null:'ROLEV-0'+(index+1)).filter(Boolean); if(failed.length){console.error('Missing evidence-linked requirements rows: '+failed.join(', ')); process.exit(1);} "` | ✅ | ⬜ pending |
 | 90-02-02 | 02 | 2 | ROLEV-02 | T-90-06 | Milestone audit receives append-only corrective update with explicit references to fresh verification/normalization evidence | docs/audit | `node -e "const fs=require('fs'); const text=fs.readFileSync('.planning/v3.5.0-MILESTONE-AUDIT.md','utf8'); const checks=['Phase 90 corrective update','ROLEV-01','ROLEV-02','ROLEV-03','90-VERIFICATION','90-NORMALIZATION','status:']; const missing=checks.filter(token=>!text.includes(token)); if(missing.length){console.error('Missing milestone audit markers: '+missing.join(', ')); process.exit(1);} "` | ✅ | ⬜ pending |
 | 90-02-03 | 02 | 2 | ROLEV-03 | T-90-07 | Roadmap plan inventory remains aligned with closure artifacts and phase requirements without unrelated churn | docs/audit | `node -e "const fs=require('fs'); const text=fs.readFileSync('.planning/ROADMAP.md','utf8'); const match=text.match(/### Phase 90:[\s\S]*?(?=\n### Phase \d+:|\n## Milestone|$)/); if(!match){console.error('Phase 90 roadmap block not found.'); process.exit(1);} const block=match[0]; const checks=['**Plans:** 2 plans','90-01-PLAN.md','90-02-PLAN.md','ROLEV-01','ROLEV-02','ROLEV-03']; const missing=checks.filter(token=>!block.includes(token)); if(missing.length){console.error('Missing Phase 90 roadmap markers: '+missing.join(', ')); process.exit(1);} "` | ✅ | ⬜ pending |
@@ -52,8 +52,8 @@ created: 2026-04-13
 
 ## Wave 0 Requirements
 
-- [ ] `.planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-VERIFICATION.md` - must capture rerun evidence and requirement matrix
-- [ ] `.planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-NORMALIZATION.md` - append-only corrective artifact linking old and new evidence
+- [x] `.planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-VERIFICATION.md` - rerun evidence and requirement matrix captured from fresh Phase 90 execution
+- [x] `.planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-NORMALIZATION.md` - append-only corrective artifact linking old and new evidence created
 - [ ] REQUIREMENTS traceability update from Pending to Complete only after evidence is recorded
 - [ ] Milestone audit refresh after Phase 90 evidence and normalization writes
 
@@ -69,14 +69,14 @@ created: 2026-04-13
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
+- [x] All Plan 01 tasks have automated verification or Wave 0 dependencies
+- [x] Sampling continuity maintained for the in-scope Plan 01 work
+- [x] Wave 0 evidence artifacts now cover the missing verification references for Plan 01
+- [x] No watch-mode flags
 - [x] Per-task feedback latency <= 30s
 - [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** Plan 01 evidence and normalization complete; Phase 90 remains open for Plan 02 traceability updates.
 
 
 
