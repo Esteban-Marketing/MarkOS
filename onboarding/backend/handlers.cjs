@@ -1840,16 +1840,44 @@ async function handleSubmit(req, res) {
           // Run closure gates (determinism, tenant isolation, contract integrity per D-05, D-06)
           const gateResults = runClosureGates(tenantId, bundle, {});
 
-          // Audit drift against active pointer per D-04, D-08
-          const driftSummary = auditDrift(tenantId, canonicalArtifacts);
+          const closeoutVerification = verifyGovernanceCloseout({
+            tenant_id: tenantId,
+            artifact_id: bundle.bundle_id,
+            retrieval_mode: 'manage',
+            run_id: `closeout-${String(bundle.bundle_id || '').slice(0, 16)}`,
+            actor_role: 'system',
+            expected_evidence_ref: gateResults.passed ? `bundle://${bundle.bundle_id}` : '',
+            observed_evidence_ref: `bundle://${bundle.bundle_id}`,
+            reasoning_trace: gateResults.passed
+              ? 'runtime closeout verification passed and closure can proceed'
+              : '',
+          });
 
-          // Write governance evidence envelope (deterministic, machine-readable per D-08, D-10)
-          const evidenceEnvelope = writeGovernanceEvidence(tenantId, bundle.bundle_id, gateResults, driftSummary);
+          if (!closeoutVerification.ok) {
+            brandingGovernanceResult = {
+              error: closeoutVerification.error,
+              machine_readable: true,
+              governance: {
+                code: closeoutVerification.code,
+                message: closeoutVerification.message,
+              },
+              verification: closeoutVerification.verification,
+            };
+          } else {
+            // Audit drift against active pointer per D-04, D-08
+            const driftSummary = auditDrift(tenantId, canonicalArtifacts);
 
-          // Set verification evidence hash on bundle registry (rollback enablement per D-03)
-          setVerificationEvidence(tenantId, bundle.bundle_id, evidenceEnvelope.evidence_hash);
+            // Write governance evidence envelope (deterministic, machine-readable per D-08, D-10)
+            const evidenceEnvelope = writeGovernanceEvidence(tenantId, bundle.bundle_id, gateResults, driftSummary);
 
-          brandingGovernanceResult = evidenceEnvelope;
+            // Set verification evidence hash on bundle registry (rollback enablement per D-03)
+            setVerificationEvidence(tenantId, bundle.bundle_id, evidenceEnvelope.evidence_hash);
+
+            brandingGovernanceResult = {
+              ...evidenceEnvelope,
+              verification: closeoutVerification.verification,
+            };
+          }
           console.log(`✓ Phase 78 governance: bundle ${bundle.bundle_id.slice(0, 8)}... verified for tenant ${tenantId}`);
         }
       } catch (govErr) {
@@ -2927,6 +2955,89 @@ function createRoleViewDeps(overrides = {}) {
   };
 }
 
+function resolveGovernanceTelemetryCapture(overrides = {}) {
+  if (overrides && typeof overrides.captureGovernanceEvent === 'function') {
+    return overrides.captureGovernanceEvent;
+  }
+  if (telemetry && typeof telemetry.captureGovernanceEvent === 'function') {
+    return telemetry.captureGovernanceEvent;
+  }
+  const err = new Error('Governance telemetry capture is unavailable.');
+  err.code = 'E_GOVERNANCE_TELEMETRY_UNAVAILABLE';
+  throw err;
+}
+
+function governanceTelemetryFailureStatus(code) {
+  return code === 'E_GOVERNANCE_TELEMETRY_UNAVAILABLE' ? 503 : 422;
+}
+
+function governanceTelemetryFailureEnvelope(stage, err) {
+  return {
+    success: false,
+    error: 'E_GOVERNANCE_TELEMETRY_INVALID',
+    machine_readable: true,
+    governance: {
+      stage,
+      code: err && err.code ? err.code : 'E_GOVERNANCE_TELEMETRY_INVALID',
+      message: err && err.message ? err.message : 'Governance telemetry payload is invalid.',
+    },
+  };
+}
+
+function verifyGovernanceCloseout(input = {}) {
+  const verification = verifyHighRiskExecution({
+    reasoning_trace: input.reasoning_trace,
+    expected_evidence_ref: input.expected_evidence_ref,
+    observed_evidence_ref: input.observed_evidence_ref,
+  });
+
+  if (!verification.verified) {
+    return {
+      ok: false,
+      error: 'E_GOVERNANCE_CLOSEOUT_VERIFICATION_FAILED',
+      verification,
+      code: 'E_GOVERNANCE_CLOSEOUT_VERIFICATION_FAILED',
+      message: 'High-risk closeout verification failed before governance closure emission.',
+    };
+  }
+
+  const captureGovernanceEvent = resolveGovernanceTelemetryCapture({
+    captureGovernanceEvent: input.captureGovernanceEvent,
+  });
+
+  try {
+    const telemetryPayload = captureGovernanceEvent(
+      input.event_name || 'runtime_governance_closeout_verified',
+      {
+        tenant_id: String(input.tenant_id || '').trim(),
+        artifact_id: String(input.artifact_id || '').trim(),
+        retrieval_mode: String(input.retrieval_mode || 'manage').trim(),
+        run_id: String(input.run_id || '').trim(),
+        actor_role: String(input.actor_role || 'system').trim(),
+        outcome_status: 'verified',
+        expected_evidence_ref: String(input.expected_evidence_ref || '').trim(),
+        observed_evidence_ref: String(input.observed_evidence_ref || '').trim(),
+        anomaly_flags: Array.isArray(verification.anomaly_flags) ? verification.anomaly_flags : [],
+        timestamp: new Date().toISOString(),
+      }
+    );
+
+    return {
+      ok: true,
+      verification,
+      telemetry: telemetryPayload,
+    };
+  } catch (err) {
+    return {
+      ok: false,
+      error: 'E_GOVERNANCE_TELEMETRY_INVALID',
+      verification,
+      code: err && err.code ? err.code : 'E_GOVERNANCE_TELEMETRY_INVALID',
+      message: err && err.message ? err.message : 'Governance telemetry payload is invalid.',
+    };
+  }
+}
+
 async function handleRoleViewOperator(req, res, overrides) {
   const context = resolveRoleViewContext(req);
   const scope = checkOperatorViewScope(
@@ -2967,6 +3078,28 @@ async function handleRoleViewOperator(req, res, overrides) {
     mode: 'manage',
     timestamp: new Date().toISOString(),
   });
+
+  try {
+    const captureGovernanceEvent = resolveGovernanceTelemetryCapture(overrides);
+    captureGovernanceEvent('runtime_role_view_operator_event', {
+      tenant_id: context.resourceTenantId,
+      artifact_id: artifactId,
+      retrieval_mode: 'manage',
+      run_id: `operator-${artifactId}`,
+      actor_role: context.role,
+      outcome_status: 'success',
+      expected_evidence_ref: `lineage://operator/${artifactId}`,
+      observed_evidence_ref: `lineage://operator/${artifactId}`,
+      anomaly_flags: [],
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    return json(
+      res,
+      governanceTelemetryFailureStatus(err && err.code),
+      governanceTelemetryFailureEnvelope('runtime_role_view_operator', err)
+    );
+  }
 
   return json(res, 200, {
     success: true,
@@ -3016,6 +3149,32 @@ async function handleRoleViewAgent(req, res, overrides) {
     filter: {},
   });
 
+  try {
+    const firstItem = Array.isArray(items) && items.length > 0 ? items[0] : null;
+    const artifactId = String(
+      (firstItem && (firstItem.artifact_id || firstItem.doc_id)) || `agent-${mode}-empty`
+    ).trim();
+    const captureGovernanceEvent = resolveGovernanceTelemetryCapture(overrides);
+    captureGovernanceEvent('runtime_role_view_agent_event', {
+      tenant_id: context.resourceTenantId,
+      artifact_id: artifactId,
+      retrieval_mode: mode,
+      run_id: `agent-${mode}-${context.resourceTenantId}`,
+      actor_role: context.role,
+      outcome_status: 'success',
+      expected_evidence_ref: `lineage://agent/${mode}/${artifactId}`,
+      observed_evidence_ref: `lineage://agent/${mode}/${artifactId}`,
+      anomaly_flags: [],
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    return json(
+      res,
+      governanceTelemetryFailureStatus(err && err.code),
+      governanceTelemetryFailureEnvelope('runtime_role_view_agent', err)
+    );
+  }
+
   return json(res, 200, {
     success: true,
     view: 'agent',
@@ -3052,6 +3211,7 @@ module.exports = {
   handleLiteracyQuery,
   __testing: {
     checkActionAuthorization,
+    verifyGovernanceCloseout,
     resetApprovalDecisionStore() {
       approvalDecisionStore.clear();
     },
