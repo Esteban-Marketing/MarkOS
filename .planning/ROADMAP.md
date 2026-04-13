@@ -723,6 +723,9 @@ Plans:
 **Requirements Mapped:** ROLEV-01, ROLEV-02, ROLEV-03
 **Depends on:** Phase 89
 **Status:** 🚧 Planned (2026-04-13)
+**Plans:** 2 plans
+- `90-01-PLAN.md` — Re-run retrieval verification flows, generate fresh ROLEV evidence, and produce append-only normalization artifacts.
+- `90-02-PLAN.md` — Promote ROLEV closure across requirements, milestone audit, and roadmap traceability using fresh Phase 90 evidence.
 **Gap Closure:** Resolves partial requirement coverage findings from `.planning/v3.5.0-MILESTONE-AUDIT.md`.
 
 ---
