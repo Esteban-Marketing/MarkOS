@@ -28,10 +28,10 @@
 ### Governance and Regression Safety
 
 - [x] **GOVV-01**: Vault operations enforce tenant isolation via Supabase RLS + PageIndex query scoping; no cross-tenant leakage.
-- [x] **GOVV-02**: Execution telemetry includes vault artifact ID, retrieval mode, outcome vs. archived evidence, and anomaly flags for agent actions.
-- [x] **GOVV-03**: v3.4.0 branding determinism, governance publish/rollback, and UAT guarantees remain non-negotiable baselines (vault is retrieval layer, not generative).
+- [ ] **GOVV-02**: Execution telemetry includes vault artifact ID, retrieval mode, outcome vs. archived evidence, and anomaly flags for agent actions.
+- [ ] **GOVV-03**: v3.4.0 branding determinism, governance publish/rollback, and UAT guarantees remain non-negotiable baselines (vault is retrieval layer, not generative).
 - [x] **GOVV-04**: High-risk agent executions use hardened verification (log reasoning, compare outcome to vault evidence) but not human approval gates (agents have on-demand access).
-- [x] **GOVV-05**: Milestone closeout requires proof of: PageIndex SLAs met, Obsidian sync stable, tenant isolation verified, v3.4 non-regression confirmed.
+- [ ] **GOVV-05**: Milestone closeout requires proof of: PageIndex SLAs met, Obsidian sync stable, tenant isolation verified, v3.4 non-regression confirmed.
 
 ## v2 Requirements (Deferred)
 
@@ -64,15 +64,15 @@
 | LITV-02 | 85 | Complete |
 | LITV-03 | 85 | Complete |
 | LITV-04 | 85 | Complete |
-| ROLEV-01 | 86 | Complete |
-| ROLEV-02 | 86 | Complete |
-| ROLEV-03 | 86 | Complete |
+| ROLEV-01 | 90 | Pending |
+| ROLEV-02 | 90 | Pending |
+| ROLEV-03 | 90 | Pending |
 | ROLEV-04 | 87 | Complete |
 | GOVV-01 | 88 | Complete |
-| GOVV-02 | 88 | Complete |
-| GOVV-03 | 88 | Complete |
+| GOVV-02 | 89 | Pending |
+| GOVV-03 | 89 | Pending |
 | GOVV-04 | 88 | Complete |
-| GOVV-05 | 88 | Complete |
+| GOVV-05 | 89 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
@@ -81,7 +81,7 @@
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-12 after Phase 88 closure with deferred global-suite remediation*
+*Last updated: 2026-04-13 after v3.5.0 milestone audit and planned gap-closure phases 89-90*
 
 **Milestone:** v3.1.0 — Operator Surface Unification  
 **Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.  

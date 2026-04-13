@@ -8,7 +8,7 @@
 - 🚧 **v3.3.0 Revenue CRM and Customer Intelligence Core** — Active milestone; Phases 58 through 64 and follow-on Phases 64.1, 64.2, and 64.3 are verified passed, and Phase 65 is the current hosted reporting closeout and milestone-promotion follow-through
 - 📋 **v3.3.1 Obsidian Mind Vault-First Pivot** — Planned future milestone after Phase 66; retires MIR/MSP as canonical structures and moves MarkOS to an Obsidian Mind-inspired vault-first operating model
 - ✅ **v3.4.0 Complete Branding Engine** — Phases 73-83 completed; archived at `.planning/milestones/v3.4.0-ROADMAP.md` (2026-04-12)
-- ✅ **v3.5.0 Ultimate Literacy Vault** — Phases 84-88 completed; archived at `.planning/milestones/v3.5.0-ROADMAP.md` (2026-04-13)
+- 🚧 **v3.5.0 Ultimate Literacy Vault** — Gap-closure active after audit; Phases 89-90 planned to resolve ROLEV and GOVV blockers before final milestone archive
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -624,7 +624,7 @@ Plans:
 
 ## 🚧 v3.5.0 — Ultimate Literacy Vault
 
-**Status:** 🚧 Planned milestone — requirements locked, roadmap phases defined
+**Status:** 🚧 Gap-closure active — post-audit blockers require Phase 89 and Phase 90 before milestone closeout
 
 **Goal:** Build a vault-first marketing literacy system with Obsidian Mind as the operator-facing source of truth and PageIndex as the vectorless agentic retrieval engine, replacing legacy Supabase/Upstash retrieval paths.
 
@@ -710,6 +710,20 @@ Plans:
 - [x] 88-03-PLAN.md — Wave 2: hardened verification without human approval gates
 - [x] 88-04-PLAN.md — Wave 3: hard v3.4 non-regression closure gate
 - [x] 88-05-PLAN.md — Wave 4: auditable milestone closure bundle and validation sign-off
+
+### Phase 89: Runtime Governance Wiring and Closure Emission
+**Goal:** Close governance runtime integration gaps by wiring telemetry capture and closure-bundle emission into live role-view and milestone-closeout paths.
+**Requirements Mapped:** GOVV-02, GOVV-03, GOVV-05
+**Depends on:** Phase 88
+**Status:** 🚧 Planned (2026-04-13)
+**Gap Closure:** Resolves critical findings from `.planning/v3.5.0-MILESTONE-AUDIT.md`.
+
+### Phase 90: Retrieval Verification Backfill and Audit Normalization
+**Goal:** Backfill missing Phase 86 verification evidence and normalize retrieval requirement closure plus Nyquist metadata consistency.
+**Requirements Mapped:** ROLEV-01, ROLEV-02, ROLEV-03
+**Depends on:** Phase 89
+**Status:** 🚧 Planned (2026-04-13)
+**Gap Closure:** Resolves partial requirement coverage findings from `.planning/v3.5.0-MILESTONE-AUDIT.md`.
 
 ---
 <details>
