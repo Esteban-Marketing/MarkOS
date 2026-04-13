@@ -20,10 +20,10 @@
 
 ### Retrieval and Role Handoffs
 
-- [ ] **ROLEV-01**: Agents can retrieve vault artifacts in three modes: (1) Retrieve+Reason (raw artifact for LLM customization), (2) Retrieve+Apply (actionable template), (3) Retrieve+Iterate (with outcome verification).
-- [ ] **ROLEV-02**: Retrieval queries support both discipline-scoped and audience-scoped filters; results include artifact ID, provenance, and audience context.
-- [ ] **ROLEV-03**: Execution handoff payloads are deterministic and include reasoning context for agent multi-step loops and outcome verification.
-- [ ] **ROLEV-04**: Operator role-views expose Obsidian-driven artifact management; agent role-views use PageIndex retrieval with auditable execution logs.
+- [x] **ROLEV-01**: Agents can retrieve vault artifacts in three modes: (1) Retrieve+Reason (raw artifact for LLM customization), (2) Retrieve+Apply (actionable template), (3) Retrieve+Iterate (with outcome verification).
+- [x] **ROLEV-02**: Retrieval queries support both discipline-scoped and audience-scoped filters; results include artifact ID, provenance, and audience context.
+- [x] **ROLEV-03**: Execution handoff payloads are deterministic and include reasoning context for agent multi-step loops and outcome verification.
+- [x] **ROLEV-04**: Operator role-views expose Obsidian-driven artifact management; agent role-views use PageIndex retrieval with auditable execution logs.
 
 ### Governance and Regression Safety
 
@@ -55,24 +55,24 @@
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| VAULT-01 | 84 | Complete |
-| VAULT-02 | 84 | Complete |
-| VAULT-03 | 84 | Complete |
-| LITV-01 | 85 | Complete |
-| LITV-02 | 85 | Complete |
-| LITV-03 | 85 | Complete |
-| LITV-04 | 85 | Complete |
-| ROLEV-01 | 90 | Pending |
-| ROLEV-02 | 90 | Pending |
-| ROLEV-03 | 90 | Pending |
-| ROLEV-04 | 87 | Complete |
-| GOVV-01 | 88 | Complete |
-| GOVV-02 | 89 | Complete |
-| GOVV-03 | 89 | Complete |
-| GOVV-04 | 88 | Complete |
-| GOVV-05 | 89 | Complete |
+| Requirement | Phase | Status | Evidence |
+|-------------|-------|--------|----------|
+| VAULT-01 | 84 | Complete | Historical phase closure artifact |
+| VAULT-02 | 84 | Complete | Historical phase closure artifact |
+| VAULT-03 | 84 | Complete | Historical phase closure artifact |
+| LITV-01 | 85 | Complete | Historical phase closure artifact |
+| LITV-02 | 85 | Complete | Historical phase closure artifact |
+| LITV-03 | 85 | Complete | Historical phase closure artifact |
+| LITV-04 | 85 | Complete | Historical phase closure artifact |
+| ROLEV-01 | 90 | Complete | Fresh evidence: .planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-VERIFICATION.md#rolev-01---retrieval-mode-verification ; normalization: .planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-NORMALIZATION.md#normalization-entry-n-01 |
+| ROLEV-02 | 90 | Complete | Fresh evidence: .planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-VERIFICATION.md#rolev-02---discipline-and-audience-filter-semantics ; normalization: .planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-NORMALIZATION.md#normalization-entry-n-02 |
+| ROLEV-03 | 90 | Complete | Fresh evidence: .planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-VERIFICATION.md#rolev-03---deterministic-handoff-and-iterate-verification-context ; normalization: .planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-NORMALIZATION.md#legacy-to-fresh-evidence-reconciliation |
+| ROLEV-04 | 87 | Complete | Phase 87 role-view verification |
+| GOVV-01 | 88 | Complete | Phase 88 governance verification |
+| GOVV-02 | 89 | Complete | Phase 89 runtime governance evidence |
+| GOVV-03 | 89 | Complete | Phase 89 runtime governance evidence |
+| GOVV-04 | 88 | Complete | Phase 88 governance verification |
+| GOVV-05 | 89 | Complete | Phase 89 closure emission evidence |
 
 **Coverage:**
 - v1 requirements: 16 total
@@ -81,7 +81,7 @@
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-13 after v3.5.0 milestone audit and planned gap-closure phases 89-90*
+*Last updated: 2026-04-13 after Phase 90 evidence-backed ROLEV closure and milestone audit normalization*
 
 **Milestone:** v3.1.0 — Operator Surface Unification  
 **Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.  
