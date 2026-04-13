@@ -719,13 +719,14 @@ Plans:
 **Gap Closure:** Resolves critical findings from `.planning/v3.5.0-MILESTONE-AUDIT.md`.
 
 ### Phase 90: Retrieval Verification Backfill and Audit Normalization
-**Goal:** Backfill missing Phase 86 verification evidence and normalize retrieval requirement closure plus Nyquist metadata consistency.
+**Goal:** Backfill missing Phase 86 verification evidence and complete retrieval closure across requirements, roadmap, and milestone audit lineage.
 **Requirements Mapped:** ROLEV-01, ROLEV-02, ROLEV-03
 **Depends on:** Phase 89
-**Status:** 🚧 Planned (2026-04-13)
+**Status:** ✅ Complete (2026-04-13) — fresh evidence captured and retrieval closure normalized
 **Plans:** 2 plans
 - `90-01-PLAN.md` — Re-run retrieval verification flows, generate fresh ROLEV evidence, and produce append-only normalization artifacts.
 - `90-02-PLAN.md` — Promote ROLEV closure across requirements, milestone audit, and roadmap traceability using fresh Phase 90 evidence.
+**Closure Evidence:** `.planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-VERIFICATION.md` and `.planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-NORMALIZATION.md` support ROLEV-01, ROLEV-02, and ROLEV-03.
 **Gap Closure:** Resolves partial requirement coverage findings from `.planning/v3.5.0-MILESTONE-AUDIT.md`.
 
 ---
