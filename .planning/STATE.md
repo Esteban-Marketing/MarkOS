@@ -18,7 +18,7 @@ progress:
 
 - Milestone: v3.5.0 - Ultimate Literacy Vault
 - Current phase: 90 (complete)
-- Next step: milestone audit passed; route to v3.5.0 closeout
+- Next step: v3.5.0 archived; start next milestone definition when ready
 
 ## Milestone Ledger (73-88)
 

@@ -1,32 +1,28 @@
 # MarkOS (MarkOS Protocol)
 
-## Current State: v3.4.0 Shipped — Complete Branding Engine
+## Current State: v3.5.0 Shipped — Ultimate Literacy Vault
 
-**Goal:** Deliver a complete branding engine from concept and pain-point mapping through visual identity and deterministic design-system generation, with canonical Next.js + Tailwind v4 + shadcn/ui implementation outputs and governance-safe version evolution.
+**Goal:** Deliver a vault-first literacy operating model with durable artifact provenance, deterministic retrieval modes, role-aware views, and governance-safe closure evidence.
 
-**Target features:**
-- Brand strategy pipeline from raw concept inputs to audience pain/needs/expectation mapping, positioning, and messaging pillars
-- Deterministic visual identity outputs including palette roles, typography hierarchy, visual language rules, and voice cues
-- Token and theme compiler that maps strategy and identity into Tailwind v4 + shadcn/ui-ready contracts
-- Component-rich UI contract and starter implementation assets for Next.js App Router
-- Governance and versioning flow for safe publish/rollback and cross-role actionable handoffs
+**Target features delivered:**
+- Canonical vault structure and PageIndex-backed literacy contracts
+- Durable ingestion and bidirectional sync with provenance-preserving organization workflows
+- Deterministic retrieval modes and execution handoff payloads for operator and agent use
+- Governance telemetry, closeout verification, and milestone evidence normalization across the literacy lane
 
-**Status:** v3.4.0 shipped on 2026-04-12 with milestone audit passed (12/12 requirements). Branding-system scope is now archived and closed.
+**Status:** v3.5.0 shipped on 2026-04-13 with milestone audit passed (16/16 requirements satisfied; Phase 90 closure complete). Literacy-vault scope is now archived and closed.
 
-## Current Milestone: v3.5.0 — Ultimate Literacy Vault
+## Current Milestone: awaiting definition
 
-**Goal:** Establish a vault-first literacy operating model that keeps the standards layer durable, searchable, and role-actionable while preserving non-regression guarantees from shipped branding and governance surfaces.
+**Goal:** Select and scope the next milestone before opening new implementation phases.
 
-**Target features:**
-- Define a canonical vault structure and retrieval contract for literacy artifacts.
-- Add durable ingestion and organization workflows that preserve provenance and decision context.
-- Deliver role-aware retrieval views and execution handoffs for strategy, content, and operator workflows.
+**Current posture:** No active milestone is open yet. The next milestone should be created explicitly through the normal milestone-definition flow.
 
 ## Next Milestone Goals
 
-- Define scoped v3.5.0 requirements and phase mapping before opening implementation plans.
-- Preserve v3.4.0 branding determinism, governance, and UAT guarantees as non-regression baselines.
-- Keep vault-first scope additive and avoid broad CRM/outbound expansion during this milestone.
+- Define the next scoped milestone and fresh requirements before starting new implementation work.
+- Preserve the shipped literacy-vault and governance guarantees as non-regression baselines.
+- Capture any deferred hardening debt as backlog work rather than silently carrying it into the next milestone.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -197,4 +193,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-12 after v3.5.0 milestone kickoff.
+Last updated: 2026-04-13 after v3.5.0 milestone closeout.
