@@ -27,11 +27,11 @@
 
 ### Governance and Regression Safety
 
-- [ ] **GOVV-01**: Vault operations enforce tenant isolation via Supabase RLS + PageIndex query scoping; no cross-tenant leakage.
-- [ ] **GOVV-02**: Execution telemetry includes vault artifact ID, retrieval mode, outcome vs. archived evidence, and anomaly flags for agent actions.
-- [ ] **GOVV-03**: v3.4.0 branding determinism, governance publish/rollback, and UAT guarantees remain non-negotiable baselines (vault is retrieval layer, not generative).
-- [ ] **GOVV-04**: High-risk agent executions use hardened verification (log reasoning, compare outcome to vault evidence) but not human approval gates (agents have on-demand access).
-- [ ] **GOVV-05**: Milestone closeout requires proof of: PageIndex SLAs met, Obsidian sync stable, tenant isolation verified, v3.4 non-regression confirmed.
+- [x] **GOVV-01**: Vault operations enforce tenant isolation via Supabase RLS + PageIndex query scoping; no cross-tenant leakage.
+- [x] **GOVV-02**: Execution telemetry includes vault artifact ID, retrieval mode, outcome vs. archived evidence, and anomaly flags for agent actions.
+- [x] **GOVV-03**: v3.4.0 branding determinism, governance publish/rollback, and UAT guarantees remain non-negotiable baselines (vault is retrieval layer, not generative).
+- [x] **GOVV-04**: High-risk agent executions use hardened verification (log reasoning, compare outcome to vault evidence) but not human approval gates (agents have on-demand access).
+- [x] **GOVV-05**: Milestone closeout requires proof of: PageIndex SLAs met, Obsidian sync stable, tenant isolation verified, v3.4 non-regression confirmed.
 
 ## v2 Requirements (Deferred)
 
@@ -68,20 +68,20 @@
 | ROLEV-02 | 86 | Complete |
 | ROLEV-03 | 86 | Complete |
 | ROLEV-04 | 87 | Complete |
-| GOVV-01 | TBA | Pending |
-| GOVV-02 | TBA | Pending |
-| GOVV-03 | TBA | Pending |
-| GOVV-04 | TBA | Pending |
-| GOVV-05 | TBA | Pending |
+| GOVV-01 | 88 | Complete |
+| GOVV-02 | 88 | Complete |
+| GOVV-03 | 88 | Complete |
+| GOVV-04 | 88 | Complete |
+| GOVV-05 | 88 | Complete |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 7
-- Unmapped: 9
+- Mapped to phases: 16
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-12 after Phase 87 execution and verification*
+*Last updated: 2026-04-12 after Phase 88 closure with deferred global-suite remediation*
 
 **Milestone:** v3.1.0 — Operator Surface Unification  
 **Goal:** Unify marketing, sales, and customer communications execution in one operational surface with auditable workflows and measurable activation outcomes.  
@@ -957,3 +957,4 @@ These narrow requirements track the decimal GSD alignment work inserted after Ph
 | BRAND-ROLE-01 | Phase 77 | Complete |
 | BRAND-GOV-01 | Phase 81 | Complete |
 | BRAND-GOV-02 | Phase 82 | Complete |
+

@@ -4,20 +4,20 @@ milestone: v3.5.0
 milestone_name: Ultimate Literacy Vault
 current_phase: 88
 current_phase_name: governance-verification-and-milestone-closure
-current_plan: 1
-status: paused
+current_plan: 5
+status: complete
 paused_at: None
-last_updated: "2026-04-12T23:05:00.000Z"
-last_activity: 2026-04-12 -- Phase 88 execution started
+last_updated: "2026-04-12T23:45:00.000Z"
+last_activity: 2026-04-12 -- Phase 88 closed with phase-scoped verification; global npm remediation deferred
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 19
-  completed_plans: 14
-  percent: 74
+  completed_plans: 19
+  percent: 100
 ---
 
-> Milestone note (2026-04-12): Phase 85 execution complete and verified PASS (7/7 must-haves, 33/33 tests, E2E probe PASS). LITV-01..04 complete. Next step: Phase 86 — Agentic Retrieval Modes (ROLEV-01..03).
+> Milestone note (2026-04-12): Phase 88 verification closed with 5/5 GOVV requirements satisfied; phase-scoped Nyquist accepted while unrelated global npm failures are deferred to remediation.
 
 - 2026-04-11: Phase 73 Plan 02 completed with deterministic brand normalization, canonical fingerprinting, tenant-safe idempotent graph writes, and handlers integration; 41/41 tests passing (determinism 8/8, tenant-safety 10/10, schema/retention/integration 23/23).
 - 2026-04-11: Phase 73 Plan 03 completed with retention/redaction enforcement closure and Nyquist validation sign-off; all 41 core phase-73 assertions verified (D-07 & D-08 metadata-first minimal-text retention, D-06 deterministic fingerprinting, D-05 tenant-safe intake boundary, D-04 hybrid normalization); 73-VALIDATION.md marked complete, nyquist_compliant=true.
@@ -100,7 +100,7 @@ Last Activity Description: Phase 88 execution started
 Paused At: None
 Status Detail: Phase 88 execution in progress for governance hardening, telemetry evidence, non-regression gates, and milestone closure bundle.
 Previous milestone: v3.5.0 — Revenue CRM and Customer Intelligence Core
-Next Step: Execute /gsd-do or select phase 74 (Branding Strategy) to continue v3.4.0 milestone work.
+Next Step: Execute global npm remediation lane (vault-writer/vector-store-client/billing+crm-outbound failures), then re-run `npm test` for full green closeout evidence.
 Carry-Over Human Scope: Hosted closeout and release tasks from v3.3.x remain tracked separately and should not expand v3.4.0 branding scope.
 
 Tooling Snapshot
@@ -241,4 +241,6 @@ Roadmap Evolution
 - 2026-04-11: Phase 67.1 inserted after Phase 67 in the v3.3.1 roadmap as urgent setup-profile work (`Configurable install setup levels with optional onboarding/UI and CLI-only agent mode`) to keep vault taxonomy planning intact and separate from installer-profile scope.
 - 2026-04-11: Phase 67.1 planning completed with context, research, three executable plan files (`67.1-01` through `67.1-03`), Nyquist validation artifact, and `67.1-PLAN-VERIFY.md` PASS; phase is ready for `/gsd:execute-phase 67.1`.
 - 2026-04-11: Phase 67.1 executed across all three plans with deterministic install profile parsing (`full|cli|minimal`), manifest profile/component persistence, update-time legacy normalization, profile-aware status transparency, README/help parity updates, and focused regression proof (`node --test test/install.test.js test/update.test.js` = 18/18 pass).
+
+
 

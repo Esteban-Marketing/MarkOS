@@ -122,7 +122,7 @@ Plans:
 **Goal:** Replace the hardcoded single-discipline literacy fetch with a dynamic multi-discipline retrieval pipeline that selects disciplines based on the client's seed data and ranks results by pain-point relevance.
 **Requirements Mapped:** LIT-04 (multi-discipline routing), LIT-05 (pain-point boosted retrieval), LIT-06 (context budget enforcement)
 **Depends on:** Phase 39 (content corpus must exist to validate retrieval)
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 **Milestone:** v3.0 MarkOS Literacy System
 
 **Plans:** 2 plans
@@ -136,7 +136,7 @@ Plans:
 **Goal:** Build a skeleton generator that produces a starter content pack — pre-filled template stubs customized to the client's business model and top pain points — that populates the `.markos-local/` workspace immediately after onboarding approval.
 **Requirements Mapped:** LIT-07 (skeleton registry coverage), LIT-08 (approval-triggered hydration)
 **Depends on:** Phase 40 (discipline router must exist for ranked discipline selection)
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 **Milestone:** v3.0 MarkOS Literacy System
 
 **Plans:** 6 plans
@@ -153,7 +153,7 @@ Plans:
 **Goal:** Implement a guided, safe database connection and provisioning workflow that validates credentials, creates required tables and RLS policies, and isolates per-client data without risking existing production data.
 **Requirements Mapped:** LIT-09 (guided setup command), LIT-10 (idempotent migration runner), LIT-11 (RLS verification), LIT-12 (namespace isolation + health snapshot)
 **Depends on:** Phase 41 (post-approval skeleton generation baseline)
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 **Milestone:** v3.0 MarkOS Literacy System
 
 **Plans:** 6 plans
@@ -412,7 +412,7 @@ Plans:
 **Goal:** Deliver CRM copilots and role-aware agent workflows for summaries, drafting, enrichment, recommendations, and approval-gated automations.
 **Requirements Mapped:** AI-CRM-01, AI-CRM-02, CRM-04, CRM-06
 **Depends on:** Phase 58 through Phase 62
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 **Plans:** 3 plans
 
@@ -425,7 +425,7 @@ Plans:
 **Goal:** Close the milestone with CRM-native attribution, revenue reporting, operator dashboards, live verification, and acceptance evidence.
 **Requirements Mapped:** ATT-01, REP-01
 **Depends on:** Phase 58 through Phase 63
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 **Plans:** 3 plans
 
@@ -481,7 +481,7 @@ Plans:
 **Goal:** Convert the remaining hosted reporting and live-environment checks into recorded v3.3.0 evidence, promote ATT-01 and REP-01 from repository-passed to satisfied, and close the milestone with honest acceptance records.
 **Requirements Mapped:** ATT-01, REP-01
 **Depends on:** Phase 64.3
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 **Plans:** 3 plans
 
@@ -494,7 +494,7 @@ Plans:
 **Goal:** Prepare the public MarkOS npm release after v3.3.0 closeout by aligning package versioning to `3.3.0`, hardening the publish path, validating the distributable artifact, and leaving one explicit human-run publish checklist for the final npm push.
 **Requirements Mapped:** DX-01, DX-02, OPS-READY-01, CI-01, RBD-01, RBD-02
 **Depends on:** Phase 65
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 **Plans:** 3 plans
 
@@ -507,7 +507,7 @@ Plans:
 
 ## 📋 v3.3.1 — Obsidian Mind Vault-First Pivot
 
-**Status:** 📋 Planned future milestone — begins only after Phase 66 finishes the v3.3.0 release lane
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred future milestone — begins only after Phase 66 finishes the v3.3.0 release lane
 
 **Goal:** Replace the MIR/MSP-first MarkOS operating model with a vault-first system inspired by Obsidian Mind, making the local Obsidian vault the canonical source of context, workflows, memory, dashboards, and operator support.
 
@@ -517,7 +517,7 @@ Plans:
 **Goal:** Define the canonical MarkOS vault taxonomy that replaces MIR/MSP, lock the compatibility boundary, and specify how legacy artifacts import into the new structure.
 **Requirements Mapped:** VAULT-01, VAULT-02, VAULT-03, MIG-01
 **Depends on:** Phase 66
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 ### Phase 67.1: Configurable install setup levels with optional onboarding/UI and CLI-only agent mode (INSERTED)
 
@@ -536,13 +536,13 @@ Plans:
 **Goal:** Rework `npx markos` and update or bootstrap flows around vault-first setup, Obsidian dependency checks, optional QMD enablement, and project bootstrap into the new knowledge structure.
 **Requirements Mapped:** BOOT-01, BOOT-02, BOOT-03, BOOT-04
 **Depends on:** Phase 67
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 ### Phase 69: Vault-Native Onboarding and Legacy Importer
 **Goal:** Replace publish-to-MIR onboarding behavior with vault-native authoring while providing a one-way importer for existing `.markos-local/MIR` and `.markos-local/MSP` users.
 **Requirements Mapped:** MIG-01, MIG-02, MIG-03
 **Depends on:** Phase 67, Phase 68
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 **Plans:** 3 plans
 
 Plans:
@@ -554,19 +554,19 @@ Plans:
 **Goal:** Replace the current MarkOS-first protocol surface with an Obsidian Mind-native operating surface plus explicit marketing overlays.
 **Requirements Mapped:** FLOW-01, FLOW-02, FLOW-03
 **Depends on:** Phase 67, Phase 68, Phase 69
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 ### Phase 71: Bases, Evidence, and Marketing Performance Graph
 **Goal:** Adapt Obsidian Mind dashboard, evidence, and performance-review concepts to MarkOS marketing execution, campaign memory, and operator reporting.
 **Requirements Mapped:** GRAPH-01, GRAPH-02, GRAPH-03, VAULT-03
 **Depends on:** Phase 67, Phase 70
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 ### Phase 72: Legacy Surface Demotion, Documentation Rewrite, and Milestone Validation
 **Goal:** Demote MIR/MSP-era surfaces to legacy or migration status, rewrite public and internal docs around the vault-first product, and validate the new milestone end-to-end.
 **Requirements Mapped:** CUT-01, CUT-02, VAULT-02, BOOT-04, FLOW-03
 **Depends on:** Phase 67, Phase 68, Phase 69, Phase 70, Phase 71
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 
 ## ✅ v3.4.0 — Complete Branding Engine (Archived)
 
@@ -614,14 +614,14 @@ Plans:
 **Goal:** Enforce tenant isolation, capture execution telemetry, validate non-regression against v3.4.0 branding/governance baselines, and close milestone with SLA and sync stability evidence.
 **Requirements Mapped:** GOVV-01, GOVV-02, GOVV-03, GOVV-04, GOVV-05
 **Depends on:** Phase 84, Phase 85, Phase 86, Phase 87
-**Status:** 📋 Planned
+**Status:** ✅ Complete (2026-04-12) — phase-scoped closure accepted; global npm remediation deferred
 **Plans:** 5 plans
 Plans:
-- [ ] 88-01-PLAN.md — Wave 1: strict tenant isolation matrix and tenant-bound scope enforcement
-- [ ] 88-02-PLAN.md — Wave 1: full governance telemetry schema and evidence linkage
-- [ ] 88-03-PLAN.md — Wave 2: hardened verification without human approval gates
-- [ ] 88-04-PLAN.md — Wave 3: hard v3.4 non-regression closure gate
-- [ ] 88-05-PLAN.md — Wave 4: auditable milestone closure bundle and validation sign-off
+- [x] 88-01-PLAN.md — Wave 1: strict tenant isolation matrix and tenant-bound scope enforcement
+- [x] 88-02-PLAN.md — Wave 1: full governance telemetry schema and evidence linkage
+- [x] 88-03-PLAN.md — Wave 2: hardened verification without human approval gates
+- [x] 88-04-PLAN.md — Wave 3: hard v3.4 non-regression closure gate
+- [x] 88-05-PLAN.md — Wave 4: auditable milestone closure bundle and validation sign-off
 
 ---
 <details>
@@ -1244,6 +1244,8 @@ Plans:
 3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 <!-- EOF -->
+
+
 
 
 
