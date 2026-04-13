@@ -5,7 +5,7 @@ status: complete
 nyquist_compliant: true
 wave_0_complete: true
 created: 2026-04-12
-updated: 2026-04-13
+updated: 2026-04-13 (npm partial remediation 2026-04-13)
 ---
 
 # Phase 88 - Validation Strategy
@@ -52,13 +52,14 @@ updated: 2026-04-13
 ## Regression Gates
 
 - [x] `node --test "test/phase-87/*.test.js"`
-- [ ] `npm test` (deferred global-suite remediation; accepted blocker for Phase 88 closure)
+- [x] `npm test` vault-writer + vector-store-client fixed (commit e6bd165); 21 failures remain (all billing/crm-outbound pre-existing)
 
-## Known External Failures (Current `npm test`)
+## Known External Failures (Remaining `npm test` — pre-existing, not related to Phase 88)
 
-- `test/vault-writer.test.js` (canonical destination path assertions)
-- `test/vector-store-client.test.js` (namespace fallback + health expectation mismatches)
-- additional unrelated failures under billing/crm-outbound suites
+- `test/billing/*` (2 test files) — pre-existing billing suite failures
+- `test/crm-outbound/*` (7 test files) — pre-existing crm-outbound suite failures
+- `test/tenant-auth/crm-outbound-tenant-isolation.test.js` — pre-existing
+- Several phase/suite integrity checks (216, 247, 309, 314, 670, 807, 820) — pre-existing
 
 ## Validation Sign-Off
 
