@@ -9,10 +9,15 @@ const {
 } = require('../helpers/billing-fixtures.cjs');
 
 function loadTsCommonJsModule(filePath) {
+  const ts = require('typescript');
   const source = fs.readFileSync(filePath, 'utf8');
+  const { outputText } = ts.transpileModule(source, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
+    fileName: filePath,
+  });
   const module = { exports: {} };
-  const wrapped = new vm.Script(`(function (exports, require, module, __filename, __dirname) {\n${source}\n})`, {
-    filename: filePath,
+  const wrapped = new vm.Script(`(function (exports, require, module, __filename, __dirname) {\n${outputText}\n})`, {
+    filename: filePath.replace(/\.ts$/, '.js'),
   });
   const localRequire = (specifier) => {
     if (specifier.startsWith('.')) {
