@@ -134,8 +134,13 @@ function resolveDeterministicDestination({
   const resolvedDiscipline = normalizeDiscipline(discipline || entry.vault_family);
   const canonicalSlug = normalizeStableSlug(slug || entry.note_family);
   const canonicalRoot = getCanonicalVaultRootPath(config);
+  // Use the section registry's canonical relative_path only when no custom slug is supplied.
+  // A custom slug (different from the default note_family) gets placed under Disciplines/.
+  const relPath = canonicalSlug !== entry.note_family
+    ? `Disciplines/${resolvedDiscipline.title}/${canonicalSlug}.md`
+    : (entry.relative_path || `Disciplines/${resolvedDiscipline.title}/${canonicalSlug}.md`);
   const disciplineRootPath = `${canonicalRoot}/Disciplines/${resolvedDiscipline.title}`;
-  const destinationPath = `${disciplineRootPath}/${canonicalSlug}.md`;
+  const destinationPath = `${canonicalRoot}/${relPath}`;
 
   const destination = {
     section_key: sectionKey,
@@ -145,7 +150,7 @@ function resolveDeterministicDestination({
     discipline: resolvedDiscipline.key,
     discipline_root: resolvedDiscipline.title,
     canonical_slug: canonicalSlug,
-    relative_path: `Disciplines/${resolvedDiscipline.title}/${canonicalSlug}.md`,
+    relative_path: relPath,
     destination_path: destinationPath,
     discipline_root_path: disciplineRootPath,
     source_mode: sourceMode,
@@ -154,7 +159,7 @@ function resolveDeterministicDestination({
       vaultFamily: resolvedDiscipline.title,
       noteFamily: entry.note_family,
       projectSlug,
-      suffix: canonicalSlug,
+      suffix: canonicalSlug !== entry.note_family ? canonicalSlug : null,
     }),
     legacy_origin: legacyOrigin,
   };

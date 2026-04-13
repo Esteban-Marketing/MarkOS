@@ -219,7 +219,7 @@ async function healthCheck() {
     return {
       ok: false,
       mode,
-      status: 'providers_degraded',
+      status: upstashConfigured ? 'providers_degraded' : 'providers_unconfigured',
       memory_state: 'degraded',
       providers,
       error: 'SUPABASE_* variables are required for active PageIndex retrieval.',
@@ -259,16 +259,17 @@ async function healthCheck() {
   }
 
   const activeReady = providers.supabase.ok && providers.pageindex.ok;
-  const legacyWarning = upstashConfigured && !providers.upstash_vector.ok;
+  const upstashFailed = upstashConfigured && !providers.upstash_vector.ok;
+  const overallOk = activeReady && !upstashFailed;
 
   return {
-    ok: activeReady,
+    ok: overallOk,
     mode,
-    status: activeReady ? (legacyWarning ? 'providers_ready_legacy_warning' : 'providers_ready') : 'providers_degraded',
+    status: overallOk ? 'providers_ready' : 'providers_degraded',
     memory_state: activeReady ? 'enabled' : 'degraded',
     providers,
-    warning: legacyWarning
-      ? 'Legacy Upstash provider is configured but not reachable; active retrieval remains ready on Supabase/PageIndex.'
+    warning: upstashFailed
+      ? 'Upstash provider is configured but not reachable.'
       : null,
     boot: _bootReport,
   };
@@ -371,9 +372,36 @@ async function upsertSeed(slug, seed) {
   return results;
 }
 
+async function _upstashContextFallback(slug, section, query, nResults) {
+  const index = getUpstashIndex();
+  if (!index) return [];
+  const candidates = getSectionCollectionReadCandidates(
+    String(slug || '').trim(),
+    String(section || '').trim()
+  );
+  for (const ns of candidates) {
+    try {
+      const results = await index.namespace(ns).query({
+        data: String(query || 'summary'),
+        topK: Math.max(1, Number(nResults) || 1),
+      });
+      if (Array.isArray(results) && results.length > 0) {
+        return results
+          .slice(0, Math.max(1, Number(nResults) || 1))
+          .map((r) => String(r.data || ''));
+      }
+    } catch {
+      // try next candidate
+    }
+  }
+  return [];
+}
+
 async function getContext(slug, section, query = 'summary', nResults = 1) {
   const client = getSupabaseClient();
-  if (!client) return [];
+  if (!client) {
+    return _upstashContextFallback(slug, section, query, nResults);
+  }
 
   const normalizedSlug = String(slug || '').trim();
   const normalizedSection = String(section || '').trim();
@@ -406,9 +434,32 @@ async function getContext(slug, section, query = 'summary', nResults = 1) {
   return prioritized.map((entry) => entry.text);
 }
 
+async function _upstashLiteracyContextFallback(discipline, query, filters, topK) {
+  const index = getUpstashIndex();
+  if (!index) return [];
+  const normalizedDiscipline = String(discipline || '').trim();
+  if (!normalizedDiscipline) return [];
+  const namespaceName = buildStandardsNamespaceName(normalizedDiscipline);
+  const filter = buildLiteracyFilter(filters);
+  try {
+    const results = await index.namespace(namespaceName).query({
+      data: String(query || 'summary'),
+      topK: Math.max(1, Number(topK) || 5),
+      filter,
+    });
+    return (Array.isArray(results) ? results : [])
+      .map((r) => ({ text: String(r.data || ''), metadata: r.metadata || {}, score: r.score || 0 }))
+      .filter((entry) => entry.text.trim().length > 0);
+  } catch {
+    return [];
+  }
+}
+
 async function getLiteracyContext(discipline, query = 'summary', filters = {}, topK = 5) {
   const client = getSupabaseClient();
-  if (!client) return [];
+  if (!client) {
+    return _upstashLiteracyContextFallback(discipline, query, filters, topK);
+  }
 
   const normalizedDiscipline = String(discipline || '').trim();
   if (!normalizedDiscipline) return [];
