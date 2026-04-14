@@ -25,9 +25,23 @@
 - [ ] **DRT-09**: Deep research runs are auditable and safe, preserving provenance and change history for every generated recommendation.
 - [ ] **DRT-10**: A verification suite measures relevance, grounding, and personalization lift across representative industries, companies, and audiences.
 
+### Provider and Connector Layer
+
+- [ ] **DRT-11**: The deep research engine supports pluggable provider routing so MarkOS can use official MCP endpoints or direct APIs when available, while falling back to internal vault-only retrieval when they are not.
+- [ ] **DRT-12**: MarkOS exposes a read-only MCP-compatible company-knowledge surface with search and fetch semantics for literacy, MIR, MSP, and approved evidence packs.
+- [ ] **DRT-13**: External research connectors preserve citations, freshness metadata, domain allow-lists, and provider-level audit records for every live research run.
+
 ## Discussion Notes
 
 This milestone is intended to extend the shipped literacy-vault foundation rather than replace it. The new engine should use the existing retrieval and governance system as a base, then layer on smarter filtering, stronger synthesis, and more precise MIR/MSP regeneration.
+
+### Preferred 2026 integration posture
+
+- Extend the existing Tavily-based search and enrichment surfaces already present in MarkOS.
+- Use OpenAI Responses web search and deep-research-capable workflows where long-running external synthesis is beneficial.
+- Add a MarkOS-owned read-only MCP layer for internal evidence and company knowledge retrieval.
+- Use Firecrawl selectively for structured site scrape, branding extraction, and richer web ingestion when raw search results are not enough.
+- Keep all external-provider use optional, domain-restricted where needed, and safe by default.
 
 ### Vault Foundation
 
