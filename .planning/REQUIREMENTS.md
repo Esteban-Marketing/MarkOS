@@ -1,29 +1,29 @@
 # Requirements: MarkOS v3.7.0 Neuro-Adaptive Literacy Intelligence
 
 **Defined:** 2026-04-14
-**Status:** Milestone kickoff in planning
+**Status:** Milestone completed and verified
 **Core Value:** Generate marketing and business output that is deeply tailored to both the company context and the ICP's pain points, motivations, objections, and neuromarketing-relevant decision patterns.
 
 ## Active Requirements (v3.7.0)
 
 ### Literacy and Template Intelligence
 
-- [ ] **NLI-01**: Literacy artifacts encode ICP pain points, desired outcomes, objections, trust blockers, and emotional state shifts in a reusable structured format.
-- [ ] **NLI-02**: Retrieval and composition use both company context and ICP context so the same company can yield meaningfully different outputs for different audiences.
-- [ ] **NLI-03**: MarkOS ships universal but tailorable literacy templates covering B2B, B2C, SaaS, agencies, services, consulting, info products, and ecommerce patterns.
-- [ ] **NLI-04**: Literacy templates capture funnel stage, buying maturity, messaging naturality expectations, and brand-safe tone guidance.
+- [x] **NLI-01**: Literacy artifacts encode ICP pain points, desired outcomes, objections, trust blockers, and emotional state shifts in a reusable structured format.
+- [x] **NLI-02**: Retrieval and composition use both company context and ICP context so the same company can yield meaningfully different outputs for different audiences.
+- [x] **NLI-03**: MarkOS ships universal but tailorable literacy templates covering B2B, B2C, SaaS, agencies, services, consulting, info products, and ecommerce patterns.
+- [x] **NLI-04**: Literacy templates capture funnel stage, buying maturity, messaging naturality expectations, and brand-safe tone guidance.
 
 ### Neuromarketing and Audience Understanding
 
-- [ ] **NLI-05**: MarkOS can map ICPs to likely motivations, fears, trust drivers, objection patterns, and relevant neuromarketing trigger clusters.
-- [ ] **NLI-06**: Agent outputs can explain why a selected angle, trigger pattern, or persuasion approach fits the target ICP.
-- [ ] **NLI-07**: The system uses the existing neuromarketing reference model as a governed foundation rather than ad hoc persuasion heuristics.
+- [x] **NLI-05**: MarkOS can map ICPs to likely motivations, fears, trust drivers, objection patterns, and relevant neuromarketing trigger clusters.
+- [x] **NLI-06**: Agent outputs can explain why a selected angle, trigger pattern, or persuasion approach fits the target ICP.
+- [x] **NLI-07**: The system uses the existing neuromarketing reference model as a governed foundation rather than ad hoc persuasion heuristics.
 
 ### Agent and Skill Training Alignment
 
-- [ ] **NLI-08**: Research, planning, and generation agents consume the upgraded literacy signals consistently across prompts, skills, and review paths.
-- [ ] **NLI-09**: MarkOS can detect and flag shallow, generic, or template-sounding output before it is treated as premium-quality content.
-- [ ] **NLI-10**: The upgraded training and literacy logic remains portable across MCP, API, CLI, editor, and internal automation surfaces.
+- [x] **NLI-08**: Research, planning, and generation agents consume the upgraded literacy signals consistently across prompts, skills, and review paths.
+- [x] **NLI-09**: MarkOS can detect and flag shallow, generic, or template-sounding output before it is treated as premium-quality content.
+- [x] **NLI-10**: The upgraded training and literacy logic remains portable across MCP, API, CLI, editor, and internal automation surfaces.
 
 ### Quality and Governance
 
@@ -47,16 +47,16 @@ This milestone is intended to upgrade the value of MarkOS literacy and agent beh
 
 | Requirement | Planned Phase | Status | Evidence |
 |-------------|---------------|--------|----------|
-| NLI-01 | 96 | Planned | Milestone context brief |
-| NLI-02 | 96 | Planned | Milestone context brief |
-| NLI-03 | 97 | Planned | Milestone context brief |
-| NLI-04 | 97 | Planned | Milestone context brief |
-| NLI-05 | 98 | Planned | Milestone context brief |
-| NLI-06 | 98 | Planned | Milestone context brief |
-| NLI-07 | 98 | Planned | Existing neuro reference + milestone context |
-| NLI-08 | 99 | Planned | Milestone context brief |
-| NLI-09 | 99 | Planned | Milestone context brief |
-| NLI-10 | 99 | Planned | Existing cross-surface deep research baseline |
+| NLI-01 | 96 | Complete | Phase 96 schema, taxonomy, and retrieval verification |
+| NLI-02 | 96 | Complete | Phase 96 context-pack and retrieval integration evidence |
+| NLI-03 | 97 | Complete | Phase 97 universal template family and fallback verification |
+| NLI-04 | 97 | Complete | Phase 97 stage, tone, and naturality guidance evidence |
+| NLI-05 | 98 | Complete | Phase 98 ICP reasoning and ranking verification |
+| NLI-06 | 98 | Complete | Phase 98 explanation and winner-contract evidence |
+| NLI-07 | 98 | Complete | Phase 98 governed neuromarketing guardrail evidence |
+| NLI-08 | 99 | Complete | Phase 99 shared tailoring alignment and planner/reviewer wiring |
+| NLI-09 | 99 | Complete | Phase 99 rewrite-required and anti-generic enforcement evidence |
+| NLI-10 | 99 | Complete | Phase 99 cross-surface portability verification |
 | NLI-11 | 99.1 | Complete | Phase 99.1 verification ledger + additive quality scorecard tests |
 | NLI-12 | 99.1 | Complete | Phase 99.1 ethical guardrail and closeout-gate evidence |
 | NLI-13 | 99.1 | Complete | Phase 99.1 carried regression slice and non-regression closeout proof |

@@ -2,6 +2,7 @@
 
 const crypto = require('crypto');
 const { createPageIndexAdapter } = require('./pageindex/pageindex-client.cjs');
+const { OPTIONAL_TAG_FIELDS, normalizeNeuroLiteracyMetadata } = require('./research/neuro-literacy-schema.cjs');
 
 let runtimeConfig = {};
 let _supabaseClient = null;
@@ -39,6 +40,23 @@ function buildStandardsNamespaceName(discipline) {
   return `${STANDARDS_NAMESPACE_PREFIX}-${normalized}`;
 }
 
+function addContainsClauses(parts, filters, fieldName, singleAlias = null) {
+  const values = normalizeFilterList(filters[fieldName]);
+  const singleValues = singleAlias ? normalizeFilterList(filters[singleAlias]) : [];
+  const clauses = Array.from(new Set([...values, ...singleValues]))
+    .map((value) => `
+${fieldName} CONTAINS '${escapeFilterValue(value)}'`.trim());
+
+  if (clauses.length === 1) {
+    parts.push(clauses[0]);
+    return;
+  }
+
+  if (clauses.length > 1) {
+    parts.push(`(${clauses.join(' OR ')})`);
+  }
+}
+
 function buildLiteracyFilter(filters = {}) {
   const parts = ["status = 'canonical'"];
 
@@ -54,19 +72,10 @@ function buildLiteracyFilter(filters = {}) {
     parts.push(`content_type = '${escapeFilterValue(filters.content_type)}'`);
   }
 
-  if (filters.pain_point_tag) {
-    parts.push(`pain_point_tags CONTAINS '${escapeFilterValue(filters.pain_point_tag)}'`);
-  }
+  addContainsClauses(parts, filters, 'pain_point_tags', 'pain_point_tag');
 
-  if (Array.isArray(filters.pain_point_tags) && filters.pain_point_tags.length > 0) {
-    const tagClauses = filters.pain_point_tags
-      .map((tag) => String(tag || '').trim())
-      .filter(Boolean)
-      .map((tag) => `pain_point_tags CONTAINS '${escapeFilterValue(tag)}'`);
-
-    if (tagClauses.length > 0) {
-      parts.push(`(${tagClauses.join(' OR ')})`);
-    }
+  for (const fieldName of OPTIONAL_TAG_FIELDS) {
+    addContainsClauses(parts, filters, fieldName);
   }
 
   return parts.join(' AND ');
@@ -479,6 +488,15 @@ async function getLiteracyContext(discipline, query = 'summary', filters = {}, t
       business_model: normalizeFilterList(filters.business_model),
       funnel_stage: normalizeFilterList(filters.funnel_stage),
       content_type: normalizeFilterList(filters.content_type),
+      desired_outcome_tags: normalizeFilterList(filters.desired_outcome_tags),
+      objection_tags: normalizeFilterList(filters.objection_tags),
+      trust_driver_tags: normalizeFilterList(filters.trust_driver_tags),
+      trust_blocker_tags: normalizeFilterList(filters.trust_blocker_tags),
+      emotional_state_tags: normalizeFilterList(filters.emotional_state_tags),
+      neuro_trigger_tags: normalizeFilterList(filters.neuro_trigger_tags),
+      archetype_tags: normalizeFilterList(filters.archetype_tags),
+      naturality_tags: normalizeFilterList(filters.naturality_tags),
+      icp_segment_tags: normalizeFilterList(filters.icp_segment_tags),
       tenant_scope: String(filters.tenant_scope || filters.tenantId || runtimeConfig.tenant_scope || 'global').trim(),
     },
     provenance_required: true,
@@ -513,7 +531,7 @@ async function getLiteracyContext(discipline, query = 'summary', filters = {}, t
     retrieveDocuments: async ({ envelope: normalizedEnvelope }) => {
       let retrievalQuery = client
         .from('markos_literacy_chunks')
-        .select('chunk_id, doc_id, chunk_text, discipline, sub_discipline, business_model, funnel_stage, content_type, pain_point_tags, source_ref, version, updated_at')
+        .select('chunk_id, doc_id, chunk_text, discipline, sub_discipline, business_model, funnel_stage, content_type, pain_point_tags, desired_outcome_tags, objection_tags, trust_driver_tags, trust_blocker_tags, emotional_state_tags, neuro_trigger_tags, archetype_tags, naturality_tags, icp_segment_tags, company_tailoring_profile, icp_tailoring_profile, stage_tailoring_profile, neuro_profile, source_ref, version, updated_at')
         .eq('status', 'canonical')
         .in('discipline', disciplineCandidates)
         .limit(Math.max(1, Number(topK) || 5));
@@ -529,6 +547,11 @@ async function getLiteracyContext(discipline, query = 'summary', filters = {}, t
       }
       if (normalizedEnvelope.filters.pain_point_tags.length > 0) {
         retrievalQuery = retrievalQuery.overlaps('pain_point_tags', normalizedEnvelope.filters.pain_point_tags);
+      }
+      for (const fieldName of OPTIONAL_TAG_FIELDS) {
+        if (Array.isArray(normalizedEnvelope.filters[fieldName]) && normalizedEnvelope.filters[fieldName].length > 0) {
+          retrievalQuery = retrievalQuery.overlaps(fieldName, normalizedEnvelope.filters[fieldName]);
+        }
       }
 
       const { data, error } = await retrievalQuery;
@@ -555,6 +578,19 @@ async function getLiteracyContext(discipline, query = 'summary', filters = {}, t
             funnel_stage: row.funnel_stage || null,
             content_type: row.content_type || null,
             pain_point_tags: Array.isArray(row.pain_point_tags) ? row.pain_point_tags : [],
+            desired_outcome_tags: Array.isArray(row.desired_outcome_tags) ? row.desired_outcome_tags : [],
+            objection_tags: Array.isArray(row.objection_tags) ? row.objection_tags : [],
+            trust_driver_tags: Array.isArray(row.trust_driver_tags) ? row.trust_driver_tags : [],
+            trust_blocker_tags: Array.isArray(row.trust_blocker_tags) ? row.trust_blocker_tags : [],
+            emotional_state_tags: Array.isArray(row.emotional_state_tags) ? row.emotional_state_tags : [],
+            neuro_trigger_tags: Array.isArray(row.neuro_trigger_tags) ? row.neuro_trigger_tags : [],
+            archetype_tags: Array.isArray(row.archetype_tags) ? row.archetype_tags : [],
+            naturality_tags: Array.isArray(row.naturality_tags) ? row.naturality_tags : [],
+            icp_segment_tags: Array.isArray(row.icp_segment_tags) ? row.icp_segment_tags : [],
+            company_tailoring_profile: row.company_tailoring_profile || {},
+            icp_tailoring_profile: row.icp_tailoring_profile || {},
+            stage_tailoring_profile: row.stage_tailoring_profile || {},
+            neuro_profile: row.neuro_profile || {},
             tenant_scope: normalizedEnvelope.filters.tenant_scope,
             source_ref: row.source_ref || null,
             version: row.version || null,
@@ -708,6 +744,7 @@ async function upsertLiteracyChunk(chunk) {
 
   const namespaceName = buildStandardsNamespaceName(discipline);
   const nowIso = new Date().toISOString();
+  const neuroMetadata = normalizeNeuroLiteracyMetadata(chunk);
   const metadata = {
     category: chunk.category || 'STANDARDS',
     discipline,
@@ -725,6 +762,19 @@ async function upsertLiteracyChunk(chunk) {
     last_validated: chunk.last_validated || null,
     ttl_days: typeof chunk.ttl_days === 'number' ? chunk.ttl_days : 180,
     pain_point_tags: Array.isArray(chunk.pain_point_tags) ? chunk.pain_point_tags : [],
+    desired_outcome_tags: neuroMetadata.desired_outcome_tags,
+    objection_tags: neuroMetadata.objection_tags,
+    trust_driver_tags: neuroMetadata.trust_driver_tags,
+    trust_blocker_tags: neuroMetadata.trust_blocker_tags,
+    emotional_state_tags: neuroMetadata.emotional_state_tags,
+    neuro_trigger_tags: neuroMetadata.neuro_trigger_tags,
+    archetype_tags: neuroMetadata.archetype_tags,
+    naturality_tags: neuroMetadata.naturality_tags,
+    icp_segment_tags: neuroMetadata.icp_segment_tags,
+    company_tailoring_profile: neuroMetadata.company_tailoring_profile,
+    icp_tailoring_profile: neuroMetadata.icp_tailoring_profile,
+    stage_tailoring_profile: neuroMetadata.stage_tailoring_profile,
+    neuro_profile: neuroMetadata.neuro_profile,
   };
 
   let relational = { ok: false, error: 'SUPABASE_UNCONFIGURED' };
@@ -751,6 +801,19 @@ async function upsertLiteracyChunk(chunk) {
       agent_use: Array.isArray(chunk.agent_use) ? chunk.agent_use : [],
       retrieval_keywords: Array.isArray(chunk.retrieval_keywords) ? chunk.retrieval_keywords : [],
       pain_point_tags: Array.isArray(chunk.pain_point_tags) ? chunk.pain_point_tags : [],
+      desired_outcome_tags: metadata.desired_outcome_tags,
+      objection_tags: metadata.objection_tags,
+      trust_driver_tags: metadata.trust_driver_tags,
+      trust_blocker_tags: metadata.trust_blocker_tags,
+      emotional_state_tags: metadata.emotional_state_tags,
+      neuro_trigger_tags: metadata.neuro_trigger_tags,
+      archetype_tags: metadata.archetype_tags,
+      naturality_tags: metadata.naturality_tags,
+      icp_segment_tags: metadata.icp_segment_tags,
+      company_tailoring_profile: metadata.company_tailoring_profile,
+      icp_tailoring_profile: metadata.icp_tailoring_profile,
+      stage_tailoring_profile: metadata.stage_tailoring_profile,
+      neuro_profile: metadata.neuro_profile,
       chunk_text: chunkText,
       vector_namespace: namespaceName,
       checksum_sha256: metadata.checksum_sha256,

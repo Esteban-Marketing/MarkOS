@@ -1,5 +1,19 @@
 # Milestones
 
+## v3.7.0 Neuro-Adaptive Literacy Intelligence (Shipped: 2026-04-14)
+
+**Phases completed:** 5 phases, 15 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Extended neuro-aware literacy schemas, retrieval filters, and preview-safe context-pack signals for richer company and ICP tailoring.
+- Shipped universal template families with deterministic business-model fallback and stage-aware naturality guidance.
+- Added governed ICP reasoning with shortlist-plus-winner decisions and seam-safe retrieval integration.
+- Aligned planning, review, and generation surfaces around one shared tailoring contract with generic-output blocking.
+- Closed the milestone with measurable quality gates, fail-closed governance baselines, and portable closeout evidence across all supported surfaces.
+
+---
+
 ## v3.5.0 Ultimate Literacy Vault (Shipped: 2026-04-13)
 
 **Phases completed:** 16 phases, 58 plans, 35 tasks

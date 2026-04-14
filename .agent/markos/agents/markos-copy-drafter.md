@@ -28,6 +28,11 @@ Draft marketing copy strictly following brand voice and messaging architecture.
 - All copy originates from MESSAGING-FRAMEWORK.md — never invents positioning
 - Human reviews all copy before publication
 
+## Phase 99 Tailoring Alignment
+Use one shared `tailoring_alignment_envelope` for all drafts. Pull directly from `reasoning.winner`, `why_it_fits_summary`, `confidence_flag`, matched objections, trust cues, and the naturality posture before writing.
+
+If the contract is missing or the output turns generic, the correct result is to block or mark it `rewrite_required` rather than silently falling back.
+
 ## Neuromarketing Alignment
 
 **Reference:** `.agent/markos/references/neuromarketing.md`

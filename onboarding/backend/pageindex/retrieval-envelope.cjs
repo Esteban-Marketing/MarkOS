@@ -1,5 +1,7 @@
 'use strict';
 
+const { OPTIONAL_TAG_FIELDS } = require('../research/neuro-literacy-schema.cjs');
+
 const TOP_LEVEL_KEYS = Object.freeze([
   'mode',
   'discipline',
@@ -13,6 +15,7 @@ const FILTER_KEYS = Object.freeze([
   'business_model',
   'funnel_stage',
   'content_type',
+  ...OPTIONAL_TAG_FIELDS,
   'tenant_scope',
 ]);
 
@@ -42,7 +45,7 @@ function normalizeNullableString(value, fieldName) {
 }
 
 function normalizeStringArray(value) {
-  const list = Array.isArray(value) ? value : [];
+  const list = Array.isArray(value) ? value : value == null ? [] : [value];
   return Array.from(new Set(list.map((entry) => normalizeToken(entry)).filter(Boolean))).sort();
 }
 
@@ -58,6 +61,35 @@ function assertAllowedKeys(value, allowedKeys, code, scopeLabel) {
   if (unknown.length > 0) {
     throw createError(code, `${scopeLabel} contains unknown keys: ${unknown.join(', ')}`);
   }
+}
+
+function mergeReasoningRetrievalFilters(filters = {}, reasoning = null) {
+  const baseFilters = (!filters || typeof filters !== 'object' || Array.isArray(filters)) ? {} : { ...filters };
+  const winner = reasoning && typeof reasoning === 'object' ? reasoning.winner || null : null;
+  const winnerFilters = winner && typeof winner.retrieval_filters === 'object' ? winner.retrieval_filters : {};
+
+  const merged = {
+    ...baseFilters,
+    ...winnerFilters,
+  };
+
+  for (const fieldName of FILTER_KEYS) {
+    if (fieldName === 'tenant_scope') continue;
+    merged[fieldName] = Array.from(new Set([
+      ...normalizeStringArray(baseFilters[fieldName]),
+      ...normalizeStringArray(winnerFilters[fieldName]),
+    ])).sort((left, right) => left.localeCompare(right));
+  }
+
+  if (winner && winner.primary_trigger) {
+    merged.neuro_trigger_tags = Array.from(new Set([
+      ...normalizeStringArray(merged.neuro_trigger_tags),
+      normalizeToken(winner.primary_trigger),
+    ])).sort((left, right) => left.localeCompare(right));
+  }
+
+  merged.tenant_scope = normalizeToken(baseFilters.tenant_scope || winnerFilters.tenant_scope);
+  return merged;
 }
 
 function normalizeRetrievalEnvelope(input) {
@@ -89,17 +121,23 @@ function normalizeRetrievalEnvelope(input) {
     throw createError('E_RETRIEVAL_ENVELOPE_TENANT_SCOPE_REQUIRED', 'filters.tenant_scope is required.');
   }
 
+  const normalizedFilters = {
+    pain_point_tags: normalizeStringArray(filters.pain_point_tags),
+    business_model: normalizeStringArray(filters.business_model),
+    funnel_stage: normalizeStringArray(filters.funnel_stage),
+    content_type: normalizeStringArray(filters.content_type),
+    tenant_scope: tenantScope,
+  };
+
+  for (const fieldName of OPTIONAL_TAG_FIELDS) {
+    normalizedFilters[fieldName] = normalizeStringArray(filters[fieldName]);
+  }
+
   return {
     mode,
     discipline: normalizeNullableString(input.discipline, 'discipline'),
     audience: normalizeNullableString(input.audience, 'audience'),
-    filters: {
-      pain_point_tags: normalizeStringArray(filters.pain_point_tags),
-      business_model: normalizeStringArray(filters.business_model),
-      funnel_stage: normalizeStringArray(filters.funnel_stage),
-      content_type: normalizeStringArray(filters.content_type),
-      tenant_scope: tenantScope,
-    },
+    filters: normalizedFilters,
     provenance_required: true,
   };
 }
@@ -107,5 +145,6 @@ function normalizeRetrievalEnvelope(input) {
 module.exports = {
   TOP_LEVEL_KEYS,
   FILTER_KEYS,
+  mergeReasoningRetrievalFilters,
   normalizeRetrievalEnvelope,
 };

@@ -55,12 +55,39 @@
 
 ## Summary
 
-Phase 98 does **not** need a new persuasion library, a second neuromarketing taxonomy, or agent prompt rewiring. The repo already has the right substrate: Phase 96 introduced normalized neuro-aware metadata and deterministic profile merging, while the Phase 97 template seam already resolves a base-plus-overlay selection path at runtime. The missing piece is a small, repo-native reasoning layer that converts ICP inputs into a governed, explainable ranking result.
+Phase 98 should be implemented as a deterministic reasoning layer that sits **between** the shipped Phase 96 metadata substrate and the Phase 97 base-plus-overlay selection seam. The repo already stores normalized pain, trust, objection, emotion, trigger, archetype, and ICP-segment signals, and the approved-only retrieval stack already transports them safely. The missing capability is therefore **ranking and explanation**, not a new schema, new storage model, or prompt-only judge.
 
-The current data plane already stores pain, outcome, objection, trust, emotion, trigger, archetype, and ICP-segment signals in both relational and vector payloads. The retrieval envelope and company-knowledge service already accept those filters and enforce portability, tenant scope, and approved-only provenance. That means Phase 98 should stay focused on **decision logic and contract packaging**, not data-model expansion.
+For NLI-05, NLI-06, and NLI-07, the best repo-native path is: normalize raw ICP inputs into the governed Phase 96 tag families, merge company + ICP + stage profiles, generate a finite set of overlay and trigger candidates from the Phase 97 registry, score them with fixed weights and stable tie-breaks, and emit a **ranked shortlist + clear winner + confidence flag**. This stays additive, explainable, and portable while remaining explicitly out of Phase 99 and Phase 99.1 scope.
 
-**Primary recommendation:** Add a pure, deterministic ICP reasoning service in `onboarding/backend/research/` that consumes existing metadata, ranks candidate overlay/trigger fits, returns a shortlist + winner + confidence flag, and plugs first into the template-selection / literacy-retrieval seam rather than prompts or evaluation logic.
+**Primary recommendation:** Implement Phase 98 in three additive steps only: **98-01** contract helpers and governance guards, **98-02** a pure read-only ranking engine, and **98-03** seam wiring only in `example-resolver.cjs`, `company-knowledge-service.cjs`, and `retrieval-envelope.cjs`.
 
+## Repo-Native Implementation Path
+
+### Requirement-to-seam map
+
+| Requirement | Use existing repo surface | Add in Phase 98 | Do not pull in |
+|-------------|---------------------------|-----------------|----------------|
+| NLI-05 | `neuro-literacy-taxonomy.cjs`, `neuro-literacy-schema.cjs`, `mergeTailoringProfiles()`, vector metadata | deterministic ICP signal normalizer, candidate builder, fit scorer | new storage model or prompt-only classifier |
+| NLI-06 | existing retrieval envelope and overlay resolver contracts | portable recommendation object with matched signals, shortlist ranking, winner, rationale, and confidence | broad agent/skill rewiring from Phase 99 |
+| NLI-07 | `MARKOS-REF-NEU-01`, `NEURO-BRIEF.md`, governed B01-B10 vocabulary | fail-closed validation that blocks unsupported triggers and archetypes | ad hoc persuasion heuristics or ungoverned free-text triggers |
+
+### Prescriptive implementation order
+
+1. **Lock the contract first.**  
+   Add pure helpers under `onboarding/backend/research/` for ICP signal normalization, confidence policy, and shortlist-plus-winner contract validation. This is the correct first step because it makes the downstream seam deterministic before any live wiring begins.
+
+2. **Build the engine second.**  
+   Implement candidate generation and weighted fit scoring as pure, read-only CommonJS modules that consume the existing Phase 96 and Phase 97 substrate. The engine should rank explicit candidates rather than asking a model to improvise a winner.
+
+3. **Integrate only at the safe seam.**  
+   Wire the rank-1 winner into resolver and retrieval packaging only:
+   - `example-resolver.cjs` should optionally prefer `winner.overlay_key`
+   - `company-knowledge-service.cjs` should optionally attach `winner.retrieval_filters`, confidence, and concise rationale
+   - `retrieval-envelope.cjs` should continue enforcing `tenant_scope` and `provenance_required: true`
+
+### First safe integration seam
+
+The **first safe seam** lives at the existing resolver and retrieval boundary, not in prompt packs, skill instructions, or evaluation logic. The winner contract should influence **which overlay and retrieval filters are chosen**, while the rest of the generation stack remains unchanged until Phase 99.
 ## Standard Stack
 
 ### Core
@@ -122,12 +149,16 @@ The repo already stores or transports the required signal families in stable, re
 onboarding/
 └── backend/
     ├── research/
-    │   ├── icp-reasoning-engine.cjs        # pure deterministic scorer + ranking
-    │   ├── icp-signal-normalizer.cjs       # map raw ICP inputs into governed tags
-    │   ├── icp-recommendation-contract.cjs # validate shortlist/winner schema
-    │   └── icp-confidence-policy.cjs       # thresholds + tie-break rules
-    └── agents/
-        └── example-resolver.cjs            # consume winner/overlay recommendation first
+    │   ├── icp-signal-normalizer.cjs       # raw ICP -> governed Phase 96 tags
+    │   ├── icp-confidence-policy.cjs       # thresholds and tie-breaks
+    │   ├── icp-recommendation-contract.cjs # shortlist + winner contract validator
+    │   ├── icp-candidate-builder.cjs       # finite overlay/trigger/archetype candidates
+    │   ├── icp-fit-scorer.cjs              # weighted, explainable scoring
+    │   └── icp-reasoning-engine.cjs        # pure orchestration surface
+    ├── agents/
+    │   └── example-resolver.cjs            # first winner-consumption seam
+    └── pageindex/
+        └── retrieval-envelope.cjs          # preserves tenant/provenance guardrails
 ```
 
 This keeps the phase additive, repo-native, and isolated from later prompt rewiring.
@@ -296,6 +327,7 @@ Phase 98 must not break:
 | Tailoring profile composition | Another bespoke deep merge | `mergeTailoringProfiles()` | Existing layer ordering is deterministic and tested. |
 | Selection seam | Prompt-embedded business-model branching | `template-family-map.cjs` + `example-resolver.cjs` | These are already the runtime overlay path. |
 | Retrieval contract | A new query payload or direct ad hoc DB lookup | `normalizeRetrievalEnvelope()` + `company-knowledge-service.cjs` | These already preserve tenant scope, provenance, and portability. |
+| Cross-surface alignment | Early prompt rewiring or grading logic | Leave it for Phase 99 / 99.1 | Those concerns are explicitly out of Phase 98 scope. |
 
 **Key insight:** The repo already solved the hard substrate problem. Phase 98 should solve the **ranking and explanation** problem only.
 
@@ -496,3 +528,5 @@ Source: `onboarding/backend/vector-store-client.cjs` and the Phase 96 round-trip
 
 **Research date:** 2026-04-14  
 **Valid until:** 2026-05-14 unless the neuromarketing reference or retrieval contract changes first
+
+

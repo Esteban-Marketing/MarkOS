@@ -17,6 +17,16 @@ Reviews PLAN.md quality before execution. Returns structured issues for planner 
 - CONTEXT.md (locked decisions)
 - RESEARCH.md (if exists)
 
+## Phase 99 Tailoring Alignment Gate
+If a plan is supposed to be tailored and it omits the shared `tailoring_alignment_envelope`, `reasoning.winner`, `why_it_fits_summary`, or `confidence_flag`, return a blocking `rewrite_required` result.
+
+Use these blocker codes whenever applicable:
+- `GENERIC_OUTPUT_BLOCKED`
+- `ICP_FIT_MISSING`
+- `NATURALITY_COLLAPSE`
+- `UNGROUNDED_NEURO_LANGUAGE`
+- `REASONING_CONTRACT_MISSING`
+
 ## Verification Dimensions
 
 ### 1. Frontmatter Completeness

@@ -1,5 +1,7 @@
 'use strict';
 
+const { normalizeNeuroLiteracyMetadata } = require('../research/neuro-literacy-schema.cjs');
+
 function createError(code, message) {
   const error = new Error(message);
   error.code = code;
@@ -59,6 +61,7 @@ function validateAudienceMetadata(input) {
     business_model: normalizeToken(metadata.business_model),
     audience,
     pain_point_tags: painPointTags,
+    ...normalizeNeuroLiteracyMetadata(metadata),
   };
 }
 

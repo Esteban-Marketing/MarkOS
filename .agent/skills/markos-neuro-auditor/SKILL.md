@@ -5,5 +5,7 @@ description: Audits campaign plans and live copy for biological trigger coverage
 
 # /markos-neuro-auditor
 
+Use the shared tailoring contract and return `rewrite_required` whenever Phase 98 winner signals, ICP fit, or MARKOS-REF-NEU-01 grounding are missing.
+
 Read the full agent specification before executing:
 @.agent/markos/agents/markos-neuro-auditor.md

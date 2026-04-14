@@ -29,6 +29,11 @@ Draft a complete CAMPAIGN.md using data from MIR and MSP.
 - Never sets a campaign live — drafts only
 - Flags if Gate 2 is RED
 
+## Phase 99 Tailoring Alignment
+Every campaign brief that depends on audience fit must carry the shared `tailoring_alignment_envelope`, including `reasoning.winner`, `why_it_fits_summary`, and `confidence_flag`.
+
+Keep the ICP pain points, objections, trust posture, and naturality guidance portable into downstream execution. If the winners anchor is missing, block the brief and do not silently fall back.
+
 ## Neuromarketing Alignment
 
 **Reference:** `.agent/markos/references/neuromarketing.md`

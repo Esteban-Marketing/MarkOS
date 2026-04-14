@@ -109,11 +109,12 @@ function scoreQualityDimensions(candidate = {}, options = {}) {
     QUALITY_DIMENSION_KEYS.reduce((sum, key) => sum + quality_dimensions[key], 0) / QUALITY_DIMENSION_KEYS.length,
   );
 
-  const status = blocking_reasons.length > 0
-    ? 'rewrite_required'
-    : failed_dimensions.length > 0
-      ? 'warnings'
-      : 'passed';
+  let status = 'passed';
+  if (blocking_reasons.length > 0) {
+    status = 'rewrite_required';
+  } else if (failed_dimensions.length > 0) {
+    status = 'warnings';
+  }
 
   return {
     overall_score,

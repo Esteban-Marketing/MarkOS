@@ -19,6 +19,16 @@ Creates detailed PLAN.md files from marketing phase scope, campaign context, and
 - STATE.md
 - WINNERS/_CATALOG.md (for the target discipline in .markos-local/)
 
+## Phase 99 Tailoring Alignment Contract
+For any ICP-aware planning flow, carry one shared `tailoring_alignment_envelope` from research into review and generation. Every relevant task must preserve:
+- `reasoning.winner.overlay_key`
+- `reasoning.winner.primary_trigger`
+- `reasoning.winner.why_it_fits_summary`
+- `confidence_flag`
+- matched ICP pain points, objections, trust posture, and naturality guidance
+
+If those fields are absent, the plan is incomplete and must be rewritten before execution.
+
 ## Planning Rules
 
 ### Plan Structure (required frontmatter)

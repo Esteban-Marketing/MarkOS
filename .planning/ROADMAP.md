@@ -12,44 +12,11 @@
 - ✅ **v3.4.0 Complete Branding Engine** — Phases 73-83 completed; archived at `.planning/milestones/v3.4.0-ROADMAP.md` (2026-04-12)
 - ✅ **v3.5.0 Ultimate Literacy Vault** — Phases 84-90 completed; archived at `.planning/milestones/v3.5.0-ROADMAP.md` (2026-04-13)
 - ✅ **v3.6.0 Deep Research Tailoring Engine** — Phases 91-95 completed; archived at `.planning/milestones/v3.6.0-ROADMAP.md` (2026-04-14)
-- 🚧 **v3.7.0 Neuro-Adaptive Literacy Intelligence** — Active planning milestone focused on neuromarketing-aware literacy, ICP intelligence, agent training alignment, and future-grade output quality
+- ✅ **v3.7.0 Neuro-Adaptive Literacy Intelligence** — Phases 96-99.1 completed; archived at `.planning/milestones/v3.7.0-ROADMAP.md` (2026-04-14)
 
-## 🚧 v3.7.0 — Neuro-Adaptive Literacy Intelligence
+## Archived Milestone Notes
 
-**Goal:** Make MarkOS output feel deeply tailored, more natural, more persuasive, and more future-proof by upgrading literacy, ICP intelligence, neuromarketing alignment, and agent training behavior.
-**Requirements to map:** NLI-01 through NLI-14
-**Depends on:** v3.6.0 deep research tailoring and governance closure
-**Status:** Phases 96-99 complete; Phase 99.1 is next
-
-### Phase 96: Neuro-Aware Literacy Schema and Taxonomy Expansion
-**Goal:** Extend the literacy architecture so it stores ICP pains, motivations, objections, trust drivers, funnel-stage nuance, and neuro-trigger signals in a reusable schema.
-**Requirements Mapped:** NLI-01, NLI-02
-**Depends on:** Phase 95 closeout and v3.6.0 shipped baselines
-**Status:** ✅ Complete (2026-04-14)
-
-### Phase 97: Universal Template and Business-Model Coverage Upgrade
-**Goal:** Build a richer universal template library that works across business models and industries while staying highly tailorable in practice.
-**Requirements Mapped:** NLI-03, NLI-04
-**Depends on:** Phase 96
-**Status:** ✅ Complete (2026-04-14)
-
-### Phase 98: ICP Pain-Point and Neuromarketing Intelligence Layer
-**Goal:** Formalize the ICP reasoning layer so MarkOS can map motivations, fears, trust cues, objections, archetypes, and trigger fits into content strategy decisions.
-**Requirements Mapped:** NLI-05, NLI-06, NLI-07
-**Depends on:** Phase 96 and Phase 97
-**Status:** ✅ Complete (2026-04-14)
-
-### Phase 99: Agent and Skill Training Alignment for Tailored Generation
-**Goal:** Upgrade agent instructions, skills, and review logic so the new literacy intelligence consistently influences planning and generation across all supported surfaces.
-**Requirements Mapped:** NLI-08, NLI-09, NLI-10
-**Depends on:** Phase 98
-**Status:** ✅ Complete (2026-04-14)
-
-### Phase 99.1: Future-Grade Quality Evaluation and Governance Closeout
-**Goal:** Add measurable quality gates for naturality, specificity, neuro-fit, and non-regression so the upgraded system can be trusted as a premium MarkOS differentiator.
-**Requirements Mapped:** NLI-11, NLI-12, NLI-13, NLI-14
-**Depends on:** Phase 99
-**Status:** 📋 Planned
+v3.7.0 Neuro-Adaptive Literacy Intelligence is now shipped and archived. Full milestone details live in `.planning/milestones/v3.7.0-ROADMAP.md`.
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 

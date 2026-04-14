@@ -9,6 +9,33 @@ const { safeReadFile, loadConfig, normalizePhaseName, escapeRegex, execGit, find
 const { extractFrontmatter, parseMustHavesBlock } = require('./frontmatter.cjs');
 const { writeStateMd } = require('./state.cjs');
 
+function extractPhaseNumbersFromContent(content = '') {
+  const phases = new Set();
+  const phasePattern = /#{2,4}\s*Phase\s+(\d+[A-Z]?(?:\.\d+)*)\s*:/gi;
+  let match;
+  while ((match = phasePattern.exec(content)) !== null) {
+    phases.add(match[1]);
+  }
+  return phases;
+}
+
+function getArchivedRoadmapPhases(cwd) {
+  const archivedPhases = new Set();
+  const milestonesDir = path.join(planningDir(cwd), 'milestones');
+  if (!fs.existsSync(milestonesDir)) return archivedPhases;
+
+  for (const entry of fs.readdirSync(milestonesDir, { withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith('-ROADMAP.md')) continue;
+    const archivePath = path.join(milestonesDir, entry.name);
+    const archiveContent = safeReadFile(archivePath) || '';
+    for (const phase of extractPhaseNumbersFromContent(archiveContent)) {
+      archivedPhases.add(phase);
+    }
+  }
+
+  return archivedPhases;
+}
+
 function cmdVerifySummary(cwd, summaryPath, checkFileCount, raw) {
   if (!summaryPath) {
     error('summary-path required');
@@ -411,13 +438,10 @@ function cmdValidateConsistency(cwd, raw) {
   const roadmapContentRaw = fs.readFileSync(roadmapPath, 'utf-8');
   const roadmapContent = extractCurrentMilestone(roadmapContentRaw, cwd);
 
-  // Extract phases from ROADMAP (archived milestones already stripped)
-  const roadmapPhases = new Set();
-  const phasePattern = /#{2,4}\s*Phase\s+(\d+[A-Z]?(?:\.\d+)*)\s*:/gi;
-  let m;
-  while ((m = phasePattern.exec(roadmapContent)) !== null) {
-    roadmapPhases.add(m[1]);
-  }
+  // Active roadmap phases must exist on disk; archived roadmap phases still count as historical coverage.
+  const activeRoadmapPhases = extractPhaseNumbersFromContent(roadmapContent);
+  const archivedRoadmapPhases = getArchivedRoadmapPhases(cwd);
+  const roadmapPhases = new Set([...activeRoadmapPhases, ...archivedRoadmapPhases]);
 
   // Get phases on disk
   const diskPhases = new Set();
@@ -430,8 +454,8 @@ function cmdValidateConsistency(cwd, raw) {
     }
   } catch { /* intentionally empty */ }
 
-  // Check: phases in ROADMAP but not on disk
-  for (const p of roadmapPhases) {
+  // Check: active roadmap phases in the current milestone but not on disk
+  for (const p of activeRoadmapPhases) {
     if (!diskPhases.has(p) && !diskPhases.has(normalizePhaseName(p))) {
       warnings.push(`Phase ${p} in ROADMAP.md but no directory on disk`);
     }
@@ -722,12 +746,9 @@ function cmdValidateHealth(cwd, options, raw) {
   if (fs.existsSync(roadmapPath)) {
     const roadmapContentRaw = fs.readFileSync(roadmapPath, 'utf-8');
     const roadmapContent = extractCurrentMilestone(roadmapContentRaw, cwd);
-    const roadmapPhases = new Set();
-    const phasePattern = /#{2,4}\s*Phase\s+(\d+[A-Z]?(?:\.\d+)*)\s*:/gi;
-    let m;
-    while ((m = phasePattern.exec(roadmapContent)) !== null) {
-      roadmapPhases.add(m[1]);
-    }
+    const activeRoadmapPhases = extractPhaseNumbersFromContent(roadmapContent);
+    const archivedRoadmapPhases = getArchivedRoadmapPhases(cwd);
+    const roadmapPhases = new Set([...activeRoadmapPhases, ...archivedRoadmapPhases]);
 
     const diskPhases = new Set();
     try {
@@ -740,8 +761,8 @@ function cmdValidateHealth(cwd, options, raw) {
       }
     } catch { /* intentionally empty */ }
 
-    // Phases in ROADMAP but not on disk
-    for (const p of roadmapPhases) {
+    // Active roadmap phases in the current milestone but not on disk
+    for (const p of activeRoadmapPhases) {
       const padded = String(parseInt(p, 10)).padStart(2, '0');
       if (!diskPhases.has(p) && !diskPhases.has(padded)) {
         addIssue('warning', 'W006', `Phase ${p} in ROADMAP.md but no directory on disk`, 'Create phase directory or remove from roadmap');

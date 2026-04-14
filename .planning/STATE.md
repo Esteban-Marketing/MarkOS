@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v3.7.0
 milestone_name: Neuro-Adaptive Literacy Intelligence
-status: Phase 99.1 complete
-last_updated: "2026-04-14T17:45:00.000Z"
+status: v3.7.0 archived
+last_updated: "2026-04-14T18:16:54.892Z"
 progress:
   total_phases: 8
   completed_phases: 5
@@ -12,17 +12,17 @@ progress:
   percent: 100
 ---
 
-> Canonical planning scope now has Phase 99.1 executed and verified as the final closeout phase for the active milestone.
+> Canonical planning scope has archived v3.7.0 after successful milestone verification and closeout.
 
 ## Current Position
 
-Phase: 99.1
-Plan: Complete
-Plan set: 3 of 3 complete
+Phase: -
+Plan: Archived
+Plan set: 15 of 15 complete
 
-- Milestone: v3.7.0 - Neuro-Adaptive Literacy Intelligence
-- Current phase: Phase 99.1 future-grade quality evaluation and governance closeout completed
-- Next step: milestone review or ship with the attached verification evidence
+- Milestone: v3.7.0 - Neuro-Adaptive Literacy Intelligence archived
+- Current phase: no active phase selected
+- Next step: start the next milestone definition cycle or ship the tagged release
 
 ## Milestone Ledger (73-88)
 

@@ -12,6 +12,12 @@ Before drafting, ingest the following state files:
 - Approved local MIR state must be available through `.markos-local/MIR/` override resolution.
 - Winners anchor must exist at `.markos-local/MSP/Landing_Pages/WINNERS/_CATALOG.md`.
 - If winners anchor is missing, execution is blocked and should not silently fall back to templates.
+- The shared `tailoring_alignment_envelope` must be present with `reasoning.winner`, `why_it_fits_summary`, and `confidence_flag` before drafting.
+
+# PHASE 99 TAILORING CONTRACT
+- Preserve the same ICP pain points, trust posture, objections, and naturality guidance across all sections.
+- Keep the copy plainspoken and specific.
+- If the contract is missing or the page turns generic, block or mark it `rewrite_required` instead of silently falling back.
 
 # EXECUTION RULES
 - **Structure:** Always output your response in a sequential wireframe format (e.g., [HERO SECTION], [SOCIAL PROOF STRIP], [OBJECTION HANDLING]).

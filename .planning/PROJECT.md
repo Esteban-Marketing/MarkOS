@@ -1,8 +1,8 @@
 # MarkOS (MarkOS Protocol)
 
-## Current State: v3.7.0 Kickoff — Neuro-Adaptive Literacy Intelligence
+## Current State: v3.7.0 Shipped — Neuro-Adaptive Literacy Intelligence
 
-**Goal:** Evolve MarkOS into a future-proof marketing and digital business literacy system that is tailored not only to the company, but also to the ICP's main pain points, motivations, objections, and natural decision psychology.
+**Goal:** MarkOS now ships a future-grade marketing and digital business literacy system that is tailored not only to the company, but also to the ICP's main pain points, motivations, objections, and natural decision psychology.
 
 **Target milestone outcomes:**
 - neuro-aware literacy schemas and reusable template packs
@@ -11,18 +11,17 @@
 - future-grade evaluation standards for naturality, specificity, persuasion quality, and audience fit
 - non-regression against the shipped v3.6.0 deep-research and governance baseline
 
-**Status:** v3.7.0 planning started on 2026-04-14 from the milestone discussion brief.
+**Status:** v3.7.0 shipped on 2026-04-14 with Phases 96 through 99.1 verified and milestone evidence green.
 
 ## Current Milestone: v3.7.0 — Neuro-Adaptive Literacy Intelligence
 
-**Current posture:** MarkOS is now entering its next milestone definition cycle with neuromarketing-aware, ICP-specific literacy and agent-training alignment as the primary focus.
+**Current posture:** This milestone is complete and ready for archive. The next milestone definition cycle is now open.
 
 ## Next Milestone Goals
 
-- Make company-tailoring and ICP-tailoring equally first-class across literacy, prompts, and agent behavior.
-- Encode pain points, motivations, objections, natural language patterns, and neuro-trigger logic into reusable but non-generic literacy.
-- Improve output quality for 2026+ expectations around naturality, specificity, persuasion, and strategic depth.
-- Preserve the v3.6.0 deep-research, auditability, and preview-safe governance guarantees as non-regression baselines.
+- Define the next post-v3.7.0 product priority and requirement set.
+- Open a fresh milestone planning cycle with a new active requirements document and roadmap scope.
+- Preserve the shipped v3.7.0 literacy, reasoning, and governance baselines as the new foundation.
 
 **Deferred Track (v2.0 Rebrand — Phases 17-22):** Residual filesystem and package rename sequencing (beyond Phase 23 identity normalization). Shelved until explicitly re-prioritized; Phase 23 already established MarkOS-first public copy and compatibility contracts.
 
@@ -35,7 +34,7 @@ Standardization and automation of marketing ideation, planning, and execution vi
 ## Context
 This project aims to instantiate the MarkOS (markos) protocol, now productized publicly as MarkOS. The system is production-grade with literacy lifecycle, operator-surface unification, and agency-scale multi-tenancy complete through v3.2.0 at the repository level. Historical CRM and vault milestones established the operational and retrieval foundation; the current focus is **v3.7.0 Neuro-Adaptive Literacy Intelligence**, which upgrades ICP-aware, neuromarketing-informed literacy and agent behavior for future-grade output quality.
 
-The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. Phase 34 delivered the intake automation backbone for beta onboarding. Phase 35 delivered installer/readiness optimization and is archived under v2.5. Phase 36 delivered the v2.4 beta-operations baseline with lifecycle ownership, weekly cadence, KPI scorecard, and PLG evidence-loop contracts. Phase 37 then delivered the MarkOS app/control-plane scaffolding with governance and data-model foundations, formally closing v2.4. Phase 38 established the Storybook, Chromatic, accessibility, and UI security baseline that now anchors v2.6 execution.
+The canonical codebase map is now live under `.planning/codebase/` as of v2.3 Phase 33. Phase 34 delivered the intake automation backbone for beta onboarding. Phase 35 delivered installer/readiness optimization and is archived under v2.5. Phase 36 delivered the v2.4 beta-operations baseline with lifecycle ownership, weekly cadence, KPI scorecard, and PLG evidence-loop contracts. Phase 37 then delivered the MarkOS app/control-plane scaffolding with governance and data-model foundations, formally closing v2.4. Phase 38 established the Storybook, Chromatic, accessibility, and UI security baseline that now anchors v2.6 execution. v3.7.0 is now shipped with neuro-aware literacy schemas, ICP reasoning, aligned generation behavior, and measurable quality-governance closeout evidence.
 
 ## Residual Onboarding Warning Behavior
 
@@ -193,4 +192,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-14 after v3.7.0 milestone kickoff and scope definition.
+Last updated: 2026-04-14 after v3.7.0 milestone completion and closeout review.

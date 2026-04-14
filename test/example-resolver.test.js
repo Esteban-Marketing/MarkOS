@@ -14,7 +14,7 @@ const path   = require('path');
 const fs     = require('fs');
 const os     = require('os');
 
-const { resolveExample } = require('../onboarding/backend/agents/example-resolver.cjs');
+const { resolveExample, resolveTemplateSelection } = require('../onboarding/backend/agents/example-resolver.cjs');
 
 // ─── Test fixtures ────────────────────────────────────────────────────────────
 
@@ -111,6 +111,21 @@ test('Suite 6: example-resolver', async (t) => {
     }
 
     fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  await t.test('6.8 honors a reasoning winner overlay while preserving legacy fallback behavior', () => {
+    const fallback = resolveTemplateSelection('Paid_Media', 'B2B');
+    const assisted = resolveTemplateSelection('Paid_Media', 'B2B', {
+      reasoning: {
+        winner: {
+          overlay_key: 'saas',
+          retrieval_filters: { tenant_scope: 'tenant-alpha-001' },
+        },
+      },
+    });
+
+    assert.equal(fallback.overlayDoc, null);
+    assert.match(assisted.overlayDoc || '', /overlay-saas/i);
   });
 
 });

@@ -13,6 +13,7 @@ const {
   getOverlayDocForModel,
   getStageAwareDoc,
   toAbsoluteRepoPath,
+  getFamilyEntry,
 } = require('../research/template-family-map.cjs');
 
 const DEFAULT_BASE = TEMPLATES_DIR;
@@ -82,14 +83,28 @@ function buildInjectionBlock(label, content) {
   ].join('\n');
 }
 
-function resolveTemplateSelection(discipline, businessModel) {
+function resolveTemplateSelection(discipline, businessModel, options = {}) {
   const family = resolveBusinessModelFamily(businessModel);
   if (!family) {
     return null;
   }
 
+  const reasoningWinner = options && typeof options === 'object'
+    ? (options.reasoning?.winner || options.winner || null)
+    : null;
+  const preferredOverlayKey = String(reasoningWinner?.overlay_key || '').trim().toLowerCase();
+
   const stageAwareDoc = getStageAwareDoc(discipline);
-  const overlayDoc = getOverlayDocForModel(family, businessModel);
+  let overlayDoc = getOverlayDocForModel(family, businessModel);
+
+  if (preferredOverlayKey) {
+    const preferredFamily = getFamilyEntry(preferredOverlayKey);
+    const preferredOverlayDoc = getOverlayDocForModel(preferredFamily, preferredOverlayKey);
+    if (preferredOverlayDoc) {
+      overlayDoc = preferredOverlayDoc;
+    }
+  }
+
   const absolutePaths = [
     toAbsoluteRepoPath(stageAwareDoc || family.baseDoc),
     toAbsoluteRepoPath(family.proofDoc || ''),
@@ -104,6 +119,12 @@ function resolveTemplateSelection(discipline, businessModel) {
     overlayDoc,
     proofDoc: family.proofDoc || null,
     absolutePaths,
+    reasoning: reasoningWinner
+      ? {
+          overlay_key: reasoningWinner.overlay_key || null,
+          confidence: reasoningWinner.confidence || null,
+        }
+      : null,
   };
 }
 

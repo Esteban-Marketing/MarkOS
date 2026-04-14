@@ -14,6 +14,12 @@ Respect the CPA limits and business model constraints defined in:
 - Approved local MIR state must be available through `.markos-local/MIR/` override resolution.
 - Winners anchor must exist at `.markos-local/MSP/Paid_Media/WINNERS/_CATALOG.md`.
 - If winners anchor is missing, execution is blocked and should not silently fall back to templates.
+- The shared `tailoring_alignment_envelope` must be available with `reasoning.winner`, `why_it_fits_summary`, and `confidence_flag`.
+
+## Phase 99 Tailoring Contract
+- Carry the same ICP pain, objections, trust posture, and naturality guidance through every ad variation.
+- Output must stay plainspoken and specific.
+- If the contract is missing or the result slips into generic template copy, block or mark it `rewrite_required`.
 
 ## Instructions
 1. Analyze the Audience Research in: {{ inject: MIR/Market_Audiences/AUDIENCES.md }}

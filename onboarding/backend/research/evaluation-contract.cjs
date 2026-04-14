@@ -150,11 +150,12 @@ function normalizeBaselineRegressions(input = {}, envelope = {}) {
 }
 
 function normalizeCloseoutReadiness(closeout = {}, decision = 'review_required') {
-  const fallbackStatus = decision === 'promotable'
-    ? 'ready'
-    : decision === 'blocked'
-      ? 'blocked'
-      : 'review_required';
+  let fallbackStatus = 'review_required';
+  if (decision === 'promotable') {
+    fallbackStatus = 'ready';
+  } else if (decision === 'blocked') {
+    fallbackStatus = 'blocked';
+  }
 
   return {
     status: normalizeToken(closeout.status, fallbackStatus).toLowerCase(),

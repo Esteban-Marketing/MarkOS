@@ -22,6 +22,18 @@ function selectBestCandidate(candidates = [], bestCandidate = null) {
   return candidates.find((candidate) => String(candidate.provider || '') === String(bestCandidate.provider || '')) || candidates[0];
 }
 
+function resolveDecision({ hasBlockers, bestScore, allArtifactsOk, qualityGateStatus }) {
+  if (hasBlockers) {
+    return 'blocked';
+  }
+
+  if (bestScore >= 85 && allArtifactsOk && qualityGateStatus === 'passed') {
+    return 'promotable';
+  }
+
+  return 'review_required';
+}
+
 function evaluateResearchRun(input = {}) {
   const previews = Array.isArray(input.previews) ? input.previews : [];
   const candidates = Array.isArray(input.candidates) ? input.candidates : [];
@@ -62,14 +74,12 @@ function evaluateResearchRun(input = {}) {
   const bestScore = Number(ranking.best_candidate?.score || 0);
   const allArtifactsOk = artifactFlags.every((flag) => flag.status === 'ok');
 
-  let decision = qualityCloseout.decision || 'review_required';
-  if (hasBlockers) {
-    decision = 'blocked';
-  } else if (bestScore >= 85 && allArtifactsOk && qualityCloseout.quality_gate?.status === 'passed') {
-    decision = 'promotable';
-  } else {
-    decision = 'review_required';
-  }
+  const decision = resolveDecision({
+    hasBlockers,
+    bestScore,
+    allArtifactsOk,
+    qualityGateStatus: qualityCloseout.quality_gate?.status,
+  });
 
   return createEvaluationEnvelope({
     run_id: input.run_id,

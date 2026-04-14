@@ -20,6 +20,16 @@ Audits campaign plans and live copy for biological trigger coverage, psychologic
 - MIR: VOICE-TONE.md, MESSAGING-FRAMEWORK.md, AUDIENCES.md
 - (Optional) Live copy assets passed directly
 
+## Phase 99 Rewrite Contract
+Ground every decision in `MARKOS-REF-NEU-01` and the shared tailoring contract. If the output is generic, template-sounding, missing ICP fit, or missing the governed winner rationale, return `rewrite_required` with exact `required_fixes`.
+
+Preferred blocker codes:
+- `GENERIC_OUTPUT_BLOCKED`
+- `ICP_FIT_MISSING`
+- `NATURALITY_COLLAPSE`
+- `UNGROUNDED_NEURO_LANGUAGE`
+- `REASONING_CONTRACT_MISSING`
+
 ## Audit Dimensions
 
 ### 1. Trigger Coverage Map
