@@ -31,6 +31,12 @@
 - [ ] **DRT-12**: MarkOS exposes a read-only MCP-compatible company-knowledge surface with search and fetch semantics for literacy, MIR, MSP, and approved evidence packs.
 - [ ] **DRT-13**: External research connectors preserve citations, freshness metadata, domain allow-lists, and provider-level audit records for every live research run.
 
+### Research Task Coverage
+
+- [ ] **DRT-14**: The research engine supports a canonical taxonomy of research modes covering market, audience, company, competitor, niche, regulation, offer, messaging, channel, SEO, content-gap, localization, trend, and account-based research.
+- [ ] **DRT-15**: Every research mode has a defined routing policy describing which filters apply, which providers are preferred, and which MarkOS artifacts it is allowed to update.
+- [ ] **DRT-16**: MarkOS exposes consistent command surfaces for MCP tools, API endpoints, and CLI or slash-command workflows so the same deep research system can be used in Claude Code, VS Code Copilot, Cursor, and internal automation.
+
 ## Discussion Notes
 
 This milestone is intended to extend the shipped literacy-vault foundation rather than replace it. The new engine should use the existing retrieval and governance system as a base, then layer on smarter filtering, stronger synthesis, and more precise MIR/MSP regeneration.

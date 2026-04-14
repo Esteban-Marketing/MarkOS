@@ -23,6 +23,7 @@
 - Research synthesis that merges literacy-base evidence, MIR/MSP state, and company-specific context into a ranked decision pack
 - Tailored updates that selectively rewrite or extend only the MIR/MSP sections affected by changed context
 - Evidence-backed reasoning with source freshness, confidence, and operator-reviewable deltas
+- Cross-client command surfaces so the same deep research engine can operate through MCP, API, and CLI or agentic workflows across Claude Code, VS Code Copilot, Cursor, and internal MarkOS runtime
 
 ## Next Milestone Goals
 
