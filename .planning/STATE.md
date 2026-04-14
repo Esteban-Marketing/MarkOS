@@ -1,24 +1,24 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.3.0
-milestone_name: Revenue CRM and Customer Intelligence Core
-status: complete
-last_updated: "2026-04-13T23:26:04.315Z"
+milestone: v3.6.0
+milestone_name: Deep Research Tailoring Engine
+status: planning
+last_updated: "2026-04-13T23:59:00Z"
 progress:
-  total_phases: 64
-  completed_phases: 16
-  total_plans: 60
-  completed_plans: 60
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
-> Canonical planning scope is phases 73 through 89.
+> Canonical planning scope will continue at Phase 91 and beyond.
 
 ## Current Position
 
-- Milestone: v3.5.0 - Ultimate Literacy Vault
-- Current phase: 90 (complete)
-- Next step: v3.5.0 archived; start next milestone definition when ready
+- Milestone: v3.6.0 - Deep Research Tailoring Engine
+- Current phase: milestone definition and requirements shaping
+- Next step: finalize the filter-aware deep research requirements and create the first roadmap phases
 
 ## Milestone Ledger (73-88)
 

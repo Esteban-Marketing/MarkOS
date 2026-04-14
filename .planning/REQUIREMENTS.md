@@ -1,9 +1,33 @@
-# Requirements: MarkOS v3.5.0 Ultimate Literacy Vault
+# Requirements: MarkOS v3.6.0 Deep Research Tailoring Engine
 
-**Defined:** 2026-04-12
-**Core Value:** Standardization and automation of marketing ideation, planning, and execution via robust agentic workflows and Linear issue tracking.
+**Defined:** 2026-04-13
+**Status:** Draft milestone scope opened
+**Core Value:** Generate evidence-backed marketing artifacts that are deeply tailored to industry, company, audience, and live strategic context instead of relying on generic templates.
 
-## v1 Requirements (v3.5.0)
+## Draft v1 Requirements (v3.6.0)
+
+### Deep Research Kernel
+
+- [ ] **DRT-01**: A single deep-research query model supports filter composition across industry, company, audience, business model, geography, growth stage, funnel stage, channel, compliance, and brand constraints.
+- [ ] **DRT-02**: Research synthesis merges the literacy base, current MIR state, current MSP state, company-specific overrides, and optional external evidence into one ranked context pack.
+- [ ] **DRT-03**: Every synthesized finding carries source lineage, freshness, confidence, and a direct implication for downstream artifact generation.
+
+### Tailored Artifact Generation
+
+- [ ] **DRT-04**: MIR generation adapts sections, examples, and strategic language by industry, company profile, and audience segment rather than using static defaults.
+- [ ] **DRT-05**: MSP generation recommends discipline-specific execution plans using the same filter stack plus channel, campaign objective, and business maturity.
+- [ ] **DRT-06**: The literacy layer supports advanced retrieval filters beyond discipline, including product family, segment, region, regulation, and strategic intent.
+- [ ] **DRT-07**: When context changes, the system can issue delta updates that refresh only the affected Literacy, MIR, or MSP artifacts.
+
+### Governance and Quality
+
+- [ ] **DRT-08**: Operators can inspect the active filter stack, evidence sources, and proposed artifact deltas before accepting or rerunning research output.
+- [ ] **DRT-09**: Deep research runs are auditable and safe, preserving provenance and change history for every generated recommendation.
+- [ ] **DRT-10**: A verification suite measures relevance, grounding, and personalization lift across representative industries, companies, and audiences.
+
+## Discussion Notes
+
+This milestone is intended to extend the shipped literacy-vault foundation rather than replace it. The new engine should use the existing retrieval and governance system as a base, then layer on smarter filtering, stronger synthesis, and more precise MIR/MSP regeneration.
 
 ### Vault Foundation
 

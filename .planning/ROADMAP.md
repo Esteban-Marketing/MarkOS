@@ -9,6 +9,7 @@
 - 📋 **v3.3.1 Obsidian Mind Vault-First Pivot** — Planned future milestone after Phase 66; retires MIR/MSP as canonical structures and moves MarkOS to an Obsidian Mind-inspired vault-first operating model
 - ✅ **v3.4.0 Complete Branding Engine** — Phases 73-83 completed; archived at `.planning/milestones/v3.4.0-ROADMAP.md` (2026-04-12)
 - ✅ **v3.5.0 Ultimate Literacy Vault** — Phases 84-90 completed; archived at .planning/milestones/v3.5.0-ROADMAP.md (2026-04-13)
+- 🚧 **v3.6.0 Deep Research Tailoring Engine** — Open milestone for adaptive research synthesis and filter-aware Literacy, MIR, and MSP customization across industry, company, audience, and strategic context
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
