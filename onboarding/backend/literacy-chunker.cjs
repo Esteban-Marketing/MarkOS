@@ -1,5 +1,7 @@
 'use strict';
 
+const { normalizeNeuroLiteracyMetadata } = require('./research/neuro-literacy-schema.cjs');
+
 function parseSimpleYamlValue(value) {
   const trimmed = String(value || '').trim();
   if (!trimmed) return '';
@@ -10,6 +12,14 @@ function parseSimpleYamlValue(value) {
       .split(',')
       .map((item) => item.trim().replace(/^"|"$/g, '').replace(/^'|'$/g, ''))
       .filter(Boolean);
+  }
+
+  if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return trimmed;
+    }
   }
 
   if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
@@ -40,7 +50,10 @@ function parseLiteracyFrontmatter(markdown) {
     metadata[key] = parseSimpleYamlValue(value);
   }
 
-  return metadata;
+  return {
+    ...metadata,
+    ...normalizeNeuroLiteracyMetadata(metadata),
+  };
 }
 
 function toSectionSlug(title) {
@@ -67,8 +80,12 @@ function findSection(text, heading) {
 
 function chunkLiteracyFile(markdown, metadata = {}) {
   const text = String(markdown || '');
+  const normalizedMetadata = {
+    ...metadata,
+    ...normalizeNeuroLiteracyMetadata(metadata),
+  };
   const chunks = [];
-  const docId = metadata.doc_id || metadata.artifact_id || metadata.document_id || 'literacy-doc';
+  const docId = normalizedMetadata.doc_id || normalizedMetadata.artifact_id || normalizedMetadata.document_id || 'literacy-doc';
 
   const definitionMatch = text.match(/^#\s+(.+?)\s*$([\s\S]*?)(?=^##\s+)/m);
   if (definitionMatch) {
@@ -115,8 +132,30 @@ function chunkLiteracyFile(markdown, metadata = {}) {
     content_type: chunk.type,
     section_title: chunk.title,
     chunk_text: chunk.text,
-    pain_point_tags: Array.isArray(metadata.pain_point_tags) ? metadata.pain_point_tags : [],
-    metadata,
+    business_model: Array.isArray(normalizedMetadata.business_model)
+      ? normalizedMetadata.business_model
+      : [normalizedMetadata.business_model].filter(Boolean),
+    funnel_stage: normalizedMetadata.funnel_stage || null,
+    buying_maturity: normalizedMetadata.buying_maturity || null,
+    overlay_for: normalizedMetadata.overlay_for || null,
+    tone_guidance: normalizedMetadata.tone_guidance || null,
+    proof_posture: normalizedMetadata.proof_posture || null,
+    naturality_expectations: normalizedMetadata.naturality_expectations || null,
+    pain_point_tags: Array.isArray(normalizedMetadata.pain_point_tags) ? normalizedMetadata.pain_point_tags : [],
+    desired_outcome_tags: Array.isArray(normalizedMetadata.desired_outcome_tags) ? normalizedMetadata.desired_outcome_tags : [],
+    objection_tags: Array.isArray(normalizedMetadata.objection_tags) ? normalizedMetadata.objection_tags : [],
+    trust_driver_tags: Array.isArray(normalizedMetadata.trust_driver_tags) ? normalizedMetadata.trust_driver_tags : [],
+    trust_blocker_tags: Array.isArray(normalizedMetadata.trust_blocker_tags) ? normalizedMetadata.trust_blocker_tags : [],
+    emotional_state_tags: Array.isArray(normalizedMetadata.emotional_state_tags) ? normalizedMetadata.emotional_state_tags : [],
+    neuro_trigger_tags: Array.isArray(normalizedMetadata.neuro_trigger_tags) ? normalizedMetadata.neuro_trigger_tags : [],
+    archetype_tags: Array.isArray(normalizedMetadata.archetype_tags) ? normalizedMetadata.archetype_tags : [],
+    naturality_tags: Array.isArray(normalizedMetadata.naturality_tags) ? normalizedMetadata.naturality_tags : [],
+    icp_segment_tags: Array.isArray(normalizedMetadata.icp_segment_tags) ? normalizedMetadata.icp_segment_tags : [],
+    company_tailoring_profile: normalizedMetadata.company_tailoring_profile || {},
+    icp_tailoring_profile: normalizedMetadata.icp_tailoring_profile || {},
+    stage_tailoring_profile: normalizedMetadata.stage_tailoring_profile || {},
+    neuro_profile: normalizedMetadata.neuro_profile || {},
+    metadata: normalizedMetadata,
   }));
 }
 

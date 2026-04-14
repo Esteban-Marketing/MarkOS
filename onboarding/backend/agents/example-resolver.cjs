@@ -1,102 +1,78 @@
 #!/usr/bin/env node
 /**
  * example-resolver.cjs — Business-Model Example Injection Utility
- * ═══════════════════════════════════════════════════════════════════════════════
- * PURPOSE:
- *   Reads the correct model-specific sibling example file for a given template
- *   and wraps it in a standardized markdown injection block for LLM prompts.
- *   Called by mir-filler.cjs and msp-filler.cjs before each LLM call.
- *
- * HOW IT WORKS:
- *   1. Receives templateName (e.g. 'AUDIENCES') and businessModel (e.g. 'B2B')
- *   2. Resolves path: {basePath}/_AUDIENCES-b2b.example.md
- *   3. Reads file content
- *   4. Wraps in ## 📌 Reference Example markdown block
- *   5. Returns the full injection string (or '' if file not found — no crash)
- *
- * EXAMPLE FILE NAMING CONVENTION:
- *   _AUDIENCES-b2b.example.md
- *   _AUDIENCES-b2c.example.md
- *   _ICPs-saas.example.md
- *   _BRAND-VOICE-agents-aas.example.md
- *   (always lowercase model slug, underscore-prefixed)
- *
- * VALID BUSINESS MODELS:
- *   B2B | B2C | B2B2C | DTC | Marketplace | SaaS | Agents-aaS
- *
- * RELATED FILES:
- *   onboarding/backend/agents/mir-filler.cjs  (imports resolveExample)
- *   onboarding/backend/agents/msp-filler.cjs  (imports resolveExample)
- *   .agent/markos/templates/ (example files live here)
- *   onboarding/onboarding-seed.schema.json    (business_model field definition)
- * ═══════════════════════════════════════════════════════════════════════════════
  */
 'use strict';
 
-const fs   = require('fs');
+const fs = require('fs');
 const path = require('path');
 
-// ─── DEFAULT BASE PATH ─────────────────────────────────────────────────────────
-// Resolves to .agent/markos/templates/ relative to repo root.
-// Callers can override this for testing.
 const { TEMPLATES_DIR } = require('../path-constants.cjs');
+const {
+  resolveBusinessModelFamily,
+  getOverlayDocForModel,
+  getStageAwareDoc,
+  toAbsoluteRepoPath,
+} = require('../research/template-family-map.cjs');
+
 const DEFAULT_BASE = TEMPLATES_DIR;
 
-// ─── MODEL SLUG MAP ────────────────────────────────────────────────────────────
-// Normalizes the business_model enum value to a filename-safe slug.
 const MODEL_SLUG = {
-  'B2B':        'b2b',
-  'B2C':        'b2c',
-  'B2B2C':      'b2b2c',
-  'DTC':        'dtc',
-  'Marketplace':'marketplace',
-  'SaaS':       'saas',
+  B2B: 'b2b',
+  B2C: 'b2c',
+  B2B2C: 'b2b2c',
+  DTC: 'dtc',
+  Marketplace: 'marketplace',
+  SaaS: 'saas',
   'Agents-aaS': 'agents-aas',
+  b2b: 'b2b',
+  b2c: 'b2c',
+  b2b2c: 'b2b2c',
+  dtc: 'dtc',
+  marketplace: 'marketplace',
+  saas: 'saas',
+  'agents-aas': 'agents-aas',
+  agency: 'agency',
+  agencies: 'agency',
+  services: 'services',
+  consulting: 'consulting',
+  ecommerce: 'ecommerce',
+  'e-commerce': 'ecommerce',
+  'info-products': 'info-products',
+  'info products': 'info-products',
 };
 
-/**
- * resolveExample
- * ──────────────
- * @param {string} templateName   - Template identifier, e.g. 'AUDIENCES', 'ICPs', 'BRAND-VOICE'
- * @param {string} businessModel  - Seed value e.g. 'B2B', 'SaaS', 'Agents-aaS'
- * @param {string} [templateSubdir] - Subdirectory within templates/, e.g. 'MIR/Market_Audiences'
- * @param {string} [basePath]     - Override for the templates root (used in tests)
- * @returns {string} Full markdown injection block, or '' if example file not found.
- *
- * @example
- *   const block = resolveExample('AUDIENCES', 'B2B', 'MIR/Market_Audiences');
- *   // Returns: "## 📌 Reference Example (B2B)\n_This is a...\n\n[file content]\n\n---\nNow fill..."
- */
-function resolveExample(templateName, businessModel, templateSubdir = '', basePath = DEFAULT_BASE) {
-  const slug = MODEL_SLUG[businessModel];
+function getModelSlug(businessModel) {
+  const raw = String(businessModel || '').trim();
+  if (!raw) return '';
+  return MODEL_SLUG[raw] || MODEL_SLUG[raw.toLowerCase()] || '';
+}
 
-  // Graceful degradation: unknown model → skip injection silently
-  if (!slug) {
+function inferDiscipline(templateSubdir = '') {
+  const value = String(templateSubdir || '').toLowerCase();
+  if (value.includes('paid')) return 'Paid_Media';
+  if (value.includes('email') || value.includes('lifecycle')) return 'Lifecycle_Email';
+  if (value.includes('landing')) return 'Landing_Pages';
+  if (value.includes('social')) return 'Social';
+  return '';
+}
+
+function readFileSafe(filePath) {
+  if (!filePath || !fs.existsSync(filePath)) {
     return '';
   }
 
-  // Build file path: {basePath}/{templateSubdir}/_TEMPLATE-slug.example.md
-  const fileName = `_${templateName}-${slug}.example.md`;
-  const filePath = templateSubdir
-    ? path.join(basePath, templateSubdir, fileName)
-    : path.join(basePath, fileName);
-
-  // Graceful degradation: file not found → skip injection silently (no crash)
-  if (!fs.existsSync(filePath)) {
-    return '';
-  }
-
-  let content;
   try {
-    content = fs.readFileSync(filePath, 'utf8').trim();
-  } catch (_err) {
+    return fs.readFileSync(filePath, 'utf8').trim();
+  } catch {
     return '';
   }
+}
 
-  // ── Injection wrapper (Option 2 — Markdown section) ────────────────────────
+function buildInjectionBlock(label, content) {
   return [
-    `## 📌 Reference Example (${businessModel})`,
-    `_This is a completed real-world example of the section below. Use it as a quality benchmark — match the length, depth, and specificity. Do NOT copy it; generate equivalent quality for the client data above._`,
+    `## 📌 Reference Example (${label})`,
+    '_This is a completed real-world example of the section below. Use it as a quality benchmark — match the length, depth, and specificity. Do NOT copy it; generate equivalent quality for the client data above._',
     '',
     content,
     '',
@@ -106,23 +82,100 @@ function resolveExample(templateName, businessModel, templateSubdir = '', basePa
   ].join('\n');
 }
 
+function resolveTemplateSelection(discipline, businessModel) {
+  const family = resolveBusinessModelFamily(businessModel);
+  if (!family) {
+    return null;
+  }
+
+  const stageAwareDoc = getStageAwareDoc(discipline);
+  const overlayDoc = getOverlayDocForModel(family, businessModel);
+  const absolutePaths = [
+    toAbsoluteRepoPath(stageAwareDoc || family.baseDoc),
+    toAbsoluteRepoPath(family.proofDoc || ''),
+    toAbsoluteRepoPath(overlayDoc || ''),
+  ].filter(Boolean);
+
+  return {
+    businessModel,
+    familySlug: family.slug,
+    modelSlug: getModelSlug(businessModel) || family.slug,
+    baseDoc: stageAwareDoc || family.baseDoc,
+    overlayDoc,
+    proofDoc: family.proofDoc || null,
+    absolutePaths,
+  };
+}
+
+function readFallbackContent(discipline, businessModel) {
+  const selection = resolveTemplateSelection(discipline, businessModel);
+  if (!selection) {
+    return { selection: null, content: '' };
+  }
+
+  const sections = selection.absolutePaths
+    .map((filePath) => readFileSafe(filePath))
+    .filter(Boolean);
+
+  return {
+    selection,
+    content: sections.join('\n\n'),
+  };
+}
+
+function resolveExample(templateName, businessModel, templateSubdir = '', basePath = DEFAULT_BASE) {
+  if (!templateName) {
+    return '';
+  }
+
+  const slug = getModelSlug(businessModel);
+  if (!slug) {
+    return '';
+  }
+
+  const fileName = `_${templateName}-${slug}.example.md`;
+  const filePath = templateSubdir
+    ? path.join(basePath, templateSubdir, fileName)
+    : path.join(basePath, fileName);
+
+  const directContent = readFileSafe(filePath);
+  if (directContent) {
+    return buildInjectionBlock(businessModel, directContent);
+  }
+
+  if (basePath !== DEFAULT_BASE) {
+    return '';
+  }
+
+  const { content } = readFallbackContent(inferDiscipline(templateSubdir), businessModel);
+  return content ? buildInjectionBlock(businessModel, content) : '';
+}
+
 function resolveSkeleton(discipline, businessModel, basePath = DEFAULT_BASE) {
-  const slug = MODEL_SLUG[businessModel];
+  const slug = getModelSlug(businessModel);
   if (!slug) {
     return '';
   }
 
   const filePath = path.join(basePath, 'SKELETONS', discipline, `_SKELETON-${slug}.md`);
-  if (!fs.existsSync(filePath)) {
+  const directContent = readFileSafe(filePath);
+  if (directContent) {
+    return directContent;
+  }
+
+  if (basePath !== DEFAULT_BASE) {
     return '';
   }
 
-  try {
-    return fs.readFileSync(filePath, 'utf8').trim();
-  } catch (_err) {
-    return '';
-  }
+  const { content } = readFallbackContent(discipline, businessModel);
+  return content || '';
 }
 
-// ─── EXPORTS ───────────────────────────────────────────────────────────────────
-module.exports = { resolveExample, resolveSkeleton, MODEL_SLUG, DEFAULT_BASE };
+module.exports = {
+  resolveExample,
+  resolveSkeleton,
+  resolveTemplateSelection,
+  getModelSlug,
+  MODEL_SLUG,
+  DEFAULT_BASE,
+};
