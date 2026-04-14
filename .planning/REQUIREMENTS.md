@@ -1,53 +1,68 @@
-# Requirements: MarkOS v3.6.0 Deep Research Tailoring Engine
+# Requirements: MarkOS v3.7.0 Neuro-Adaptive Literacy Intelligence
 
-**Defined:** 2026-04-13
-**Status:** Draft milestone scope opened
-**Core Value:** Generate evidence-backed marketing artifacts that are deeply tailored to industry, company, audience, and live strategic context instead of relying on generic templates.
+**Defined:** 2026-04-14
+**Status:** Milestone kickoff in planning
+**Core Value:** Generate marketing and business output that is deeply tailored to both the company context and the ICP's pain points, motivations, objections, and neuromarketing-relevant decision patterns.
 
-## Draft v1 Requirements (v3.6.0)
+## Active Requirements (v3.7.0)
 
-### Deep Research Kernel
+### Literacy and Template Intelligence
 
-- [ ] **DRT-01**: A single deep-research query model supports filter composition across industry, company, audience, business model, geography, growth stage, funnel stage, channel, compliance, and brand constraints.
-- [ ] **DRT-02**: Research synthesis merges the literacy base, current MIR state, current MSP state, company-specific overrides, and optional external evidence into one ranked context pack.
-- [ ] **DRT-03**: Every synthesized finding carries source lineage, freshness, confidence, and a direct implication for downstream artifact generation.
+- [ ] **NLI-01**: Literacy artifacts encode ICP pain points, desired outcomes, objections, trust blockers, and emotional state shifts in a reusable structured format.
+- [ ] **NLI-02**: Retrieval and composition use both company context and ICP context so the same company can yield meaningfully different outputs for different audiences.
+- [ ] **NLI-03**: MarkOS ships universal but tailorable literacy templates covering B2B, B2C, SaaS, agencies, services, consulting, info products, and ecommerce patterns.
+- [ ] **NLI-04**: Literacy templates capture funnel stage, buying maturity, messaging naturality expectations, and brand-safe tone guidance.
 
-### Tailored Artifact Generation
+### Neuromarketing and Audience Understanding
 
-- [ ] **DRT-04**: MIR generation adapts sections, examples, and strategic language by industry, company profile, and audience segment rather than using static defaults.
-- [ ] **DRT-05**: MSP generation recommends discipline-specific execution plans using the same filter stack plus channel, campaign objective, and business maturity.
-- [ ] **DRT-06**: The literacy layer supports advanced retrieval filters beyond discipline, including product family, segment, region, regulation, and strategic intent.
-- [ ] **DRT-07**: When context changes, the system can issue delta updates that refresh only the affected Literacy, MIR, or MSP artifacts.
+- [ ] **NLI-05**: MarkOS can map ICPs to likely motivations, fears, trust drivers, objection patterns, and relevant neuromarketing trigger clusters.
+- [ ] **NLI-06**: Agent outputs can explain why a selected angle, trigger pattern, or persuasion approach fits the target ICP.
+- [ ] **NLI-07**: The system uses the existing neuromarketing reference model as a governed foundation rather than ad hoc persuasion heuristics.
 
-### Governance and Quality
+### Agent and Skill Training Alignment
 
-- [ ] **DRT-08**: Operators can inspect the active filter stack, evidence sources, and proposed artifact deltas before accepting or rerunning research output.
-- [ ] **DRT-09**: Deep research runs are auditable and safe, preserving provenance and change history for every generated recommendation.
-- [ ] **DRT-10**: A verification suite measures relevance, grounding, and personalization lift across representative industries, companies, and audiences.
+- [ ] **NLI-08**: Research, planning, and generation agents consume the upgraded literacy signals consistently across prompts, skills, and review paths.
+- [ ] **NLI-09**: MarkOS can detect and flag shallow, generic, or template-sounding output before it is treated as premium-quality content.
+- [ ] **NLI-10**: The upgraded training and literacy logic remains portable across MCP, API, CLI, editor, and internal automation surfaces.
 
-### Provider and Connector Layer
+### Quality and Governance
 
-- [ ] **DRT-11**: The deep research engine supports pluggable provider routing so MarkOS can use official MCP endpoints or direct APIs when available, while falling back to internal vault-only retrieval when they are not.
-- [ ] **DRT-12**: MarkOS exposes a read-only MCP-compatible company-knowledge surface with search and fetch semantics for literacy, MIR, MSP, and approved evidence packs.
-- [ ] **DRT-13**: External research connectors preserve citations, freshness metadata, domain allow-lists, and provider-level audit records for every live research run.
-
-### Research Task Coverage
-
-- [ ] **DRT-14**: The research engine supports a canonical taxonomy of research modes covering market, audience, company, competitor, niche, regulation, offer, messaging, channel, SEO, content-gap, localization, trend, and account-based research.
-- [ ] **DRT-15**: Every research mode has a defined routing policy describing which filters apply, which providers are preferred, and which MarkOS artifacts it is allowed to update.
-- [ ] **DRT-16**: MarkOS exposes consistent command surfaces for MCP tools, API endpoints, and CLI or slash-command workflows so the same deep research system can be used in Claude Code, VS Code Copilot, Cursor, and internal automation.
+- [ ] **NLI-11**: Evaluation measures personalization depth, ICP fit, neuro-trigger appropriateness, naturality, specificity, and grounded usefulness.
+- [ ] **NLI-12**: Guardrails keep persuasion ethical, evidence-aware, brand-safe, and non-manipulative.
+- [ ] **NLI-13**: v3.6.0 deep-research, provenance, and preview-safe governance guarantees remain explicit non-regression baselines.
+- [ ] **NLI-14**: The milestone leaves MarkOS better prepared for future 2026+ quality standards without requiring a platform rewrite.
 
 ## Discussion Notes
 
-This milestone is intended to extend the shipped literacy-vault foundation rather than replace it. The new engine should use the existing retrieval and governance system as a base, then layer on smarter filtering, stronger synthesis, and more precise MIR/MSP regeneration.
+This milestone is intended to upgrade the value of MarkOS literacy and agent behavior, not just add more content volume. The target is smarter, more natural, more audience-aware output that feels custom and premium.
 
-### Preferred 2026 integration posture
+### Locked planning principles
 
-- Extend the existing Tavily-based search and enrichment surfaces already present in MarkOS.
-- Use OpenAI Responses web search and deep-research-capable workflows where long-running external synthesis is beneficial.
-- Add a MarkOS-owned read-only MCP layer for internal evidence and company knowledge retrieval.
-- Use Firecrawl selectively for structured site scrape, branding extraction, and richer web ingestion when raw search results are not enough.
-- Keep all external-provider use optional, domain-restricted where needed, and safe by default.
+- Tailoring must happen at both the company layer and the ICP layer.
+- Neuromarketing is a built-in differentiator and must live in literacy, agent training, and evaluation.
+- Reusable templates are required, but generic output is not acceptable.
+- Deep research and governance from v3.6.0 remain foundational and must not regress.
+
+## Traceability (v3.7.0 kickoff)
+
+| Requirement | Planned Phase | Status | Evidence |
+|-------------|---------------|--------|----------|
+| NLI-01 | 96 | Planned | Milestone context brief |
+| NLI-02 | 96 | Planned | Milestone context brief |
+| NLI-03 | 97 | Planned | Milestone context brief |
+| NLI-04 | 97 | Planned | Milestone context brief |
+| NLI-05 | 98 | Planned | Milestone context brief |
+| NLI-06 | 98 | Planned | Milestone context brief |
+| NLI-07 | 98 | Planned | Existing neuro reference + milestone context |
+| NLI-08 | 99 | Planned | Milestone context brief |
+| NLI-09 | 99 | Planned | Milestone context brief |
+| NLI-10 | 99 | Planned | Existing cross-surface deep research baseline |
+| NLI-11 | 99.1 | Planned | Milestone context brief |
+| NLI-12 | 99.1 | Planned | Existing governance posture |
+| NLI-13 | 99.1 | Planned | v3.6.0 shipped milestone evidence |
+| NLI-14 | 99.1 | Planned | Milestone context brief |
+
+## Historical carry-forward notes (archived)
 
 ### Vault Foundation
 

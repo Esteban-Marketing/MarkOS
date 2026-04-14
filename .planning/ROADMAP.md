@@ -2,14 +2,54 @@
 
 ## Milestones
 
+> Archived milestone phase details are intentionally kept in the matching files under `.planning/milestones/`, while this roadmap stays summary-first for active planning work.
+
 - ✅ **v1.0 Initial Protocol** — Phases 1-7 (shipped 2026-03-23)
 - ✅ **v3.1.0 Operator Surface Unification** — Phases 45-50 completed (2026-04-03) → **ARCHIVED** (`.planning/milestones/v3.1.0-phases/`)
-- 📦 **v3.2.0 Post-Unification Execution & Adoption** — Repository-complete milestone with hosted follow-through tracked separately from the active v3.3 closeout work
-- 🚧 **v3.3.0 Revenue CRM and Customer Intelligence Core** — Active milestone; Phases 58 through 64 and follow-on Phases 64.1, 64.2, and 64.3 are verified passed, and Phase 65 is the current hosted reporting closeout and milestone-promotion follow-through
+- 📦 **v3.2.0 Post-Unification Execution & Adoption** — Repository-complete milestone with hosted follow-through tracked separately from the earlier CRM closeout work
+- 📦 **v3.3.0 Revenue CRM and Customer Intelligence Core** — Historical CRM milestone stream retained for repo continuity and prior closeout evidence
 - 📋 **v3.3.1 Obsidian Mind Vault-First Pivot** — Planned future milestone after Phase 66; retires MIR/MSP as canonical structures and moves MarkOS to an Obsidian Mind-inspired vault-first operating model
 - ✅ **v3.4.0 Complete Branding Engine** — Phases 73-83 completed; archived at `.planning/milestones/v3.4.0-ROADMAP.md` (2026-04-12)
-- ✅ **v3.5.0 Ultimate Literacy Vault** — Phases 84-90 completed; archived at .planning/milestones/v3.5.0-ROADMAP.md (2026-04-13)
-- 🚧 **v3.6.0 Deep Research Tailoring Engine** — Open milestone for adaptive research synthesis and filter-aware Literacy, MIR, and MSP customization across industry, company, audience, and strategic context
+- ✅ **v3.5.0 Ultimate Literacy Vault** — Phases 84-90 completed; archived at `.planning/milestones/v3.5.0-ROADMAP.md` (2026-04-13)
+- ✅ **v3.6.0 Deep Research Tailoring Engine** — Phases 91-95 completed; archived at `.planning/milestones/v3.6.0-ROADMAP.md` (2026-04-14)
+- 🚧 **v3.7.0 Neuro-Adaptive Literacy Intelligence** — Active planning milestone focused on neuromarketing-aware literacy, ICP intelligence, agent training alignment, and future-grade output quality
+
+## 🚧 v3.7.0 — Neuro-Adaptive Literacy Intelligence
+
+**Goal:** Make MarkOS output feel deeply tailored, more natural, more persuasive, and more future-proof by upgrading literacy, ICP intelligence, neuromarketing alignment, and agent training behavior.
+**Requirements to map:** NLI-01 through NLI-14
+**Depends on:** v3.6.0 deep research tailoring and governance closure
+**Status:** Phase 96 complete; Phase 97 is next
+
+### Phase 96: Neuro-Aware Literacy Schema and Taxonomy Expansion
+**Goal:** Extend the literacy architecture so it stores ICP pains, motivations, objections, trust drivers, funnel-stage nuance, and neuro-trigger signals in a reusable schema.
+**Requirements Mapped:** NLI-01, NLI-02
+**Depends on:** Phase 95 closeout and v3.6.0 shipped baselines
+**Status:** ✅ Complete (2026-04-14)
+
+### Phase 97: Universal Template and Business-Model Coverage Upgrade
+**Goal:** Build a richer universal template library that works across business models and industries while staying highly tailorable in practice.
+**Requirements Mapped:** NLI-03, NLI-04
+**Depends on:** Phase 96
+**Status:** 📋 Planned
+
+### Phase 98: ICP Pain-Point and Neuromarketing Intelligence Layer
+**Goal:** Formalize the ICP reasoning layer so MarkOS can map motivations, fears, trust cues, objections, archetypes, and trigger fits into content strategy decisions.
+**Requirements Mapped:** NLI-05, NLI-06, NLI-07
+**Depends on:** Phase 96 and Phase 97
+**Status:** 📋 Planned
+
+### Phase 99: Agent and Skill Training Alignment for Tailored Generation
+**Goal:** Upgrade agent instructions, skills, and review logic so the new literacy intelligence consistently influences planning and generation across all supported surfaces.
+**Requirements Mapped:** NLI-08, NLI-09, NLI-10
+**Depends on:** Phase 98
+**Status:** 📋 Planned
+
+### Phase 99.1: Future-Grade Quality Evaluation and Governance Closeout
+**Goal:** Add measurable quality gates for naturality, specificity, neuro-fit, and non-regression so the upgraded system can be trusted as a premium MarkOS differentiator.
+**Requirements Mapped:** NLI-11, NLI-12, NLI-13, NLI-14
+**Depends on:** Phase 99
+**Status:** 📋 Planned
 
 ## Phase 31 Rollout Hardening (Execution-Ready Plan Set)
 
@@ -500,7 +540,7 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 66-01-PLAN.md — Wave 1 release contract: align package version, publish metadata, and public release notes to the v3.3.0 milestone boundary
+- 📦 **v3.3.0 Revenue CRM and Customer Intelligence Core** — Historical CRM milestone stream retained for repo continuity and prior closeout evidence
 - [ ] 66-02-PLAN.md — Wave 2 distributable validation: prove the packed artifact and `npx markos` install path work from the publishable package contents
 - [ ] 66-03-PLAN.md — Wave 3 publish checklist and verification: create the final human-run npm publish workflow, registry verification checklist, and release verdict ledger
 
@@ -729,6 +769,12 @@ Plans:
 - `90-02-PLAN.md` — Promote ROLEV closure across requirements, milestone audit, and roadmap traceability using fresh Phase 90 evidence.
 **Closure Evidence:** `.planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-VERIFICATION.md` and `.planning/phases/90-retrieval-verification-backfill-and-audit-normalization/90-NORMALIZATION.md` support ROLEV-01, ROLEV-02, and ROLEV-03.
 **Gap Closure:** Resolves partial requirement coverage findings from `.planning/v3.5.0-MILESTONE-AUDIT.md`.
+
+## v3.6.0 — Deep Research Tailoring Engine
+
+**Status:** ✅ Archived milestone (shipped 2026-04-14)  
+**Archive:** `.planning/milestones/v3.6.0-ROADMAP.md`  
+**Summary:** Delivered filter-aware deep research, approved knowledge retrieval, adaptive orchestration, review-safe MIR/MSP deltas, and governance evaluation across supported client surfaces.
 
 ---
 <details>
@@ -1351,8 +1397,4 @@ Plans:
 3. Every retirement decision must include an owner, rationale, and rollback path so legacy surfaces can be restored if a rollout regression appears.
 
 <!-- EOF -->
-
-
-
-
 
