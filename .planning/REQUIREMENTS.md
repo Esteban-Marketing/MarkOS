@@ -27,10 +27,10 @@
 
 ### Quality and Governance
 
-- [ ] **NLI-11**: Evaluation measures personalization depth, ICP fit, neuro-trigger appropriateness, naturality, specificity, and grounded usefulness.
-- [ ] **NLI-12**: Guardrails keep persuasion ethical, evidence-aware, brand-safe, and non-manipulative.
-- [ ] **NLI-13**: v3.6.0 deep-research, provenance, and preview-safe governance guarantees remain explicit non-regression baselines.
-- [ ] **NLI-14**: The milestone leaves MarkOS better prepared for future 2026+ quality standards without requiring a platform rewrite.
+- [x] **NLI-11**: Evaluation measures personalization depth, ICP fit, neuro-trigger appropriateness, naturality, specificity, and grounded usefulness.
+- [x] **NLI-12**: Guardrails keep persuasion ethical, evidence-aware, brand-safe, and non-manipulative.
+- [x] **NLI-13**: v3.6.0 deep-research, provenance, and preview-safe governance guarantees remain explicit non-regression baselines.
+- [x] **NLI-14**: The milestone leaves MarkOS better prepared for future 2026+ quality standards without requiring a platform rewrite.
 
 ## Discussion Notes
 
@@ -57,10 +57,10 @@ This milestone is intended to upgrade the value of MarkOS literacy and agent beh
 | NLI-08 | 99 | Planned | Milestone context brief |
 | NLI-09 | 99 | Planned | Milestone context brief |
 | NLI-10 | 99 | Planned | Existing cross-surface deep research baseline |
-| NLI-11 | 99.1 | Planned | Milestone context brief |
-| NLI-12 | 99.1 | Planned | Existing governance posture |
-| NLI-13 | 99.1 | Planned | v3.6.0 shipped milestone evidence |
-| NLI-14 | 99.1 | Planned | Milestone context brief |
+| NLI-11 | 99.1 | Complete | Phase 99.1 verification ledger + additive quality scorecard tests |
+| NLI-12 | 99.1 | Complete | Phase 99.1 ethical guardrail and closeout-gate evidence |
+| NLI-13 | 99.1 | Complete | Phase 99.1 carried regression slice and non-regression closeout proof |
+| NLI-14 | 99.1 | Complete | Phase 99.1 portable review bundle and closeout artifacts |
 
 ## Historical carry-forward notes (archived)
 
