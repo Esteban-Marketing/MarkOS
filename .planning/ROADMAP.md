@@ -4,7 +4,8 @@
 
 > Archived milestone phase details are intentionally kept in the matching files under `.planning/milestones/`, while this roadmap stays summary-first for active planning work.
 
-- 🚧 **v3.8.0 Revenue CRM and Customer Intelligence Core** — Active milestone initialized 2026-04-14; phase planning starts at Phases 100-105
+- 🚧 **v3.9.0 Vertical Plugin Literacy Libraries** — Active milestone initialized 2026-04-15; phase planning starts at Phases 106-110
+- ✅ **v3.8.0 Revenue CRM and Customer Intelligence Core** — Phases 100-105 completed; archived at `.planning/milestones/v3.8.0-ROADMAP.md` (2026-04-15)
 - ✅ **v3.7.0 Neuro-Adaptive Literacy Intelligence** — Phases 96-99.1 completed; archived at `.planning/milestones/v3.7.0-ROADMAP.md` (2026-04-14)
 - ✅ **v3.6.0 Deep Research Tailoring Engine** — Phases 91-95 completed; archived at `.planning/milestones/v3.6.0-ROADMAP.md` (2026-04-14)
 - ✅ **v3.5.0 Ultimate Literacy Vault** — Phases 84-90 completed; archived at `.planning/milestones/v3.5.0-ROADMAP.md` (2026-04-13)
@@ -12,52 +13,50 @@
 - ✅ **v3.1.0 Operator Surface Unification** — Phases 45-50 completed; archived at `.planning/milestones/v3.1.0-ROADMAP.md` (2026-04-03)
 - ✅ **v1.0 Initial Protocol** — Phases 1-7 shipped (2026-03-23)
 
-## Active Milestone: v3.8.0 — Revenue CRM and Customer Intelligence Core
+## Active Milestone: v3.9.0 — Vertical Plugin Literacy Libraries
 
-**Status:** Active — milestone initialized, requirements locked, and no plans executed yet.
+**Status:** Planning active — milestone direction is locked and phase work can now begin.
 
-**Goal:** Make MarkOS the governed system of record for customer identity, behavioral intelligence, pipeline execution, outbound delivery, and approval-aware AI-assisted reporting.
+**Goal:** Make MarkOS initialization feel domain-native by loading composable business-model and industry literacy packs that generate better starter examples, skeletons, prompts, and workspace artifacts from day one.
 
-**Requirements to map:** CRM-01, CRM-02, CRM-03, CRM-04, TRK-01, TRK-02, PIP-01, PIP-02, EXEC-01, EXEC-02, OUT-01, OUT-02, AI-CRM-01, AI-CRM-02
+**Requirements to map:** LIB-01, LIB-02, LIB-03, LIB-04, INIT-01, INIT-02, INIT-03, GOV-01, GOV-02
 
-**Research:** `.planning/research/v3.8.0-revenue-crm-customer-intelligence-core/SUMMARY.md`
+**Research/context:** `.planning/milestones/v3.9.0-PLUGIN-LITERACY-LIBRARIES-CONTEXT.md`
 
-### Phase 100: CRM Schema and Identity Graph Foundation
-**Goal:** Establish canonical contact, company, account, customer, deal, task, and activity records with tenant-safe lineage, merge controls, and audit-ready identity links.
-**Requirements Mapped:** CRM-01, CRM-02
-**Depends on:** Shipped v3.7.0 governance and tenant-safety baselines
-**Status:** Planned
+### Phase 106: Template Taxonomy and Selection Contracts
+**Goal:** Define the canonical library registry, pack metadata, selection rules, and operator override contract for base family plus industry overlay composition.
+**Requirements Mapped:** LIB-01, LIB-04, INIT-02
+**Depends on:** Shipped v3.8.0 onboarding, literacy, and plugin foundations
+**Status:** 📋 Planned
+**Plans:** 1 plan
 
-### Phase 101: Behavioral Tracking and Lifecycle Stitching
-**Goal:** Normalize product, web, and campaign events into one CRM activity ledger and stitch anonymous behavior to known records with confidence and review controls.
-**Requirements Mapped:** CRM-03, TRK-01, TRK-02
-**Depends on:** Phase 100
-**Status:** Planned
+Plans:
+- [ ] 106-01-PLAN.md — Wave 0–3: Ajv install + test stub; pack-schema.json + 7 manifests + pack-loader.cjs; template-family-map.cjs facade; resolvePackSelection + INDUSTRY_ALIAS_MAP
 
-### Phase 102: Multi-View Pipeline Workspace
-**Goal:** Deliver the core operator workspace across table, Kanban, record detail, timeline, calendar, and forecast views with saved filters and rollups.
-**Requirements Mapped:** PIP-01, PIP-02
-**Depends on:** Phase 100, Phase 101
-**Status:** Planned
+### Phase 107: Business-Model Starter Library Expansion
+**Goal:** Author and normalize the base starter packs for priority business families so each supported model has discipline-aware examples and initialization scaffolding.
+**Requirements Mapped:** LIB-03
+**Depends on:** Phase 106
+**Status:** 📋 Planned
 
-### Phase 103: Sales and Success Execution Workspace
-**Goal:** Add role-aware queues, tasks, playbooks, SLA signals, and next-best-action surfaces for sales and customer success operations.
-**Requirements Mapped:** EXEC-01, EXEC-02
-**Depends on:** Phase 102
-**Status:** Planned
+### Phase 108: Industry Overlay Packs
+**Goal:** Add the first vertical overlays for Travel, IT, Marketing Services, and Professional Services and ensure they compose cleanly with the base family packs.
+**Requirements Mapped:** LIB-02
+**Depends on:** Phase 106, Phase 107
+**Status:** 📋 Planned
 
-### Phase 104: Native Outbound Execution
-**Goal:** Enable governed email, SMS, and WhatsApp sending with consent checks, templates, delivery telemetry, and timeline writeback.
-**Requirements Mapped:** OUT-01, OUT-02
-**Depends on:** Phase 100, Phase 101, Phase 103
-**Status:** Planned
+### Phase 109: Initialization and Workspace Hydration Integration
+**Goal:** Wire the library selection flow into onboarding, approval, and local workspace hydration so the correct packs appear automatically during project setup.
+**Requirements Mapped:** INIT-01, INIT-03
+**Depends on:** Phase 106 through Phase 108
+**Status:** 📋 Planned
 
-### Phase 105: Approval-Aware AI Copilot and Reporting Closeout
-**Goal:** Ship grounded CRM copilots, approval-aware recommendations, attribution rollups, reporting dashboards, and the milestone closeout evidence bundle.
-**Requirements Mapped:** CRM-04, AI-CRM-01, AI-CRM-02
-**Depends on:** Phase 100 through Phase 104
-**Status:** Planned
+### Phase 110: Diagnostics, Fallbacks, and Closeout Hardening
+**Goal:** Add graceful fallback behavior, coverage diagnostics, and regression safeguards so partial library support stays trustworthy and auditable.
+**Requirements Mapped:** GOV-01, GOV-02
+**Depends on:** Phase 106 through Phase 109
+**Status:** 📋 Planned
 
 ## Archived Milestone Notes
 
-v3.7.0 Neuro-Adaptive Literacy Intelligence is fully shipped and archived. Historical roadmap details for previous milestone streams remain under `.planning/milestones/` and committed git history so the root roadmap can stay focused on the active execution lane.
+Historical milestone details remain under `.planning/milestones/` and committed git history so the root roadmap can stay focused on the active execution lane.
