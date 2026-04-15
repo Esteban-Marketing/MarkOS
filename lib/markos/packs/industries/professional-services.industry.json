@@ -1,17 +1,17 @@
 {
   "slug": "professional-services",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Professional Services",
   "type": "overlay",
   "aliases": ["professional services", "consulting services", "advisory", "management consulting"],
   "industries": ["professional-services"],
   "disciplines": ["Paid_Media", "Content_SEO", "Lifecycle_Email", "Social", "Landing_Pages"],
   "completeness": {
-    "Paid_Media": "partial",
-    "Content_SEO": "partial",
-    "Lifecycle_Email": "partial",
-    "Social": "partial",
-    "Landing_Pages": "partial"
+    "Paid_Media": "full",
+    "Content_SEO": "full",
+    "Lifecycle_Email": "full",
+    "Social": "full",
+    "Landing_Pages": "full"
   },
   "assets": {
     "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-tone-and-naturality.md",
@@ -20,7 +20,7 @@
     "skeletonDir": "onboarding/templates/SKELETONS/industries/professional-services/"
   },
   "fallbackAllowed": false,
-  "overlayFor": ["services", "b2b"],
+  "overlayFor": ["b2b", "services"],
   "dependencies": [],
   "operatorNotes": "Best composed with Services or B2B base family. Adds RFP-culture framing, rate card transparency posture, credentialing as proof, and peer referral as primary acquisition channel.",
   "changelog": [
@@ -28,6 +28,11 @@
       "version": "1.0.0",
       "date": "2026-04-15",
       "summary": "Phase 108: initial Professional Services industry overlay pack"
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-04-15",
+      "summary": "Phase 110: graduated completeness partial→full; all 5 disciplines authored and verified"
     }
   ]
 }

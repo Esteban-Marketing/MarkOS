@@ -1,17 +1,17 @@
 {
   "slug": "it",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "IT & Technology",
   "type": "overlay",
   "aliases": ["it", "information technology", "tech", "technology", "software", "cybersecurity"],
   "industries": ["it"],
   "disciplines": ["Paid_Media", "Content_SEO", "Lifecycle_Email", "Social", "Landing_Pages"],
   "completeness": {
-    "Paid_Media": "partial",
-    "Content_SEO": "partial",
-    "Lifecycle_Email": "partial",
-    "Social": "partial",
-    "Landing_Pages": "partial"
+    "Paid_Media": "full",
+    "Content_SEO": "full",
+    "Lifecycle_Email": "full",
+    "Social": "full",
+    "Landing_Pages": "full"
   },
   "assets": {
     "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-tone-and-naturality.md",
@@ -28,6 +28,11 @@
       "version": "1.0.0",
       "date": "2026-04-15",
       "summary": "Phase 108: initial IT & Technology industry overlay pack"
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-04-15",
+      "summary": "Phase 110: graduated completeness partial→full; all 5 disciplines authored and verified"
     }
   ]
 }

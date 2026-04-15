@@ -1,6 +1,6 @@
 {
   "slug": "saas",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "displayName": "SaaS (Software-as-a-Service)",
   "type": "base",
   "aliases": [
@@ -17,11 +17,11 @@
     "Landing_Pages"
   ],
   "completeness": {
-    "Paid_Media": "partial",
-    "Content_SEO": "partial",
-    "Lifecycle_Email": "partial",
-    "Social": "partial",
-    "Landing_Pages": "partial"
+    "Paid_Media": "full",
+    "Content_SEO": "full",
+    "Lifecycle_Email": "full",
+    "Social": "full",
+    "Landing_Pages": "full"
   },
   "assets": {
     "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-business-model-saas.md",
@@ -43,6 +43,11 @@
       "version": "1.1.0",
       "date": "2026-04-15",
       "summary": "Phase 107: authored per-family tone doc, 5-discipline skeletons; graduated completeness stub→partial"
+    },
+    {
+      "version": "1.2.0",
+      "date": "2026-04-15",
+      "summary": "Phase 110: graduated completeness partial→full; all 5 disciplines authored and verified"
     }
   ]
 }

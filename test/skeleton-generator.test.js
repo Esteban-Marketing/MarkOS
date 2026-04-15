@@ -91,6 +91,7 @@ function createRuntimeContextMock(outputRoot) {
 }
 
 const handlersPath = path.join(__dirname, '..', 'onboarding', 'backend', 'handlers.cjs');
+const SEED_PATH = path.join(__dirname, '..', 'onboarding-seed.json');
 const vaultWriterPath = path.join(__dirname, '..', 'onboarding', 'backend', 'vault', 'vault-writer.cjs');
 const runReportPath = path.join(__dirname, '..', 'onboarding', 'backend', 'vault', 'run-report.cjs');
 const vectorStorePath = path.join(__dirname, '..', 'onboarding', 'backend', 'vector-store-client.cjs');
@@ -345,6 +346,12 @@ test('generateSkeletons uses overlay PROMPTS.md when packSelection.overlayPack i
 
 test('handleApprove response includes packSelection field when resolvePackSelection succeeds', async () => {
 	const dir = makeTmpDir();
+	const originalSeedText = fs.existsSync(SEED_PATH) ? fs.readFileSync(SEED_PATH, 'utf8') : null;
+	if (originalSeedText) {
+		const seedObj = JSON.parse(originalSeedText);
+		if (seedObj.packSelection) seedObj.packSelection.overrideReason = null;
+		fs.writeFileSync(SEED_PATH, JSON.stringify(seedObj, null, 2), 'utf8');
+	}
 	try {
 		const runtimeMock = createRuntimeContextMock(dir);
 		const resolvedPackSelection = {
@@ -399,12 +406,19 @@ test('handleApprove response includes packSelection field when resolvePackSelect
 			});
 		});
 	} finally {
+		if (originalSeedText !== null && originalSeedText !== undefined) fs.writeFileSync(SEED_PATH, originalSeedText, 'utf8');
 		fs.rmSync(dir, { recursive: true, force: true });
 	}
 });
 
 test('handleApprove emits packSelection: null when resolvePackSelection throws', async () => {
 	const dir = makeTmpDir();
+	const originalSeedText2 = fs.existsSync(SEED_PATH) ? fs.readFileSync(SEED_PATH, 'utf8') : null;
+	if (originalSeedText2) {
+		const seedObj = JSON.parse(originalSeedText2);
+		if (seedObj.packSelection) seedObj.packSelection.overrideReason = null;
+		fs.writeFileSync(SEED_PATH, JSON.stringify(seedObj, null, 2), 'utf8');
+	}
 	try {
 		const runtimeMock = createRuntimeContextMock(dir);
 
@@ -452,12 +466,19 @@ test('handleApprove emits packSelection: null when resolvePackSelection throws',
 			});
 		});
 	} finally {
+		if (originalSeedText2 !== null && originalSeedText2 !== undefined) fs.writeFileSync(SEED_PATH, originalSeedText2, 'utf8');
 		fs.rmSync(dir, { recursive: true, force: true });
 	}
 });
 
 test('handleApprove writes seed.packSelection to disk before generateSkeletons', async () => {
 	const dir = makeTmpDir();
+	const originalSeedText3 = fs.existsSync(SEED_PATH) ? fs.readFileSync(SEED_PATH, 'utf8') : null;
+	if (originalSeedText3) {
+		const seedObj = JSON.parse(originalSeedText3);
+		if (seedObj.packSelection) seedObj.packSelection.overrideReason = null;
+		fs.writeFileSync(SEED_PATH, JSON.stringify(seedObj, null, 2), 'utf8');
+	}
 	try {
 		const runtimeMock = createRuntimeContextMock(dir);
 		let capturedPackSelection;
@@ -513,6 +534,7 @@ test('handleApprove writes seed.packSelection to disk before generateSkeletons',
 			});
 		});
 	} finally {
+		if (originalSeedText3 !== null && originalSeedText3 !== undefined) fs.writeFileSync(SEED_PATH, originalSeedText3, 'utf8');
 		fs.rmSync(dir, { recursive: true, force: true });
 	}
 });
