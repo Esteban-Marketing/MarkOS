@@ -172,10 +172,20 @@ function resolveExample(templateName, businessModel, templateSubdir = '', basePa
   return content ? buildInjectionBlock(businessModel, content) : '';
 }
 
-function resolveSkeleton(discipline, businessModel, basePath = DEFAULT_BASE) {
+function resolveSkeleton(discipline, businessModel, basePath = DEFAULT_BASE, overlaySlug = null) {
   const slug = getModelSlug(businessModel);
   if (!slug) {
     return '';
+  }
+
+  // Phase 109: industry overlay check (D-03 — Replace strategy, D-06 — silent fallback)
+  if (overlaySlug) {
+    const overlayPath = path.join(basePath, 'SKELETONS', 'industries', overlaySlug, discipline, 'PROMPTS.md');
+    const overlayContent = readFileSafe(overlayPath);
+    if (overlayContent) {
+      return overlayContent;
+    }
+    // Overlay file absent → fall through to base skeleton silently (GOV-01 diagnostics are Phase 110)
   }
 
   const filePath = path.join(basePath, 'SKELETONS', discipline, `_SKELETON-${slug}.md`);
