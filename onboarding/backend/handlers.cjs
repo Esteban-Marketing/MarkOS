@@ -36,6 +36,7 @@ const { writeRunReport } = require('./vault/run-report.cjs');
 const { planImport, applyImportPlan } = require('./vault/import-engine.cjs');
 const telemetry = require('./agents/telemetry.cjs');
 const { generateSkeletons } = require('./agents/skeleton-generator.cjs');
+const { resolvePackSelection } = require('../../lib/markos/packs/pack-loader.cjs'); // Phase 109
 const {
   assertAwaitingApproval,
   recordApprovalDecision,
@@ -2380,13 +2381,33 @@ async function handleApprove(req, res) {
     }
 
     let skeletonsSummary = { generated: [], failed: [] };
+    let packSelection = null; // Phase 109 — declared here so both json() calls outside the try can read it
     try {
       let seed = {};
       if (fs.existsSync(SEED_PATH)) {
         seed = JSON.parse(fs.readFileSync(SEED_PATH, 'utf8'));
       }
 
-      const skeletonResults = await generateSkeletons(seed, approvedDrafts);
+      // Phase 109: resolve pack selection and persist to seed (D-01, D-02, D-06, D-08) ─────────
+      try {
+        packSelection = resolvePackSelection(seed);
+        seed.packSelection = packSelection; // D-08: written as-is, no transformation
+      } catch (resolveErr) {
+        console.warn('[POST /approve] resolvePackSelection failed:', resolveErr.message);
+        // packSelection remains null; seed.packSelection not set; continue (D-06)
+      }
+
+      if (packSelection !== null) {
+        try {
+          fs.writeFileSync(SEED_PATH, JSON.stringify(seed, null, 2), 'utf8'); // D-02
+        } catch (writeErr) {
+          console.warn('[POST /approve] Failed to persist packSelection to seed:', writeErr.message);
+          // Non-fatal — approval continues without persisted packSelection (D-06)
+        }
+      }
+      // End Phase 109 ────────────────────────────────────────────────────────────────────────────
+
+      const skeletonResults = await generateSkeletons(seed, approvedDrafts, undefined, undefined, packSelection); // Phase 109
       skeletonsSummary = skeletonResults.reduce(
         (accumulator, result) => {
           if (Array.isArray(result.files) && result.files.length > 0) {
@@ -2435,6 +2456,7 @@ async function handleApprove(req, res) {
           execution_readiness: readiness,
         },
         skeletons: skeletonsSummary,
+        packSelection: packSelection,        // Phase 109 — null if resolution failed (D-07)
         outcome: createOutcome('warning', 'APPROVE_PARTIAL_WARNING', 'Drafts were written with warnings.', {
           warnings: [...writeWarnings, ...combinedErrors],
         }),
@@ -2484,6 +2506,7 @@ async function handleApprove(req, res) {
         execution_readiness: readiness,
       },
       skeletons: skeletonsSummary,
+      packSelection: packSelection,        // Phase 109 — null if resolution failed (D-07)
       outcome: createOutcome('success', 'APPROVE_OK', 'Drafts were written successfully.'),
     });
   } catch (err) {
