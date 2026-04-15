@@ -36,16 +36,17 @@ function interpolatePainPoints(content, painPoints) {
 	return result;
 }
 
-async function generateSkeletons(seed, approvedDrafts, outputBasePath = MARKOS_LOCAL_DIR, templatesBasePath = TEMPLATES_DIR) {
+async function generateSkeletons(seed, approvedDrafts, outputBasePath = MARKOS_LOCAL_DIR, templatesBasePath = TEMPLATES_DIR, packSelection = null) {
   void approvedDrafts;
 
   const businessModel = seed?.company?.business_model;
   const painPoints = Array.isArray(seed?.audience?.pain_points) ? seed.audience.pain_points : [];
   const generatedAt = new Date().toISOString();
   const slug = getModelSlug(businessModel);
+  const overlaySlug = (packSelection && packSelection.overlayPack) || null; // Phase 109
 
   return DISCIPLINES.map((discipline) => {
-    const baseContent = resolveSkeleton(discipline, businessModel, templatesBasePath);
+    const baseContent = resolveSkeleton(discipline, businessModel, templatesBasePath, overlaySlug); // Phase 109
     if (!baseContent || !slug) {
       return { discipline, files: [], error: 'template_not_found' };
     }
