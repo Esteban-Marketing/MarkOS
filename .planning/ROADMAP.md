@@ -28,10 +28,10 @@
 **Requirements Mapped:** LIB-01, LIB-04, INIT-02
 **Depends on:** Shipped v3.8.0 onboarding, literacy, and plugin foundations
 **Status:** 📋 Planned
-**Plans:** 1 plan
+**Plans:** 2/2 plans complete
 
 Plans:
-- [ ] 106-01-PLAN.md — Wave 0–3: Ajv install + test stub; pack-schema.json + 7 manifests + pack-loader.cjs; template-family-map.cjs facade; resolvePackSelection + INDUSTRY_ALIAS_MAP
+- [x] 106-01-PLAN.md — Wave 0–3: Ajv install + test stub; pack-schema.json + 7 manifests + pack-loader.cjs; template-family-map.cjs facade; resolvePackSelection + INDUSTRY_ALIAS_MAP
 
 ### Phase 107: Business-Model Starter Library Expansion
 **Goal:** Author and normalize the base starter packs for priority business families so each supported model has discipline-aware examples and initialization scaffolding.
