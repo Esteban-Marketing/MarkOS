@@ -97,6 +97,7 @@ const vectorStorePath = path.join(__dirname, '..', 'onboarding', 'backend', 'vec
 const telemetryPath = path.join(__dirname, '..', 'onboarding', 'backend', 'agents', 'telemetry.cjs');
 const runtimeContextPath = path.join(__dirname, '..', 'onboarding', 'backend', 'runtime-context.cjs');
 const skeletonGeneratorPath = path.join(__dirname, '..', 'onboarding', 'backend', 'agents', 'skeleton-generator.cjs');
+const packLoaderPath = path.join(__dirname, '..', 'lib', 'markos', 'packs', 'pack-loader.cjs');
 
 test('resolveSkeleton resolves correct base template for known discipline + model', () => {
 	const dir = makeTmpDir();
@@ -291,6 +292,220 @@ test('skeleton generation failure does not affect HTTP 200 response', async () =
 								const payload = JSON.parse(res.body);
 								assert.deepEqual(payload.skeletons.failed, ['all']);
 								assert.ok(Array.isArray(payload.skeletons.generated));
+							});
+						});
+					});
+				});
+			});
+		});
+	} finally {
+		fs.rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test('generateSkeletons uses overlay PROMPTS.md when packSelection.overlayPack is set', async () => {
+	const templatesDir = makeTmpDir();
+	const outputDir = makeTmpDir();
+	try {
+		const overlayPath = path.join(templatesDir, 'SKELETONS', 'industries', 'travel', 'Paid_Media', 'PROMPTS.md');
+		fs.mkdirSync(path.dirname(overlayPath), { recursive: true });
+		fs.writeFileSync(overlayPath, '# Travel Paid Media Overlay\n\nIndustry-specific prompt content.', 'utf8');
+
+		const otherDisciplines = ['Content_SEO', 'Lifecycle_Email', 'Social', 'Landing_Pages'];
+		for (const disc of otherDisciplines) {
+			const basePath = path.join(templatesDir, 'SKELETONS', disc, '_SKELETON-saas.md');
+			fs.mkdirSync(path.dirname(basePath), { recursive: true });
+			fs.writeFileSync(basePath, `# SaaS ${disc} Skeleton`, 'utf8');
+		}
+
+		const seed = {
+			company: { business_model: 'SaaS' },
+			audience: { pain_points: [] },
+		};
+		const packSelection = {
+			basePack: 'saas',
+			overlayPack: 'travel',
+			overrideReason: null,
+			resolvedAt: new Date().toISOString(),
+		};
+
+		const results = await generateSkeletons(seed, {}, outputDir, templatesDir, packSelection);
+		const paidMediaResult = results.find(r => r.discipline === 'Paid_Media');
+		assert.ok(paidMediaResult, 'Paid_Media result must exist');
+		assert.equal(paidMediaResult.error, null, 'Paid_Media must not error');
+		const fileContent = fs.readFileSync(paidMediaResult.files[0], 'utf8');
+		assert.ok(fileContent.includes('Travel Paid Media Overlay'), 'generated file must contain overlay content');
+	} finally {
+		fs.rmSync(templatesDir, { recursive: true, force: true });
+		fs.rmSync(outputDir, { recursive: true, force: true });
+	}
+});
+
+// ── Phase 109: handleApprove packSelection integration tests ─────────────────
+
+test('handleApprove response includes packSelection field when resolvePackSelection succeeds', async () => {
+	const dir = makeTmpDir();
+	try {
+		const runtimeMock = createRuntimeContextMock(dir);
+		const resolvedPackSelection = {
+			basePack: 'saas',
+			overlayPack: 'travel',
+			overrideReason: null,
+			resolvedAt: new Date().toISOString(),
+		};
+
+		await withMockedModule(runtimeContextPath, runtimeMock, async () => {
+			await withMockedModule(vaultWriterPath, {
+				writeApprovedDrafts: () => ({
+					written: ['MarkOS-Vault/Strategy/company.md'],
+					items: [{ source_key: 'company_profile', outcome: 'imported', destination_path: 'MarkOS-Vault/Strategy/company.md', warnings: [], errors: [] }],
+					errors: [],
+				}),
+			}, async () => {
+				await withMockedModule(runReportPath, {
+					writeRunReport: () => ({ report_note_path: 'MarkOS-Vault/Memory/Migration Reports/mock.md' }),
+				}, async () => {
+					await withMockedModule(vectorStorePath, {
+						configure: () => {},
+						storeDraft: async () => ({ ok: true }),
+					}, async () => {
+						await withMockedModule(telemetryPath, {
+							captureExecutionCheckpoint: () => {},
+							captureRolloutEndpointEvent: () => {},
+						}, async () => {
+							await withMockedModule(packLoaderPath, {
+								resolvePackSelection: () => resolvedPackSelection,
+							}, async () => {
+								await withMockedModule(skeletonGeneratorPath, {
+									generateSkeletons: async () => ([
+										{ discipline: 'Paid_Media', files: ['.markos-local/MSP/Paid_Media/SKELETONS/_SKELETON-saas.md'], error: null },
+									]),
+								}, async () => {
+									const handlers = loadFreshModule(handlersPath);
+									const req = createJsonRequest({ slug: 'acme', approvedDrafts: { company_profile: 'ok' } }, '/approve');
+									const res = createMockResponse();
+
+									await handlers.handleApprove(req, res);
+									assert.equal(res.statusCode, 200);
+									const payload = JSON.parse(res.body);
+									assert.ok('packSelection' in payload, 'response must have packSelection key');
+									assert.equal(payload.packSelection.basePack, 'saas');
+									assert.equal(payload.packSelection.overlayPack, 'travel');
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+	} finally {
+		fs.rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test('handleApprove emits packSelection: null when resolvePackSelection throws', async () => {
+	const dir = makeTmpDir();
+	try {
+		const runtimeMock = createRuntimeContextMock(dir);
+
+		await withMockedModule(runtimeContextPath, runtimeMock, async () => {
+			await withMockedModule(vaultWriterPath, {
+				writeApprovedDrafts: () => ({
+					written: ['MarkOS-Vault/Strategy/company.md'],
+					items: [{ source_key: 'company_profile', outcome: 'imported', destination_path: 'MarkOS-Vault/Strategy/company.md', warnings: [], errors: [] }],
+					errors: [],
+				}),
+			}, async () => {
+				await withMockedModule(runReportPath, {
+					writeRunReport: () => ({ report_note_path: 'MarkOS-Vault/Memory/Migration Reports/mock.md' }),
+				}, async () => {
+					await withMockedModule(vectorStorePath, {
+						configure: () => {},
+						storeDraft: async () => ({ ok: true }),
+					}, async () => {
+						await withMockedModule(telemetryPath, {
+							captureExecutionCheckpoint: () => {},
+							captureRolloutEndpointEvent: () => {},
+						}, async () => {
+							await withMockedModule(packLoaderPath, {
+								resolvePackSelection: () => { throw new Error('forced pack resolve failure'); },
+							}, async () => {
+								await withMockedModule(skeletonGeneratorPath, {
+									generateSkeletons: async () => ([
+										{ discipline: 'Paid_Media', files: ['.markos-local/MSP/Paid_Media/SKELETONS/_SKELETON-saas.md'], error: null },
+									]),
+								}, async () => {
+									const handlers = loadFreshModule(handlersPath);
+									const req = createJsonRequest({ slug: 'acme', approvedDrafts: { company_profile: 'ok' } }, '/approve');
+									const res = createMockResponse();
+
+									await handlers.handleApprove(req, res);
+									assert.equal(res.statusCode, 200);
+									const payload = JSON.parse(res.body);
+									assert.strictEqual(payload.packSelection, null, 'packSelection must be null when resolution throws');
+									assert.ok(Array.isArray(payload.skeletons.generated), 'skeletons block must still be present');
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+	} finally {
+		fs.rmSync(dir, { recursive: true, force: true });
+	}
+});
+
+test('handleApprove writes seed.packSelection to disk before generateSkeletons', async () => {
+	const dir = makeTmpDir();
+	try {
+		const runtimeMock = createRuntimeContextMock(dir);
+		let capturedPackSelection;
+		const resolvedPackSelection = {
+			basePack: 'b2b',
+			overlayPack: 'it',
+			overrideReason: null,
+			resolvedAt: new Date().toISOString(),
+		};
+
+		await withMockedModule(runtimeContextPath, runtimeMock, async () => {
+			await withMockedModule(vaultWriterPath, {
+				writeApprovedDrafts: () => ({
+					written: ['MarkOS-Vault/Strategy/company.md'],
+					items: [{ source_key: 'company_profile', outcome: 'imported', destination_path: 'MarkOS-Vault/Strategy/company.md', warnings: [], errors: [] }],
+					errors: [],
+				}),
+			}, async () => {
+				await withMockedModule(runReportPath, {
+					writeRunReport: () => ({ report_note_path: 'MarkOS-Vault/Memory/Migration Reports/mock.md' }),
+				}, async () => {
+					await withMockedModule(vectorStorePath, {
+						configure: () => {},
+						storeDraft: async () => ({ ok: true }),
+					}, async () => {
+						await withMockedModule(telemetryPath, {
+							captureExecutionCheckpoint: () => {},
+							captureRolloutEndpointEvent: () => {},
+						}, async () => {
+							await withMockedModule(packLoaderPath, {
+								resolvePackSelection: () => resolvedPackSelection,
+							}, async () => {
+								await withMockedModule(skeletonGeneratorPath, {
+									generateSkeletons: async (_seed, _drafts, _out, _tpl, ps) => {
+										capturedPackSelection = ps;
+										return [{ discipline: 'Paid_Media', files: [], error: null }];
+									},
+								}, async () => {
+									const handlers = loadFreshModule(handlersPath);
+									const req = createJsonRequest({ slug: 'acme', approvedDrafts: { company_profile: 'ok' } }, '/approve');
+									const res = createMockResponse();
+
+									await handlers.handleApprove(req, res);
+									assert.equal(res.statusCode, 200);
+									assert.ok(capturedPackSelection, 'generateSkeletons must receive packSelection');
+									assert.equal(capturedPackSelection.basePack, 'b2b');
+									assert.equal(capturedPackSelection.overlayPack, 'it');
+								});
 							});
 						});
 					});

@@ -14,7 +14,7 @@ const path   = require('path');
 const fs     = require('fs');
 const os     = require('os');
 
-const { resolveExample, resolveTemplateSelection } = require('../onboarding/backend/agents/example-resolver.cjs');
+const { resolveExample, resolveTemplateSelection, resolveSkeleton } = require('../onboarding/backend/agents/example-resolver.cjs');
 
 // ─── Test fixtures ────────────────────────────────────────────────────────────
 
@@ -128,4 +128,49 @@ test('Suite 6: example-resolver', async (t) => {
     assert.match(assisted.overlayDoc || '', /overlay-saas/i);
   });
 
+});
+
+// ── Phase 109: resolveSkeleton overlay tests ─────────────────────────────────
+
+test('resolveSkeleton returns overlay PROMPTS.md content when overlaySlug supplied and file exists', () => {
+  const dir = makeTmpDir();
+  try {
+    const overlayPath = path.join(dir, 'SKELETONS', 'industries', 'travel', 'Paid_Media', 'PROMPTS.md');
+    fs.mkdirSync(path.dirname(overlayPath), { recursive: true });
+    fs.writeFileSync(overlayPath, '# Travel Paid_Media Overlay Prompt\n\nOverlay content.', 'utf8');
+
+    const result = resolveSkeleton('Paid_Media', 'B2B', dir, 'travel');
+    assert.ok(result.includes('Travel Paid_Media Overlay Prompt'), 'should return overlay PROMPTS.md content');
+    assert.ok(!result.includes('_SKELETON-'), 'should NOT contain base skeleton filename indicator');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('resolveSkeleton falls back to base skeleton when overlaySlug supplied but overlay file absent', () => {
+  const dir = makeTmpDir();
+  try {
+    const basePath = path.join(dir, 'SKELETONS', 'Paid_Media', '_SKELETON-b2b.md');
+    fs.mkdirSync(path.dirname(basePath), { recursive: true });
+    fs.writeFileSync(basePath, '# B2B Base Skeleton Content', 'utf8');
+
+    const result = resolveSkeleton('Paid_Media', 'B2B', dir, 'travel');
+    assert.ok(result.includes('B2B Base Skeleton Content'), 'should fall back to base skeleton when overlay absent');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('resolveSkeleton behavior unchanged when no overlaySlug supplied (backward compat)', () => {
+  const dir = makeTmpDir();
+  try {
+    const basePath = path.join(dir, 'SKELETONS', 'Content_SEO', '_SKELETON-saas.md');
+    fs.mkdirSync(path.dirname(basePath), { recursive: true });
+    fs.writeFileSync(basePath, '# SaaS Content SEO Skeleton', 'utf8');
+
+    const result = resolveSkeleton('Content_SEO', 'SaaS', dir);
+    assert.ok(result.includes('SaaS Content SEO Skeleton'), 'should resolve base skeleton with no overlaySlug');
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });
