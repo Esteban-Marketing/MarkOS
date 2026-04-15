@@ -1,5 +1,18 @@
 # Milestones
 
+## v3.8.0 Revenue CRM and Customer Intelligence Core (Shipped: 2026-04-15)
+
+**Phases completed:** 6 phases, 6 plans, 0 tasks
+
+**Key accomplishments:**
+
+- Established the governed CRM source of truth with tenant-safe identity, lifecycle timelines, and multi-view operator workspaces.
+- Added role-aware execution queues, next-best-action surfaces, and bounded playbook actions for sales and customer success.
+- Shipped consent-safe native outbound across email, SMS, and WhatsApp with timeline-first evidence.
+- Closed the milestone with grounded copilot briefs, approval-aware AI actions, attribution rollups, and CRM-native reporting verification.
+
+---
+
 ## v3.7.0 Neuro-Adaptive Literacy Intelligence (Shipped: 2026-04-14)
 
 **Phases completed:** 5 phases, 15 plans, 0 tasks
