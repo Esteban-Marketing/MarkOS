@@ -1,0 +1,29 @@
+{
+  "slug": "ecommerce",
+  "version": "1.0.0",
+  "displayName": "Ecommerce (DTC, Marketplace, Retail)",
+  "type": "base",
+  "aliases": ["ecommerce", "e-commerce", "dtc", "marketplace", "retail"],
+  "industries": [],
+  "disciplines": ["Paid_Media", "Content_SEO", "Lifecycle_Email", "Social", "Landing_Pages"],
+  "completeness": {
+    "Paid_Media": "stub",
+    "Content_SEO": "stub",
+    "Lifecycle_Email": "stub",
+    "Social": "stub",
+    "Landing_Pages": "stub"
+  },
+  "assets": {
+    "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-tone-and-naturality.md",
+    "proofDoc": ".agent/markos/literacy/Shared/TPL-SHARED-proof-posture.md",
+    "overlayDoc": ".agent/markos/literacy/Shared/TPL-SHARED-overlay-ecommerce.md",
+    "skeletonDir": "onboarding/templates/SKELETONS/ecommerce/"
+  },
+  "fallbackAllowed": true,
+  "overlayFor": null,
+  "dependencies": [],
+  "operatorNotes": "",
+  "changelog": [
+    { "version": "1.0.0", "date": "2026-04-14", "summary": "Initial pack definition migrated from FAMILY_REGISTRY" }
+  ]
+}
