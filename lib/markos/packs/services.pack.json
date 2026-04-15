@@ -1,20 +1,32 @@
 {
   "slug": "services",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Professional Services (Consulting & Services)",
   "type": "base",
-  "aliases": ["services", "service", "consulting", "consultant", "professional services"],
+  "aliases": [
+    "services",
+    "service",
+    "consulting",
+    "consultant",
+    "professional services"
+  ],
   "industries": [],
-  "disciplines": ["Paid_Media", "Content_SEO", "Lifecycle_Email", "Social", "Landing_Pages"],
+  "disciplines": [
+    "Paid_Media",
+    "Content_SEO",
+    "Lifecycle_Email",
+    "Social",
+    "Landing_Pages"
+  ],
   "completeness": {
-    "Paid_Media": "stub",
-    "Content_SEO": "stub",
-    "Lifecycle_Email": "stub",
-    "Social": "stub",
-    "Landing_Pages": "stub"
+    "Paid_Media": "partial",
+    "Content_SEO": "partial",
+    "Lifecycle_Email": "partial",
+    "Social": "partial",
+    "Landing_Pages": "partial"
   },
   "assets": {
-    "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-tone-and-naturality.md",
+    "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-business-model-services.md",
     "proofDoc": ".agent/markos/literacy/Shared/TPL-SHARED-proof-posture.md",
     "overlayDoc": ".agent/markos/literacy/Shared/TPL-SHARED-overlay-consulting.md",
     "skeletonDir": "onboarding/templates/SKELETONS/services/"
@@ -24,6 +36,15 @@
   "dependencies": [],
   "operatorNotes": "",
   "changelog": [
-    { "version": "1.0.0", "date": "2026-04-14", "summary": "Initial pack definition migrated from FAMILY_REGISTRY" }
+    {
+      "version": "1.0.0",
+      "date": "2026-04-14",
+      "summary": "Initial pack definition migrated from FAMILY_REGISTRY"
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-04-15",
+      "summary": "Phase 107: authored per-family tone doc, 5-discipline skeletons; graduated completeness stub→partial"
+    }
   ]
 }
