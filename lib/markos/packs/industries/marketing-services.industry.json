@@ -1,0 +1,33 @@
+{
+  "slug": "marketing-services",
+  "version": "1.0.0",
+  "displayName": "Marketing Services",
+  "type": "overlay",
+  "aliases": ["marketing services", "marketing agency", "digital marketing", "performance marketing"],
+  "industries": ["marketing-services"],
+  "disciplines": ["Paid_Media", "Content_SEO", "Lifecycle_Email", "Social", "Landing_Pages"],
+  "completeness": {
+    "Paid_Media": "partial",
+    "Content_SEO": "partial",
+    "Lifecycle_Email": "partial",
+    "Social": "partial",
+    "Landing_Pages": "partial"
+  },
+  "assets": {
+    "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-tone-and-naturality.md",
+    "proofDoc": ".agent/markos/literacy/Shared/TPL-SHARED-proof-posture.md",
+    "overlayDoc": ".agent/markos/literacy/Shared/TPL-SHARED-overlay-industry-marketing-services.md",
+    "skeletonDir": "onboarding/templates/SKELETONS/industries/marketing-services/"
+  },
+  "fallbackAllowed": false,
+  "overlayFor": ["agency", "b2b"],
+  "dependencies": [],
+  "operatorNotes": "Best composed with Agency or B2B base family. Adds performance-metrics culture, data-driven proof posture, and CMO buying context.",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-04-15",
+      "summary": "Phase 108: initial Marketing Services industry overlay pack"
+    }
+  ]
+}

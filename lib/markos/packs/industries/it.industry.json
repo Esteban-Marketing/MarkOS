@@ -1,0 +1,33 @@
+{
+  "slug": "it",
+  "version": "1.0.0",
+  "displayName": "IT & Technology",
+  "type": "overlay",
+  "aliases": ["it", "information technology", "tech", "technology", "software", "cybersecurity"],
+  "industries": ["it"],
+  "disciplines": ["Paid_Media", "Content_SEO", "Lifecycle_Email", "Social", "Landing_Pages"],
+  "completeness": {
+    "Paid_Media": "partial",
+    "Content_SEO": "partial",
+    "Lifecycle_Email": "partial",
+    "Social": "partial",
+    "Landing_Pages": "partial"
+  },
+  "assets": {
+    "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-tone-and-naturality.md",
+    "proofDoc": ".agent/markos/literacy/Shared/TPL-SHARED-proof-posture.md",
+    "overlayDoc": ".agent/markos/literacy/Shared/TPL-SHARED-overlay-industry-it.md",
+    "skeletonDir": "onboarding/templates/SKELETONS/industries/it/"
+  },
+  "fallbackAllowed": false,
+  "overlayFor": ["b2b", "saas", "services"],
+  "dependencies": [],
+  "operatorNotes": "Best composed with B2B, SaaS, or Services base family. Adds technical buyer skepticism framing, ROI/TCO proof posture, and security/compliance proof points.",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-04-15",
+      "summary": "Phase 108: initial IT & Technology industry overlay pack"
+    }
+  ]
+}

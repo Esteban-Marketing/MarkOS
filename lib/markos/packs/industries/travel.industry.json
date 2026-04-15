@@ -1,0 +1,33 @@
+{
+  "slug": "travel",
+  "version": "1.0.0",
+  "displayName": "Travel & Hospitality",
+  "type": "overlay",
+  "aliases": ["travel", "hospitality", "tourism", "hotels"],
+  "industries": ["travel"],
+  "disciplines": ["Paid_Media", "Content_SEO", "Lifecycle_Email", "Social", "Landing_Pages"],
+  "completeness": {
+    "Paid_Media": "partial",
+    "Content_SEO": "partial",
+    "Lifecycle_Email": "partial",
+    "Social": "partial",
+    "Landing_Pages": "partial"
+  },
+  "assets": {
+    "baseDoc": ".agent/markos/literacy/Shared/TPL-SHARED-tone-and-naturality.md",
+    "proofDoc": ".agent/markos/literacy/Shared/TPL-SHARED-proof-posture.md",
+    "overlayDoc": ".agent/markos/literacy/Shared/TPL-SHARED-overlay-industry-travel.md",
+    "skeletonDir": "onboarding/templates/SKELETONS/industries/travel/"
+  },
+  "fallbackAllowed": false,
+  "overlayFor": ["b2c", "b2b"],
+  "dependencies": [],
+  "operatorNotes": "Best composed with B2C or B2B base family. Adds destination aspiration, seasonal urgency framing, and review-based social proof posture.",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-04-15",
+      "summary": "Phase 108: initial Travel & Hospitality industry overlay pack"
+    }
+  ]
+}
