@@ -2,6 +2,7 @@
 
 const path = require('path');
 const { PROJECT_ROOT } = require('../path-constants.cjs');
+const { getFamilyRegistry } = require('../../../lib/markos/packs/pack-loader.cjs');
 
 const SHARED_BASE_DOC = '.agent/markos/literacy/Shared/TPL-SHARED-tone-and-naturality.md';
 const SHARED_PROOF_DOC = '.agent/markos/literacy/Shared/TPL-SHARED-proof-posture.md';
@@ -19,65 +20,6 @@ const OVERLAY_DOCS = Object.freeze({
   'info-products': '.agent/markos/literacy/Shared/TPL-SHARED-overlay-info-products.md',
 });
 
-const FAMILY_REGISTRY = Object.freeze([
-  {
-    slug: 'b2b',
-    aliases: ['b2b', 'business to business', 'enterprise'],
-    baseDoc: SHARED_BASE_DOC,
-    proofDoc: SHARED_PROOF_DOC,
-    overlayDocs: {},
-  },
-  {
-    slug: 'b2c',
-    aliases: ['b2c', 'business to consumer', 'consumer'],
-    baseDoc: SHARED_BASE_DOC,
-    proofDoc: SHARED_PROOF_DOC,
-    overlayDocs: {},
-  },
-  {
-    slug: 'agency',
-    aliases: ['agency', 'agencies', 'agents-aas', 'agents aas', 'agentic services'],
-    baseDoc: SHARED_BASE_DOC,
-    proofDoc: SHARED_PROOF_DOC,
-    overlayDocs: {},
-  },
-  {
-    slug: 'services',
-    aliases: ['services', 'service', 'consulting', 'consultant', 'professional services'],
-    baseDoc: SHARED_BASE_DOC,
-    proofDoc: SHARED_PROOF_DOC,
-    overlayDocs: {
-      consulting: OVERLAY_DOCS.consulting,
-    },
-  },
-  {
-    slug: 'saas',
-    aliases: ['saas', 'software as a service', 'software-service'],
-    baseDoc: SHARED_BASE_DOC,
-    proofDoc: SHARED_PROOF_DOC,
-    overlayDocs: {
-      saas: OVERLAY_DOCS.saas,
-    },
-  },
-  {
-    slug: 'ecommerce',
-    aliases: ['ecommerce', 'e-commerce', 'dtc', 'marketplace', 'retail'],
-    baseDoc: SHARED_BASE_DOC,
-    proofDoc: SHARED_PROOF_DOC,
-    overlayDocs: {
-      ecommerce: OVERLAY_DOCS.ecommerce,
-    },
-  },
-  {
-    slug: 'info-products',
-    aliases: ['info-products', 'info products', 'digital products', 'course', 'courses', 'education offer'],
-    baseDoc: SHARED_BASE_DOC,
-    proofDoc: SHARED_PROOF_DOC,
-    overlayDocs: {
-      'info-products': OVERLAY_DOCS['info-products'],
-    },
-  },
-]);
 
 function canonicalizeValue(value) {
   return String(value == null ? '' : value)
@@ -94,7 +36,7 @@ function normalizeBusinessModel(value) {
   const token = canonicalizeValue(value);
   if (!token) return '';
 
-  for (const entry of FAMILY_REGISTRY) {
+  for (const entry of getFamilyRegistry()) {
     if (token === canonicalizeValue(entry.slug)) {
       return entry.slug;
     }
@@ -119,7 +61,7 @@ function inferOverlayKey(value) {
 
 function getFamilyEntry(familySlug) {
   const slug = normalizeBusinessModel(familySlug) || canonicalizeValue(familySlug);
-  return FAMILY_REGISTRY.find((entry) => entry.slug === slug) || null;
+  return getFamilyRegistry().find((entry) => entry.slug === slug) || null;
 }
 
 function resolveBusinessModelFamily(value) {
@@ -141,6 +83,8 @@ function toAbsoluteRepoPath(relativePath) {
   if (!relativePath) return '';
   return path.join(PROJECT_ROOT, ...String(relativePath).split('/'));
 }
+
+const FAMILY_REGISTRY = getFamilyRegistry();
 
 module.exports = {
   FAMILY_REGISTRY,
