@@ -3,9 +3,9 @@
 > **Audit trail only.** Do not use as input to planning, research, or execution agents.
 > Decisions are captured in CONTEXT.md — this log preserves the alternatives considered.
 
-**Date:** 2026-04-15
+**Date:** 2026-04-15 (updated 2026-04-15 post-execution)
 **Phase:** 108-industry-overlay-packs
-**Areas discussed:** Discipline coverage per vertical, overlayFor mapping, Professional Services overlap, Skeleton approach
+**Areas discussed:** Discipline coverage per vertical, overlayFor mapping, Professional Services overlap, Skeleton approach, Pack loader subdirectory pattern
 
 ---
 
@@ -65,6 +65,18 @@
 - Tone doc file naming convention for overlays
 - Pack `operatorNotes` field content
 - Pack base and proof doc paths for overlay packs
+
+## Post-Execution Update (2026-04-15)
+
+## Pack Loader Subdirectory Pattern
+
+| Option | Description | Selected |
+|--------|-------------|----------|
+| Two-path pattern — root for base, industries/ for overlays | Note that base packs (*.pack.json) are loaded from lib/markos/packs/ root, and industry overlays (*.industry.json) are loaded from lib/markos/packs/industries/ subdirectory via a separate path.join call — lock this as D-08 for Phase 109 awareness | ✓ |
+| Fix the wrong statement in canonical_refs only | Just update the incorrect note in canonical_refs without adding a new decision entry | |
+
+**User's choice:** Two-path pattern — lock as D-08
+**Notes:** Confirmed from Pack 108 execution. `path.join(__dirname, 'industries', overlaySlug + '.industry.json')` is a direct lookup, not a glob scan. Phase 109 tooling must scan both paths independently.
 
 ## Deferred Ideas
 

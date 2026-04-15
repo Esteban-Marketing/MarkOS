@@ -1,7 +1,7 @@
 # Phase 108: Industry Overlay Packs - Context
 
 **Gathered:** 2026-04-15
-**Status:** Ready for planning
+**Status:** Updated 2026-04-15 (post-execution revision)
 
 <domain>
 ## Phase Boundary
@@ -36,6 +36,10 @@ Add 4 industry vertical overlay packs — Travel, IT, Marketing Services, and Pr
 
 - **D-07:** Industry overlay skeletons are **fully standalone** — 4 prompts per discipline per vertical, same format as Phase 107 base family skeletons. No assumption about which base family skeleton is also active. Self-contained authoring, no runtime dependencies between base and overlay skeleton files.
 
+### Pack Loader Path Architecture
+
+- **D-08:** Industry overlay manifests are loaded from a separate `lib/markos/packs/industries/` subdirectory, not the root `lib/markos/packs/` directory. Base family packs (`*.pack.json`) remain at root. Overlay packs use the filename pattern `{slug}.industry.json` and are resolved via `path.join(__dirname, 'industries', overlaySlug + '.industry.json')` in `pack-loader.cjs`. Phase 109 must not assume all packs are at the root level — any tooling that reads manifests needs to scan both `lib/markos/packs/*.pack.json` (base families) and `lib/markos/packs/industries/*.industry.json` (overlays) separately.
+
 ### Agent's Discretion
 - Tone doc file naming convention for overlays (e.g., `TPL-SHARED-industry-travel.md` vs `TPL-SHARED-overlay-industry-travel.md`) — agent should follow the existing overlay naming pattern (`TPL-SHARED-overlay-{slug}`) for consistency
 - Slug formatting for multi-word verticals: use hyphenated lowercase (`marketing-services`, `professional-services`) — consistent with the `INDUSTRY_ALIAS_MAP` already in place
@@ -51,7 +55,7 @@ Add 4 industry vertical overlay packs — Travel, IT, Marketing Services, and Pr
 
 ### Pack Schema and Loader
 - `lib/markos/packs/pack-schema.json` — Ajv-compilable JSON Schema. Overlay packs use `type: "overlay"`, same 12-field schema as base packs
-- `lib/markos/packs/pack-loader.cjs` — Singleton loader. `INDUSTRY_ALIAS_MAP` stub already maps all 4 verticals. `resolvePackSelection()` returns `overlayPack` slug when a match exists. Scans `lib/markos/packs/*.pack.json` only (not a subdirectory)
+- `lib/markos/packs/pack-loader.cjs` — Singleton loader. `INDUSTRY_ALIAS_MAP` stub already maps all 4 verticals. `resolvePackSelection()` returns `overlayPack` slug when a match exists. **Two-path architecture:** base packs scanned from `lib/markos/packs/*.pack.json` (root), industry overlays loaded from `lib/markos/packs/industries/*.industry.json` (subdirectory via separate `path.join(__dirname, 'industries', slug + '.industry.json')` call — NOT a glob scan)
 - `lib/markos/packs/b2b.pack.json` — Reference base pack at v1.1.0 structure to match for overlay packs
 
 ### Phase 106 Contracts (Locked)
@@ -75,7 +79,7 @@ Add 4 industry vertical overlay packs — Travel, IT, Marketing Services, and Pr
 ## Existing Code Insights
 
 ### Reusable Assets
-- `lib/markos/packs/pack-loader.cjs`: `INDUSTRY_ALIAS_MAP` already has all 4 industry slug mappings — no loader changes required to activate overlay resolution
+- `lib/markos/packs/pack-loader.cjs`: Updated to load industry overlays from `lib/markos/packs/industries/*.industry.json` subdirectory via direct path lookup (`path.join(__dirname, 'industries', overlaySlug + '.industry.json')`). Base pack scanning remains at root directory (globs `*.pack.json`). Two-path pattern is confirmed and tested (26/26 tests pass).
 - `lib/markos/packs/pack-schema.json`: `type: "overlay"` and `overlayFor` fields already supported — overlay packs validate against the existing schema without schema changes
 - `lib/markos/packs/b2b.pack.json`: v1.1.0 structure is the reference format for all new packs (including overlays)
 - `.agent/markos/literacy/Shared/TPL-SHARED-overlay-saas.md`: existing overlay doc with 9-key YAML frontmatter — use this pattern for all 4 industry overlay tone docs
