@@ -10,7 +10,7 @@ const PRIVACY_DISMISSED_KEY = 'markos_privacy_dismissed';
 const LEGACY_PRIVACY_DISMISSED_KEY = 'markos_privacy_dismissed'; // legacy fallback, do not remove
 const DEFAULT_PROJECT_SLUG = 'markos-client';
 const DEFAULT_PUBLISH_LABEL = 'Write Approved Notes to Vault';
-const TOTAL_STEPS  = 3;
+const TOTAL_STEPS  = 4;
 let currentStep    = 0; // Starts at Step 0 (Omni-Input Gate)
 let lastSeed       = null;   // seed built on step 6 submit
 let lastSlug       = null;   // slug returned by server
@@ -43,6 +43,7 @@ const loadingMessage     = document.getElementById('loadingMessage');
 const draftGrid          = document.getElementById('draftGrid');
 const publishBar         = document.getElementById('publishBar');
 const btnPublish         = document.getElementById('btnPublish');
+const btnConfirmPack     = document.getElementById('btnConfirmPack'); // Phase 110
 const publishSummary     = document.getElementById('publishSummary');
 const gateStatusBar      = document.getElementById('gateStatusBar');
 
@@ -250,6 +251,10 @@ function updateUI() {
     // Navigation hidden on step 3 — handled by draft cards + publish button
     navButtons.style.display = 'none';
     return;
+  } else if (currentStep === 4) {
+    // Navigation hidden on step 4 — handled by completeness review + btnConfirmPack (Phase 110)
+    navButtons.style.display = 'none';
+    return;
   } else {
     btnNext.innerText = 'Save & Continue';
   }
@@ -269,6 +274,13 @@ function showStep(stepIndex) {
     currentStep = 3;
     updateUI();
     switchTab('schema');
+    return;
+  }
+
+  if (stepIndex === 4) {
+    currentStep = 4;
+    updateUI();
+    void showPackOverrideStep(); // async — loads /api/packs/resolution and renders grid (Phase 110)
     return;
   }
 
@@ -559,15 +571,23 @@ function updatePublishBar() {
 }
 
 // ── Publish ───────────────────────────────────────────────────────────────────
-async function handlePublish() {
+async function handlePublish(packOverridePayload) {
   setPublishButtonState('Writing Vault Notes...', true);
   publishSummary.textContent = 'Writing canonical vault notes and report note...';
 
   try {
+    const requestBody = { approvedDrafts, slug: lastSlug };
+    // Phase 110: include packOverride when operator changed the selection in step 4
+    if (packOverridePayload && packOverridePayload.basePack) {
+      requestBody.packOverride = {
+        basePack:    String(packOverridePayload.basePack),
+        overlayPack: packOverridePayload.overlayPack ? String(packOverridePayload.overlayPack) : null,
+      };
+    }
     const response = await fetch('/approve', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ approvedDrafts, slug: lastSlug }),
+      body: JSON.stringify(requestBody),
     });
 
     const result = await response.json();
@@ -622,6 +642,101 @@ async function handlePublish() {
     showOutcomeStatus(null, `Failure: ${err.message}`);
     alert(`Publish failed: ${err.message}`);
   }
+}
+
+// ── Step 4: Review Library Selection (Phase 110 — GOV-02 operator override UI) ────────────────
+async function showPackOverrideStep() {
+  const summaryEl     = document.getElementById('packSelectionSummary');
+  const gridEl        = document.getElementById('completenessGrid');
+  const baseSelect    = document.getElementById('packBaseSelect');
+  const overlaySelect = document.getElementById('packOverlaySelect');
+  const statusBar     = document.getElementById('packGateStatusBar');
+
+  // Reset to loading state
+  if (summaryEl)  summaryEl.innerHTML  = '<p class="loading-text">Loading pack selection\u2026</p>';
+  if (gridEl)     gridEl.innerHTML     = '';
+  if (statusBar)  statusBar.textContent = '';
+
+  try {
+    const res  = await fetch('/api/packs/resolution');
+    const data = await res.json();
+
+    if (!data.success) {
+      if (summaryEl) summaryEl.innerHTML = '<p class="error-text">Could not load pack selection. Proceeding with auto-resolved defaults.</p>';
+      return;
+    }
+
+    const { packSelection, packDiagnostics, availablePacks } = data;
+
+    // 1. Render auto-resolved summary
+    if (summaryEl && packSelection) {
+      const base    = packSelection.basePack    || '(none)';
+      const overlay = packSelection.overlayPack || '(none)';
+      const reason  = packSelection.overrideReason === 'operator_override' ? ' \u26a1 operator override' : ' auto-resolved';
+      summaryEl.innerHTML =
+        '<p><strong>Base Family:</strong> ' + escapeHtml(base) + '</p>' +
+        '<p><strong>Industry Overlay:</strong> ' + escapeHtml(overlay) + '</p>' +
+        '<p class="resolution-reason">' + escapeHtml(reason) + '</p>';
+    }
+
+    // 2. Populate dropdown options
+    if (baseSelect && availablePacks && availablePacks.base) {
+      baseSelect.innerHTML = availablePacks.base
+        .map(function(p) {
+          return '<option value="' + escapeHtml(p.slug) + '"' +
+            (p.slug === (packSelection && packSelection.basePack) ? ' selected' : '') +
+            '>' + escapeHtml(p.displayName) + '</option>';
+        })
+        .join('');
+    }
+    if (overlaySelect && availablePacks && availablePacks.overlay) {
+      const noneSelected = !packSelection || !packSelection.overlayPack;
+      overlaySelect.innerHTML =
+        '<option value=""' + (noneSelected ? ' selected' : '') + '>(None)</option>' +
+        availablePacks.overlay
+          .map(function(p) {
+            return '<option value="' + escapeHtml(p.slug) + '"' +
+              (p.slug === (packSelection && packSelection.overlayPack) ? ' selected' : '') +
+              '>' + escapeHtml(p.displayName) + '</option>';
+          })
+          .join('');
+    }
+
+    // 3. Render completeness grid
+    if (gridEl && packDiagnostics && packDiagnostics.completeness) {
+      const LEVEL_CLASS = { full: 'level-full', partial: 'level-partial', stub: 'level-stub', missing: 'level-missing' };
+      const rows = Object.entries(packDiagnostics.completeness)
+        .map(function(entry) {
+          const discipline = entry[0];
+          const level = entry[1];
+          const cls = LEVEL_CLASS[level] || 'level-unknown';
+          return '<div class="completeness-row">' +
+            '<span class="discipline-name">' + escapeHtml(discipline.replace(/_/g, ' ')) + '</span>' +
+            '<span class="completeness-badge ' + cls + '">' + escapeHtml(level) + '</span>' +
+            '</div>';
+        })
+        .join('');
+      const fallbackNote = packDiagnostics.fallbackApplied
+        ? '<p class="fallback-warning">\u26a0 Partial coverage \u2014 some disciplines use stub templates.</p>'
+        : '';
+      gridEl.innerHTML = '<div class="completeness-grid-inner">' + rows + '</div>' + fallbackNote;
+    }
+
+  } catch (err) {
+    console.warn('[onboarding] showPackOverrideStep: fetch failed:', err.message);
+    if (summaryEl) summaryEl.innerHTML = '<p class="error-text">Could not load pack details. Defaults will be used.</p>';
+  }
+}
+
+// Helper: minimal HTML escaping for operator-visible strings (T-110-03)
+function escapeHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 // ── Tabs & Schema Grid ────────────────────────────────────────────────────────
@@ -1048,7 +1163,26 @@ btnBack.addEventListener('click', () => {
   }
 });
 
-btnPublish.addEventListener('click', handlePublish);
+btnPublish.addEventListener('click', () => showStep(4)); // Phase 110: advance to Review Library Selection
+
+// Phase 110: Step 4 — Confirm pack override and proceed to write vault notes
+if (btnConfirmPack) {
+  btnConfirmPack.addEventListener('click', () => {
+    const baseSelectEl    = document.getElementById('packBaseSelect');
+    const overlaySelectEl = document.getElementById('packOverlaySelect');
+    const basePack    = baseSelectEl    ? baseSelectEl.value    : null;
+    const overlayPack = overlaySelectEl ? overlaySelectEl.value : null;
+    // Only pass as override if operator actually has a valid base selected
+    const packOverridePayload = basePack ? { basePack, overlayPack: overlayPack || null } : null;
+    void handlePublish(packOverridePayload);
+  });
+}
+
+// Phase 110: Step 4 — Back navigation to step 3 draft review
+const btnBackToReview = document.getElementById('btnBackToReview');
+if (btnBackToReview) {
+  btnBackToReview.addEventListener('click', () => showStep(3));
+}
 
 window.addEventListener('beforeunload', () => {
   const hasDrafts = Object.keys(draftContents || {}).length > 0;

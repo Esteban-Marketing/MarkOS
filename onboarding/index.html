@@ -167,6 +167,29 @@
                 </div>
             </section>
 
+            <!-- Step 4: Review Library Selection (Phase 110 — GOV-02 operator override UI) -->
+            <section class="step-section" data-step="4" id="packOverrideStep">
+                <h2 class="step-title">Review Library Selection</h2>
+                <p class="draft-review-subtext">Auto-resolved pack selection. Override before writing vault notes.</p>
+                <div class="pack-selection-summary" id="packSelectionSummary"><p class="loading-text">Loading pack selection…</p></div>
+                <div class="pack-override-controls" id="packOverrideControls">
+                    <div class="form-group">
+                        <label for="packBaseSelect">Base Family</label>
+                        <select id="packBaseSelect" class="form-select"><option value="">Loading…</option></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="packOverlaySelect">Industry Overlay</label>
+                        <select id="packOverlaySelect" class="form-select"><option value="">Loading…</option></select>
+                    </div>
+                </div>
+                <div class="completeness-grid" id="completenessGrid"><!-- Populated by JS --></div>
+                <button class="btn-back" id="btnBackToReview">← Back to Draft Review</button>
+                <div class="publish-bar">
+                    <button class="btn-publish" id="btnConfirmPack">Confirm &amp; Write Vault Notes</button>
+                    <div class="gate-status-bar" id="packGateStatusBar" role="status" aria-live="polite"></div>
+                </div>
+            </section>
+
             <!-- Navigation Buttons -->
             <div class="button-group" id="navButtons">
                 <button type="button" class="btn-secondary" id="btnBack" disabled>Back</button>
