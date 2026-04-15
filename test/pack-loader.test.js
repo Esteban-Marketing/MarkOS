@@ -127,3 +127,104 @@ test('Suite 106: pack-loader — resolvePackSelection', async (t) => {
     assert.ok('resolvedAt'     in result, 'must have resolvedAt');
   });
 });
+
+test('Suite 108: pack-loader — industry overlay resolution', async (t) => {
+
+  await t.test('108.1 travel industry resolves overlayPack=travel', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'b2b', industry: 'travel' } });
+    assert.strictEqual(result.basePack, 'b2b');
+    assert.strictEqual(result.overlayPack, 'travel');
+  });
+
+  await t.test('108.2 it industry resolves overlayPack=it', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'saas', industry: 'it' } });
+    assert.strictEqual(result.basePack, 'saas');
+    assert.strictEqual(result.overlayPack, 'it');
+  });
+
+  await t.test('108.3 marketing-services industry resolves overlayPack=marketing-services', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'agency', industry: 'marketing services' } });
+    assert.strictEqual(result.basePack, 'agency');
+    assert.strictEqual(result.overlayPack, 'marketing-services');
+  });
+
+  await t.test('108.4 professional-services industry resolves overlayPack=professional-services', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'services', industry: 'professional services' } });
+    assert.strictEqual(result.basePack, 'services');
+    assert.strictEqual(result.overlayPack, 'professional-services');
+  });
+
+  await t.test('108.5 hospitality alias resolves to travel overlay', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'b2c', industry: 'hospitality' } });
+    assert.strictEqual(result.overlayPack, 'travel');
+  });
+
+  await t.test('108.6 information technology alias resolves to it overlay', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'b2b', industry: 'information technology' } });
+    assert.strictEqual(result.overlayPack, 'it');
+  });
+
+  await t.test('108.7 digital marketing alias resolves to marketing-services overlay', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'agency', industry: 'digital marketing' } });
+    assert.strictEqual(result.overlayPack, 'marketing-services');
+  });
+
+  await t.test('108.8 advisory alias resolves to professional-services overlay', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'b2b', industry: 'advisory' } });
+    assert.strictEqual(result.overlayPack, 'professional-services');
+  });
+
+  await t.test('108.9 unknown industry resolves overlayPack=null', () => {
+    const { resolvePackSelection, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const result = resolvePackSelection({ company: { business_model: 'b2b', industry: 'agriculture' } });
+    assert.strictEqual(result.basePack, 'b2b');
+    assert.strictEqual(result.overlayPack, null);
+  });
+
+  await t.test('108.10 industry overlay manifests are valid JSON with required fields', () => {
+    const fs   = require('fs');
+    const path = require('path');
+    const Ajv  = require('ajv');
+    const schema = JSON.parse(fs.readFileSync(
+      path.resolve(__dirname, '../lib/markos/packs/pack-schema.json'), 'utf8'
+    ));
+    const ajv = new Ajv({ allErrors: true, strict: false });
+    const validate = ajv.compile(schema);
+    const slugs = ['travel', 'it', 'marketing-services', 'professional-services'];
+    for (const slug of slugs) {
+      const filePath = path.resolve(__dirname, '../lib/markos/packs/industries', slug + '.industry.json');
+      assert.ok(fs.existsSync(filePath), `${slug}.industry.json must exist`);
+      const manifest = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      assert.ok(validate(manifest), `${slug}.industry.json must pass schema validation: ${JSON.stringify(validate.errors)}`);
+      assert.strictEqual(manifest.type, 'overlay', `${slug} must have type=overlay`);
+      assert.ok(Array.isArray(manifest.overlayFor) && manifest.overlayFor.length > 0,
+        `${slug} must have overlayFor array`);
+    }
+  });
+
+  await t.test('108.11 existing 106.1 still passes (7 base pack entries, no overlay inflation)', () => {
+    const { getFamilyRegistry, _resetCacheForTests } = getLoader();
+    _resetCacheForTests();
+    const registry = getFamilyRegistry();
+    assert.strictEqual(registry.length, 7,
+      `getFamilyRegistry must return exactly 7 entries; got ${registry.length}`);
+  });
+
+});
