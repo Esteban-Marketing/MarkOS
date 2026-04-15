@@ -66,13 +66,13 @@ Plans:
 **Goal:** Wire the library selection flow into onboarding, approval, and local workspace hydration so the correct packs appear automatically during project setup.
 **Requirements Mapped:** INIT-01, INIT-03
 **Depends on:** Phase 106 through Phase 108
-**Status:** 📋 Planned
+**Status:** ✅ Complete
 **Plans:** 4 plans
 Plans:
-- [ ] 109-01-PLAN.md — Wave 1: resolveSkeleton overlay param (example-resolver.cjs)
-- [ ] 109-02-PLAN.md — Wave 2: generateSkeletons packSelection param (skeleton-generator.cjs)
-- [ ] 109-03-PLAN.md — Wave 3: handlers.cjs integration (require + packSelection block + both response payloads)
-- [ ] 109-04-PLAN.md — Wave 4: Tests (overlay unit tests + handleApprove integration tests)
+- [x] 109-01-PLAN.md — Wave 1: resolveSkeleton overlay param (example-resolver.cjs)
+- [x] 109-02-PLAN.md — Wave 2: generateSkeletons packSelection param (skeleton-generator.cjs)
+- [x] 109-03-PLAN.md — Wave 3: handlers.cjs integration (require + packSelection block + both response payloads)
+- [x] 109-04-PLAN.md — Wave 4: Tests (overlay unit tests + handleApprove integration tests)
 
 ### Phase 110: Diagnostics, Fallbacks, and Closeout Hardening
 **Goal:** Add graceful fallback behavior, coverage diagnostics, and regression safeguards so partial library support stays trustworthy and auditable.
