@@ -79,6 +79,13 @@ Plans:
 **Requirements Mapped:** GOV-01, GOV-02
 **Depends on:** Phase 106 through Phase 109
 **Status:** 📋 Planned
+**Plans:** 4 plans
+
+Plans:
+- [ ] 110-01-PLAN.md — Wave 1: getPackDiagnostics + getAvailablePackOptions in pack-loader.cjs + test stubs
+- [ ] 110-02-PLAN.md — Wave 2: Override guard + packDiagnostics in handleApprove + GET /api/packs/resolution route
+- [ ] 110-03-PLAN.md — Wave 3: Operator Override UI (data-step=4 in index.html + onboarding.js step 4 logic)
+- [ ] 110-04-PLAN.md — Wave 3: Suite 110 real assertions + completeness graduation (9 packs partial→full)
 
 ## Archived Milestone Notes
 
