@@ -1,7 +1,7 @@
 ```yaml
 doc_id: "TPL-SHARED-business-model-services"
 discipline: "Shared"
-business_model: ["services", "consulting"]
+business_model: ["services"]
 pain_point_tags: ["trust_gap", "unclear_differentiation", "long_sales_cycle", "high_commitment_hesitation"]
 funnel_stage: ["Awareness", "Consideration", "Decision", "Onboarding", "Retention"]
 buying_maturity: "problem-aware to high-commitment decision"

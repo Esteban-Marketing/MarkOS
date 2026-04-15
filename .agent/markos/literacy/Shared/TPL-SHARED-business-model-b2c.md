@@ -61,6 +61,6 @@ Avoid: Generic blast emails, loyalty programs with no perceived near-term value,
 ## COUNTER-INDICATORS
 - Corporate or clinical language — B2C buyers process brand voice in milliseconds and reject tonal mismatch before reading the copy.
 - Feature-first messaging without emotional hook — nobody buys a "512MB memory" experience; they buy the feeling of having their photos organized.
-- Manufactured urgency — fake scarcity or countdown timers that reset damage brand trust the moment thebuyer notices.
+- Manufactured urgency — fake scarcity or countdown timers that reset damage brand trust the moment the buyer notices.
 - Generic reviews ("Great product, would recommend") — specific reviews with named outcomes convert better and build more trust.
 - Lecturing or educational tone at the Decision stage — the buyer has decided; stop selling and start confirming.
