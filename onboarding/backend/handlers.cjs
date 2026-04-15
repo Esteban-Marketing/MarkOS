@@ -36,7 +36,8 @@ const { writeRunReport } = require('./vault/run-report.cjs');
 const { planImport, applyImportPlan } = require('./vault/import-engine.cjs');
 const telemetry = require('./agents/telemetry.cjs');
 const { generateSkeletons } = require('./agents/skeleton-generator.cjs');
-const { resolvePackSelection } = require('../../lib/markos/packs/pack-loader.cjs'); // Phase 109
+const { resolvePackSelection, getPackDiagnostics, getAvailablePackOptions } =
+  require('../../lib/markos/packs/pack-loader.cjs'); // Phase 109, Phase 110
 const {
   assertAwaitingApproval,
   recordApprovalDecision,
@@ -2136,6 +2137,7 @@ async function handleApprove(req, res) {
       run_state,
       decision,
       rationale,
+      packOverride = null,  // Phase 110: operator override from Step 4 UI (null when absent)
     } = await readBody(req);
 
     const runtime = createRuntimeContext();
@@ -2382,16 +2384,42 @@ async function handleApprove(req, res) {
 
     let skeletonsSummary = { generated: [], failed: [] };
     let packSelection = null; // Phase 109 — declared here so both json() calls outside the try can read it
+    let packDiagnostics = null; // Phase 110 — declared alongside packSelection
     try {
       let seed = {};
       if (fs.existsSync(SEED_PATH)) {
         seed = JSON.parse(fs.readFileSync(SEED_PATH, 'utf8'));
       }
 
-      // Phase 109: resolve pack selection and persist to seed (D-01, D-02, D-06, D-08) ─────────
+      // Phase 110: Operator-override-aware resolution (GOV-02 — auditable, D-03 from Phase 106) ─
+      // Replaces the unconditional resolvePackSelection() call from Phase 109.
       try {
-        packSelection = resolvePackSelection(seed);
-        seed.packSelection = packSelection; // D-08: written as-is, no transformation
+        if (packOverride && packOverride.basePack) {
+          // T-110-01 mitigation: validate basePack and overlayPack against known options
+          const knownOptions = getAvailablePackOptions();
+          const knownBaseSlugs    = knownOptions.base.map(e => e.slug);
+          const knownOverlaySlugs = knownOptions.overlay.map(e => e.slug);
+          if (!knownBaseSlugs.includes(packOverride.basePack)) {
+            console.warn('[POST /approve] packOverride.basePack rejected — unknown slug:', packOverride.basePack);
+          } else {
+            const safeOverlay = (packOverride.overlayPack && knownOverlaySlugs.includes(packOverride.overlayPack))
+              ? packOverride.overlayPack
+              : null;
+            packSelection = {
+              basePack:       packOverride.basePack,
+              overlayPack:    safeOverlay,
+              overrideReason: 'operator_override',
+              resolvedAt:     new Date().toISOString(),
+            };
+            seed.packSelection = packSelection;
+          }
+        } else if (seed.packSelection && seed.packSelection.overrideReason === 'operator_override') {
+          // Already written by this session — preserve it without re-resolving (D-06 Phase 106)
+          packSelection = seed.packSelection;
+        } else {
+          packSelection = resolvePackSelection(seed);
+          seed.packSelection = packSelection;
+        }
       } catch (resolveErr) {
         console.warn('[POST /approve] resolvePackSelection failed:', resolveErr.message);
         // packSelection remains null; seed.packSelection not set; continue (D-06)
@@ -2405,7 +2433,16 @@ async function handleApprove(req, res) {
           // Non-fatal — approval continues without persisted packSelection (D-06)
         }
       }
-      // End Phase 109 ────────────────────────────────────────────────────────────────────────────
+
+      // Phase 110: build packDiagnostics alongside packSelection (GOV-01 visible diagnostics)
+      // Wrapped in own try/catch — diagnostics failure must never block approval (D-06)
+      try {
+        packDiagnostics = getPackDiagnostics(packSelection);
+      } catch (diagErr) {
+        console.warn('[POST /approve] getPackDiagnostics failed:', diagErr.message);
+        // packDiagnostics stays null — T-110-03: no stack trace surfaces in response
+      }
+      // End Phase 110 ─────────────────────────────────────────────────────────────────────────
 
       const skeletonResults = await generateSkeletons(seed, approvedDrafts, undefined, undefined, packSelection); // Phase 109
       skeletonsSummary = skeletonResults.reduce(
@@ -2456,7 +2493,8 @@ async function handleApprove(req, res) {
           execution_readiness: readiness,
         },
         skeletons: skeletonsSummary,
-        packSelection: packSelection,        // Phase 109 — null if resolution failed (D-07)
+        packSelection:   packSelection,      // Phase 109 — null if resolution failed (D-07)
+        packDiagnostics: packDiagnostics,    // Phase 110 — null if diagnostics failed (GOV-01)
         outcome: createOutcome('warning', 'APPROVE_PARTIAL_WARNING', 'Drafts were written with warnings.', {
           warnings: [...writeWarnings, ...combinedErrors],
         }),
@@ -2506,7 +2544,8 @@ async function handleApprove(req, res) {
         execution_readiness: readiness,
       },
       skeletons: skeletonsSummary,
-      packSelection: packSelection,        // Phase 109 — null if resolution failed (D-07)
+      packSelection:   packSelection,      // Phase 109 — null if resolution failed (D-07)
+      packDiagnostics: packDiagnostics,    // Phase 110 — null if diagnostics failed (GOV-01)
       outcome: createOutcome('success', 'APPROVE_OK', 'Drafts were written successfully.'),
     });
   } catch (err) {
@@ -3347,6 +3386,46 @@ async function handleRoleViewAgent(req, res, overrides) {
   });
 }
 
+// ─── GET /api/packs/resolution (Phase 110) ────────────────────────────────────────
+/**
+ * Read-only endpoint: returns current pack resolution + diagnostics + available
+ * options for the operator override UI (Step 4 in onboarding).
+ *
+ * Security: reads only from SEED_PATH (hardcoded constant — T-110-02).
+ * Response: known fields only — no internal paths or stack traces (T-110-03).
+ */
+async function handlePacksResolution(req, res) {
+  try {
+    let seed = {};
+    if (fs.existsSync(SEED_PATH)) {
+      seed = JSON.parse(fs.readFileSync(SEED_PATH, 'utf8'));
+    }
+    // GOV-02: Honor stored operator_override — do not re-resolve (D-06 Phase 106)
+    let packSelection;
+    if (seed.packSelection && seed.packSelection.overrideReason === 'operator_override') {
+      packSelection = seed.packSelection; // Honor stored operator selection
+    } else {
+      packSelection = resolvePackSelection(seed);
+    }
+    const packDiagnostics = getPackDiagnostics(packSelection);
+    const availablePacks = getAvailablePackOptions();
+    return json(res, 200, {
+      success:        true,
+      packSelection,
+      packDiagnostics,
+      availablePacks, // { base: [{slug, displayName, completeness}], overlay: [...] }
+    });
+  } catch (err) {
+    console.warn('[GET /api/packs/resolution] Error:', err.message);
+    return json(res, 200, {
+      success:         false,
+      packSelection:   null,
+      packDiagnostics: null,
+      availablePacks:  { base: [], overlay: [] },
+    });
+  }
+}
+
 module.exports = {
   handleConfig,
   handleStatus,
@@ -3354,6 +3433,7 @@ module.exports = {
   handleSubmit,
   handleRegenerate,
   handleApprove,
+  handlePacksResolution,  // Phase 110
   handleImporterScan,
   handleImporterApply,
   handleMarkosdbMigration,

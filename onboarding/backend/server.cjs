@@ -103,6 +103,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && req.url.startsWith('/api/spark-suggestion')) return handlers.handleSparkSuggestion(req, res);
   if (req.method === 'POST' && req.url.startsWith('/api/competitor-discovery')) return handlers.handleCompetitorDiscovery(req, res);
   if (req.method === 'POST' && req.url.startsWith('/regenerate')) return handlers.handleRegenerate(req, res);
+  if (req.method === 'GET' && req.url.startsWith('/api/packs/resolution')) return handlers.handlePacksResolution(req, res);
   if (req.method === 'POST' && req.url.startsWith('/approve')) return handlers.handleApprove(req, res);
   if (req.method === 'POST' && req.url.startsWith('/api/importer/scan')) return handlers.handleImporterScan(req, res);
   if (req.method === 'POST' && req.url.startsWith('/api/importer/apply')) return handlers.handleImporterApply(req, res);
