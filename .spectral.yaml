@@ -1,0 +1,56 @@
+# .spectral.yaml — MarkOS OpenAPI Spectral ruleset
+# Runs in CI on contracts/openapi.json via openapi-ci.yml
+# Fail-severity: error (warnings are informational only)
+
+extends:
+  - spectral:oas
+
+rules:
+  # ---- MarkOS custom rules ----
+
+  # Every path operation must carry an x-flow-id annotation (traceability back to F-NN contract)
+  markos-operation-flow-id:
+    message: "Operation is missing x-flow-id. Every path operation must trace to an F-NN flow contract."
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete,head,options,trace]"
+    then:
+      field: "x-flow-id"
+      function: truthy
+
+  # Every path operation must have at least one tag
+  markos-operation-has-tag:
+    message: "Operation is missing tags. Tag every operation with its domain."
+    severity: warn
+    given: "$.paths[*][get,post,put,patch,delete,head,options,trace]"
+    then:
+      field: tags
+      function: truthy
+
+  # x-markos-flows must be present and non-empty (flow index required)
+  markos-flow-index-present:
+    message: "x-markos-flows is missing or empty. The merged doc must include a flow index."
+    severity: error
+    given: "$"
+    then:
+      field: "x-markos-flows"
+      function: truthy
+
+  # info.version must be semver-compatible
+  markos-info-version-semver:
+    message: "info.version must be a semantic version string (e.g. 1.0.0)"
+    severity: error
+    given: "$.info"
+    then:
+      field: version
+      function: pattern
+      functionOptions:
+        match: "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?(\\+[a-zA-Z0-9.]+)?$"
+
+  # Disable some noisy OAS rules that don't apply to MarkOS's style
+  # (These are intentional: MarkOS contracts use x-flow-id for operationId uniqueness)
+  operation-operationId-unique:
+    severity: warn
+  operation-success-response:
+    severity: warn
+  oas3-api-servers:
+    severity: off

@@ -1,0 +1,51 @@
+name: OpenAPI Lint (Spectral)
+
+on:
+  pull_request:
+    paths:
+      - "contracts/**"
+      - "scripts/openapi/**"
+      - ".spectral.yaml"
+      - ".github/workflows/openapi-ci.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "contracts/**"
+      - "scripts/openapi/**"
+      - ".spectral.yaml"
+
+jobs:
+  openapi-lint:
+    name: Build + Spectral lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build OpenAPI document
+        run: npm run openapi:build
+
+      - name: Verify flow count
+        run: |
+          FLOW_COUNT=$(node -e "const d=require('./contracts/openapi.json'); console.log(Object.keys(d['x-markos-flows']).length)")
+          echo "Flow count: $FLOW_COUNT"
+          if [ "$FLOW_COUNT" -lt 39 ]; then
+            echo "ERROR: Expected at least 39 F-NN flows in merged doc, got $FLOW_COUNT"
+            exit 1
+          fi
+
+      - name: Spectral lint
+        run: npx --yes @stoplight/spectral-cli@6 lint contracts/openapi.json --ruleset .spectral.yaml --fail-severity error
+
+      - name: Smoke test
+        run: node --test test/openapi/openapi-build.test.js
