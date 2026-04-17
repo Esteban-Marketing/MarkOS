@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schemas.anthropic.com/claude-marketplace/v1.json",
+  "name": "markos",
+  "displayName": "MarkOS — Marketing OS",
+  "description": "Marketing operating system. Briefs → drafts → audits → scheduled campaigns, grounded in a canon + literacy pipeline. 10 tools for research, planning, drafting, auditing, and execution.",
+  "version": "1.0.0",
+  "homepage": "https://markos.dev",
+  "repository": "https://github.com/estebanooortz/MarkOS",
+  "categories": ["marketing", "content-generation", "analytics"],
+  "license": "MIT",
+  "server": {
+    "type": "http",
+    "url": "https://markos.dev/api/mcp/session",
+    "protocolVersion": "2025-06-18"
+  },
+  "tools": [
+    { "name": "draft_message", "description": "Generate a marketing draft from a channel+audience+pain+promise+brand brief." },
+    { "name": "plan_campaign", "description": "Produce a campaign plan outline from an objective + audience." },
+    { "name": "research_audience", "description": "Return an audience research snapshot for a segment key." },
+    { "name": "run_neuro_audit", "description": "Run a neuro-audit over a draft and return scored issues." },
+    { "name": "generate_brief", "description": "Generate a structured brief from a freeform prompt." },
+    { "name": "audit_claim", "description": "Verify whether a marketing claim is supported by canon evidence." },
+    { "name": "list_pain_points", "description": "List canonical pain-point taxonomy entries." },
+    { "name": "rank_execution_queue", "description": "Rank CRM execution-queue items for a tenant scope." },
+    { "name": "schedule_post", "description": "Schedule a post draft onto a channel queue." },
+    { "name": "explain_literacy", "description": "Explain a literacy node or archetype slug." }
+  ]
+}

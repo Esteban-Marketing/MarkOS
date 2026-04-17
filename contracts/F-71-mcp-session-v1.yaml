@@ -1,0 +1,113 @@
+id: F-71-mcp-session-v1
+phase: 200
+name: MCP Session
+status: active
+summary: MCP (Model Context Protocol) session endpoint exposing 10 MarkOS tools to MCP clients.
+
+transport:
+  http_session_endpoint: /api/mcp/session
+  dispatch_endpoint: /api/mcp/tools/{toolName}
+  protocol: json-rpc-2.0
+  protocol_version: "2025-06-18"
+
+tools:
+  - draft_message
+  - plan_campaign
+  - research_audience
+  - run_neuro_audit
+  - generate_brief
+  - audit_claim
+  - list_pain_points
+  - rank_execution_queue
+  - schedule_post
+  - explain_literacy
+
+paths:
+  /api/mcp/session:
+    get:
+      summary: Return MCP server metadata + tool list
+      operationId: getMcpSession
+      tags:
+        - mcp
+      responses:
+        '200':
+          description: Session metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  server:
+                    type: object
+                    properties:
+                      name: { type: string }
+                      version: { type: string }
+                  tools:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/McpToolDescriptor'
+    post:
+      summary: JSON-RPC 2.0 request (initialize / tools/list / tools/call)
+      operationId: postMcpSession
+      tags:
+        - mcp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jsonrpc, method]
+              properties:
+                jsonrpc: { type: string, enum: ["2.0"] }
+                id: { oneOf: [{ type: string }, { type: integer }, { type: "null" }] }
+                method: { type: string }
+                params: { type: object, additionalProperties: true }
+      responses:
+        '200':
+          description: JSON-RPC response envelope
+  /api/mcp/tools/{toolName}:
+    post:
+      summary: Invoke a single tool by name
+      operationId: invokeMcpTool
+      tags:
+        - mcp
+      parameters:
+        - name: toolName
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: Tool result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  tool: { type: string }
+                  result: { type: object, additionalProperties: true }
+        '404': { description: Unknown tool }
+
+components:
+  schemas:
+    McpToolDescriptor:
+      type: object
+      required: [name, description, inputSchema]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        inputSchema: { type: object, additionalProperties: true }
+
+marketplace:
+  listing_manifest: .claude-plugin/marketplace.json
+  submission_status: pending
