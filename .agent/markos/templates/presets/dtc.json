@@ -1,0 +1,145 @@
+{
+  "_schema": "markos-preset-v1",
+  "_bucket": "dtc",
+  "_description": "Seed preset for Direct-to-Consumer brands selling physical or digital products online.",
+
+  "mir_seed": {
+    "company": {
+      "name": "{{company_name}}",
+      "stage": "0-1M MRR",
+      "industry": "DTC / E-commerce",
+      "business_model": "ecommerce"
+    },
+    "product": {
+      "name": "{{product_name}}",
+      "category": "Consumer Product",
+      "value_proposition": "Better ingredients, better results, shipped direct.",
+      "pricing_model": "one-time-plus-subscription",
+      "free_trial": false
+    },
+    "audience": {
+      "primary_archetype": "conscious-consumer",
+      "secondary_archetypes": ["deal-seeker", "gift-buyer"],
+      "pain_points": [
+        "low_repeat_purchase_rate",
+        "high_acquisition_cost",
+        "low_average_order_value",
+        "cart_abandonment"
+      ],
+      "success_criteria": [
+        "Increase LTV:CAC ratio above 3x",
+        "Grow subscription cohort to 30% of revenue",
+        "Reduce first-order CAC by 25%"
+      ],
+      "demographics": {
+        "age_range": "25-44",
+        "gender_skew": "neutral",
+        "income_bracket": "middle-to-upper-middle"
+      }
+    },
+    "market": {
+      "positioning": "premium-accessibility",
+      "competitors": [
+        { "name": "Mass retail brands", "positioning": "cheap-and-ubiquitous" },
+        { "name": "Ultra-premium niche", "positioning": "exclusive-but-expensive" }
+      ],
+      "differentiators": [
+        "Transparent sourcing",
+        "Subscription savings",
+        "Community-driven product development"
+      ]
+    },
+    "content_maturity": "moderate",
+    "budget_range": "10k-50k/mo"
+  },
+
+  "msp_seed": {
+    "primary_channel": "paid-social",
+    "motion_templates": [
+      {
+        "id": "dtc-001",
+        "name": "Abandoned Cart Recovery Sequence",
+        "channel": "email+sms",
+        "type": "lifecycle",
+        "pain": "cart_abandonment",
+        "audience": "conscious-consumer",
+        "description": "3-touch cart recovery: urgency reminder → social proof → final discount. Recovers 15-25% of abandoned carts.",
+        "stages": ["consideration", "decision"]
+      },
+      {
+        "id": "dtc-002",
+        "name": "Post-Purchase LTV Engine",
+        "channel": "email",
+        "type": "lifecycle",
+        "pain": "low_repeat_purchase_rate",
+        "audience": "conscious-consumer",
+        "description": "Day 3/7/21/45 post-purchase sequence: delivery delight → usage tips → cross-sell → subscription upsell.",
+        "stages": ["retention", "expansion"]
+      },
+      {
+        "id": "dtc-003",
+        "name": "Paid Social Acquisition Campaign",
+        "channel": "paid-social",
+        "type": "paid",
+        "pain": "high_acquisition_cost",
+        "audience": "conscious-consumer",
+        "description": "Meta/TikTok creative campaign using UGC + proof creative. Hooks on problem, closes on transformation.",
+        "stages": ["awareness", "consideration"]
+      },
+      {
+        "id": "dtc-004",
+        "name": "Subscription Conversion Campaign",
+        "channel": "email+in-app",
+        "type": "lifecycle",
+        "pain": "low_repeat_purchase_rate",
+        "audience": "deal-seeker",
+        "description": "After first purchase, educate on subscription savings. Bundle benefit framing + easy cancel guarantee.",
+        "stages": ["retention", "expansion"]
+      },
+      {
+        "id": "dtc-005",
+        "name": "Influencer Seeding + Affiliate Program",
+        "channel": "influencer",
+        "type": "organic",
+        "pain": "high_acquisition_cost",
+        "audience": "conscious-consumer",
+        "description": "Micro-influencer (10K-100K) seeding program with affiliate codes. Authentic UGC factory at low CPM.",
+        "stages": ["awareness"]
+      }
+    ]
+  },
+
+  "brand_pack_placeholder": {
+    "tone": "warm-and-relatable",
+    "voice_archetype": "knowledgeable-friend",
+    "formality": "conversational",
+    "avoid": ["clinical language", "corporate speak", "greenwashing vagueness"],
+    "proof_posture": "social-proof-first",
+    "claim_style": "transformation-story",
+    "cta_style": "benefit-led"
+  },
+
+  "literacy_nodes": {
+    "shared": [
+      "TPL-SHARED-business-model-ecommerce",
+      "TPL-SHARED-business-model-b2c",
+      "TPL-SHARED-tone-and-naturality",
+      "TPL-SHARED-proof-posture",
+      "TPL-SHARED-overlay-ecommerce"
+    ],
+    "channel": [
+      "TPL-LE-stage-aware-universal",
+      "TPL-PM-stage-aware-universal",
+      "TPL-LP-stage-aware-universal"
+    ],
+    "diagnostics": [
+      "LIT-EMAIL-001-low-open-rate",
+      "LIT-EMAIL-002-high-churn-signals",
+      "LIT-LP-001-low-cvr",
+      "LIT-LP-002-high-bounce",
+      "LIT-PM-002-low-roas",
+      "LIT-PM-001-high-cpr",
+      "LIT-SOCIAL-001-low-engagement"
+    ]
+  }
+}

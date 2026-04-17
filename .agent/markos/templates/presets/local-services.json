@@ -1,0 +1,139 @@
+{
+  "_schema": "markos-preset-v1",
+  "_bucket": "local-services",
+  "_description": "Seed preset for local service businesses: home services, medical practices, legal, fitness, restaurants.",
+
+  "mir_seed": {
+    "company": {
+      "name": "{{company_name}}",
+      "stage": "pre-launch",
+      "industry": "Local Services",
+      "business_model": "services"
+    },
+    "product": {
+      "name": "{{service_name}}",
+      "category": "Local Service",
+      "value_proposition": "Trusted local experts. Fast response. Guaranteed results.",
+      "pricing_model": "per-job-or-subscription",
+      "free_trial": false
+    },
+    "audience": {
+      "primary_archetype": "local-homeowner-or-patient",
+      "secondary_archetypes": ["local-business-owner", "repeat-client"],
+      "pain_points": [
+        "low_local_visibility",
+        "low_review_volume",
+        "inconsistent_new_bookings",
+        "low_repeat_client_rate"
+      ],
+      "success_criteria": [
+        "Rank in top 3 Google Maps results for primary service keyword",
+        "Grow to 50+ Google reviews in 6 months",
+        "Fill 80% of appointment slots via digital channels"
+      ],
+      "geography": "local-market",
+      "radius_miles": 25
+    },
+    "market": {
+      "positioning": "trusted-neighborhood-expert",
+      "competitors": [
+        { "name": "National franchise chains", "positioning": "impersonal-but-known" },
+        { "name": "Unreviewed local competitors", "positioning": "cheaper-but-unreliable" }
+      ],
+      "differentiators": [
+        "Local ownership and accountability",
+        "Fast response time",
+        "Transparent pricing before commitment"
+      ]
+    },
+    "content_maturity": "none",
+    "budget_range": "500-3k/mo"
+  },
+
+  "msp_seed": {
+    "primary_channel": "local-seo",
+    "motion_templates": [
+      {
+        "id": "local-001",
+        "name": "Google Business Profile Optimization",
+        "channel": "local-seo",
+        "type": "organic",
+        "pain": "low_local_visibility",
+        "audience": "local-homeowner-or-patient",
+        "description": "Optimize GBP listing: categories, service descriptions, photos, Q&A, weekly posts. Drives Maps rankings and call volume.",
+        "stages": ["awareness"]
+      },
+      {
+        "id": "local-002",
+        "name": "Review Generation Sequence",
+        "channel": "sms+email",
+        "type": "lifecycle",
+        "pain": "low_review_volume",
+        "audience": "repeat-client",
+        "description": "Post-service review request via SMS (72h after job). Friction-free 1-click Google link. Escalation path for unhappy customers.",
+        "stages": ["retention"]
+      },
+      {
+        "id": "local-003",
+        "name": "Local Service Ads + Google Search",
+        "channel": "paid-search",
+        "type": "paid",
+        "pain": "inconsistent_new_bookings",
+        "audience": "local-homeowner-or-patient",
+        "description": "LSA + Search campaigns targeting high-intent local keywords. Budget-efficient; pay per verified lead.",
+        "stages": ["awareness", "decision"]
+      },
+      {
+        "id": "local-004",
+        "name": "Seasonal Promotion Campaign",
+        "channel": "email+social",
+        "type": "campaign",
+        "pain": "inconsistent_new_bookings",
+        "audience": "repeat-client",
+        "description": "Seasonal offer to past clients 3x/year. Keeps the business top-of-mind and fills calendar gaps.",
+        "stages": ["retention", "expansion"]
+      },
+      {
+        "id": "local-005",
+        "name": "Referral Program Launch",
+        "channel": "sms+email",
+        "type": "lifecycle",
+        "pain": "high_acquisition_cost",
+        "audience": "repeat-client",
+        "description": "Simple refer-a-friend offer: $25 credit for referrer + 10% off for new client. Lowest CAC channel for local businesses.",
+        "stages": ["expansion"]
+      }
+    ]
+  },
+
+  "brand_pack_placeholder": {
+    "tone": "friendly-and-trustworthy",
+    "voice_archetype": "reliable-neighbor",
+    "formality": "casual-and-direct",
+    "avoid": ["corporate jargon", "overly technical language", "vague guarantees"],
+    "proof_posture": "review-and-testimonial-led",
+    "claim_style": "plain-spoken-specific",
+    "cta_style": "call-or-book-now"
+  },
+
+  "literacy_nodes": {
+    "shared": [
+      "TPL-SHARED-business-model-services",
+      "TPL-SHARED-business-model-b2c",
+      "TPL-SHARED-tone-and-naturality",
+      "TPL-SHARED-proof-posture",
+      "TPL-SHARED-overlay-industry-professional-services"
+    ],
+    "channel": [
+      "TPL-LE-stage-aware-universal",
+      "TPL-LP-stage-aware-universal"
+    ],
+    "diagnostics": [
+      "LIT-SEO-001-low-rankings",
+      "LIT-LP-001-low-cvr",
+      "LIT-LP-003-form-abandonment",
+      "LIT-SOCIAL-001-low-engagement",
+      "LIT-SOCIAL-003-brand-awareness"
+    ]
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "_schema": "markos-preset-v1",
+  "_bucket": "agency",
+  "_description": "Seed preset for marketing, creative, or consulting agencies selling services to business clients.",
+
+  "mir_seed": {
+    "company": {
+      "name": "{{company_name}}",
+      "stage": "0-1M MRR",
+      "industry": "Marketing Services / Agency",
+      "business_model": "services"
+    },
+    "product": {
+      "name": "{{service_name}}",
+      "category": "Agency Services",
+      "value_proposition": "Strategy and execution that drives measurable pipeline.",
+      "pricing_model": "retainer-plus-project",
+      "free_trial": false
+    },
+    "audience": {
+      "primary_archetype": "growth-focused-cmo",
+      "secondary_archetypes": ["budget-conscious-founder", "scaling-marketing-lead"],
+      "pain_points": [
+        "inconsistent_pipeline",
+        "proving_marketing_roi",
+        "content_at_scale",
+        "talent_gaps"
+      ],
+      "success_criteria": [
+        "Replace 2-3 FTE with agency retainer at lower cost",
+        "Achieve 3x pipeline from content investment",
+        "Reduce time-to-campaign from 6 weeks to 2"
+      ],
+      "job_titles": ["CMO", "VP Marketing", "Director of Demand Gen", "Founder"],
+      "company_sizes": ["11-50", "51-200"]
+    },
+    "market": {
+      "positioning": "strategic-execution-partner",
+      "competitors": [
+        { "name": "In-house team", "positioning": "expensive-slow-and-limited-bandwidth" },
+        { "name": "Offshore agencies", "positioning": "cheap-but-misaligned" }
+      ],
+      "differentiators": [
+        "AI-augmented delivery speed",
+        "Embedded strategic ownership",
+        "Transparent performance dashboards"
+      ]
+    },
+    "content_maturity": "moderate",
+    "budget_range": "3k-15k/mo"
+  },
+
+  "msp_seed": {
+    "primary_channel": "inbound-content",
+    "motion_templates": [
+      {
+        "id": "agency-001",
+        "name": "Thought Leadership Authority Build",
+        "channel": "content+linkedin",
+        "type": "organic",
+        "pain": "proving_marketing_roi",
+        "audience": "growth-focused-cmo",
+        "description": "Weekly LinkedIn posts + monthly long-form case studies positioning founders as category experts. Drives inbound inquiry.",
+        "stages": ["awareness", "consideration"]
+      },
+      {
+        "id": "agency-002",
+        "name": "Inbound Lead Nurture Sequence",
+        "channel": "email",
+        "type": "lifecycle",
+        "pain": "inconsistent_pipeline",
+        "audience": "budget-conscious-founder",
+        "description": "7-touch sequence from lead magnet download to discovery call booked. Proof-stacked with ROI stories.",
+        "stages": ["consideration", "decision"]
+      },
+      {
+        "id": "agency-003",
+        "name": "Case Study Distribution Campaign",
+        "channel": "email+paid-social",
+        "type": "demand-gen",
+        "pain": "proving_marketing_roi",
+        "audience": "growth-focused-cmo",
+        "description": "Repurpose client wins into targeted ads + email campaigns. Segmented by vertical for relevance.",
+        "stages": ["consideration", "decision"]
+      },
+      {
+        "id": "agency-004",
+        "name": "Referral Reactivation Program",
+        "channel": "email",
+        "type": "lifecycle",
+        "pain": "inconsistent_pipeline",
+        "audience": "growth-focused-cmo",
+        "description": "Quarterly check-in to past clients + warm referral ask. Includes a value-add audit offer to reactivate dormant relationships.",
+        "stages": ["retention", "expansion"]
+      },
+      {
+        "id": "agency-005",
+        "name": "Content-at-Scale Offer Launch",
+        "channel": "email+landing-page",
+        "type": "campaign",
+        "pain": "content_at_scale",
+        "audience": "scaling-marketing-lead",
+        "description": "Launch campaign for a productized AI-augmented content retainer. Positions speed + quality over volume.",
+        "stages": ["awareness", "decision"]
+      }
+    ]
+  },
+
+  "brand_pack_placeholder": {
+    "tone": "authoritative-and-empathetic",
+    "voice_archetype": "strategic-advisor",
+    "formality": "business-casual",
+    "avoid": ["vague promises", "vanity metrics", "agency cliches"],
+    "proof_posture": "case-study-driven",
+    "claim_style": "outcome-specific",
+    "cta_style": "low-friction-discovery"
+  },
+
+  "literacy_nodes": {
+    "shared": [
+      "TPL-SHARED-business-model-services",
+      "TPL-SHARED-business-model-b2b",
+      "TPL-SHARED-tone-and-naturality",
+      "TPL-SHARED-proof-posture",
+      "TPL-SHARED-overlay-consulting",
+      "TPL-SHARED-overlay-industry-marketing-services"
+    ],
+    "channel": [
+      "TPL-LE-stage-aware-universal",
+      "TPL-LP-stage-aware-universal"
+    ],
+    "diagnostics": [
+      "LIT-EMAIL-001-low-open-rate",
+      "LIT-EMAIL-003-weak-nurture-sequences",
+      "LIT-SEO-001-low-rankings",
+      "LIT-LP-001-low-cvr",
+      "LIT-SOCIAL-003-brand-awareness"
+    ]
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "_schema": "markos-preset-v1",
+  "_bucket": "solopreneur",
+  "_description": "Seed preset for solopreneurs: indie creators, consultants, coaches, and vibe-coders launching products.",
+
+  "mir_seed": {
+    "company": {
+      "name": "{{creator_name}}",
+      "stage": "pre-launch",
+      "industry": "Creator / Indie Products",
+      "business_model": "info-products"
+    },
+    "product": {
+      "name": "{{product_name}}",
+      "category": "Digital Product or Service",
+      "value_proposition": "Built by one person who actually gets your problem.",
+      "pricing_model": "one-time-or-subscription",
+      "free_trial": true
+    },
+    "audience": {
+      "primary_archetype": "ambitious-builder",
+      "secondary_archetypes": ["vibe-coder", "bootstrap-founder"],
+      "pain_points": [
+        "audience_building",
+        "content_consistency",
+        "conversion_from_followers_to_buyers",
+        "low_email_list_growth"
+      ],
+      "success_criteria": [
+        "Reach $5K MRR with a single productized offer",
+        "Build email list to 1,000 engaged subscribers",
+        "Convert 3-5% of audience to paid customers"
+      ],
+      "platforms": ["twitter-x", "linkedin", "substack", "github"],
+      "community": "build-in-public"
+    },
+    "market": {
+      "positioning": "authentic-niche-expert",
+      "competitors": [
+        { "name": "Big-name courses", "positioning": "generic-and-overproduced" },
+        { "name": "VC-backed tools", "positioning": "feature-bloated-and-impersonal" }
+      ],
+      "differentiators": [
+        "Built-in-public transparency",
+        "Opinionated point of view",
+        "Direct access to the maker"
+      ]
+    },
+    "content_maturity": "basic",
+    "budget_range": "0-500/mo"
+  },
+
+  "msp_seed": {
+    "primary_channel": "organic-social",
+    "motion_templates": [
+      {
+        "id": "solo-001",
+        "name": "Build-in-Public Content Engine",
+        "channel": "twitter-x+linkedin",
+        "type": "organic",
+        "pain": "audience_building",
+        "audience": "ambitious-builder",
+        "description": "Daily build-in-public posts: progress updates, learnings, and behind-the-scenes. Compounds follower growth over 90 days.",
+        "stages": ["awareness"]
+      },
+      {
+        "id": "solo-002",
+        "name": "Email List Lead Magnet Funnel",
+        "channel": "content+email",
+        "type": "lifecycle",
+        "pain": "low_email_list_growth",
+        "audience": "ambitious-builder",
+        "description": "Free resource (template, checklist, or mini-course) distributed via social bio link. Welcome sequence converts subscribers to buyers.",
+        "stages": ["consideration", "decision"]
+      },
+      {
+        "id": "solo-003",
+        "name": "Product Launch Campaign",
+        "channel": "email+social",
+        "type": "campaign",
+        "pain": "conversion_from_followers_to_buyers",
+        "audience": "vibe-coder",
+        "description": "7-day launch sequence: tease → reveal → proof → urgency → close. Coordinates email + social touch-points.",
+        "stages": ["decision"]
+      },
+      {
+        "id": "solo-004",
+        "name": "Weekly Newsletter Engine",
+        "channel": "email",
+        "type": "organic",
+        "pain": "content_consistency",
+        "audience": "ambitious-builder",
+        "description": "Weekly newsletter template: one insight + one resource + one CTA. Builds authority and keeps list warm without burnout.",
+        "stages": ["awareness", "retention"]
+      },
+      {
+        "id": "solo-005",
+        "name": "Community Seeding + Collaboration",
+        "channel": "community",
+        "type": "organic",
+        "pain": "audience_building",
+        "audience": "bootstrap-founder",
+        "description": "Strategic participation in 3-5 niche communities + cross-promotion with complementary solopreneurs. Fastest organic distribution lever.",
+        "stages": ["awareness"]
+      }
+    ]
+  },
+
+  "brand_pack_placeholder": {
+    "tone": "authentic-and-opinionated",
+    "voice_archetype": "fellow-builder",
+    "formality": "casual-and-direct",
+    "avoid": ["corporate polish", "false urgency", "generic motivational content"],
+    "proof_posture": "personal-story-first",
+    "claim_style": "honest-and-specific",
+    "cta_style": "low-pressure-invitation"
+  },
+
+  "literacy_nodes": {
+    "shared": [
+      "TPL-SHARED-business-model-saas",
+      "TPL-SHARED-business-model-b2c",
+      "TPL-SHARED-tone-and-naturality",
+      "TPL-SHARED-proof-posture",
+      "TPL-SHARED-overlay-info-products"
+    ],
+    "channel": [
+      "TPL-LE-stage-aware-universal",
+      "TPL-LP-stage-aware-universal"
+    ],
+    "diagnostics": [
+      "LIT-EMAIL-001-low-open-rate",
+      "LIT-EMAIL-003-weak-nurture-sequences",
+      "LIT-LP-001-low-cvr",
+      "LIT-SOCIAL-001-low-engagement",
+      "LIT-SOCIAL-002-audience-growth-plateau",
+      "LIT-SOCIAL-003-brand-awareness"
+    ]
+  }
+}

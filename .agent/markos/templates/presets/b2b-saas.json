@@ -1,0 +1,140 @@
+{
+  "_schema": "markos-preset-v1",
+  "_bucket": "b2b-saas",
+  "_description": "Seed preset for B2B SaaS companies targeting SMB-to-mid-market buyers.",
+
+  "mir_seed": {
+    "company": {
+      "name": "{{company_name}}",
+      "stage": "0-1M MRR",
+      "industry": "SaaS / Software",
+      "business_model": "saas"
+    },
+    "product": {
+      "name": "{{product_name}}",
+      "category": "B2B SaaS",
+      "value_proposition": "Automate the manual work that slows your team down.",
+      "pricing_model": "subscription",
+      "free_trial": true
+    },
+    "audience": {
+      "primary_archetype": "pragmatic-ops-lead",
+      "secondary_archetypes": ["skeptical-cfo", "champion-ic"],
+      "pain_points": [
+        "pipeline_velocity",
+        "manual_reporting_overhead",
+        "tool_fragmentation",
+        "slow_onboarding_time_to_value"
+      ],
+      "success_criteria": [
+        "Reduce time-to-value from weeks to days",
+        "Cut manual reporting by 80%",
+        "Consolidate 3+ point tools into one"
+      ],
+      "job_titles": ["VP Operations", "Head of Revenue", "RevOps Manager", "COO"],
+      "company_sizes": ["11-50", "51-200", "201-500"]
+    },
+    "market": {
+      "positioning": "operational-efficiency-layer",
+      "competitors": [
+        { "name": "Spreadsheet workflows", "positioning": "free-but-fragile" },
+        { "name": "Enterprise incumbent", "positioning": "expensive-and-bloated" }
+      ],
+      "differentiators": [
+        "AI-native automation",
+        "No-code setup",
+        "Transparent pricing"
+      ]
+    },
+    "content_maturity": "basic",
+    "budget_range": "5k-20k/mo"
+  },
+
+  "msp_seed": {
+    "primary_channel": "inbound-content",
+    "motion_templates": [
+      {
+        "id": "btm-001",
+        "name": "Pipeline Velocity Email Sequence",
+        "channel": "email",
+        "type": "lifecycle",
+        "pain": "pipeline_velocity",
+        "audience": "pragmatic-ops-lead",
+        "description": "5-touch nurture sequence targeting ops leads experiencing pipeline stalls. Leads with proof, closes with ROI calc.",
+        "stages": ["awareness", "consideration", "decision"]
+      },
+      {
+        "id": "btm-002",
+        "name": "Competitive Displacement Campaign",
+        "channel": "content+email",
+        "type": "demand-gen",
+        "pain": "tool_fragmentation",
+        "audience": "skeptical-cfo",
+        "description": "Comparison content + retargeting ads targeting teams stuck on legacy tools. Proof-forward narrative.",
+        "stages": ["consideration", "decision"]
+      },
+      {
+        "id": "btm-003",
+        "name": "Free Trial Activation Onboarding",
+        "channel": "email+in-app",
+        "type": "lifecycle",
+        "pain": "slow_onboarding_time_to_value",
+        "audience": "champion-ic",
+        "description": "Day 0/3/7/14 onboarding sequence to drive activation milestones and internal champion creation.",
+        "stages": ["activation", "expansion"]
+      },
+      {
+        "id": "btm-004",
+        "name": "Thought Leadership SEO Program",
+        "channel": "content",
+        "type": "organic",
+        "pain": "manual_reporting_overhead",
+        "audience": "pragmatic-ops-lead",
+        "description": "Pillar + cluster content strategy targeting high-intent ops keywords. Builds category ownership.",
+        "stages": ["awareness", "consideration"]
+      },
+      {
+        "id": "btm-005",
+        "name": "LinkedIn Paid Demand Generation",
+        "channel": "paid-social",
+        "type": "paid",
+        "pain": "pipeline_velocity",
+        "audience": "pragmatic-ops-lead",
+        "description": "LinkedIn sponsored content targeting job-title + company-size segments with pain-aware creative.",
+        "stages": ["awareness", "consideration"]
+      }
+    ]
+  },
+
+  "brand_pack_placeholder": {
+    "tone": "confident-and-direct",
+    "voice_archetype": "trusted-expert",
+    "formality": "professional-but-approachable",
+    "avoid": ["jargon", "buzzwords", "passive voice", "vague promises"],
+    "proof_posture": "evidence-first",
+    "claim_style": "specific-and-falsifiable",
+    "cta_style": "action-oriented"
+  },
+
+  "literacy_nodes": {
+    "shared": [
+      "TPL-SHARED-business-model-saas",
+      "TPL-SHARED-business-model-b2b",
+      "TPL-SHARED-tone-and-naturality",
+      "TPL-SHARED-proof-posture",
+      "TPL-SHARED-overlay-saas"
+    ],
+    "channel": [
+      "TPL-LE-stage-aware-universal",
+      "TPL-PM-stage-aware-universal",
+      "TPL-LP-stage-aware-universal"
+    ],
+    "diagnostics": [
+      "LIT-EMAIL-001-low-open-rate",
+      "LIT-EMAIL-003-weak-nurture-sequences",
+      "LIT-SEO-001-low-rankings",
+      "LIT-LP-001-low-cvr",
+      "LIT-PM-001-high-cpr"
+    ]
+  }
+}
