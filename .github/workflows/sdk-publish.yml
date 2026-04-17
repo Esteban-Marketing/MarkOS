@@ -1,0 +1,66 @@
+name: SDK auto-gen CI
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/openapi.json'
+      - 'contracts/F-*.yaml'
+      - 'scripts/openapi/**'
+      - 'scripts/sdk/**'
+      - 'sdk/typescript/**'
+      - 'sdk/python/**'
+      - '.github/workflows/sdk-publish.yml'
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci
+      - run: npm run openapi:build
+      - run: node scripts/sdk/bump-semver.cjs
+      - name: Generate TS schema
+        working-directory: sdk/typescript
+        run: npm install && npm run generate
+      - name: Type-check TS SDK
+        working-directory: sdk/typescript
+        run: npx tsc --noEmit
+      - name: Dry-run publish
+        working-directory: sdk/typescript
+        run: npm publish --dry-run --access public
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install build openapi-python-client pytest
+      - name: Prepare openapi for Python codegen
+        run: node scripts/sdk/prepare-openapi.cjs || true
+      - name: Regenerate client (best-effort)
+        run: |
+          cd sdk/python
+          openapi-python-client generate --path ../../contracts/openapi.sdk.json --overwrite || echo "codegen deferred until parser hardening (200-01.1)"
+      - name: Build sdist + wheel
+        working-directory: sdk/python
+        run: python -m build
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [typescript, python]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '24' }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: echo "Real publish step wires once NPM_TOKEN + PYPI_TOKEN secrets are provisioned."
