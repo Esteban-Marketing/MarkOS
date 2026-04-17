@@ -1,10 +1,15 @@
 ---
 phase: 201
 slug: saas-tenancy-hardening
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-04-16
+reviewed_at: 2026-04-17
+checker_verdict: approved
+checker_flags: 1
+checker_blocks: 0
+revisions: 1
 ---
 
 # Phase 201 — UI Design Contract
