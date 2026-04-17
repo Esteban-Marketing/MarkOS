@@ -2,26 +2,21 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: active
-last_updated: "2026-04-16T00:00:00.000Z"
+status: Executing Phase 200
+last_updated: "2026-04-17T00:36:17.771Z"
 progress:
   total_phases: 7
   completed_phases: 0
-  total_plans: 8
+  total_plans: 0
   completed_plans: 0
-  percent: 0
-previous_milestone:
-  version: v3.9.0
-  name: Vertical Plugin Literacy Libraries
-  status: complete
-  archived_at: ".planning/milestones/v3.9.0-ROADMAP.md"
-  audit: ".planning/v3.9.0-MILESTONE-AUDIT.md"
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
+Phase: 200 (saas-readiness-wave-0) — EXECUTING
+Plan: 1 of 1
 **Milestone:** v4.0.0 — SaaS Readiness 1.0 — active
 **Phase:** 200 (saas-readiness-wave-0) — **planned, ready to execute**
 **Quality Baseline:** 15 gates defined in `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`; inherited by every subsequent phase.
@@ -35,18 +30,19 @@ previous_milestone:
 
 ## Next step
 
-Execute phase 200 (wave-0):
+Execute remaining plans in phase 200 wave-0 (parallel execution in progress):
 
-```
+**Wave 1 (parallel):** 200-01 (OpenAPI), 200-03 (Webhooks), 200-04 (Presets), 200-05 (llms.txt)
+
+200-01 status: **Files written, awaiting git commit** (git write ops blocked in parallel agent; see SUMMARY.md)
+
+After Wave 1 commits are applied:
+- Wave 2: 200-02 (CLI generate), 200-06 (MCP server), 200-07 (SDK CI)
+- Wave 3: 200-08 (Claude Marketplace landing)
+
+```bash
 /gsd-execute-phase 200
 ```
-
-Run from fresh context (`/clear` first). Phase 200 has CONTEXT-equivalent `DISCUSS.md` + full `PLAN.md` + `QUALITY-BASELINE.md` already authored. Executor should:
-
-1. Run plans in the wave order defined in PLAN.md.
-2. Honor every Quality Baseline gate (15).
-3. One atomic commit per plan.
-4. Update this STATE.md as phases progress.
 
 ## Open questions
 

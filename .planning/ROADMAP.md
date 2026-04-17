@@ -29,10 +29,10 @@
 **Requirements Mapped:** API-01, SDK-01, MCP-01, WHK-01, CLI-01, QA-01..15
 **Depends on:** v3.9.0 closure
 **Status:** 📋 Planned
-**Plans:** 8 plans (see `.planning/phases/200-saas-readiness-wave-0/PLAN.md`)
+**Plans:** 2/8 plans executed
 
 Plans:
-- [ ] 200-01-PLAN.md — Public OpenAPI 3.1 merge + serve
+- [x] 200-01-PLAN.md — Public OpenAPI 3.1 merge + serve (files written, commit pending)
 - [ ] 200-02-PLAN.md — CLI `markos generate <brief>` one-shot mode
 - [ ] 200-03-PLAN.md — Webhook subscription primitive
 - [ ] 200-04-PLAN.md — Presetted onboarding `--preset=<bucket>`
