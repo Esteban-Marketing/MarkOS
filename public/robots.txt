@@ -1,0 +1,37 @@
+# robots.txt — MarkOS
+# https://markos.dev/robots.txt
+
+# Default: allow all well-behaved crawlers
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# ─── AI Crawler Allow-list ────────────────────────────────────────────────────
+# Explicitly allow AI training and retrieval bots on all public content.
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# ─── Sitemaps ─────────────────────────────────────────────────────────────────
+
+Sitemap: https://markos.dev/sitemap.xml
