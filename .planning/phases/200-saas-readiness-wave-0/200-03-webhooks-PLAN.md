@@ -3,6 +3,14 @@ phase: 200-saas-readiness-wave-0
 plan: 03
 type: execute
 wave: 1
+status: deferred
+deferred_at: 2026-04-17
+deferred_reason: |
+  Wave 1 spawn produced only the SQL migration (subagent blocked on Bash perms
+  in worktree sandbox, exited early before writing libs/endpoints/contracts/tests).
+  Orphan migration 70_markos_webhook_subscriptions.sql remains untracked on disk
+  as a starting point for the next session.
+  Resume via: /gsd:execute-phase 200 --wave 1 --interactive (re-picks incomplete plans only).
 depends_on: []
 files_modified:
   - supabase/migrations/70_markos_webhook_subscriptions.sql

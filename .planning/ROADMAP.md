@@ -29,7 +29,7 @@
 **Requirements Mapped:** API-01, SDK-01, MCP-01, WHK-01, CLI-01, QA-01..15
 **Depends on:** v3.9.0 closure
 **Status:** 📋 Planned
-**Plans:** 2/8 plans executed
+**Plans:** 3/8 plans executed
 
 Plans:
 - [x] 200-01-PLAN.md — Public OpenAPI 3.1 merge + serve (files written, commit pending)
