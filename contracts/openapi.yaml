@@ -5,7 +5,7 @@ openapi: 3.1.0
 info:
   title: MarkOS API
   version: 1.0.0
-  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 42 flow contracts.
+  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 51 flow contracts.
   contact:
     name: MarkOS Engineering
     url: "https://markos.esteban.marketing"
@@ -138,6 +138,33 @@ x-markos-flows:
   F-73-webhook-delivery-v1:
     source: contracts/F-73-webhook-delivery-v1.yaml
     description: MarkOS flow F-73-webhook-delivery-v1
+  F-80-public-signup-v1:
+    source: contracts/F-80-public-signup-v1.yaml
+    description: MarkOS flow F-80-public-signup-v1
+  F-81-passkey-webauthn-v1:
+    source: contracts/F-81-passkey-webauthn-v1.yaml
+    description: MarkOS flow F-81-passkey-webauthn-v1
+  F-82-tenant-sessions-v1:
+    source: contracts/F-82-tenant-sessions-v1.yaml
+    description: MarkOS flow F-82-tenant-sessions-v1
+  F-83-byod-custom-domain-v1:
+    source: contracts/F-83-byod-custom-domain-v1.yaml
+    description: MarkOS flow F-83-byod-custom-domain-v1
+  F-84-tenant-branding-v1:
+    source: contracts/F-84-tenant-branding-v1.yaml
+    description: MarkOS flow F-84-tenant-branding-v1
+  F-85-members-invites-v1:
+    source: contracts/F-85-members-invites-v1.yaml
+    description: MarkOS flow F-85-members-invites-v1
+  F-86-tenant-lifecycle-v1:
+    source: contracts/F-86-tenant-lifecycle-v1.yaml
+    description: MarkOS flow F-86-tenant-lifecycle-v1
+  F-87-tenant-switcher-v1:
+    source: contracts/F-87-tenant-switcher-v1.yaml
+    description: MarkOS flow F-87-tenant-switcher-v1
+  F-88-tenant-audit-query-v1:
+    source: contracts/F-88-tenant-audit-query-v1.yaml
+    description: MarkOS flow F-88-tenant-audit-query-v1
 tags:
   -     name: admin
     description: admin domain flows
@@ -159,6 +186,8 @@ tags:
     description: onboarding domain flows
   -     name: reporting
     description: reporting domain flows
+  -     name: tenancy
+    description: tenancy domain flows
   -     name: tracking
     description: tracking domain flows
 paths:
@@ -272,6 +301,166 @@ paths:
         - general
       x-flow-id: F-62-outbound-send-v1
       x-flow-name: Outbound Send
+      x-domain: general
+      x-flow-version: v1
+  /api/auth/callback:
+    get:
+      summary: Verify OTP token and provision org + tenant
+      operationId: verifySignupCallback
+      tags:
+        - auth
+        - signup
+      parameters:
+        -           name: token_hash
+          in: query
+          required: true
+          schema:
+            type: string
+        -           name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: "[magiclink, email]"
+            default: magiclink
+      responses:
+        '302':
+          description: "Redirect — /onboarding on success, /login?error=... on failure"
+          headers:
+            Location:
+              schema:
+                type: string
+      x-flow-id: F-80-public-signup-v1
+      x-flow-name: Public Signup (Magic-Link + BotID)
+      x-domain: general
+      x-flow-version: v1
+  /api/auth/passkey/authenticate-options:
+    post:
+      summary: Issue authentication options for a user by user_id
+      operationId: passkeyAuthenticateOptions
+      tags: "[auth, passkey]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[user_id]"
+              properties: "{ user_id: { type: string } }"
+      responses:
+        '200':
+          description: PublicKeyCredentialRequestOptionsJSON + challenge_id
+        '400': "{ description: user_id_required }"
+      x-flow-id: F-81-passkey-webauthn-v1
+      x-flow-name: Passkey (WebAuthn) Opt-In + Authentication
+      x-domain: general
+      x-flow-version: v1
+  /api/auth/passkey/authenticate-verify:
+    post:
+      summary: Verify authentication assertion and establish session
+      operationId: passkeyAuthenticateVerify
+      tags: "[auth, passkey]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuthVerifyRequest"
+      responses:
+        '200':
+          description: Verified; session cookie set
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+        '400': "{ description: invalid_body | verification_failed | challenge_expired | credential_not_found }"
+      x-flow-id: F-81-passkey-webauthn-v1
+      x-flow-name: Passkey (WebAuthn) Opt-In + Authentication
+      x-domain: general
+      x-flow-version: v1
+  /api/auth/passkey/register-options:
+    post:
+      summary: "Issue WebAuthn registration options (server-side challenge) for the current session's user"
+      operationId: passkeyRegisterOptions
+      tags: "[auth, passkey]"
+      responses:
+        '200':
+          description: PublicKeyCredentialCreationOptionsJSON + challenge_id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationOptionsResponse"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-81-passkey-webauthn-v1
+      x-flow-name: Passkey (WebAuthn) Opt-In + Authentication
+      x-domain: general
+      x-flow-version: v1
+  /api/auth/passkey/register-verify:
+    post:
+      summary: Verify registration attestation and persist credential
+      operationId: passkeyRegisterVerify
+      tags: "[auth, passkey]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterVerifyRequest"
+      responses:
+        '200':
+          description: Credential registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+        '400': "{ description: invalid_body | verification_failed | challenge_expired | challenge_not_found }"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-81-passkey-webauthn-v1
+      x-flow-name: Passkey (WebAuthn) Opt-In + Authentication
+      x-domain: general
+      x-flow-version: v1
+  /api/auth/signup:
+    post:
+      summary: Enqueue a public signup (magic-link send)
+      operationId: enqueuePublicSignup
+      tags:
+        - auth
+        - signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+      responses:
+        '201':
+          description: Magic link sent; user is buffered but no tenant created yet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupAccepted"
+        '400':
+          description: "invalid_email | invalid_body | supabase_error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupError"
+        '403':
+          description: bot_detected (BotID verification failed)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupError"
+        '405':
+          description: method_not_allowed
+        '429':
+          description: rate_limited (5/hour/IP or 1/minute/email exceeded)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SignupError"
+      x-flow-id: F-80-public-signup-v1
+      x-flow-name: Public Signup (Magic-Link + BotID)
       x-domain: general
       x-flow-version: v1
   /api/competitor-discovery:
@@ -664,6 +853,107 @@ paths:
       x-flow-name: ai-interview-parse-answer
       x-domain: enrichment
       x-flow-version: v1
+  /api/settings/custom-domain/add:
+    post:
+      summary: Request a new custom domain for the active org
+      operationId: addCustomDomain
+      tags: "[tenancy, byod]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[domain]"
+              properties:
+                domain: "{ type: string, pattern: '^(?!-)[a-z0-9-]{1,63}(\\.[a-z]{2,})+$' }"
+      responses:
+        '200': "{ description: Domain added, status=pending, cname_target returned }"
+        '400': "{ description: invalid_domain_format | quota_exceeded | domain_required }"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-83-byod-custom-domain-v1
+      x-flow-name: BYOD Custom Domain
+      x-domain: general
+      x-flow-version: v1
+  /api/settings/custom-domain/remove:
+    post:
+      summary: "Remove the org's custom domain (soft-delete + Vercel API DELETE)"
+      operationId: removeCustomDomain
+      tags: "[tenancy, byod]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[domain]"
+              properties: "{ domain: { type: string } }"
+      responses:
+        '200': "{ description: removed }"
+        '404': "{ description: not_found }"
+      x-flow-id: F-83-byod-custom-domain-v1
+      x-flow-name: BYOD Custom Domain
+      x-domain: general
+      x-flow-version: v1
+  /api/settings/custom-domain/status:
+    get:
+      summary: Poll current verification status (DNS + SSL)
+      operationId: pollCustomDomainStatus
+      tags: "[tenancy, byod]"
+      parameters:
+        -           name: domain
+          in: query
+          required: true
+          schema: "{ type: string }"
+      responses:
+        '200':
+          description: Current status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: "{ type: string, enum: [pending, verifying, verified, failed] }"
+                  verified_at: "{ type: string, format: date-time, nullable: true }"
+                  ssl_issued_at: "{ type: string, format: date-time, nullable: true }"
+      x-flow-id: F-83-byod-custom-domain-v1
+      x-flow-name: BYOD Custom Domain
+      x-domain: general
+      x-flow-version: v1
+  /api/settings/tenant-branding:
+    get:
+      summary: Get current tenant branding (falls back to MarkOS defaults)
+      operationId: getTenantBranding
+      tags: "[tenancy, branding]"
+      responses:
+        '200':
+          description: branding record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TenantBranding"
+      x-flow-id: F-84-tenant-branding-v1
+      x-flow-name: Tenant Branding
+      x-domain: general
+      x-flow-version: v1
+    post:
+      summary: Upsert tenant branding
+      operationId: upsertTenantBranding
+      tags: "[tenancy, branding]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TenantBrandingPatch"
+      responses:
+        '200': "{ description: saved }"
+        '400': "{ description: invalid_input | primary_color must match #RRGGBB }"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-84-tenant-branding-v1
+      x-flow-name: Tenant Branding
+      x-domain: general
+      x-flow-version: v1
   /api/spark-suggestion:
     post:
       summary: Generate spark content suggestions
@@ -680,6 +970,404 @@ paths:
       x-flow-id: F-16
       x-flow-name: spark-suggestion
       x-domain: enrichment
+      x-flow-version: v1
+  /api/tenant/audit/list:
+    get:
+      summary: List audit entries for the active tenant
+      operationId: listTenantAudit
+      tags:
+        - tenancy
+        - audit
+      parameters:
+        -           name: source_domain
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - auth
+              - tenancy
+              - orgs
+              - billing
+              - crm
+              - outbound
+              - webhooks
+              - approvals
+              - consent
+              - governance
+              - system
+        -           name: action
+          in: query
+          required: false
+          schema:
+            type: string
+        -           name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        -           name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        -           name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: Audit entries with chain pointers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AuditEntry"
+                  has_more:
+                    type: boolean
+        '401':
+          description: unauthenticated
+        '403':
+          description: forbidden (not tenant-admin or owner)
+      x-flow-id: F-88-tenant-audit-query-v1
+      x-flow-name: tenant_audit_query
+      x-domain: tenancy
+      x-flow-version: v1
+  /api/tenant/invites/accept:
+    post:
+      summary: Accept an invite via token
+      operationId: acceptTenantInvite
+      tags: "[tenancy, invites]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[token]"
+              properties:
+                token: "{ type: string }"
+      responses:
+        '200':
+          description: Accepted; org + tenant membership inserted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[org_id, tenant_id, tenant_role]"
+                properties:
+                  org_id: "{ type: string }"
+                  tenant_id: "{ type: string }"
+                  tenant_role: "{ type: string }"
+        '400': "{ description: invite_not_found | invite_already_accepted | invite_withdrawn | invite_expired | invite_email_mismatch | seat_quota_reached | token_required }"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-85-members-invites-v1
+      x-flow-name: Tenant Members + Invites
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/invites/create:
+    post:
+      summary: Create an invite (seat-quota gated)
+      operationId: createTenantInvite
+      tags: "[tenancy, invites]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[email, tenant_role]"
+              properties:
+                email: "{ type: string, format: email }"
+                tenant_role:
+                  type: string
+                  enum: "[owner, tenant-admin, manager, contributor, reviewer, billing-admin, readonly]"
+      responses:
+        '201':
+          description: Invite created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[token, expires_at]"
+                properties:
+                  token: "{ type: string }"
+                  expires_at: "{ type: string, format: date-time }"
+        '400': "{ description: seat_quota_reached | invalid_tenant_role | email_and_tenant_role_required }"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-85-members-invites-v1
+      x-flow-name: Tenant Members + Invites
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/invites/withdraw:
+    post:
+      summary: Withdraw a pending invite
+      operationId: withdrawTenantInvite
+      tags: "[tenancy, invites]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[token]"
+              properties:
+                token: "{ type: string }"
+      responses:
+        '200':
+          description: Withdrawn (idempotent)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: "{ type: boolean, enum: [true] }"
+        '400': "{ description: token_required }"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-85-members-invites-v1
+      x-flow-name: Tenant Members + Invites
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/lifecycle/cancel-offboard:
+    post:
+      summary: Cancel an in-progress offboarding within the 30-day grace window
+      operationId: cancelTenantOffboarding
+      tags: "[tenancy, lifecycle]"
+      responses:
+        '200':
+          description: Offboarding cancelled; tenant status=active
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[status]"
+                properties:
+                  status: "{ type: string, enum: [active] }"
+        '401': "{ description: unauthenticated }"
+        '403': "{ description: forbidden }"
+        '409': "{ description: not_offboarding }"
+      x-flow-id: F-86-tenant-lifecycle-v1
+      x-flow-name: Tenant Lifecycle + GDPR Purge
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/lifecycle/offboard:
+    post:
+      summary: Initiate tenant offboarding (30-day purge timer)
+      operationId: initiateTenantOffboarding
+      tags: "[tenancy, lifecycle]"
+      responses:
+        '200':
+          description: Offboarding initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[purge_due_at]"
+                properties:
+                  purge_due_at: "{ type: string, format: date-time }"
+        '401': "{ description: unauthenticated }"
+        '403': "{ description: forbidden (non-owner/tenant-admin) }"
+        '409': "{ description: already_offboarding }"
+      x-flow-id: F-86-tenant-lifecycle-v1
+      x-flow-name: Tenant Lifecycle + GDPR Purge
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/lifecycle/purge-cron:
+    post:
+      summary: Cron-gated purge runner (shared secret)
+      operationId: runTenantPurgeCron
+      tags: "[tenancy, lifecycle, cron]"
+      description: "|"
+      responses:
+        '200':
+          description: All purges succeeded
+          content:
+            application/json:
+              schema: "{ $ref: '#/components/schemas/PurgeResult' }"
+        '207':
+          description: Partial success (some tenants failed)
+          content:
+            application/json:
+              schema: "{ $ref: '#/components/schemas/PurgeResult' }"
+        '401': "{ description: unauthorised (missing or wrong cron secret) }"
+      x-flow-id: F-86-tenant-lifecycle-v1
+      x-flow-name: Tenant Lifecycle + GDPR Purge
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/members/list:
+    get:
+      summary: List tenant members with seat usage
+      operationId: listTenantMembers
+      tags: "[tenancy, members]"
+      responses:
+        '200':
+          description: Members + seat usage
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[members, seat_usage]"
+                properties:
+                  members:
+                    type: array
+                    items: "{ $ref: '#/components/schemas/TenantMembership' }"
+                  seat_usage: "{ $ref: '#/components/schemas/SeatUsage' }"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-85-members-invites-v1
+      x-flow-name: Tenant Members + Invites
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/members/remove:
+    post:
+      summary: Remove a tenant member
+      operationId: removeTenantMember
+      tags: "[tenancy, members]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[user_id]"
+              properties:
+                user_id: "{ type: string }"
+      responses:
+        '200':
+          description: Removed; audit emitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: "{ type: boolean, enum: [true] }"
+        '400': "{ description: user_id_required }"
+        '401': "{ description: unauthenticated }"
+        '404': "{ description: not_found }"
+      x-flow-id: F-85-members-invites-v1
+      x-flow-name: Tenant Members + Invites
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/sessions/list:
+    get:
+      summary: List active sessions for the current user + tenant
+      operationId: listTenantSessions
+      tags: "[tenancy, sessions]"
+      responses:
+        '200':
+          description: List of active session devices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SessionDevice"
+      x-flow-id: F-82-tenant-sessions-v1
+      x-flow-name: Tenant Session Management
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/sessions/revoke:
+    post:
+      summary: Revoke a single session OR all other sessions
+      operationId: revokeTenantSessions
+      tags: "[tenancy, sessions]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                -                   type: object
+                  required: "[session_id]"
+                  properties:
+                    session_id: "{ type: string }"
+                -                   type: object
+                  required: "[all]"
+                  properties:
+                    all: "{ type: boolean, enum: [true] }"
+      responses:
+        '200':
+          description: Revoked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: "{ type: boolean, enum: [true] }"
+                  revoked_count: "{ type: integer }"
+        '400': "{ description: invalid_json | session_id_required | current_session_unknown }"
+        '401': "{ description: unauthenticated }"
+        '404': "{ description: not_found (session does not belong to user/tenant) }"
+      x-flow-id: F-82-tenant-sessions-v1
+      x-flow-name: Tenant Session Management
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/switcher/create-tenant:
+    post:
+      summary: Create a new tenant inside an existing org
+      operationId: createSwitcherTenant
+      tags: "[tenancy, switcher]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[slug, name]"
+              properties:
+                slug: "{ type: string, pattern: '^[a-z0-9-]{2,63}$' }"
+                name: "{ type: string, minLength: 2, maxLength: 80 }"
+      responses:
+        '201':
+          description: Tenant created; caller added as owner
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[tenant_id, slug]"
+                properties:
+                  tenant_id: "{ type: string }"
+                  slug: "{ type: string }"
+        '400': "{ description: slug_reserved | slug_taken | slug_and_name_required }"
+        '401': "{ description: unauthenticated }"
+        '403': "{ description: forbidden (non-owner/billing-admin of org) }"
+      x-flow-id: F-87-tenant-switcher-v1
+      x-flow-name: Tenant Switcher + Create-in-Org
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/switcher/list:
+    get:
+      summary: List every org + tenant the current user belongs to
+      operationId: listSwitcherTargets
+      tags: "[tenancy, switcher]"
+      responses:
+        '200':
+          description: Orgs grouped with their tenants
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[orgs]"
+                properties:
+                  orgs:
+                    type: array
+                    items: "{ $ref: '#/components/schemas/OrgGroup' }"
+        '401': "{ description: unauthenticated }"
+      x-flow-id: F-87-tenant-switcher-v1
+      x-flow-name: Tenant Switcher + Create-in-Org
+      x-domain: general
       x-flow-version: v1
   /api/tracking/identify:
     post:
@@ -850,6 +1538,28 @@ paths:
         '404': "{ description: Subscription not found }"
       x-flow-id: F-72-webhook-subscription-v1
       x-flow-name: Webhook Subscription
+      x-domain: general
+      x-flow-version: v1
+  /api/webhooks/vercel-domain:
+    post:
+      summary: Vercel verification webhook (HMAC-signed)
+      operationId: vercelDomainWebhook
+      tags: "[tenancy, webhooks]"
+      parameters:
+        -           name: X-Markos-Signature
+          in: header
+          required: true
+          schema: "{ type: string }"
+        -           name: X-Markos-Timestamp
+          in: header
+          required: true
+          schema: "{ type: string }"
+      responses:
+        '200': "{ description: processed }"
+        '401': "{ description: invalid_signature }"
+        '400': "{ description: invalid_json | domain_missing }"
+      x-flow-id: F-83-byod-custom-domain-v1
+      x-flow-name: BYOD Custom Domain
       x-domain: general
       x-flow-version: v1
   /approve:
@@ -1138,3 +1848,191 @@ components:
         next_retry_at: "{ type: string, format: date-time, nullable: true }"
         created_at: "{ type: string, format: date-time }"
         updated_at: "{ type: string, format: date-time }"
+    F_80_public_signup_v1_SignupRequest:
+      type: object
+      required: "[email, botIdToken]"
+      properties:
+        email:
+          type: string
+          format: email
+        botIdToken:
+          type: string
+          minLength: 1
+          description: Vercel BotID pre-submit token issued client-side
+    F_80_public_signup_v1_SignupAccepted:
+      type: object
+      required: "[ok, buffer_expires_at]"
+      properties:
+        ok:
+          type: boolean
+          enum: "[true]"
+        buffer_expires_at:
+          type: string
+          format: date-time
+    F_80_public_signup_v1_SignupError:
+      type: object
+      required: "[error]"
+      properties:
+        error:
+          type: string
+          enum:
+            - invalid_email
+            - invalid_body
+            - bot_detected
+            - rate_limited
+            - db_error
+            - supabase_error
+        message:
+          type: string
+        reason:
+          type: string
+    F_81_passkey_webauthn_v1_RegistrationOptionsResponse:
+      type: object
+      required: "[options, challenge_id]"
+      properties:
+        options: "{ type: object, description: 'PublicKeyCredentialCreationOptionsJSON from @simplewebauthn/server' }"
+        challenge_id: "{ type: string, description: 'Opaque id of the server-stored challenge' }"
+    F_81_passkey_webauthn_v1_RegisterVerifyRequest:
+      type: object
+      required: "[challenge_id, attResponse]"
+      properties:
+        challenge_id: "{ type: string }"
+        attResponse: "{ type: object, description: 'RegistrationResponseJSON from @simplewebauthn/browser startRegistration' }"
+    F_81_passkey_webauthn_v1_AuthVerifyRequest:
+      type: object
+      required: "[user_id, challenge_id, authResponse]"
+      properties:
+        user_id: "{ type: string }"
+        challenge_id: "{ type: string }"
+        authResponse: "{ type: object, description: 'AuthenticationResponseJSON from @simplewebauthn/browser startAuthentication' }"
+    F_81_passkey_webauthn_v1_VerifyResponse:
+      type: object
+      required: "[verified]"
+      properties:
+        verified: "{ type: boolean }"
+        credential_id: "{ type: string }"
+    F_81_passkey_webauthn_v1_PasskeyCredential:
+      type: object
+      properties:
+        id: "{ type: string }"
+        credential_id: "{ type: string }"
+        public_key: "{ type: string, description: base64 }"
+        counter: "{ type: integer }"
+        device_type: "{ type: string, nullable: true }"
+        backed_up: "{ type: boolean }"
+        aaguid: "{ type: string, nullable: true }"
+        nickname: "{ type: string, nullable: true }"
+        last_used_at: "{ type: string, format: date-time, nullable: true }"
+        created_at: "{ type: string, format: date-time }"
+    F_82_tenant_sessions_v1_SessionDevice:
+      type: object
+      required: "[session_id, last_seen_at, is_current]"
+      properties:
+        session_id: "{ type: string }"
+        device_label: "{ type: string, nullable: true }"
+        user_agent: "{ type: string, nullable: true }"
+        last_seen_at: "{ type: string, format: date-time }"
+        location: "{ type: string, nullable: true }"
+        is_current: "{ type: boolean }"
+    F_84_tenant_branding_v1_TenantBranding:
+      type: object
+      properties:
+        logo_url: "{ type: string, nullable: true, format: uri }"
+        primary_color: "{ type: string, pattern: '^#[0-9a-fA-F]{6}$', default: '#0d9488' }"
+        display_name: "{ type: string, nullable: true }"
+        vanity_login_enabled: "{ type: boolean }"
+    F_84_tenant_branding_v1_TenantBrandingPatch:
+      type: object
+      properties:
+        logo_url: "{ type: string, nullable: true }"
+        primary_color: "{ type: string, pattern: '^#[0-9a-fA-F]{6}$' }"
+        display_name: "{ type: string, nullable: true }"
+        vanity_login_enabled: "{ type: boolean }"
+    F_85_members_invites_v1_TenantMembership:
+      type: object
+      required: "[id, user_id, iam_role, created_at]"
+      properties:
+        id: "{ type: string }"
+        user_id: "{ type: string }"
+        iam_role: "{ type: string }"
+        created_at: "{ type: string, format: date-time }"
+    F_85_members_invites_v1_SeatUsage:
+      type: object
+      required: "[used, quota]"
+      properties:
+        used: "{ type: integer }"
+        quota: "{ type: integer }"
+    F_86_tenant_lifecycle_v1_PurgeResult:
+      type: object
+      required: "[processed, purged, errors]"
+      properties:
+        processed: "{ type: integer }"
+        purged:
+          type: array
+          items:
+            type: object
+            required: "[tenant_id, export_id]"
+            properties:
+              tenant_id: "{ type: string }"
+              export_id: "{ type: string }"
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              tenant_id: "{ type: string }"
+              stage: "{ type: string }"
+              error: "{ type: string }"
+    F_87_tenant_switcher_v1_OrgGroup:
+      type: object
+      required: "[org_id, org_name, org_slug, org_role, tenants]"
+      properties:
+        org_id: "{ type: string }"
+        org_name: "{ type: string }"
+        org_slug: "{ type: string }"
+        org_role: "{ type: string, enum: [owner, billing-admin, readonly] }"
+        tenants:
+          type: array
+          items: "{ $ref: '#/components/schemas/TenantEntry' }"
+    F_87_tenant_switcher_v1_TenantEntry:
+      type: object
+      required: "[id, slug, name, iam_role, status]"
+      properties:
+        id: "{ type: string }"
+        slug: "{ type: string }"
+        name: "{ type: string }"
+        iam_role: "{ type: string }"
+        status: "{ type: string, enum: [active, offboarding, purged] }"
+    F_88_tenant_audit_query_v1_AuditEntry:
+      type: object
+      required:
+        - id
+        - occurred_at
+        - action
+        - source_domain
+        - prev_hash
+        - row_hash
+      properties:
+        id:
+          type: integer
+          format: int64
+        occurred_at:
+          type: string
+          format: date-time
+        action:
+          type: string
+        source_domain:
+          type: string
+        actor_id:
+          type: string
+          nullable: true
+        actor_role:
+          type: string
+          nullable: true
+        payload:
+          type: object
+          additionalProperties: true
+        prev_hash:
+          type: string
+        row_hash:
+          type: string

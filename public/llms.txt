@@ -23,6 +23,14 @@
 - [Onboarding Presets](https://markos.dev/docs/examples/presets): `npx markos init --preset=b2b-saas` — seed your instance for your business model.
 - [Webhook Test Fire](https://markos.dev/docs/examples/webhook-test): End-to-end webhook subscribe → test-fire → signed callback.
 
+# Phase 201 — Tenancy
+
+- [Subdomain + BYOD Routing](https://markos.dev/docs/routing): Middleware resolution (bare/system/reserved/first_party/byod), reserved-slug policy, Vercel Domains API flow, edge-config slug cache.
+- [Operator Settings](https://markos.dev/docs/admin): /settings/members · /settings/domain · /settings/sessions · /settings/danger — seat usage, BYOD, sessions revoke, offboarding.
+- [Tenant Lifecycle](https://markos.dev/docs/tenancy-lifecycle): D-14 30-day soft-delete → purge timeline, cancel window, purge cron, audit emits.
+- [GDPR Export](https://markos.dev/docs/gdpr-export): D-15 signed-URL zip bundle shape, BUNDLE_DOMAINS, 7-day TTL, hash-chain replay verification.
+- [Phase 201 LLM Summary](https://markos.dev/docs/llms/phase-201-tenancy): Decisions · artifacts · contracts (F-80..F-88) · migrations (81..87).
+
 ## Optional
 
 - [Full Docs (concatenated markdown)](https://markos.dev/docs/llms-full.txt): Single-file concatenation of all documentation pages for LLM ingestion.
