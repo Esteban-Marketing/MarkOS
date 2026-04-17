@@ -57,9 +57,11 @@ populated_by: gsd-planner (2026-04-17)
 | 201-06-T2 | 06 | 2 | QA-01, QA-12, QA-14 | unit (grep+shape) | `node --test test/tenancy/byod.test.js` | ❌ W0 | ⬜ pending |
 | 201-07-T1 | 07 | 2 | QA-04, QA-11, QA-13 | unit | `node --test test/tenancy/invites.test.js test/tenancy/lifecycle.test.js test/tenancy/switcher.test.js` | ❌ W0 | ⬜ pending |
 | 201-07-T2 | 07 | 2 | QA-04, QA-15 | unit (injected stubs) | `node --test test/tenancy/gdpr-export.test.js` | ❌ W0 | ⬜ pending |
-| 201-07-T3 | 07 | 2 | QA-01, QA-14 | unit (grep+shape) | `node --test test/tenancy/invites.test.js test/tenancy/lifecycle.test.js test/tenancy/gdpr-export.test.js test/tenancy/switcher.test.js` | ❌ W0 | ⬜ pending |
+| 201-07-T3a | 07 | 2 | QA-01, QA-14 | unit (grep+shape) | `node --test test/tenancy/invites.test.js test/tenancy/lifecycle.test.js test/tenancy/gdpr-export.test.js test/tenancy/switcher.test.js` | ❌ W0 | ⬜ pending |
+| 201-07-T3b | 07 | 2 | QA-01, QA-14 | unit (grep+shape) | `node --test test/tenancy/invites.test.js test/tenancy/lifecycle.test.js test/tenancy/switcher.test.js` | ❌ W0 | ⬜ pending |
 | 201-08-T1 | 08 | 3 | QA-11, QA-15 | unit (grep+shape) | `node --test test/tenancy/audit-emitter-wiring.test.js` | ❌ W0 | ⬜ pending |
 | 201-08-T2 | 08 | 3 | QA-01, QA-15 | unit (grep+shape) | `node --test test/tenancy/openapi-merge.test.js test/tenancy/docs-mirror.test.js` | ❌ W0 | ⬜ pending |
+| 201-08-T3 | 08 | 3 | API-02, QA-09 | unit | `node --test test/tenancy/slug-cache.test.js` | ❌ W0 | ⬜ pending |
 
 *Status legend: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -101,6 +103,7 @@ Wave 3:
 - [ ] `test/tenancy/audit-emitter-wiring.test.js` — Plan 08 (5 grep-based contract-lock tests)
 - [ ] `test/tenancy/openapi-merge.test.js` — Plan 08 (2 openapi.json path coverage tests)
 - [ ] `test/tenancy/docs-mirror.test.js` — Plan 08 (5 docs + llms.txt coverage tests)
+- [ ] `test/tenancy/slug-cache.test.js` — Plan 08 (6+ slug-cache tests: read-hit, read-miss+backfill, write-through, invalidate on rename, 60s TTL contract, fail-closed on edge-config error) — fulfils Plan 05 T-201-05-06 promise
 
 ---
 

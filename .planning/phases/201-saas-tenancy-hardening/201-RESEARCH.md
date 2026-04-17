@@ -727,22 +727,25 @@ ALTER TABLE markos_audit_log
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Vercel BotID integration specifics**
    - What we know: BotID is listed in the Quality Baseline (gate 12) and is a Vercel product. Pre-submit token issuance is the pattern.
    - What's unclear: Exact client-side script tag, server-side verification endpoint URL, and whether it integrates with the `@vercel/functions` package or is a separate REST call.
    - Recommendation: Planner should add a Wave 0 task to read current Vercel BotID docs before coding the signup API.
+   - **RESOLVED:** Plan 03 uses the BotID REST `verify` endpoint called server-side in `lib/markos/auth/botid.cjs`; the signup form forwards the pre-submit token in the POST body and the API handler at `api/auth/signup.js` verifies server-side before any DB write. No client-side script beyond the standard form submit is required; fail-closed on verification error per `verifyBotIdToken(token, { skipInTest })`.
 
 2. **Supabase CDC → markos_audit_log ingest architecture**
    - What we know: Supabase Realtime `postgres_changes` can subscribe to table inserts. The preferred pattern is a long-running Fluid Compute function.
    - What's unclear: Whether a Vercel background function is the right home for this subscriber, or whether a Supabase Edge Function + Postgres trigger is more reliable given the long-running requirement.
    - Recommendation: Consider a Postgres trigger that writes to a `markos_audit_staging` table (guaranteed at-least-once), drained by a Vercel Queue job. This removes the need for a persistent subscriber and is more consistent with the project's existing Vercel Queues posture from the Quality Baseline.
+   - **RESOLVED:** Plan 02 adopts the staging-table pattern — `markos_audit_log_staging` is written synchronously via `enqueueAuditStaging(client, entry)` from every domain handler (Pitfall 3 mitigation — no dependency on `postgres_changes` for correctness). The Vercel cron at `api/audit/drain.js` (scheduled `*/1 * * * *` in `vercel.ts` per Plan 08) claims unclaimed rows via `SELECT ... FOR UPDATE SKIP LOCKED` and calls `append_markos_audit_row` per row. No persistent Supabase Realtime subscriber is needed.
 
 3. **`@vercel/edge-config` write-through for slug cache**
    - What we know: Edge Config is read-optimized (sub-millisecond reads at the edge). Writes go through the Edge Config REST API.
    - What's unclear: Write latency on slug creation/change and whether the 60-second TTL stale window is acceptable for the use case.
    - Recommendation: Accept 60-second stale window as a known tradeoff; document it. If a slug change goes live instantly, a cache-bust call to the Edge Config API on slug save handles the critical path.
+   - **RESOLVED:** Plan 08 Task 3 wires `@vercel/edge-config` slug→tenant cache (`lib/markos/tenant/slug-cache.{ts,cjs}` with `readSlugFromEdge`/`writeSlugToEdge`/`invalidateSlug`). Middleware (from Plan 05) tries edge-config first and falls back to Supabase on miss with backfill. Write-through on `markos_tenants` INSERT/UPDATE via hook in `lib/markos/orgs/tenants.cjs` (Plan 01). 60s stale window accepted; slug rename path calls `invalidateSlug` synchronously so the critical path is cache-busted. Contract locked in `test/tenancy/slug-cache.test.js`.
 
 ---
 
