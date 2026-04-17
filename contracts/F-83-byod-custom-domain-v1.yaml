@@ -1,0 +1,100 @@
+id: F-83-byod-custom-domain-v1
+phase: 201
+name: BYOD Custom Domain
+status: active
+summary: |
+  Add / remove / status-poll a single custom domain per org (D-13) via Vercel Domains API v10.
+  Vercel webhook lands at /api/webhooks/vercel-domain and flips status to 'verified'.
+
+boundary:
+  tenant_scoped: true
+  requires_session: true
+  external_dependency: Vercel Domains API v10
+
+decisions:
+  - D-12 full BYOD surface (CNAME + auto-SSL + vanity login + tenant chrome)
+  - D-13 1 custom domain per org for phase 201
+
+paths:
+  /api/settings/custom-domain/add:
+    post:
+      summary: Request a new custom domain for the active org
+      operationId: addCustomDomain
+      tags: [tenancy, byod]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [domain]
+              properties:
+                domain: { type: string, pattern: '^(?!-)[a-z0-9-]{1,63}(\.[a-z]{2,})+$' }
+      responses:
+        '200': { description: Domain added, status=pending, cname_target returned }
+        '400': { description: invalid_domain_format | quota_exceeded | domain_required }
+        '401': { description: unauthenticated }
+
+  /api/settings/custom-domain/remove:
+    post:
+      summary: Remove the org's custom domain (soft-delete + Vercel API DELETE)
+      operationId: removeCustomDomain
+      tags: [tenancy, byod]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [domain]
+              properties: { domain: { type: string } }
+      responses:
+        '200': { description: removed }
+        '404': { description: not_found }
+
+  /api/settings/custom-domain/status:
+    get:
+      summary: Poll current verification status (DNS + SSL)
+      operationId: pollCustomDomainStatus
+      tags: [tenancy, byod]
+      parameters:
+        - name: domain
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Current status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, enum: [pending, verifying, verified, failed] }
+                  verified_at: { type: string, format: date-time, nullable: true }
+                  ssl_issued_at: { type: string, format: date-time, nullable: true }
+
+  /api/webhooks/vercel-domain:
+    post:
+      summary: Vercel verification webhook (HMAC-signed)
+      operationId: vercelDomainWebhook
+      tags: [tenancy, webhooks]
+      parameters:
+        - name: X-Markos-Signature
+          in: header
+          required: true
+          schema: { type: string }
+        - name: X-Markos-Timestamp
+          in: header
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: processed }
+        '401': { description: invalid_signature }
+        '400': { description: invalid_json | domain_missing }
+
+security_considerations:
+  - 1 custom domain per org enforced by partial unique index idx_markos_custom_domains_one_per_org (Plan 05).
+  - Vercel webhook verified via lib/markos/webhooks/signing.cjs verifySignature with VERCEL_DOMAIN_WEBHOOK_SECRET + replay window 300s.
+  - Pitfall 5: middleware.ts only routes BYOD traffic when status='verified' — unverified domains fall through to default Next.js 404.
+  - Service-role client writes are audited via enqueueAuditStaging source_domain='tenancy' for both add + remove.

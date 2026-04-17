@@ -1,0 +1,58 @@
+id: F-84-tenant-branding-v1
+phase: 201
+name: Tenant Branding
+status: active
+summary: |
+  Per-tenant branding (logo, primary_color, display_name, vanity_login_enabled) — powers
+  the vanity login page (Surface 7) and the brand chrome block in /settings/domain (Surface 3c).
+
+boundary:
+  tenant_scoped: true
+
+decisions:
+  - D-12 tenant-branded chrome on BYOD custom domains + vanity login page
+
+paths:
+  /api/settings/tenant-branding:
+    get:
+      summary: Get current tenant branding (falls back to MarkOS defaults)
+      operationId: getTenantBranding
+      tags: [tenancy, branding]
+      responses:
+        '200':
+          description: branding record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TenantBranding'
+    post:
+      summary: Upsert tenant branding
+      operationId: upsertTenantBranding
+      tags: [tenancy, branding]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantBrandingPatch'
+      responses:
+        '200': { description: saved }
+        '400': { description: invalid_input | primary_color must match #RRGGBB }
+        '401': { description: unauthenticated }
+
+components:
+  schemas:
+    TenantBranding:
+      type: object
+      properties:
+        logo_url: { type: string, nullable: true, format: uri }
+        primary_color: { type: string, pattern: '^#[0-9a-fA-F]{6}$', default: '#0d9488' }
+        display_name: { type: string, nullable: true }
+        vanity_login_enabled: { type: boolean }
+    TenantBrandingPatch:
+      type: object
+      properties:
+        logo_url: { type: string, nullable: true }
+        primary_color: { type: string, pattern: '^#[0-9a-fA-F]{6}$' }
+        display_name: { type: string, nullable: true }
+        vanity_login_enabled: { type: boolean }

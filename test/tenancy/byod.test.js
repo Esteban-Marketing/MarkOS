@@ -122,3 +122,70 @@ test('Suite 201-06: pollDomainStatus stays verifying when Vercel reports misconf
   assert.equal(r.status, 'verifying');
   assert.equal(r.verified_at, null);
 });
+
+// --- F-83 + F-84 contracts + handler + surface presence ---
+const fs = require('fs');
+const path = require('path');
+
+test('Suite 201-06: F-83 contract lists add / remove / status / webhook endpoints', () => {
+  const yaml = fs.readFileSync(path.join(__dirname, '..', '..', 'contracts', 'F-83-byod-custom-domain-v1.yaml'), 'utf8');
+  assert.match(yaml, /\/api\/settings\/custom-domain\/add/);
+  assert.match(yaml, /\/api\/settings\/custom-domain\/remove/);
+  assert.match(yaml, /\/api\/settings\/custom-domain\/status/);
+  assert.match(yaml, /\/api\/webhooks\/vercel-domain/);
+  assert.match(yaml, /quota_exceeded/);
+});
+
+test('Suite 201-06: F-84 contract documents tenant branding', () => {
+  const yaml = fs.readFileSync(path.join(__dirname, '..', '..', 'contracts', 'F-84-tenant-branding-v1.yaml'), 'utf8');
+  assert.match(yaml, /\/api\/settings\/tenant-branding/);
+  assert.match(yaml, /TenantBranding/);
+  assert.match(yaml, /primary_color/);
+});
+
+test('Suite 201-06: all BYOD handlers exist + export functions', () => {
+  for (const name of ['custom-domain/add', 'custom-domain/remove', 'custom-domain/status']) {
+    const mod = require(`../../api/settings/${name}.js`);
+    assert.equal(typeof mod, 'function');
+  }
+  const webhook = require('../../api/webhooks/vercel-domain.js');
+  assert.equal(typeof webhook, 'function');
+  const branding = require('../../api/settings/tenant-branding.js');
+  assert.equal(typeof branding, 'function');
+});
+
+test('Suite 201-06: vercel-domain webhook handler rejects invalid signature', async () => {
+  const handler = require('../../api/webhooks/vercel-domain.js');
+  let statusCode = null;
+  const res = { setHeader: () => {}, end: () => {} };
+  Object.defineProperty(res, 'statusCode', { set: (v) => { statusCode = v; } });
+  const body = JSON.stringify({ domain: 'acme.com' });
+  const req = {
+    method: 'POST',
+    headers: { 'x-markos-signature': 'sha256=bad', 'x-markos-timestamp': String(Math.floor(Date.now() / 1000)) },
+    on: (event, cb) => {
+      if (event === 'data') cb(Buffer.from(body));
+      if (event === 'end') setTimeout(cb, 0);
+    },
+  };
+  await handler(req, res);
+  assert.equal(statusCode, 401);
+});
+
+test('Suite 201-06: Surface 3 /settings/domain page renders UI-SPEC copy', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', '..', 'app', '(markos)', 'settings', 'domain', 'page.tsx'), 'utf8');
+  assert.match(src, /Add domain/);
+  assert.match(src, /Remove domain/);
+  assert.match(src, /Custom domain/);
+  assert.match(src, /CNAME/);
+  assert.match(src, /Brand chrome|Save brand settings/);
+});
+
+test('Suite 201-06: Surface 7 vanity login page reads x-markos-byod header and uses branding primary_color', () => {
+  const src = fs.readFileSync(path.join(__dirname, '..', '..', 'app', '(markos)', 'login', 'page.tsx'), 'utf8');
+  assert.match(src, /x-markos-byod/);
+  assert.match(src, /x-markos-tenant-id/);
+  assert.match(src, /Send magic link/);
+  assert.match(src, /--accent/);
+  assert.match(src, /Powered by MarkOS/);
+});
