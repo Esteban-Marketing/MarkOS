@@ -105,3 +105,14 @@ test('Suite 201-07: F-86 contract documents offboard + cancel-offboard + purge-c
   assert.match(y, /\/api\/tenant\/lifecycle\/cancel-offboard/);
   assert.match(y, /\/api\/tenant\/lifecycle\/purge-cron/);
 });
+
+
+test('Suite 201-07: Surface 6 danger page exists with UI-SPEC copy + modal WCAG hook', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, '..', '..', 'app', '(markos)', 'settings', 'danger', 'page.tsx'), 'utf8');
+  assert.match(src, /Delete workspace/);
+  assert.match(src, /Start deletion/);
+  assert.match(src, /Type the workspace slug/);
+  assert.match(src, /<dialog|aria-labelledby/);
+});

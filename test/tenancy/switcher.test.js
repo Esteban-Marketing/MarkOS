@@ -47,3 +47,20 @@ test('Suite 201-07: listTenantsForUser returns empty array when user has no memb
   const r = await listTenantsForUser(client, 'u-none');
   assert.deepEqual(r, []);
 });
+
+
+test('Suite 201-07: Surface 5 TenantSwitcher exists with UI-SPEC copy + focal hooks', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, '..', '..', 'components', 'markos', 'tenant', 'TenantSwitcher.tsx'), 'utf8');
+  assert.match(src, /Create new workspace|Create workspace/);
+  assert.match(src, /aria-labelledby|<details/);
+});
+
+test('Suite 201-07: invite landing page exists + posts to accept handler', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, '..', '..', 'app', '(markos)', 'invite', '[token]', 'page.tsx'), 'utf8');
+  assert.match(src, /Accept invite/);
+  assert.match(src, /\/api\/tenant\/invites\/accept/);
+});

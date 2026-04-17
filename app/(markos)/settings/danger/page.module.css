@@ -1,0 +1,215 @@
+.page {
+  padding: 24px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contentCard {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 760px;
+}
+
+.heading {
+  margin: 0;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #9a3412;
+}
+
+.subheading {
+  margin: 0;
+  font-size: 16px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.dangerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border: 1px dashed #fca5a5;
+  border-radius: 16px;
+  gap: 16px;
+}
+
+.dangerLabel {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 16px;
+}
+
+.dangerHelp {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.deleteOutlineButton {
+  min-height: 44px;
+  padding: 10px 18px;
+  background: transparent;
+  color: #9a3412;
+  border: 1px solid #9a3412;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.deleteOutlineButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.deleteOutlineButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteFilledButton {
+  min-height: 44px;
+  padding: 10px 18px;
+  background: #9a3412;
+  color: #ffffff;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.deleteFilledButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.deleteFilledButton:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.cancelButton {
+  min-height: 44px;
+  padding: 10px 18px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancelButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.dialog {
+  border: 0;
+  border-radius: 24px;
+  padding: 28px;
+  width: min(520px, calc(100vw - 32px));
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+}
+
+.dialog::backdrop {
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.dialogHeading {
+  margin: 0 0 12px;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.dialogBody {
+  margin: 0 0 16px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.field input {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.field input:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.purgeBanner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #fef3c7;
+  color: #78350f;
+  border-left: 4px solid #d97706;
+  border-radius: 14px;
+  font-size: 14px;
+  max-width: 760px;
+}
+
+.cancelLink {
+  background: transparent;
+  color: #78350f;
+  border: 0;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.cancelLink:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 12px 16px;
+  background: #ffffff;
+  border-left: 4px solid #0f766e;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+}
