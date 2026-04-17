@@ -1,7 +1,7 @@
 ```yaml
 doc_id: "TPL-SHARED-overlay-industry-professional-services"
 discipline: "Shared"
-overlay_for: ["services", "b2b"]
+overlay_for: ["b2b", "services"]
 industry: ["professional-services"]
 pain_point_tags: ["credential_validation_barrier", "rfp_culture", "peer_referral_weight", "rate_transparency_pressure", "outcome_vs_effort_confusion"]
 funnel_stage: ["Awareness", "Consideration", "Decision", "Onboarding", "Retention"]
