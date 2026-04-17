@@ -45,7 +45,7 @@ Plans:
 **Goal:** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
 **Requirements Mapped:** API-02, QA-01..15
 **Depends on:** Phase 200
-**Status:** ✅ Plans complete — awaiting verification
+**Status:** ✅ Complete — verified 2026-04-17 (see 201-VERIFICATION.md)
 **Plans:** 8/8 plans complete
 **DISCUSS:** `.planning/phases/201-saas-tenancy-hardening/DISCUSS.md`
 
