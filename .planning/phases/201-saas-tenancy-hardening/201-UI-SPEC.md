@@ -58,14 +58,14 @@ Declared values (multiples of 4 only). Sourced from existing CSS patterns and ex
 
 All sizes in px. Two weights only: regular (400) and semibold (600).
 
+**4 distinct scale tiers — 32, 28, 16, 14.**
+
 | Role | Font | Size | Weight | Line Height | Usage |
 |------|------|------|--------|-------------|-------|
 | Display | Sora | 32px (2rem) | 600 | 1.0 | Page titles, signup hero heading, vanity login headline |
-| Heading | Sora | 28px | 600 | 1.2 | Section headings (`h1` inside cards), offboarding countdown |
-| Section title | Space Grotesk | 20px | 600 | 1.3 | Panel `h2`, settings section headers |
+| Heading | Sora | 28px | 600 | 1.2 | Section headings (`h1` inside cards), offboarding countdown, panel `h2`, settings section headers (small-heading variant: same 28px, same weight — differentiated by surrounding whitespace and card hierarchy, not a separate size tier) |
 | Body | Space Grotesk | 16px | 400 | 1.6 | Body copy, descriptions, inline explanatory text |
-| Label / eyebrow | Space Grotesk | 14px | 600 | 1.4 | Uppercase eyebrows (8% letter-spacing), table headers, badge text, helper labels |
-| Code / domain | Space Grotesk | 14px | 400 | 1.5 | CNAME records, subdomain display, signed-URL display, session device fingerprints |
+| Label / eyebrow | Space Grotesk | 14px | 600 | 1.4 | Uppercase eyebrows (8% letter-spacing), table headers, badge text, helper labels. Code / domain variant: same 14px size, weight 400, line-height 1.5, monospace family via `Space Grotesk` fallback chain — used for CNAME records, subdomain display, signed-URL display, session device fingerprints. Not a separate scale tier. |
 
 **Eyebrow styling:** 14px, weight 600, `text-transform: uppercase`, `letter-spacing: 0.08em`, color `#0f766e` (teal — brand accent). Source: `layout-shell.module.css .eyebrow`.
 
@@ -115,6 +115,8 @@ Eight UI surfaces in scope. Contract for each.
 
 **URL:** `markos.dev/signup`
 
+**Primary focal point:** "Create workspace" CTA button.
+
 **States to implement:**
 
 | State | Trigger | Visual |
@@ -146,13 +148,15 @@ Eight UI surfaces in scope. Contract for each.
 
 **URL:** `{tenant}.markos.dev/settings/sessions`
 
+**Primary focal point:** Current-session badge + per-row "Revoke session" buttons.
+
 **States:**
 
 | State | Visual |
 |-------|--------|
-| Active sessions list | Table or stacked card list. Columns: Device, Last seen, Location (city/country), "Revoke" action. Current session row labeled "(this device)" with no revoke option. |
-| Empty (single session) | Single row: current device only. No "Revoke all others" shown. |
-| Revoke single session | Confirmation inline: "Revoke this session? The device will be signed out immediately." [Revoke] [Cancel] |
+| Active sessions list | Table or stacked card list. Columns: Device, Last seen, Location (city/country), "Revoke session" action. Current session row labeled "(this device)" with no revoke option. |
+| Empty (single session) | Single row: current device only. No "Revoke all other sessions" shown. |
+| Revoke single session | Confirmation inline: "Revoke this session? The device will be signed out immediately." [Revoke session] [Keep session] |
 | Revoke success | Row fades out. Toast: "Session revoked." |
 | Revoke error | Inline error in row: "Could not revoke. Try again." |
 | Multiple sessions | "Revoke all other sessions" button appears below list. Confirmation: "Sign out {N} other devices?" |
@@ -164,6 +168,8 @@ Eight UI surfaces in scope. Contract for each.
 ### Surface 3: `/settings/domain`
 
 **URL:** `{tenant}.markos.dev/settings/domain`
+
+**Primary focal point:** Domain status badge + CNAME instructions panel.
 
 **Sub-surfaces:**
 
@@ -179,7 +185,7 @@ Eight UI surfaces in scope. Contract for each.
 | SSL status polling | Status badge: "DNS verifying..." (amber dot). Polling every 30s. |
 | Domain verified | Status badge: "Verified" (teal dot + checkmark). SSL badge: "SSL active". |
 | Verification failed | Status badge: "Verification failed" (red dot). Error: "We couldn't verify the CNAME record. Check your DNS settings and try again." |
-| Domain removal | "Remove domain" link (destructive outline button). Confirmation: "Remove {domain}? Your workspace will only be accessible at {slug}.markos.dev." [Remove] [Cancel] |
+| Domain removal | "Remove domain" link (destructive outline button). Confirmation: "Remove {domain}? Your workspace will only be accessible at {slug}.markos.dev." [Remove domain] [Keep domain] |
 
 **3b — Vanity Login Toggle:**
 
@@ -206,6 +212,8 @@ Eight UI surfaces in scope. Contract for each.
 
 **URL:** `{tenant}.markos.dev/settings/members`
 
+**Primary focal point:** Seat usage bar + "Send an invite" CTA.
+
 **Location decision (Claude's Discretion):** `/settings/members` — consistent with settings shell nav; no separate `/admin/seats` surface in phase 201. Org-level seat quota shown inline.
 
 **States:**
@@ -217,9 +225,9 @@ Eight UI surfaces in scope. Contract for each.
 | Invite form | Email input + role selector (dropdown: Admin / Member / Read-only). CTA: "Send invite". |
 | Invite sent | Inline confirmation: "Invite sent to {email}." Pending invites section appears below active members. |
 | Seat quota reached | Invite CTA disabled. Inline notice: "Seat limit reached ({quota} seats). Upgrade your plan to add more members." |
-| Pending invite list | Row per invite: email, role, "Sent {relative time}", "Resend" text-button, "Cancel" text-button. |
-| Invite cancelled | Row fades out. Toast: "Invite cancelled." |
-| Remove member | Confirmation inline: "Remove {name} from this workspace? They'll lose access immediately." [Remove] [Cancel] |
+| Pending invite list | Row per invite: email, role, "Sent {relative time}", "Resend" text-button, "Withdraw invite" text-button. |
+| Invite withdrawn | Row fades out. Toast: "Invite cancelled." |
+| Remove member | Confirmation inline: "Remove {name} from this workspace? They'll lose access immediately." [Remove] [Keep member] |
 | Remove success | Row fades out. Toast: "{name} removed." |
 
 **Layout:** Settings shell. Uses `.contentCard` with embedded sub-sections.
@@ -230,6 +238,8 @@ Eight UI surfaces in scope. Contract for each.
 
 **Location:** Sidebar, below brand lockup. Replaces current static tenant pill.
 
+**Primary focal point:** Current tenant slug pill / dropdown trigger.
+
 **States:**
 
 | State | Visual |
@@ -238,7 +248,7 @@ Eight UI surfaces in scope. Contract for each.
 | Single org, multiple tenants | Pill becomes a dropdown trigger. Shows current tenant slug. Dropdown lists all tenants under org. "Create new workspace" option at bottom. |
 | Multiple orgs | Org selector above tenant selector. Shows org name + plan badge. Switching org reloads the tenant list. |
 | Switcher open | Dropdown panel: white card, 20px radius, `box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10)`. Max-height 320px, scrollable. |
-| Creating new tenant | Modal (centered, 480px wide): "Create a new workspace". Slug input with live availability check. CTA: "Create workspace". Cancel: "Not now". |
+| Creating new tenant | Modal (centered, 480px wide): "Create a new workspace". Slug input with live availability check. CTA: "Create workspace". Secondary: "Not now". |
 | Slug taken | Inline under input: "That slug is taken. Try another." |
 | Slug reserved | Inline: "That name is reserved. Choose another." |
 
@@ -249,6 +259,8 @@ Eight UI surfaces in scope. Contract for each.
 ### Surface 6: Offboarding UI
 
 **URL:** `{tenant}.markos.dev/settings/danger` (or at bottom of a settings overview page)
+
+**Primary focal point:** Offboarding countdown banner when active; "Delete workspace" button when inactive.
 
 **Entry point:** "Delete workspace" button visible to tenant-admin and org-owner roles only. Not shown to members.
 
@@ -263,7 +275,7 @@ Eight UI surfaces in scope. Contract for each.
 
 | State | Visual |
 |-------|--------|
-| Open | Modal (480px wide). Heading: "Delete this workspace?" Body: "Your workspace will go read-only immediately. After 30 days, all data is permanently deleted and your export will be ready. Type the workspace slug to confirm." Slug-confirmation input. CTA: "Start deletion" (destructive filled button, `background: #9a3412`). Cancel: "Keep workspace". |
+| Open | Modal (480px wide). Heading: "Delete this workspace?" Body: "Your workspace will go read-only immediately. After 30 days, all data is permanently deleted and your export will be ready. Type the workspace slug to confirm." Slug-confirmation input. CTA: "Start deletion" (destructive filled button, `background: #9a3412`). Secondary: "Keep workspace". |
 | Slug mismatch | CTA disabled until slug matches exactly. |
 | Confirmed | Modal closes. Banner appears: offboarding countdown panel. |
 
@@ -284,6 +296,8 @@ Eight UI surfaces in scope. Contract for each.
 
 **URL:** `{custom-domain}/login`
 
+**Primary focal point:** Tenant-branded "Send magic link" CTA.
+
 **Rendered when:** Middleware detects BYOD host + tenant has `vanity_login_enabled = true` + `status = verified` in `markos_custom_domains`.
 
 **States:**
@@ -302,6 +316,8 @@ Eight UI surfaces in scope. Contract for each.
 ### Surface 8: Marketing / Claim-CTA 404 (Unclaimed Subdomain)
 
 **URL:** `{unclaimed}.markos.dev` — any subdomain not found in `markos_tenants.slug`
+
+**Primary focal point:** "Claim this workspace" CTA.
 
 **States:**
 
@@ -324,7 +340,7 @@ All copy is developer-native and direct. No passive voice. No "please". No ellip
 |---------|-------------------|---------------------|
 | Signup | "Create workspace" | — |
 | Passkey prompt | "Set up passkey" | "Not now" |
-| Sessions (revoke) | "Revoke" | "Cancel" |
+| Sessions (revoke) | "Revoke session" | "Keep session" |
 | Sessions (revoke all) | "Revoke all other sessions" | — |
 | Domain add | "Add domain" | — |
 | Domain remove | "Remove domain" | "Keep domain" |
@@ -370,7 +386,7 @@ All copy is developer-native and direct. No passive voice. No "please". No ellip
 | Revoke single session | "Revoke this session? The device will be signed out immediately." | Inline, not modal |
 | Revoke all other sessions | "Sign out {N} other devices?" | Inline, not modal |
 | Remove member | "Remove {name} from this workspace? They'll lose access immediately." | Inline, not modal |
-| Cancel invite | No confirmation — cancel is low-stakes. Toast only. | Toast |
+| Withdraw invite | No confirmation — withdrawing is low-stakes. Toast only. | Toast |
 | Remove custom domain | "Remove {domain}? Your workspace will only be accessible at {slug}.markos.dev." | Inline |
 | Delete workspace (offboard) | "Delete this workspace? Your workspace will go read-only immediately. After 30 days, all data is permanently deleted and your export will be ready. Type the workspace slug to confirm." | Modal + slug confirmation input |
 | Cancel offboarding | No secondary confirmation — cancellation is the safe path. Toast only. | Toast |
@@ -486,6 +502,8 @@ No third-party registry blocks in this phase. All UI is bespoke CSS Modules foll
 9. **CNAME code block.** Wrap CNAME records in `<pre><code>` with a copy button. Copy button uses `navigator.clipboard.writeText()` with a "Copied" confirmation flash (1.5s).
 
 10. **Responsive breakpoint.** Follow existing breakpoint at `max-width: 960px` (from billing CSS) and `max-width: 980px` (from layout-shell CSS). Sidebar collapses to top nav strip on mobile. All settings cards go single-column.
+
+11. **Typography — section headings.** Panel `h2` and settings section headers use the Heading tier (Sora, 28px, weight 600) — not a separate 20px tier. Differentiate hierarchy through card nesting and whitespace, not font size. Do not introduce a 20px size not present in the scale.
 
 ---
 
