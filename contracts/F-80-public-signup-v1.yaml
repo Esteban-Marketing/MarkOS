@@ -1,0 +1,135 @@
+id: F-80-public-signup-v1
+phase: 201
+name: Public Signup (Magic-Link + BotID)
+status: active
+summary: |
+  Public self-serve signup with Vercel BotID pre-submit gate and Supabase Auth magic-link double
+  opt-in. Creates no org / tenant rows until the user clicks the verify link (Pitfall 1).
+
+boundary:
+  tenant_scoped: false
+  public: true
+
+decisions:
+  - D-01 magic-link primary
+  - D-02 double opt-in via email
+  - D-03 BotID pre-submit + 5/hour/IP rate-limit
+  - D-06 1 org -> 1 tenant on first verify
+
+paths:
+  /api/auth/signup:
+    post:
+      summary: Enqueue a public signup (magic-link send)
+      operationId: enqueuePublicSignup
+      tags:
+        - auth
+        - signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: Magic link sent; user is buffered but no tenant created yet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupAccepted'
+        '400':
+          description: invalid_email | invalid_body | supabase_error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupError'
+        '403':
+          description: bot_detected (BotID verification failed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupError'
+        '405':
+          description: method_not_allowed
+        '429':
+          description: rate_limited (5/hour/IP or 1/minute/email exceeded)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignupError'
+
+  /api/auth/callback:
+    get:
+      summary: Verify OTP token and provision org + tenant
+      operationId: verifySignupCallback
+      tags:
+        - auth
+        - signup
+      parameters:
+        - name: token_hash
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [magiclink, email]
+            default: magiclink
+      responses:
+        '302':
+          description: Redirect — /onboarding on success, /login?error=... on failure
+          headers:
+            Location:
+              schema:
+                type: string
+
+components:
+  schemas:
+    SignupRequest:
+      type: object
+      required: [email, botIdToken]
+      properties:
+        email:
+          type: string
+          format: email
+        botIdToken:
+          type: string
+          minLength: 1
+          description: Vercel BotID pre-submit token issued client-side
+    SignupAccepted:
+      type: object
+      required: [ok, buffer_expires_at]
+      properties:
+        ok:
+          type: boolean
+          enum: [true]
+        buffer_expires_at:
+          type: string
+          format: date-time
+    SignupError:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          enum:
+            - invalid_email
+            - invalid_body
+            - bot_detected
+            - rate_limited
+            - db_error
+            - supabase_error
+        message:
+          type: string
+        reason:
+          type: string
+
+security_considerations:
+  - BotID token is required client-side before the POST hits the API (D-03 pre-submit)
+  - Raw IPs are never persisted; only sha256(ip) lands in markos_signup_rate_limits (GDPR)
+  - No markos_orgs / markos_tenants row is created before verifyOtp succeeds (Pitfall 1)
+  - Reserved-slug blocklist enforced by provisioner before tenant insert (D-11)
+  - Magic-link token expiry is governed by Supabase Auth (default 1h)

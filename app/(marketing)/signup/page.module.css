@@ -1,0 +1,186 @@
+/* Phase 201 Surface 1 — Public Signup Flow
+ * Tokens inherit from 201-UI-SPEC.md. CSS Modules only (no shadcn, no Tailwind).
+ */
+
+.marketingShell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 22%),
+    linear-gradient(180deg, #f8fbfd 0%, #eef4fb 100%);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+}
+
+.signupPage {
+  display: grid;
+  place-items: center;
+  padding: 64px 24px;
+  min-height: 100vh;
+}
+
+.authCard {
+  width: min(480px, 100%);
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
+.displayHeading {
+  margin: 0;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.0;
+  color: #0f172a;
+}
+
+.subheading {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.input {
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  background: #f8fbfd;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  color: #0f172a;
+  transition: border-color 120ms ease, outline-color 120ms ease;
+}
+
+.input:focus {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-color: #0d9488;
+}
+
+.inputError {
+  border-color: #f87171;
+}
+
+.primaryCta {
+  min-height: 44px;
+  padding: 10px 20px;
+  background: #0d9488;
+  color: #ffffff;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 120ms ease, transform 120ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.primaryCta:hover:not(:disabled) {
+  background: #0f766e;
+}
+
+.primaryCta:focus {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.primaryCta:disabled {
+  background: #94a3b8;
+  cursor: progress;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.help {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #475569;
+  min-height: 18px;
+}
+
+.errorText {
+  color: #9a3412;
+  font-weight: 600;
+}
+
+.successPanel {
+  margin-top: 8px;
+  padding: 16px;
+  background: #e6fffb;
+  border-left: 4px solid #0f766e;
+  border-radius: 12px;
+  color: #0f172a;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.resendButton {
+  margin-top: 12px;
+  background: transparent;
+  border: 0;
+  color: #0f766e;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 0;
+}
+
+.resendButton:disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.signinLink {
+  color: #0f766e;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.signinLink:hover {
+  text-decoration: underline;
+}
