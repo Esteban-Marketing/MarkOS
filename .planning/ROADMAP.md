@@ -46,7 +46,7 @@ Plans:
 **Requirements Mapped:** API-02, QA-01..15
 **Depends on:** Phase 200
 **Status:** 📋 Planned
-**Plans:** 5/8 plans executed
+**Plans:** 6/8 plans executed
 **DISCUSS:** `.planning/phases/201-saas-tenancy-hardening/DISCUSS.md`
 
 Plans:
@@ -55,7 +55,7 @@ Plans:
 - [x] 201-03-PLAN.md — Public signup (magic-link + BotID + 5/h rate-limit + double opt-in provisioner) + Surface 1 /signup
 - [x] 201-04-PLAN.md — Passkey opt-in (@simplewebauthn v13 wrapper + PasskeyPrompt card on 2nd login)
 - [x] 201-05-PLAN.md — middleware.ts (subdomain + reserved + BYOD) + 30-day rolling session + Surface 2 + Surface 8
-- [ ] 201-06-PLAN.md — BYOD custom domain (Vercel Domains API + webhook verify) + Surface 3 + Surface 7 vanity login + tenant branding
+- [x] 201-06-PLAN.md — BYOD custom domain (Vercel Domains API + webhook verify) + Surface 3 + Surface 7 vanity login + tenant branding
 - [ ] 201-07-PLAN.md — Members + invites (seat pool) + Surface 5 switcher + Surface 4 + Surface 6 offboarding + GDPR export
 - [ ] 201-08-PLAN.md — Cross-domain audit emit wiring + openapi.json regen + 5 docs pages + llms.txt + F-88 audit query + vercel.ts crons
 
