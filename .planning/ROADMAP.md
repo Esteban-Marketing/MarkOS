@@ -46,12 +46,12 @@ Plans:
 **Requirements Mapped:** API-02, QA-01..15
 **Depends on:** Phase 200
 **Status:** 📋 Planned
-**Plans:** 8 plans
+**Plans:** 2/8 plans executed
 **DISCUSS:** `.planning/phases/201-saas-tenancy-hardening/DISCUSS.md`
 
 Plans:
-- [ ] 201-01-PLAN.md — Org + tenant schema (markos_orgs + FK + RLS) + reserved-slug blocklist library
-- [ ] 201-02-PLAN.md — Unified markos_audit_log + per-tenant SHA-256 hash chain + at-least-once staging drain
+- [x] 201-01-PLAN.md — Org + tenant schema (markos_orgs + FK + RLS) + reserved-slug blocklist library
+- [x] 201-02-PLAN.md — Unified markos_audit_log + per-tenant SHA-256 hash chain + at-least-once staging drain
 - [ ] 201-03-PLAN.md — Public signup (magic-link + BotID + 5/h rate-limit + double opt-in provisioner) + Surface 1 /signup
 - [ ] 201-04-PLAN.md — Passkey opt-in (@simplewebauthn v13 wrapper + PasskeyPrompt card on 2nd login)
 - [ ] 201-05-PLAN.md — middleware.ts (subdomain + reserved + BYOD) + 30-day rolling session + Surface 2 + Surface 8
