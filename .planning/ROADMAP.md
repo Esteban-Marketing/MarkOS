@@ -45,8 +45,8 @@ Plans:
 **Goal:** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
 **Requirements Mapped:** API-02, QA-01..15
 **Depends on:** Phase 200
-**Status:** 📋 Planned
-**Plans:** 7/8 plans executed
+**Status:** ✅ Plans complete — awaiting verification
+**Plans:** 8/8 plans complete
 **DISCUSS:** `.planning/phases/201-saas-tenancy-hardening/DISCUSS.md`
 
 Plans:
@@ -57,7 +57,7 @@ Plans:
 - [x] 201-05-PLAN.md — middleware.ts (subdomain + reserved + BYOD) + 30-day rolling session + Surface 2 + Surface 8
 - [x] 201-06-PLAN.md — BYOD custom domain (Vercel Domains API + webhook verify) + Surface 3 + Surface 7 vanity login + tenant branding
 - [x] 201-07-PLAN.md — Members + invites (seat pool) + Surface 5 switcher + Surface 4 + Surface 6 offboarding + GDPR export
-- [ ] 201-08-PLAN.md — Cross-domain audit emit wiring + openapi.json regen + 5 docs pages + llms.txt + F-88 audit query + vercel.ts crons
+- [x] 201-08-PLAN.md — Cross-domain audit emit wiring + openapi.json regen + 5 docs pages + llms.txt + F-88 audit query + vercel.ts crons + @vercel/edge-config slug cache
 
 ### Phase 202: MCP Server GA + Claude Marketplace Launch
 **Goal:** Graduate the 0-day MCP server to GA: session persistence, +20 skills, public marketplace approval, Cursor / Windsurf / Warp certified.

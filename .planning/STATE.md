@@ -2,20 +2,53 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Executing Phase 201
-last_updated: "2026-04-17T19:56:51.771Z"
+status: Phase 201 plans complete — awaiting verification
+last_updated: "2026-04-17T00:00:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 1
   total_plans: 16
-  completed_plans: 14
+  completed_plans: 16
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 201 (saas-tenancy-hardening) — EXECUTING
+Phase: 201 (saas-tenancy-hardening) — PLANS COMPLETE, AWAITING VERIFICATION
+Plan: 8 of 8 shipped (`201-08-SUMMARY.md`)
+
+## What just happened (2026-04-17)
+
+- **Plan 201-08 shipped** — consolidation wave closed.
+  - Cross-domain audit emitters wired: webhooks/engine.cjs + api/approve.js + api/submit.js.
+  - F-88 tenant-audit-query contract + `api/tenant/audit/list.js` handler (tenant-admin read-only).
+  - `contracts/openapi.json` regenerated (51 flows, 69 paths; all 14 phase-201 paths present).
+  - 5 docs pages shipped: routing, admin, tenancy-lifecycle, gdpr-export, llms/phase-201-tenancy.
+  - `public/llms.txt` appended with "Phase 201 — Tenancy" section (5 entries).
+  - `vercel.ts` cron registry: audit/drain, lifecycle/purge-cron, cleanup-unverified-signups.
+  - `@vercel/edge-config` ^1.4.3 added; `lib/markos/tenant/slug-cache.{cjs,ts}` read-through in
+    middleware + write-through from `lib/markos/orgs/tenants.{cjs,ts}` and
+    `switcher.createTenantInOrg`. Fulfils T-201-05-06 Plan 05 threat-model promise.
+  - 4 new test suites: `audit-emitter-wiring`, `openapi-merge`, `docs-mirror`, `slug-cache` (21 tests).
+  - Full phase-201 suite: **122/122 pass**. Auth + webhooks regression: **60/60 pass**.
+  - Commits: 9f9b58e, aae5467, 1b148b3, cf7c84b, dc820e4, e6bcbf2, 3c5a9fd.
+
+## Next step
+
+Run phase verification for 201:
+
+```bash
+/gsd-verify-phase 201
+```
+
+After verification clears, proceed to Phase 202 per ROADMAP.
+
+---
+
+## Prior position (2026-04-16 · still-relevant context)
+
+Phase: 201 (saas-tenancy-hardening)
 Plan: 1 of 8
 **Milestone:** v4.0.0 — SaaS Readiness 1.0 — active
 **Phase:** 201
