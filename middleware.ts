@@ -42,17 +42,40 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 
   // Layer 2b: first-party slug → resolve to tenant
   if (resolution.kind === 'first_party') {
+    const slug = resolution.slug || '';
+
+    // Phase 201 Plan 08 Task 3: edge-config cache in front of Supabase (T-201-05-06 mitigation).
+    // Read-through: cache hit short-circuits the Supabase round-trip.
+    const { readSlugFromEdge, writeSlugToEdge } = await import('./lib/markos/tenant/slug-cache.cjs');
+    const cachedTenantId = await readSlugFromEdge(slug);
+
+    if (cachedTenantId) {
+      const headers = new Headers(req.headers);
+      headers.set('x-markos-tenant-id', cachedTenantId);
+      headers.set('x-markos-tenant-slug', slug);
+      // org_id is not cached at this layer (keeps the edge-config value a simple string).
+      // Downstream handlers requiring org_id already re-fetch via supabase when needed.
+      headers.set('x-markos-byod', '0');
+      return NextResponse.next({ request: { headers } });
+    }
+
     const client = await createServiceClient();
     const { resolveTenantBySlug } = await import('./lib/markos/tenant/resolver');
-    const tenant = await resolveTenantBySlug(client, resolution.slug || '');
+    const tenant = await resolveTenantBySlug(client, slug);
     if (!tenant) {
       url.pathname = '/404-workspace';
-      url.searchParams.set('slug', resolution.slug || '');
+      url.searchParams.set('slug', slug);
       return NextResponse.rewrite(url);
     }
+
+    // Backfill the edge-config cache (fire-and-forget; never blocks the response).
+    if (tenant.status === 'active') {
+      writeSlugToEdge(slug, tenant.tenant_id).catch(() => {});
+    }
+
     const headers = new Headers(req.headers);
     headers.set('x-markos-tenant-id', tenant.tenant_id);
-    headers.set('x-markos-tenant-slug', resolution.slug || '');
+    headers.set('x-markos-tenant-slug', slug);
     headers.set('x-markos-org-id', tenant.org_id);
     headers.set('x-markos-byod', '0');
     return NextResponse.next({ request: { headers } });
