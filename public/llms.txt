@@ -1,0 +1,30 @@
+# MarkOS — Marketing Operating System
+
+> Protocol-grade marketing infrastructure for AI-ready teams. MarkOS is the structured system layer that makes AI marketing agents consistent, brand-safe, and measurable. Install in one command: `npx markos`.
+
+## Docs
+
+- [Quick Start](https://markos.dev/docs/quickstart): Install and configure MarkOS in minutes.
+- [LLM BYOK Architecture](https://markos.dev/docs/llm-byok-architecture): Multi-provider LLM support with Anthropic, OpenAI, and Gemini behind a unified adapter.
+- [Operator LLM Setup](https://markos.dev/docs/operator-llm-setup): Configure provider keys, run smoke tests, monitor usage.
+- [CRM Overview](https://markos.dev/docs/crm): Unified pipeline, identity graph, and execution queue.
+- [Execution Queues](https://markos.dev/docs/execution-queues): AI-ranked task queue with recommendation engine.
+- [Attribution & Tracking](https://markos.dev/docs/attribution): Activity normalization, timeline, cross-channel attribution.
+
+## API
+
+- [OpenAPI Reference](https://markos.dev/api/openapi.json): Full OpenAPI 3.1 specification for all MarkOS API endpoints.
+- [Webhook Subscriptions](https://markos.dev/docs/webhooks): Subscribe to events; HMAC-SHA256 signed deliveries.
+- [MCP Server](https://markos.dev/docs/mcp): 10 MCP tools for Claude Desktop, Cursor, and Windsurf integration.
+
+## Examples
+
+- [Generate a Draft](https://markos.dev/docs/examples/generate-draft): `markos generate ./brief.yaml` → audit-passing draft in seconds.
+- [Onboarding Presets](https://markos.dev/docs/examples/presets): `npx markos init --preset=b2b-saas` — seed your instance for your business model.
+- [Webhook Test Fire](https://markos.dev/docs/examples/webhook-test): End-to-end webhook subscribe → test-fire → signed callback.
+
+## Optional
+
+- [Full Docs (concatenated markdown)](https://markos.dev/docs/llms-full.txt): Single-file concatenation of all documentation pages for LLM ingestion.
+- [Changelog](https://markos.dev/changelog): Version history and breaking changes.
+- [GitHub Repository](https://github.com/estebanooortz/markos): Source code, issues, and contributions.
