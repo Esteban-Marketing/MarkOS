@@ -1,6 +1,8 @@
 'use strict';
 
-const ALLOWED_LINK_STATUSES = new Set(['candidate', 'accepted', 'review', 'rejected']);
+const { crmIdentityLinkStatuses } = require('./contracts.ts');
+
+const ALLOWED_LINK_STATUSES = new Set(crmIdentityLinkStatuses);
 
 function clampConfidence(value) {
   const numeric = Number(value);

@@ -24,6 +24,7 @@ x-markos-meta:
     color_hex: "optional"
     is_won: "optional"
     is_lost: "optional"
+    forecast_weight: "optional"
   mutation_payloads:
     - "pipeline_config_updated"
     - "pipeline_stage_reordered"

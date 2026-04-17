@@ -120,12 +120,15 @@ function buildWeightedAttributionModel(input = {}) {
     .filter((link) => link?.link_status === 'accepted')
     .map((link) => String(link.anonymous_identity_id || '').trim())
     .filter(Boolean));
-  const reviewExcludedCount = timelineEntries
+  const reviewExcludedEntries = timelineEntries
     .filter((entry) => entry && typeof entry === 'object')
     .filter((entry) => Object.hasOwn(FAMILY_WEIGHTS, entry.activity_family))
     .filter((entry) => entry.anonymous_identity_id)
-    .filter((entry) => !acceptedAnonymousIds.has(String(entry.anonymous_identity_id || '').trim()))
-    .length;
+    .filter((entry) => !acceptedAnonymousIds.has(String(entry.anonymous_identity_id || '').trim()));
+  const reviewExcludedCount = reviewExcludedEntries.length;
+  const reviewExcludedRefs = Array.from(new Set(reviewExcludedEntries
+    .map((entry) => String(entry.source_event_ref || '').trim())
+    .filter(Boolean)));
   const reasons = [];
   if (reviewExcludedCount > 0) {
     reasons.push('review identity linkage excluded from attribution credit');
@@ -148,6 +151,7 @@ function buildWeightedAttributionModel(input = {}) {
     readiness: Object.freeze({
       status: reasons.length > 0 ? 'degraded' : 'ready',
       reasons: Object.freeze(reasons),
+      evidence_refs: Object.freeze(reviewExcludedRefs),
     }),
   });
 }

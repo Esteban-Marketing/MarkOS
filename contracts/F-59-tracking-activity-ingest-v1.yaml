@@ -15,6 +15,13 @@ x-markos-meta:
   auth_local: "runtime_local"
   auth_hosted: "public for first-party pages, supabase bearer for protected surfaces"
   source_of_truth: "crm_activity_ledger"
+  required_ledger_fields:
+    - "tenant_id"
+    - "activity_family"
+    - "related_record_kind"
+    - "related_record_id"
+    - "source_event_ref"
+    - "occurred_at"
   supported_activity_families:
     - "web_activity"
     - "campaign_touch"

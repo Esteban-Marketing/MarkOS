@@ -7,5 +7,11 @@
     "version": "2.1",
     "generated": "2026-04-04T03:49:59.115Z",
     "completeness_score": 100
+  },
+  "packSelection": {
+    "basePack": "b2b",
+    "overlayPack": null,
+    "overrideReason": "operator_override",
+    "resolvedAt": "2026-04-15T21:49:39.140Z"
   }
 }

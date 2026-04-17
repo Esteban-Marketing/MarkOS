@@ -61,6 +61,10 @@ test('TRK-03: tracking ingest contract names normalized activity families explic
   const contract = fs.readFileSync(ingestContractPath, 'utf8');
 
   assert.match(contract, /supported_activity_families:/);
+  assert.match(contract, /required_ledger_fields:/);
+  assert.match(contract, /tenant_id/);
+  assert.match(contract, /source_event_ref/);
+  assert.match(contract, /occurred_at/);
   assert.match(contract, /web_activity/);
   assert.match(contract, /campaign_touch/);
   assert.match(contract, /attribution_update/);

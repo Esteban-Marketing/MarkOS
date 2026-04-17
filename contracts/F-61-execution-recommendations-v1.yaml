@@ -24,10 +24,10 @@ recommendation_fields:
 
 queue_tabs:
   - due_overdue
+  - approval_needed
   - inbound
   - stalled
   - success_risk
-  - approval_needed
   - ownership_data
   - priority
 

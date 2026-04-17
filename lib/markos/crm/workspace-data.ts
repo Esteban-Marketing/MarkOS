@@ -32,6 +32,37 @@ function listLinkedEntities(store, tenantId, recordKind, recordId) {
   return entities.filter((entry) => entry.linked_record_id === recordId);
 }
 
+function buildDefaultSavedViews(input = {}) {
+  const pipelineKey = typeof input.pipeline_key === 'string' ? input.pipeline_key.trim() : null;
+  const baseFilters = {
+    search: input.search || '',
+    stage_key: input.stage_key || '',
+  };
+  return [
+    {
+      view_key: 'pipeline-board',
+      label: 'Pipeline Board',
+      view_type: 'kanban',
+      pipeline_key: pipelineKey,
+      filters: baseFilters,
+    },
+    {
+      view_key: 'closing-soon',
+      label: 'Closing Soon',
+      view_type: 'table',
+      pipeline_key: pipelineKey,
+      filters: { ...baseFilters, risk_level: 'medium' },
+    },
+    {
+      view_key: 'at-risk',
+      label: 'At Risk',
+      view_type: 'table',
+      pipeline_key: pipelineKey,
+      filters: { ...baseFilters, risk_level: 'high' },
+    },
+  ];
+}
+
 function buildCrmWorkspaceSnapshot(input = {}) {
   const tenantId = String(input.tenant_id || '').trim();
   const recordKind = String(input.record_kind || 'deal').trim();
@@ -61,6 +92,12 @@ function buildCrmWorkspaceSnapshot(input = {}) {
       search,
       stage_key: stageKey,
     },
+    saved_views: buildDefaultSavedViews({
+      pipeline_key: pipeline.pipeline_key || null,
+      search,
+      stage_key: stageKey,
+    }),
+    active_saved_view_key: viewType === 'kanban' ? 'pipeline-board' : null,
     selected_record: selectedRecord,
     records,
   });

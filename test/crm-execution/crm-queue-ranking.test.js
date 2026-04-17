@@ -102,3 +102,36 @@ test('CRM-04: manager or team queue includes intervention candidates beyond the 
   assert.ok(queueData.team_queue.some((item) => item.queue_tab === 'approval_needed'));
   assert.ok(queueData.tabs.some((tab) => tab.tab_key === 'success_risk'));
 });
+
+test('EXEC-01: approval-needed work stays ahead of passive risk items and approval tabs stay near the top', () => {
+  const store = makeStore();
+  createCrmEntity(store, {
+    entity_id: 'customer-risk-001',
+    tenant_id: 'tenant-alpha-001',
+    record_kind: 'customer',
+    display_name: 'Renewal Risk Customer',
+    attributes: { owner_actor_id: 'csm-001', health_score: 41, renewal_at: '2026-04-20T00:00:00.000Z' },
+  });
+  createCrmEntity(store, {
+    entity_id: 'deal-approval-001',
+    tenant_id: 'tenant-alpha-001',
+    record_kind: 'deal',
+    display_name: 'Approval Blocked Deal',
+    attributes: { owner_actor_id: 'manager-001', approval_state: 'needed', amount: 9000 },
+  });
+
+  const queueData = buildExecutionQueues({
+    crmStore: store,
+    tenant_id: 'tenant-alpha-001',
+    actor_id: 'manager-001',
+    now: '2026-04-04T12:00:00.000Z',
+  });
+
+  const approvalIndex = queueData.tabs.findIndex((tab) => tab.tab_key === 'approval_needed');
+  const successRiskIndex = queueData.tabs.findIndex((tab) => tab.tab_key === 'success_risk');
+
+  assert.ok(approvalIndex >= 0);
+  assert.ok(successRiskIndex >= 0);
+  assert.ok(approvalIndex < successRiskIndex);
+  assert.equal(queueData.team_queue[0].record_id, 'deal-approval-001');
+});

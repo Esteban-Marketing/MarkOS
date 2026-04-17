@@ -10,6 +10,13 @@ const crmRecordKinds = Object.freeze([
   'note',
 ]);
 
+const crmIdentityLinkStatuses = Object.freeze([
+  'candidate',
+  'accepted',
+  'review',
+  'rejected',
+]);
+
 const crmWorkspaceViewTypes = Object.freeze([
   'kanban',
   'table',
@@ -153,6 +160,7 @@ function validateWorkspaceObjectDefinition(input) {
 
 module.exports = {
   crmRecordKinds,
+  crmIdentityLinkStatuses,
   crmWorkspaceViewTypes,
   crmEntitySchema,
   crmCustomFieldDefinitionSchema,

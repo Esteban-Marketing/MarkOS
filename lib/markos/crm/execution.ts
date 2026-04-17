@@ -6,10 +6,10 @@ const { buildCrmWorkspaceSnapshot } = require('./workspace-data.ts');
 
 const EXECUTION_QUEUE_TABS = Object.freeze([
   'due_overdue',
+  'approval_needed',
   'inbound',
   'stalled',
   'success_risk',
-  'approval_needed',
   'ownership_data',
   'priority',
 ]);
@@ -227,8 +227,8 @@ function computeUrgencyScore(signals) {
   score += Math.min(signals.overdue_task_count * 20, 40);
   score += Math.min(signals.inbound_touch_count * 15, 30);
   score += Math.min(signals.stalled_days, 20);
-  score += signals.success_risk ? 25 : 0;
-  score += signals.approval_needed ? 20 : 0;
+  score += signals.approval_needed ? 30 : 0;
+  score += signals.success_risk ? 20 : 0;
   score += signals.missing_owner ? 15 : 0;
   score += signals.missing_data ? 10 : 0;
   score += Math.min(Math.max(signals.intent_score, 0), 100) / 5;
@@ -339,12 +339,12 @@ function buildExecutionRecommendations(input = {}) {
 
 function queueTabWeight(queueTab) {
   return {
-    approval_needed: 6,
-    due_overdue: 5,
+    due_overdue: 6,
+    approval_needed: 5,
     inbound: 4,
-    success_risk: 3,
-    ownership_data: 2,
-    stalled: 1,
+    stalled: 3,
+    success_risk: 2,
+    ownership_data: 1,
     priority: 0,
   }[queueTab] || 0;
 }

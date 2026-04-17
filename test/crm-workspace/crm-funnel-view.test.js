@@ -47,12 +47,13 @@ function authFor(role, tenantId = 'tenant-alpha-001') {
   };
 }
 
-test('REP-01: funnel view computes simple stage count and value totals from canonical records', () => {
+test('REP-01: funnel view computes weighted stage forecast and value totals from canonical records', () => {
   assert.equal(fs.existsSync(funnelViewPath), true);
   const contract = fs.readFileSync(contractPath, 'utf8');
   assert.match(contract, /funnel_semantics:/);
   assert.match(contract, /record_count/);
   assert.match(contract, /total_value/);
+  assert.match(contract, /weighted_value/);
 
   const workspace = loadTsCommonJsModule(workspacePath);
   const state = workspace.createWorkspaceState({
@@ -69,14 +70,14 @@ test('REP-01: funnel view computes simple stage count and value totals from cano
   const rows = workspace.buildFunnelRows({
     state,
     pipeline: { stages: [
-      { stage_key: 'qualified', display_name: 'Qualified' },
-      { stage_key: 'proposal', display_name: 'Proposal' },
+      { stage_key: 'qualified', display_name: 'Qualified', forecast_weight: 0.25 },
+      { stage_key: 'proposal', display_name: 'Proposal', forecast_weight: 0.75 },
     ] },
   });
 
-  assert.deepEqual(rows.map((row) => [row.stage_key, row.record_count, row.total_value]), [
-    ['qualified', 1, 1200],
-    ['proposal', 2, 1000],
+  assert.deepEqual(rows.map((row) => [row.stage_key, row.record_count, row.total_value, row.weighted_value]), [
+    ['qualified', 1, 1200, 300],
+    ['proposal', 2, 1000, 750],
   ]);
 });
 
@@ -100,8 +101,8 @@ test('REP-01: funnel API derives rows from active stage config and canonical dea
     display_name: 'Sales Pipeline',
     object_kind: 'deal',
     stages: [
-      { stage_key: 'qualified', display_name: 'Qualified', stage_order: 1 },
-      { stage_key: 'proposal', display_name: 'Proposal', stage_order: 2 },
+      { stage_key: 'qualified', display_name: 'Qualified', stage_order: 1, forecast_weight: 0.25 },
+      { stage_key: 'proposal', display_name: 'Proposal', stage_order: 2, forecast_weight: 0.75 },
     ],
   }, 'owner-actor-001');
   createCrmEntity(store, {
@@ -118,8 +119,8 @@ test('REP-01: funnel API derives rows from active stage config and canonical dea
   await handleFunnel(req, res);
 
   assert.equal(res.statusCode, 200);
-  assert.deepEqual(res.body.rows.map((row) => [row.stage_key, row.record_count, row.total_value]), [
-    ['qualified', 1, 1200],
-    ['proposal', 1, 800],
+  assert.deepEqual(res.body.rows.map((row) => [row.stage_key, row.record_count, row.total_value, row.weighted_value]), [
+    ['qualified', 1, 1200, 300],
+    ['proposal', 1, 800, 600],
   ]);
 });

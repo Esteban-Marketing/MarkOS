@@ -42,6 +42,9 @@ function buildCrmTimeline(input) {
   const acceptedAnonymousIds = new Set(acceptedLinks
     .map((link) => String(link.anonymous_identity_id || '').trim())
     .filter(Boolean));
+  const acceptedLinkByAnonymousId = new Map(acceptedLinks
+    .map((link) => [String(link.anonymous_identity_id || '').trim(), link])
+    .filter(([anonymousIdentityId]) => anonymousIdentityId));
 
   return (options.activities || [])
     .filter((row) => row && typeof row === 'object')
@@ -55,11 +58,20 @@ function buildCrmTimeline(input) {
         || acceptedAnonymousIds.has(String(row.anonymous_identity_id || '').trim())
       );
     })
-    .map((row) => Object.freeze({
-      ...row,
-      activity_family: normalizeActivityFamily(row.activity_family),
-      stitched_identity: acceptedAnonymousIds.has(String(row.anonymous_identity_id || '').trim()),
-    }))
+    .map((row) => {
+      const anonymousIdentityId = String(row.anonymous_identity_id || '').trim();
+      const stitched_identity = acceptedAnonymousIds.has(anonymousIdentityId);
+      const stitchLink = stitched_identity ? acceptedLinkByAnonymousId.get(anonymousIdentityId) : null;
+      return Object.freeze({
+        ...row,
+        activity_family: normalizeActivityFamily(row.activity_family),
+        stitched_identity,
+        stitch_label: stitched_identity ? 'stitched_pre_conversion_history' : null,
+        stitch_evidence_ref: stitchLink?.source_event_ref || null,
+        stitch_confidence: stitchLink?.confidence ?? null,
+        stitch_status: stitchLink?.link_status || null,
+      });
+    })
     .sort((left, right) => {
       const leftTs = Date.parse(left.occurred_at || left.created_at || 0);
       const rightTs = Date.parse(right.occurred_at || right.created_at || 0);

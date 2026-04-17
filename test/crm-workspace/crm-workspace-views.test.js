@@ -42,6 +42,7 @@ test('CRM-03: workspace routes and shell replace placeholder pages with a CRM wo
   assert.match(shellSource, /Kanban/);
   assert.match(shellSource, /Table/);
   assert.match(shellSource, /Timeline/);
+  assert.match(shellSource, /Saved Views/);
   assert.match(shellSource, /fetch\('\/api\/crm\/records'/);
 });
 

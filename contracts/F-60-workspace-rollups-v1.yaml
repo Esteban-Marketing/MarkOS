@@ -17,20 +17,23 @@ x-markos-meta:
       - "calendar_date_field_key"
     approved_object_behavior: "only explicitly eligible objects appear in calendar results"
   funnel_semantics:
-    aggregation_mode: "simple"
+    aggregation_mode: "canonical_plus_weighted"
     measures:
       - "record_count"
       - "total_value"
+      - "weighted_value"
     derives_from:
       - "pipeline_key"
       - "stage_key"
       - "amount"
+      - "forecast_weight"
   cross_view_truth:
     shared_context_fields:
       - "view_type"
       - "pipeline_key"
       - "filters"
       - "selected_record"
+      - "active_saved_view_key"
 
 paths:
   /api/crm/calendar:
@@ -46,7 +49,7 @@ paths:
           description: "Calendar date updated with audit evidence"
   /api/crm/funnel:
     get:
-      summary: "Return simple stage-count and value totals from canonical CRM records"
+      summary: "Return canonical stage counts, values, and weighted forecast totals from CRM records"
       responses:
         "200":
           description: "Funnel rollups returned for the active pipeline and filters"

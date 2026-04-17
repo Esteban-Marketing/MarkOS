@@ -49,6 +49,10 @@ test('CRM-04: copilot workspace route uses CRM-native queue, detail, and evidenc
   assert.match(storeSource, /summaryMode/);
   assert.match(storeSource, /selectedPackage/);
   assert.match(storeSource, /evidenceEntries/);
+
+  const recordPanelSource = fs.readFileSync(recordPanelPath, 'utf8');
+  assert.match(recordPanelSource, /Record brief/i);
+  assert.match(recordPanelSource, /why it matters|evidence-backed|next step/i);
 });
 
 test('AI-CRM-01: copilot workspace snapshot hydrates record, conversation, recommendations, and evidence from canonical CRM state', () => {

@@ -9,6 +9,7 @@ const contractsPath = path.join(root, 'lib/markos/crm/contracts.ts');
 const entitiesPath = path.join(root, 'lib/markos/crm/entities.ts');
 const schemaPath = path.join(root, 'supabase/migrations/58_crm_core_entities.sql');
 const customFieldsPath = path.join(root, 'supabase/migrations/58_crm_custom_fields.sql');
+const hardeningMigrationPath = path.join(root, 'supabase/migrations/100_crm_schema_identity_graph_hardening.sql');
 const crudContractPath = path.join(root, 'contracts/F-58-crm-entity-crud-v1.yaml');
 
 function loadTsCommonJsModule(filePath) {
@@ -26,7 +27,7 @@ function loadTsCommonJsModule(filePath) {
 }
 
 test('CRM-01: Wave 1 artifacts exist', () => {
-  [contractsPath, entitiesPath, schemaPath, customFieldsPath, crudContractPath].forEach((filePath) => {
+  [contractsPath, entitiesPath, schemaPath, customFieldsPath, hardeningMigrationPath, crudContractPath].forEach((filePath) => {
     assert.ok(fs.existsSync(filePath), `${filePath} must exist`);
   });
 });
@@ -34,6 +35,7 @@ test('CRM-01: Wave 1 artifacts exist', () => {
 test('CRM-01: contracts expose first-class CRM entity families', () => {
   const contracts = loadTsCommonJsModule(contractsPath);
   assert.deepEqual(contracts.crmRecordKinds, ['contact', 'company', 'deal', 'account', 'customer', 'task', 'note']);
+  assert.deepEqual(contracts.crmIdentityLinkStatuses, ['candidate', 'accepted', 'review', 'rejected']);
   assert.ok(contracts.crmEntitySchema.required.includes('tenant_id'));
   assert.ok(contracts.crmCustomFieldDefinitionSchema.required.includes('entity_kind'));
   assert.ok(contracts.crmCustomFieldValueSchema.required.includes('field_definition_id'));

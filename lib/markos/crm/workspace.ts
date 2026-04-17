@@ -9,7 +9,7 @@ function toTrimmedString(value, fallback = '') {
 function normalizeWorkspaceState(state) {
   return state && typeof state === 'object'
     ? state
-    : { filters: {}, records: [], selected_record: null, tenant_id: '', object_kind: 'deal', pipeline_key: null, sort: normalizeSort(null) };
+    : { filters: {}, records: [], selected_record: null, tenant_id: '', object_kind: 'deal', pipeline_key: null, sort: normalizeSort(null), saved_views: [], active_saved_view_key: null };
 }
 
 function normalizeSort(sort) {
@@ -20,10 +20,85 @@ function normalizeSort(sort) {
   });
 }
 
+function normalizeSavedViews(savedViews) {
+  if (!Array.isArray(savedViews)) {
+    return [];
+  }
+  const seen = new Set();
+  return savedViews
+    .map((entry, index) => {
+      const input = entry && typeof entry === 'object' ? entry : {};
+      const viewKey = toTrimmedString(input.view_key || input.key, `view-${index + 1}`);
+      if (!viewKey || seen.has(viewKey)) {
+        return null;
+      }
+      seen.add(viewKey);
+      return Object.freeze({
+        view_key: viewKey,
+        label: toTrimmedString(input.label, viewKey),
+        view_type: assertWorkspaceViewType(input.view_type || 'kanban'),
+        pipeline_key: typeof input.pipeline_key === 'string' ? input.pipeline_key.trim() : null,
+        filters: Object.freeze(input.filters && typeof input.filters === 'object' ? { ...input.filters } : {}),
+        sort: normalizeSort(input.sort),
+      });
+    })
+    .filter(Boolean);
+}
+
+function deriveRiskLevel(record) {
+  const explicit = toTrimmedString(getRecordValue(record, 'risk_level')).toLowerCase();
+  if (explicit) {
+    return explicit;
+  }
+  const healthScore = Number(getRecordValue(record, 'health_score') || 0);
+  if (Number.isFinite(healthScore) && healthScore > 0) {
+    if (healthScore < 30) {
+      return 'high';
+    }
+    if (healthScore < 50) {
+      return 'medium';
+    }
+  }
+  const stalledDays = Number(getRecordValue(record, 'stalled_days') || 0);
+  if (Number.isFinite(stalledDays)) {
+    if (stalledDays >= 14) {
+      return 'high';
+    }
+    if (stalledDays >= 7) {
+      return 'medium';
+    }
+  }
+  if (!toTrimmedString(getRecordValue(record, 'owner_actor_id'))) {
+    return 'medium';
+  }
+  return 'low';
+}
+
+function resolveStageWeight(stage, index, totalStages) {
+  const input = stage && typeof stage === 'object' ? stage : {};
+  if (input.is_lost === true) {
+    return 0;
+  }
+  if (input.is_won === true) {
+    return 1;
+  }
+  const raw = Number(input.forecast_weight ?? input.weight ?? input.probability ?? NaN);
+  if (Number.isFinite(raw)) {
+    const normalized = raw > 1 ? raw / 100 : raw;
+    return Number(Math.min(1, Math.max(0, normalized)).toFixed(6));
+  }
+  if (totalStages <= 0) {
+    return 1;
+  }
+  return Number((((index || 0) + 1) / (totalStages + 1)).toFixed(6));
+}
+
 function createWorkspaceState(input = {}) {
   const filters = input.filters && typeof input.filters === 'object'
     ? { ...input.filters }
     : {};
+  const savedViews = normalizeSavedViews(input.saved_views);
+  const activeSavedViewKey = typeof input.active_saved_view_key === 'string' ? input.active_saved_view_key.trim() : null;
   return Object.freeze({
     tenant_id: toTrimmedString(input.tenant_id),
     object_kind: toTrimmedString(input.object_kind, 'deal'),
@@ -33,6 +108,8 @@ function createWorkspaceState(input = {}) {
     sort: normalizeSort(input.sort),
     selected_record: typeof input.selected_record === 'string' ? input.selected_record.trim() : null,
     records: Array.isArray(input.records) ? input.records.slice() : [],
+    saved_views: Object.freeze(savedViews),
+    active_saved_view_key: activeSavedViewKey,
   });
 }
 
@@ -51,11 +128,15 @@ function getRecordValue(record, field) {
 function getWorkspaceRecords(state) {
   const search = String(state.filters.search || '').trim().toLowerCase();
   const stageKey = state.filters.stage_key ? String(state.filters.stage_key).trim() : null;
+  const ownerActorId = state.filters.owner_actor_id ? String(state.filters.owner_actor_id).trim() : null;
+  const riskLevel = state.filters.risk_level ? String(state.filters.risk_level).trim().toLowerCase() : null;
   return state.records
     .filter((record) => record.tenant_id === state.tenant_id)
     .filter((record) => record.record_kind === state.object_kind)
     .filter((record) => !state.pipeline_key || String(getRecordValue(record, 'pipeline_key') || '') === state.pipeline_key)
     .filter((record) => !stageKey || String(getRecordValue(record, 'stage_key') || '') === stageKey)
+    .filter((record) => !ownerActorId || String(getRecordValue(record, 'owner_actor_id') || '').trim() === ownerActorId)
+    .filter((record) => !riskLevel || deriveRiskLevel(record) === riskLevel)
     .filter((record) => !search || String(record.display_name || '').toLowerCase().includes(search))
     .sort((left, right) => {
       const leftValue = getRecordValue(left, state.sort.field);
@@ -141,13 +222,17 @@ function buildFunnelRows(input = {}) {
     ? pipeline.stages
     : Array.from(new Set(records.map((record) => String(getRecordValue(record, 'stage_key') || 'unassigned')))).map((stageKey) => ({ stage_key: stageKey, display_name: stageKey }));
 
-  return stages.map((stage) => {
+  return stages.map((stage, index) => {
     const stageRecords = records.filter((record) => String(getRecordValue(record, 'stage_key') || 'unassigned') === stage.stage_key);
+    const totalValue = Number(stageRecords.reduce((sum, record) => sum + Number(getRecordValue(record, 'amount') || 0), 0).toFixed(2));
+    const stageWeight = resolveStageWeight(stage, index, stages.length);
     return {
       stage_key: stage.stage_key,
       display_name: stage.display_name,
       record_count: stageRecords.length,
-      total_value: Number(stageRecords.reduce((sum, record) => sum + Number(getRecordValue(record, 'amount') || 0), 0).toFixed(2)),
+      total_value: totalValue,
+      stage_weight: stageWeight,
+      weighted_value: Number((totalValue * stageWeight).toFixed(2)),
     };
   });
 }
@@ -173,6 +258,45 @@ function applyWorkspaceMutation(state, mutation = {}) {
   }
   if (mutation.type === 'set_filter') {
     return createWorkspaceState({ ...normalizedState, filters: { ...normalizedState.filters, ...mutationFilters } });
+  }
+  if (mutation.type === 'save_view') {
+    const savedView = mutation.saved_view && typeof mutation.saved_view === 'object'
+      ? mutation.saved_view
+      : {};
+    const viewKey = toTrimmedString(savedView.view_key || savedView.key || mutation.saved_view_key);
+    if (!viewKey) {
+      return createWorkspaceState(normalizedState);
+    }
+    const normalizedView = normalizeSavedViews([{
+      view_key: viewKey,
+      label: savedView.label || savedView.name || viewKey,
+      view_type: savedView.view_type || normalizedState.view_type,
+      pipeline_key: Object.hasOwn(savedView, 'pipeline_key') ? savedView.pipeline_key : normalizedState.pipeline_key,
+      filters: savedView.filters || normalizedState.filters,
+      sort: savedView.sort || normalizedState.sort,
+    }])[0];
+    const existingViews = Array.isArray(normalizedState.saved_views) ? normalizedState.saved_views.filter((entry) => entry.view_key !== viewKey) : [];
+    return createWorkspaceState({
+      ...normalizedState,
+      saved_views: [...existingViews, normalizedView],
+      active_saved_view_key: viewKey,
+    });
+  }
+  if (mutation.type === 'set_saved_view') {
+    const viewKey = toTrimmedString(mutation.saved_view_key || mutation.view_key);
+    const savedViews = Array.isArray(normalizedState.saved_views) ? normalizedState.saved_views : [];
+    const match = savedViews.find((entry) => entry.view_key === viewKey);
+    if (!match) {
+      return createWorkspaceState(normalizedState);
+    }
+    return createWorkspaceState({
+      ...normalizedState,
+      active_saved_view_key: match.view_key,
+      view_type: match.view_type || normalizedState.view_type,
+      pipeline_key: Object.hasOwn(match, 'pipeline_key') ? match.pipeline_key : normalizedState.pipeline_key,
+      filters: match.filters || normalizedState.filters,
+      sort: match.sort || normalizedState.sort,
+    });
   }
   if (mutation.type === 'select_record') {
     return createWorkspaceState({ ...normalizedState, selected_record: mutation.record_id });

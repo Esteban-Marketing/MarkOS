@@ -4,6 +4,7 @@ const path = require('node:path');
 
 const { createJsonRequest } = require('../setup.js');
 const { buildCrmTimeline } = require('../../lib/markos/crm/timeline.ts');
+const { buildWeightedAttributionModel } = require('../../lib/markos/crm/attribution.ts');
 const { appendTrackedActivity } = require('../../lib/markos/crm/tracking.ts');
 
 const identifyHandlerPath = path.join(__dirname, '../../api/tracking/identify.js');
@@ -72,10 +73,14 @@ test('TRK-04: accepted identity assertions attach anonymous history to known CRM
     identity_links: store.identityLinks,
   });
 
+  const stitchedEntry = timeline.find((entry) => entry.source_event_ref === 'ingest:1');
+
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.decision, 'accepted');
   assert.equal(store.identityLinks[0].link_status, 'accepted');
-  assert.ok(timeline.some((entry) => entry.source_event_ref === 'ingest:1' && entry.stitched_identity === true));
+  assert.equal(stitchedEntry.stitched_identity, true);
+  assert.equal(stitchedEntry.stitch_label, 'stitched_pre_conversion_history');
+  assert.equal(stitchedEntry.stitch_evidence_ref, 'identify:accepted:1');
   assert.ok(timeline.some((entry) => entry.activity_family === 'attribution_update'));
 });
 
@@ -116,8 +121,19 @@ test('TRK-04: review-only identity candidates do not attach anonymous history ye
     identity_links: store.identityLinks,
   });
 
+  const attribution = buildWeightedAttributionModel({
+    tenant_id: 'tenant-alpha-001',
+    record_kind: 'contact',
+    record_id: 'contact-456',
+    revenue_amount: 1000,
+    activities: store.activities,
+    identity_links: store.identityLinks,
+  });
+
   assert.equal(res.statusCode, 200);
   assert.equal(res.body.decision, 'review');
   assert.equal(store.identityLinks[0].link_status, 'review');
   assert.equal(timeline.some((entry) => entry.source_event_ref === 'ingest:2'), false);
+  assert.equal(attribution.readiness.status, 'degraded');
+  assert.deepEqual(attribution.readiness.evidence_refs, ['ingest:2']);
 });

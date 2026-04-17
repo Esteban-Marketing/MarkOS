@@ -3,7 +3,7 @@ import React from 'react';
 export function FunnelView({
   rows,
 }: Readonly<{
-  rows: Array<{ stage_key: string; display_name: string; record_count: number; total_value: number }>;
+  rows: Array<{ stage_key: string; display_name: string; record_count: number; total_value: number; weighted_value?: number }>;
 }>) {
   return (
     <div>
@@ -14,6 +14,7 @@ export function FunnelView({
             <th>Stage</th>
             <th>Count</th>
             <th>Total Value</th>
+            <th>Weighted Forecast</th>
           </tr>
         </thead>
         <tbody>
@@ -22,6 +23,7 @@ export function FunnelView({
               <td>{row.display_name}</td>
               <td>{row.record_count}</td>
               <td>{row.total_value}</td>
+              <td>{row.weighted_value ?? row.total_value}</td>
             </tr>
           ))}
         </tbody>

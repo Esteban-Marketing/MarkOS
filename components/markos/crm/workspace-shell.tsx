@@ -59,6 +59,9 @@ export function WorkspaceShell({
   const rows = workspace.buildTableRows(workspaceState);
   const calendarEntries = workspace.buildCalendarEntries({ state: workspaceState, object_definition: objectDefinition || {} });
   const funnelRows = workspace.buildFunnelRows({ state: workspaceState, pipeline: pipeline || { stages: [] } });
+  const savedViews: Array<any> = Array.isArray((workspaceState as any).saved_views)
+    ? (workspaceState as any).saved_views
+    : [];
 
   function syncRecord(record: WorkspaceRecord) {
     startTransition(() => {
@@ -109,12 +112,26 @@ export function WorkspaceShell({
     });
   }
 
+  function applySavedView(viewKey: string) {
+    startTransition(() => {
+      setWorkspaceState(workspace.applyWorkspaceMutation(workspaceState, { type: 'set_saved_view', saved_view_key: viewKey }));
+    });
+  }
+
   return (
     <section>
       <header>
         <h1>CRM Workspace</h1>
         <p>Tenant: {tenantId}</p>
         <p>Object: {objectKind}</p>
+        <div>
+          <strong>Saved Views</strong>{' '}
+          {savedViews.length === 0 ? <span>Current Workspace</span> : savedViews.map((view) => (
+            <button key={view.view_key} type="button" onClick={() => applySavedView(view.view_key)}>
+              {view.label}
+            </button>
+          ))}
+        </div>
         <nav>
           <button type="button" onClick={() => setWorkspaceState(workspace.applyWorkspaceMutation(workspaceState, { type: 'set_view', view_type: 'kanban' }))}>Kanban</button>{' '}
           <button type="button" onClick={() => setWorkspaceState(workspace.applyWorkspaceMutation(workspaceState, { type: 'set_view', view_type: 'table' }))}>Table</button>{' '}

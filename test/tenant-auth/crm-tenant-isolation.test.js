@@ -8,6 +8,7 @@ const root = path.join(__dirname, '../..');
 const schemaPath = path.join(root, 'supabase/migrations/58_crm_core_entities.sql');
 const customFieldsPath = path.join(root, 'supabase/migrations/58_crm_custom_fields.sql');
 const activityPath = path.join(root, 'supabase/migrations/58_crm_activity_and_identity.sql');
+const hardeningPath = path.join(root, 'supabase/migrations/100_crm_schema_identity_graph_hardening.sql');
 const entitiesPath = path.join(root, 'lib/markos/crm/entities.ts');
 
 function loadTsCommonJsModule(filePath) {
@@ -48,8 +49,12 @@ test('CRM tenant isolation: activity, identity, and merge lineage tables remain 
     assert.match(sql, new RegExp(`${tableName}[\\s\\S]*tenant_id text not null`, 'i'));
     assert.match(sql, new RegExp(`alter table ${tableName} enable row level security`, 'i'));
   });
-  assert.match(sql, /link_status in \('candidate', 'accepted', 'rejected'\)/i);
   assert.match(sql, /decision_state in \('accepted', 'rejected'\)/i);
+
+  const hardeningSql = fs.readFileSync(hardeningPath, 'utf8');
+  assert.match(hardeningSql, /crm_identity_links/i);
+  assert.match(hardeningSql, /review/i);
+  assert.match(hardeningSql, /link_status/i);
 });
 
 test('CRM tenant isolation: entity helpers deny cross-tenant mutation and hide foreign rows', () => {
