@@ -48,7 +48,14 @@ const {
   resolveScopeTarget,
   slugify,
   normalizeInstallProfile,
+  VALID_PRESET_BUCKETS,
 } = require('./cli-runtime.cjs');
+const {
+  loadPreset,
+  applyPreset,
+  writePresetSeed,
+  validateBucket,
+} = require('./lib/preset-loader.cjs');
 
 // ── Environment Settings ───────────────────────────────────────────────────
 const PKG_DIR = path.resolve(__dirname, '..');
@@ -516,6 +523,90 @@ function summarizeReadiness({ vaultBootstrap, obsidianReport, qmdReport, hasAiKe
   };
 }
 
+/**
+ * performPresetInstall — non-interactive preset-seeded install
+ *
+ * Validates the bucket, installs protocol files, writes the preset seed,
+ * and exits. Does not launch the onboarding server or ask any questions.
+ *
+ * @param {object} cli - Parsed CLI args (must contain cli.preset)
+ */
+async function performPresetInstall(cli) {
+  const bucket = cli.preset;
+
+  // Validate bucket early so the error is clear.
+  const bucketCheck = validateBucket(bucket);
+  if (!bucketCheck.valid) {
+    console.error(`\n✗ ${bucketCheck.error}`);
+    console.error(`  Valid presets: ${VALID_PRESET_BUCKETS.join(', ')}\n`);
+    process.exit(1);
+  }
+
+  banner(`MarkOS Preset Install v${VERSION} — bucket: ${bucket}`);
+  console.log(`\n  Preset:  ${bucket}`);
+  console.log(`  Mode:    non-interactive (preset fast-path)`);
+  console.log(`  Target:  ${CWD}\n`);
+
+  // 1. Install protocol files (same as standard install).
+  const scope = cli.scope || 'project';
+  const targetDir = resolveScopeTarget(CWD, scope);
+  const agentDir = path.join(targetDir, '.agent');
+  const hasGSD = detectGSD(CWD);
+  const { markosDest } = installProtocolFiles({ pkgDir: PKG_DIR, cwd: CWD, agentDir, hasGSD });
+
+  // 2. Ensure project config.
+  const projectName = cli.projectName || inferProjectName(CWD);
+  const projectConfig = ensureProjectConfig(CWD, projectName);
+
+  // 3. Bootstrap vault scaffold.
+  const vaultBootstrap = ensureCanonicalVaultBootstrap(CWD, projectName, projectConfig.projectSlug);
+  console.log(`✓ Canonical vault scaffold ready (${path.relative(CWD, vaultBootstrap.vaultRoot)})`);
+
+  // 4. Load preset and write seed file.
+  const preset = loadPreset(bucket);
+  const seed = applyPreset(preset, {
+    company_name: projectName,
+    product_name: projectName,
+    service_name: projectName,
+    creator_name: projectName,
+  });
+
+  const { SEED_PATH } = require('../onboarding/backend/path-constants.cjs');
+  writePresetSeed(SEED_PATH, seed);
+  console.log(`✓ Preset seed written (${path.relative(CWD, SEED_PATH)})`);
+  console.log(`  Bucket:           ${bucket}`);
+  console.log(`  Motion templates: ${seed.msp?.motion_templates?.length || 0}`);
+  console.log(`  Literacy nodes:   ${Object.values(seed.literacy_nodes || {}).flat().length}`);
+
+  // 5. Write install manifest.
+  const installProfile = 'cli';
+  const components = buildProfileComponents(installProfile, true);
+  writeInstallManifest({
+    cwd: CWD,
+    markosDest,
+    isGlobal: scope === 'global',
+    projectName,
+    projectSlug: projectConfig.projectSlug,
+    vaultBootstrap,
+    installProfile,
+    components,
+  });
+
+  // 6. Apply gitignore protections.
+  const gitignoreResult = applyGitignoreProtections(CWD);
+  if (gitignoreResult.changed) {
+    console.log('✓ .gitignore updated with private local artifact protections');
+  }
+
+  appendAiDocSection(CWD);
+
+  banner(`MarkOS preset "${bucket}" installed ✓`);
+  console.log(`\n  Preset seed:   ${path.relative(CWD, SEED_PATH)}`);
+  console.log(`  Vault:         ${vaultBootstrap.vaultRoot}`);
+  console.log(`  Project:       ${projectName}`);
+  console.log(`  Next step:     Open MarkOS-Vault in Obsidian, or run \`node onboarding/backend/server.cjs\` to review seed data.\n`);
+}
+
 async function run() {
   const cli = parseCliArgs();
 
@@ -575,6 +666,13 @@ async function run() {
   }
 
   loadProjectEnv(CWD);
+
+  // ── Preset fast-path: --preset=<bucket> skips guided interview ─────────────
+  if (cli.preset) {
+    rl.close();
+    await performPresetInstall(cli);
+    return;
+  }
 
   banner(`MarkOS Installer v${VERSION} — Marketing Operating System`);
 

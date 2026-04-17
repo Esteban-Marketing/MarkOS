@@ -79,6 +79,8 @@ const COMMAND_ALIASES = Object.freeze({
   'vault:reviews': Object.freeze({ command: 'vault:open', vaultFamily: 'reviews' }),
 });
 
+const VALID_PRESET_BUCKETS = Object.freeze(['b2b-saas', 'dtc', 'agency', 'local-services', 'solopreneur']);
+
 const VALUE_FLAGS = Object.freeze({
   '--project-name': 'projectName',
   '--project-slug': 'projectSlug',
@@ -86,6 +88,7 @@ const VALUE_FLAGS = Object.freeze({
   '--provider': 'provider',
   '--month': 'month',
   '--export': 'exportFormat',
+  '--preset': 'preset',
 });
 
 const BOOLEAN_FLAGS = Object.freeze({
@@ -157,6 +160,11 @@ function applyInlineFlag(parsed, token) {
     return true;
   }
 
+  if (token.startsWith('--preset=')) {
+    parsed.preset = token.slice('--preset='.length) || null;
+    return true;
+  }
+
   for (const [prefix, key] of inlineFlags) {
     if (token.startsWith(prefix)) {
       parsed[key] = token.slice(prefix.length) || null;
@@ -214,6 +222,7 @@ function parseCliArgs(argv = process.argv.slice(2)) {
     profileConflict: null,
     cliOnly: false,
     minimalOnly: false,
+    preset: null,
   };
 
   const tokens = [...argv];
@@ -247,7 +256,7 @@ function parseCliArgs(argv = process.argv.slice(2)) {
 }
 
 function printInstallUsage() {
-  console.log('Usage: npx markos [install] [--yes] [--project-name <name>] [--profile <full|cli|minimal>] [--cli-only|--minimal] [--no-onboarding] [--project|--global]');
+  console.log('Usage: npx markos [install] [--yes] [--project-name <name>] [--profile <full|cli|minimal>] [--cli-only|--minimal] [--no-onboarding] [--project|--global] [--preset <b2b-saas|dtc|agency|local-services|solopreneur>]');
   console.log('       npx markos update');
   console.log('       npx markos db:setup');
   console.log('       npx markos import:legacy [--project-slug <slug>] [--scan|--apply]');
@@ -456,6 +465,7 @@ function bootPluginRuntime(manifests = []) {
 
 module.exports = {
   MIN_NODE_VERSION,
+  VALID_PRESET_BUCKETS,
   assertSupportedNodeVersion,
   banner,
   buildFileHashes,
