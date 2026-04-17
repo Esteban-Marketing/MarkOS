@@ -1,0 +1,64 @@
+import type { WebhookEvent, WebhookStore, WebhookSubscription } from './engine';
+
+export const MAX_ATTEMPTS = 24;
+export const BASE_DELAY_SECONDS = 5;
+export const MAX_DELAY_SECONDS = 24 * 60 * 60;
+
+export const STATUS = {
+  PENDING: 'pending',
+  RETRYING: 'retrying',
+  DELIVERED: 'delivered',
+  FAILED: 'failed',
+} as const;
+
+export type DeliveryStatus = (typeof STATUS)[keyof typeof STATUS];
+
+export type WebhookDelivery = {
+  id: string;
+  subscription_id: string;
+  tenant_id: string;
+  event: WebhookEvent | string;
+  payload: Record<string, unknown>;
+  attempt: number;
+  status: DeliveryStatus;
+  response_code: number | null;
+  last_error: string | null;
+  next_retry_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type DeliveryStore = {
+  insert: (row: WebhookDelivery) => Promise<WebhookDelivery>;
+  findById: (id: string) => Promise<WebhookDelivery | null>;
+  update: (id: string, patch: Partial<WebhookDelivery>) => Promise<WebhookDelivery | null>;
+  listByTenant: (tenant_id: string) => Promise<WebhookDelivery[]>;
+};
+
+export type Queue = {
+  push: (delivery_id: string) => Promise<void>;
+};
+
+export type EnqueueInput = {
+  subscription: WebhookSubscription;
+  event: WebhookEvent | string;
+  payload?: Record<string, unknown>;
+};
+
+export declare function computeBackoffSeconds(attempt: number): number;
+export declare function createInMemoryQueue(): Queue & { drain(): string[]; size(): number };
+export declare function createInMemoryDeliveryStore(): DeliveryStore;
+export declare function enqueueDelivery(
+  deliveries: DeliveryStore,
+  queue: Queue,
+  input: EnqueueInput,
+): Promise<WebhookDelivery>;
+export declare function processDelivery(
+  deliveries: DeliveryStore,
+  subscriptions: Pick<WebhookStore, 'findById'>,
+  delivery_id: string,
+  options?: { fetch?: typeof fetch; now?: () => number },
+): Promise<
+  | { delivered: true; status: number; attempt: number }
+  | { delivered: false; reason?: string; attempt?: number; status?: DeliveryStatus; next_retry_at?: string; last_error?: string }
+>;
