@@ -665,6 +665,13 @@ async function run() {
     return;
   }
 
+  if (cli.command === 'generate') {
+    rl.close();
+    const { main: runGenerateCLI } = require('./generate.cjs');
+    await runGenerateCLI();
+    return;
+  }
+
   loadProjectEnv(CWD);
 
   // ── Preset fast-path: --preset=<bucket> skips guided interview ─────────────

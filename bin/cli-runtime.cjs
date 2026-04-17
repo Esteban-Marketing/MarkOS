@@ -77,6 +77,7 @@ const COMMAND_ALIASES = Object.freeze({
   'vault:evidence': Object.freeze({ command: 'vault:open', vaultFamily: 'evidence' }),
   'vault:review': Object.freeze({ command: 'vault:open', vaultFamily: 'reviews' }),
   'vault:reviews': Object.freeze({ command: 'vault:open', vaultFamily: 'reviews' }),
+  generate: Object.freeze({ command: 'generate' }),
 });
 
 const VALID_PRESET_BUCKETS = Object.freeze(['b2b-saas', 'dtc', 'agency', 'local-services', 'solopreneur']);
