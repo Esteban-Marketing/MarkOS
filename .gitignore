@@ -21,3 +21,16 @@ tmp/
 onboarding-seed.json
 .markos-install-manifest.json
 .markos-install-manifest.json
+
+# Raw upstream templates staged for install (delete after install)
+.temp/
+
+# PageIndex deep-index output (LLM-generated per file)
+obsidian/.pageindex/deep/
+tools/pageindex/results/
+tools/pageindex/.env
+
+# Python artifacts from PageIndex
+tools/pageindex/__pycache__/
+tools/pageindex/**/__pycache__/
+tools/pageindex/*.pyc

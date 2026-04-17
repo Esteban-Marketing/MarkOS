@@ -1,38 +1,81 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.9.0
-milestone_name: Vertical Plugin Literacy Libraries
-status: complete
-last_updated: "2026-04-15T20:00:00.000Z"
+milestone: v4.0.0
+milestone_name: SaaS Readiness 1.0
+status: active
+last_updated: "2026-04-16T00:00:00.000Z"
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 23
-  completed_plans: 23
-  percent: 100
+  total_phases: 7
+  completed_phases: 0
+  total_plans: 8
+  completed_plans: 0
+  percent: 0
+previous_milestone:
+  version: v3.9.0
+  name: Vertical Plugin Literacy Libraries
+  status: complete
+  archived_at: ".planning/milestones/v3.9.0-ROADMAP.md"
+  audit: ".planning/v3.9.0-MILESTONE-AUDIT.md"
 ---
 
-> New milestone initialized after the successful v3.8.0 archive and closeout.
+> v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 110 (diagnostics-fallbacks-and-closeout-hardening) — COMPLETE
-All 4 plans committed: 59306f8 (110-01), 22aa41f (110-02), c39e75c (110-03), 06c9f30 (110-04)
-Status: Milestone v3.9.0 COMPLETE — ready for /gsd-complete-milestone
+**Milestone:** v4.0.0 — SaaS Readiness 1.0 — active
+**Phase:** 200 (saas-readiness-wave-0) — **planned, ready to execute**
+**Quality Baseline:** 15 gates defined in `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`; inherited by every subsequent phase.
 
-- Milestone: v3.9.0 - Vertical Plugin Literacy Libraries — ALL PHASES DONE
-- Completed phases: 106, 107, 108, 109, 110
-- Full regression: 301 tests, 257 pass, 44 fail (at baseline — no regressions introduced)
-- Next step: /gsd-complete-milestone
+## What just happened (2026-04-16)
 
-## Accumulated Context
+- v3.9.0 closure reconciled: phase 110 SUMMARY.md files written for all 4 plans (110-01…110-04), ROADMAP.md checkmarks + milestone status updated to complete, v3.9.0-MILESTONE-AUDIT.md passed.
+- v3.9.0 ROADMAP section archived to `.planning/milestones/v3.9.0-ROADMAP.md`.
+- v4.0.0 milestone opened with 7 phases (200–206) and 8 atomic plans scoped under phase 200 (wave-0).
+- `obsidian/thinking/2026-04-16-markos-saas-roadmap.md` is the authoritative synthesis.
 
-- v3.8.0 shipped and archived cleanly with milestone evidence green.
-- The next product priority is a plugin-based literacy library system specialized by business model and industry.
-- Existing example resolution, skeleton generation, and plugin gating seams should be extended rather than replaced.
-- Priority business families for the first cut are B2B, B2C, SaaS, Ecommerce, and service-led businesses.
-- Priority vertical overlays for the first cut are Travel, IT, Marketing Services, and Professional Services.
-- The milestone goal is faster time-to-value during MarkOS initialization through ready-to-consume literacy assets.
-- Governance, tenant safety, approval posture, and visible fallback behavior remain non-negotiable.
-- Phase 106 will define the library registry, composition model, selection rules, and operator override contract before authoring broad pack coverage.
-- Phase 108: pack-loader D-08 two-path architecture confirmed (root for base packs, industries/ for overlays). Hyphenated slug aliases `marketing-services` and `professional-services` added to INDUSTRY_ALIAS_MAP (fix M-01). overlayFor order for professional-services corrected to ["b2b", "services"] per D-04 (fix L-01).
+## Next step
+
+Execute phase 200 (wave-0):
+
+```
+/gsd-execute-phase 200
+```
+
+Run from fresh context (`/clear` first). Phase 200 has CONTEXT-equivalent `DISCUSS.md` + full `PLAN.md` + `QUALITY-BASELINE.md` already authored. Executor should:
+
+1. Run plans in the wave order defined in PLAN.md.
+2. Honor every Quality Baseline gate (15).
+3. One atomic commit per plan.
+4. Update this STATE.md as phases progress.
+
+## Open questions
+
+None — Q-A / Q-B / Q-C answered on 2026-04-16. See `obsidian/brain/Target ICP.md` + `obsidian/brain/Brand Stance.md` + Nango embedded connector posture.
+
+## Accumulated Context (v4.0.0 theme)
+
+- Mission: public SaaS launch · API-first · MCP-native · agent-marketplace-friendly · Claude Marketplace distribution priority.
+- Target ICP: seed-to-A B2B SaaS + modern DTC + solopreneurs (incl. vibe-coders).
+- Brand stance: developer-native · AI-first · quietly confident.
+- Connector framework: Nango embedded (from phase 210).
+- Monetization: platform fee + metered AI + BYOK discount.
+- Compliance: SOC 2 Type I 6mo · Type II + ISO 27001 Y2 · HIPAA opt-in.
+- Residency: US-East → US + EU → APAC.
+- Autonomy: tiered, earn-trust per mutation family.
+- Marketplace: plugins + agents with revenue share (70/30); moderated.
+- Quality-first day-0 investment ratified — 80% foundations, 20% feature scope for wave-0.
+
+## Carry-over context from v3.9.0
+
+- Plugin runtime (`lib/markos/packs/pack-loader.cjs`) + pack diagnostics are stable and ready to extend.
+- 13-connector set locked: Shopify · HubSpot · Stripe · Slack · Google Ads · Meta Ads · GA4 · Segment · Resend · Twilio · PostHog · Linear · Supabase.
+- 7 business-model packs + 4 industry overlays shipped v3.9.0.
+- Test baseline: 301 tests · 257 pass · 44 fail — preserved; any regression blocks phase close.
+
+## References
+
+- Roadmap (full): `obsidian/thinking/2026-04-16-markos-saas-roadmap.md`
+- Phase 200: `.planning/phases/200-saas-readiness-wave-0/` (DISCUSS.md · PLAN.md · QUALITY-BASELINE.md)
+- Phases 201–206: `.planning/phases/201-*/DISCUSS.md` through `.planning/phases/206-*/DISCUSS.md`
+- Canon: `obsidian/brain/MarkOS Canon.md` · `Agent Registry.md` · `Target ICP.md` · `Brand Stance.md`
+- Quality gates: `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`

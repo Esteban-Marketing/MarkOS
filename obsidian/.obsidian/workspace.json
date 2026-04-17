@@ -1,0 +1,225 @@
+{
+  "main": {
+    "id": "2e6f30af62a61d08",
+    "type": "split",
+    "children": [
+      {
+        "id": "8866d61f4bbb1d8e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7e50e5325e200fab",
+            "type": "leaf",
+            "state": {
+              "type": "bases",
+              "state": {
+                "file": "Untitled.base",
+                "viewName": "Table"
+              },
+              "icon": "lucide-table",
+              "title": "Untitled"
+            }
+          }
+        ]
+      },
+      {
+        "id": "804c392108386831",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bcd3ee3e20a9b5e8",
+            "type": "leaf",
+            "state": {
+              "type": "canvas",
+              "state": {
+                "file": "Clients/Esteban.Marketing/Marketing Ecosystem.canvas",
+                "viewState": {
+                  "x": -255,
+                  "y": -20,
+                  "zoom": 0
+                }
+              },
+              "icon": "lucide-layout-dashboard",
+              "title": "Marketing Ecosystem"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "570f551987f91c80",
+    "type": "split",
+    "children": [
+      {
+        "id": "d2733dae8f98b1de",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5611ef73c055d9cc",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "c32e57238d1d44ee",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "f1ae5ea984047c1c",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "f35e5080a3c41c43",
+    "type": "split",
+    "children": [
+      {
+        "id": "d838b45115182642",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e52a7add53aef206",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Untitled.base",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Untitled"
+            }
+          },
+          {
+            "id": "71433b3a03b7f22c",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Untitled.base",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Untitled"
+            }
+          },
+          {
+            "id": "9d0788dec0498d29",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "d4d2a6c152011c8f",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "b507db86a7781d6a",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Untitled.base",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Untitled"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "7e50e5325e200fab",
+  "lastOpenFiles": [
+    "Welcome.md",
+    "Untitled.base",
+    "Untitled.md",
+    "Clients/Esteban.Marketing/Marketing Ecosystem.canvas",
+    "Literacy/Marketing Literacy/Email Marketing/B2B Cold Email Marketing.md",
+    "Untitled.canvas",
+    "Literacy/Marketing Literacy/Email Marketing",
+    "Literacy/Marketing Literacy",
+    "Clients/Esteban.Marketing/Marketing App/Tasks",
+    "Clients/Esteban.Marketing/MarkOS",
+    "Clients/Esteban.Marketing/Marketing App",
+    "Clients/Esteban.Marketing",
+    "Clients",
+    "Literacy"
+  ]
+}

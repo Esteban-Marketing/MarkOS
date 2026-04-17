@@ -1,0 +1,1310 @@
+---
+date: 2026-04-17
+description: PageIndex-schema navigational tree of the vault. Regenerate with npm run vault:index.
+tags: [index, moc, pageindex]
+---
+
+# Vault PageIndex
+
+> Auto-generated. Do not edit by hand. Regenerate with `node scripts/pageindex/build-vault-index.mjs`.
+
+- **Obsidian Vault (MarkOS Second Brain)/**
+  - **bases/**
+  - **brain/**
+    - [[brain/Agent Registry|Agent Registry]] — Registry of all 39 MarkOS codebase agents — token IDs, roles, inputs, outputs, tier, literacy references. The operator-facing map of who does what.
+      - **Agent Registry/**
+      - **Tiered view/**
+      - **Strategy tier/**
+      - **Audience tier/**
+      - **Content / Creator tier/**
+      - **Analytics tier/**
+    - [[brain/Audience Archetype Canon|Audience Archetype Canon]] — Audience Archetype Canon — the deterministic operator-grade schema for capturing an audience: ICP, persona, JTBD, buying committee, psychographics, VOC, pain matrix.
+      - **Audience Archetype Canon/**
+      - **Archetype = 7 blocks/**
+      - **Block 1 — Identity/**
+      - **Block 2 — Situation/**
+      - **Block 3 — Jobs-to-be-Done/**
+      - **Block 4 — Pain matrix/**
+    - [[brain/Brand Stance|Brand Stance]] — MarkOS brand stance (Q-B) — developer-native, AI-first, quietly confident. Locked 2026-04-16. Drives marketing copy, UI aesthetic, partnerships, content voice.
+      - **Brand Stance/**
+      - **Three anchors/**
+      - **1. Developer-native/**
+      - **2. AI-first (without hype)/**
+      - **3. Quietly confident/**
+      - **Visual system direction/**
+    - [[brain/Brand System Canon|Brand System Canon]] — MarkOS Brand System Canon — identity, personality, voice, style, visual, claim library, taboos. The deterministic contract that the voice classifier enforces.
+      - **Brand System Canon/**
+      - **The six layers/**
+      - **Layer 1 — Identity/**
+      - **Layer 2 — Personality/**
+      - **Layer 3 — Positioning/**
+      - **Layer 4 — Voice/**
+    - [[brain/Communication Guides|Communication Guides]] — MarkOS Communication Guides — tone spectrum, register, reading-level, inclusive language, legal claims, disclosure, formatting standards per channel.
+      - **Communication Guides/**
+      - **The five scales/**
+      - **Reading level/**
+      - **Sentence rules/**
+      - **Lexicon rules/**
+      - **Formatting standards/**
+    - [[brain/Gotchas|Gotchas]] — Pitfalls and edge cases across the MarkOS codebase — dual-entry drift, tenant-context gotchas, consent bypasses, migration ordering, CRM lineage traps.
+      - **Gotchas/**
+      - **`.cjs` / `.ts` twin drift/**
+      - **Missing `tenant_id` on new CRM tables/**
+      - **Unprotected onboarding ingress/**
+      - **CRM timelines read only from activity ledger/**
+      - **Copilot mutations without approval package/**
+    - [[brain/Key Decisions|Key Decisions]] — Architectural and workflow decisions observed across the MarkOS codebase — each captures the choice, rationale, and where it lives.
+      - **Key Decisions/**
+      - **2026-04-16 — SaaS direction locked (v4.0.0 → v5.0.0)/**
+      - **2026-04-16 — Quality-first day-0 investment/**
+      - **Next.js App Router with `(markos)` route group/**
+      - **Vault-first bootstrap (not cloud-first)/**
+      - **Fixed-weight CRM attribution/**
+    - [[brain/MarkOS Canon|MarkOS Canon]] — MarkOS Canon — the 10 operator commandments that make MarkOS bulletproof. Goal: every message audience-centric, pain-point-rooted, brand-tailored, strategy-aligned, literacy-backed.
+      - **MarkOS Canon/**
+      - **Mission/**
+      - **The Ten Commandments/**
+      - **I. Know the human before the message/**
+      - **II. Name the pain exactly/**
+      - **III. Match message to need, not need to message/**
+    - [[brain/Memories|Memories]] — Index of memory topics — codebase atlas, decisions, patterns, gotchas, people, goals, skills. Pointers only; content lives in linked notes.
+      - **Memories/**
+      - **Codebase memory (MarkOS repo)/**
+      - **MarkOS Canon (operator doctrine)/**
+      - **Operational memory/**
+      - **Org memory/**
+      - **Index auto-generated/**
+    - [[brain/Message Crafting Pipeline|Message Crafting Pipeline]] — The canonical 7-stage MarkOS message-crafting pipeline — from seed intent to approved, audience-centric, brand-tailored, pain-rooted, neuro-calibrated, channel-native artifact.
+      - **Message Crafting Pipeline/**
+      - **The 7 stages/**
+      - **1. Intent — what outcome does this message drive?/**
+      - **2. Audience — who exactly is this for?/**
+      - **3. Pain — what pain/need does this touch?/**
+      - **4. Promise — what specifically does the product do about this pain?/**
+    - [[brain/Neuro Audit Canon|Neuro Audit Canon]] — Neuro Audit Canon — the ten biological triggers (B01–B10) that the Neuro Auditor enforces. How to apply, when to apply, and how to avoid manipulation.
+      - **Neuro Audit Canon/**
+      - **The ten triggers/**
+      - **Activation rules/**
+      - **`<neuro_spec>` block schema/**
+      - **Funnel stage → recommended triggers/**
+      - **Ethical fence/**
+    - [[brain/North Star|North Star]] — Living document of goals, focus areas, and aspirations — read at session start, updated when direction shifts
+      - **North Star/**
+      - **Current Focus/**
+      - **Goals/**
+      - **Short-term (This Quarter)/**
+      - **Medium-term (This Half)/**
+      - **Long-term (This Year+)/**
+    - [[brain/Pain-Point Engine|Pain-Point Engine]] — MarkOS Pain-Point Engine — 8-parent taxonomy, discipline routing rules, tailoring templates, and evidence schema. Source: .agent/markos/literacy/taxonomy.json.
+      - **Pain-Point Engine/**
+      - **The 8 parent tags/**
+      - **Sub-tag structure/**
+      - **Evidence schema/**
+      - **Discipline routing/**
+      - **Tailoring templates per pain-point/**
+    - [[brain/Patterns|Patterns]] — Recurring architectural and implementation patterns observed across the MarkOS codebase — auth, tenancy, contracts, CRM, LLM, approval, tracking.
+      - **Patterns/**
+      - **API handler shape/**
+      - **Tenant isolation/**
+      - **Contracts-first endpoints/**
+      - **Workspace builder → view components/**
+      - **Page-scoped Zustand-like stores/**
+    - [[brain/Skills|Skills]] — Vault-specific workflows and slash commands — reusable patterns for review prep, project tracking, and vault maintenance
+      - **Skills/**
+      - **Slash Commands/**
+      - **Daily Workflow/**
+      - **Editing & Synthesis/**
+      - **Meeting Prep & Capture/**
+      - **Performance & Review/**
+    - [[brain/Target ICP|Target ICP]] — MarkOS SaaS target ICP (Q-A) — seed-to-A B2B SaaS + modern DTC + solopreneurs + vibe-coders. Locked 2026-04-16. Drives feature order, pricing floor, GTM narrative.
+      - **Target ICP/**
+      - **Three archetypes (primary)/**
+      - **Archetype 1 — "Solo Founder Sam" (solopreneur / vibe-coder)/**
+      - **Archetype 2 — "Growth Gina" (seed-to-A B2B SaaS, Head of Growth / Head of Marketing)/**
+      - **Archetype 3 — "Commerce Clara" (modern DTC founder / brand lead)/**
+      - **Non-target (explicit)/**
+  - **literacy/**
+    - **Marketing Literacy/**
+      - **00 Frameworks/**
+        - [[literacy/Marketing Literacy/00 Frameworks/AARRR Pirate Metrics|AARRR Pirate Metrics]] — Acquisition · Activation · Retention · Referral · Revenue.
+          - **AARRR Pirate Metrics/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/00 Frameworks/Jobs-to-be-Done|Jobs-to-be-Done]] — Why customers \"hire\" a product — functional, emotional, social jobs.
+          - **Jobs-to-be-Done/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/00 Frameworks/Neuro Triggers|Neuro Triggers]] — Biological + cognitive triggers that influence buyer decisions — matches MarkOS Neuro Auditor taxonomy.
+          - **Neuro Triggers/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/00 Frameworks/North Star Metric|North Star Metric]] — Single operating metric that captures the product-value delivered to the user.
+          - **North Star Metric/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/00 Frameworks/README|README]] — Foundational mental models every marketer shares — STP, JTBD, AARRR, 4Ps, NSM, funnels, buyer psychology, neuro triggers.
+          - **Frameworks/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/00 Frameworks/STP Framework|STP Framework]] — Segmentation · targeting · positioning — the classical strategic sequence.
+          - **STP Framework/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **01 Strategy & Positioning/**
+        - **Challenger Sales /**
+          - [[literacy/Marketing Literacy/01 Strategy & Positioning/Challenger Sales / Marketing| Marketing]] — Teach, tailor, take control — pattern for disrupting incumbents.
+            - **Challenger Sales / Marketing/**
+            - **Definition/**
+            - **Why it matters (2026)/**
+            - **Mechanics/**
+            - **Pitfalls/**
+            - **Related/**
+        - [[literacy/Marketing Literacy/01 Strategy & Positioning/Category Design|Category Design]] — Creating and owning a new market category.
+          - **Category Design/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/01 Strategy & Positioning/GTM Motions|GTM Motions]] — Product-led, sales-led, community-led, marketing-led — how the motion shapes the org.
+          - **GTM Motions/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/01 Strategy & Positioning/README|README]] — Where we play and how we win — category design, differentiation, GTM motions, business-model–aware plays.
+          - **Strategy & Positioning/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **02 Brand & Creative/**
+        - [[literacy/Marketing Literacy/02 Brand & Creative/AI-Assisted Creative Production|AI-Assisted Creative Production]] — Prompt-to-campaign workflows, brand guardrails, model-level QA.
+          - **AI-Assisted Creative Production/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/02 Brand & Creative/Brand Voice Design|Brand Voice Design]] — Tone · register · lexicon · taboos.
+          - **Brand Voice Design/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/02 Brand & Creative/Creative Brief Canvas|Creative Brief Canvas]] — Objective · audience · insight · single-minded proposition · reasons to believe.
+          - **Creative Brief Canvas/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/02 Brand & Creative/README|README]] — Brand system — promise, voice, identity — and the creative engine that expresses it consistently across channels.
+          - **Brand & Creative/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **03 Audience & Segmentation/**
+        - [[literacy/Marketing Literacy/03 Audience & Segmentation/Buying Committee Mapping|Buying Committee Mapping]] — Economic buyer · champion · user · technical gatekeeper · blocker · ratifier.
+          - **Buying Committee Mapping/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/03 Audience & Segmentation/Ideal Customer Profile|Ideal Customer Profile]] — Firmographic + technographic + behavioural specification of the \"perfect\" account.
+          - **Ideal Customer Profile/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/03 Audience & Segmentation/Predictive Audiences|Predictive Audiences]] — ML-derived clusters replacing static lookalikes.
+          - **Predictive Audiences/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/03 Audience & Segmentation/README|README]] — Who exactly — ICPs, personas, buying committees, psychographics, lookalikes, predictive audiences.
+          - **Audience & Segmentation/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **04 Paid Media/**
+        - [[literacy/Marketing Literacy/04 Paid Media/CTV Programmatic|CTV Programmatic]] — CTV (Connected-TV) programmatic — streaming inventory landscape, AVOD/FAST, SSAI, attention metrics, shoppable TV, measurement beyond reach/frequency.
+          - **CTV Programmatic/**
+          - **Inventory supply (2026)/**
+          - **Buying paths/**
+          - **Stack components/**
+          - **Measurement/**
+          - **Creative patterns/**
+        - [[literacy/Marketing Literacy/04 Paid Media/Paid Search 2026|Paid Search 2026]] — Automated bidding, AI campaign creation (PMax / Advantage+), SGE/AI-Overview placement bidding.
+          - **Paid Search 2026/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/04 Paid Media/Paid Social 2026|Paid Social 2026]] — Advantage+ Shopping, TikTok Symphony, LinkedIn Accelerate, creator-first ads.
+          - **Paid Social 2026/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/04 Paid Media/Programmatic OOH|Programmatic OOH]] — Addressable outdoor, attention-measurement pixels, live event triggers.
+          - **Programmatic OOH/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/04 Paid Media/README|README]] — Paid channel discipline — search, social, display, CTV, retail media, audio, DOOH — 2026 landscape.
+          - **Paid Media/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/04 Paid Media/Retail Media Networks|Retail Media Networks]] — Amazon · Walmart · Instacart · Kroger · Uber · Target · Etsy · TikTok Shop — closed-loop, first-party data advantage.
+          - **Retail Media Networks/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **05 SEO & Organic Discovery/**
+        - [[literacy/Marketing Literacy/05 SEO & Organic Discovery/Entity SEO|Entity SEO]] — Knowledge-graph-level optimization — Wikidata, Wikipedia, schema, named-entity relevance.
+          - **Entity SEO/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/05 SEO & Organic Discovery/Generative Engine Optimization|Generative Engine Optimization]] — GEO — optimizing content so LLM answer engines (ChatGPT, Perplexity, Google AI Overview, Copilot, Claude, Gemini) cite it. The new top-of-funnel in 2026.
+          - **Generative Engine Optimization (GEO)/**
+          - **Surfaces that matter (2026)/**
+          - **What gets cited/**
+          - **Tactics/**
+          - **Measurement/**
+          - **Pitfalls/**
+        - [[literacy/Marketing Literacy/05 SEO & Organic Discovery/LLMO vs GEO vs AEO|LLMO vs GEO vs AEO]] — Canonical disambiguation of LLMO, GEO, AEO (and SGE/AIO) — overlapping acronyms, where each emphasizes the work, how to pick one internally.
+          - **LLMO vs GEO vs AEO/**
+          - **Matrix/**
+          - **How they actually overlap/**
+          - **When to pick which term/**
+          - **Don't bikeshed/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/05 SEO & Organic Discovery/llms.txt Standard|llms.txt Standard]] — llms.txt — emerging machine-readable manifest that declares to LLM crawlers which pages/docs to prioritize when answering about the site. Distinct from robots.txt.
+          - **llms.txt Standard/**
+          - **Shape/**
+          - **Why marketers care/**
+          - **Related standards/**
+          - **Tooling/**
+          - **Pitfalls/**
+        - [[literacy/Marketing Literacy/05 SEO & Organic Discovery/README|README]] — Organic discovery in the post-10-blue-links era — classical SEO + LLMO/GEO/AEO for AI-generated answers.
+          - **SEO & Organic Discovery/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/05 SEO & Organic Discovery/Zero-Click Search|Zero-Click Search]] — Zero-click search — when SERPs and AI answer engines resolve queries without a click. Strategy: maximize brand presence IN the answer, not just via a click-through.
+          - **Zero-Click Search/**
+          - **Why zero-click keeps growing/**
+          - **Strategic responses/**
+          - **Content patterns that win zero-click/**
+          - **Pitfalls/**
+          - **Related/**
+      - **06 Content Marketing/**
+        - [[literacy/Marketing Literacy/06 Content Marketing/AI-Assisted Editorial Workflow|AI-Assisted Editorial Workflow]] — Ideation → draft → voice calibration → fact-check → publish; human-in-the-loop checkpoints.
+          - **AI-Assisted Editorial Workflow/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/06 Content Marketing/Documentation-as-Marketing|Documentation-as-Marketing]] — Dev-rel content, API references, code samples that compound as SEO assets.
+          - **Documentation-as-Marketing/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/06 Content Marketing/Pillar · Cluster · Atomic|Pillar · Cluster · Atomic]] — Topic architecture for depth + breadth in one graph.
+          - **Pillar · Cluster · Atomic/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/06 Content Marketing/Programmatic SEO|Programmatic SEO]] — Template-driven long-tail content powered by structured data and LLM generation — with quality gates.
+          - **Programmatic SEO/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/06 Content Marketing/README|README]] — Content as the flywheel — pillar → cluster → atomic — augmented by AI authoring, programmatic SEO, and video-first surfaces.
+          - **Content Marketing/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **07 Email & Lifecycle/**
+        - [[literacy/Marketing Literacy/07 Email & Lifecycle/Apple MPP & Post-Open Metrics|Apple MPP & Post-Open Metrics]] — Open-rate inflation; pivot to clicks, replies, pipeline.
+          - **Apple MPP & Post-Open Metrics/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/07 Email & Lifecycle/B2B Cold Email Marketing|B2B Cold Email Marketing]] — Cold outreach literacy — existing note migrated here.
+          - **B2B Cold Email Marketing/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/07 Email & Lifecycle/Deliverability Baseline 2026|Deliverability Baseline 2026]] — SPF · DKIM · DMARC enforcement, BIMI, Gmail/Yahoo bulk-sender requirements.
+          - **Deliverability Baseline 2026/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/07 Email & Lifecycle/Lifecycle Flow Patterns|Lifecycle Flow Patterns]] — Welcome, onboarding, nurture, reactivation, winback, churn-save sequences.
+          - **Lifecycle Flow Patterns/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/07 Email & Lifecycle/README|README]] — Owned, direct, first-party channel — deliverability, lifecycle flows, personalization, predictive send-time.
+          - **Email & Lifecycle/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **08 SMS & Conversational/**
+        - [[literacy/Marketing Literacy/08 SMS & Conversational/RCS Business Messaging|RCS Business Messaging]] — Rich-card, branded, verified messaging — Google + Apple (2026) cross-platform rollout.
+          - **RCS Business Messaging/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/08 SMS & Conversational/README|README]] — SMS, WhatsApp, RCS, and messenger-native marketing — consent, deliverability, conversational AI.
+          - **SMS & Conversational/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/08 SMS & Conversational/SMS Consent & 10DLC|SMS Consent & 10DLC]] — US carrier registration, opt-in language, double-opt-in for marketing.
+          - **SMS Consent & 10DLC/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/08 SMS & Conversational/WhatsApp Business Platform|WhatsApp Business Platform]] — Template messages, marketing conversations, session-based pricing, flows.
+          - **WhatsApp Business Platform/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **09 Social & Community/**
+        - [[literacy/Marketing Literacy/09 Social & Community/Community-Led Growth|Community-Led Growth]] — Community as acquisition + retention channel; models and metrics.
+          - **Community-Led Growth/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/09 Social & Community/Founder-Led Content|Founder-Led Content]] — Personal-brand amplification strategy for B2B and DTC.
+          - **Founder-Led Content/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/09 Social & Community/README|README]] — Organic social + owned community — engagement, content atomization, community-led growth.
+          - **Social & Community/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/09 Social & Community/Social Listening 2026|Social Listening 2026]] — Multimodal sentiment, meme detection, LLM-powered conversation clustering.
+          - **Social Listening 2026/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **10 Influencer & Creator/**
+        - [[literacy/Marketing Literacy/10 Influencer & Creator/AI-Generated Creators|AI-Generated Creators]] — Virtual influencers and synthetic content — disclosure + ethical boundaries (2026 regulation).
+          - **AI-Generated Creators/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/10 Influencer & Creator/Creator Whitelisting|Creator Whitelisting]] — Running paid ads from a creator's handle — compliance, attribution.
+          - **Creator Whitelisting/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/10 Influencer & Creator/README|README]] — Creator-led marketing — nano/micro/macro, affiliate + UGC, deepfake disclosure, performance attribution.
+          - **Influencer & Creator Economy/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/10 Influencer & Creator/UGC Rights & Usage|UGC Rights & Usage]] — Licensing models, exclusivity windows, usage-fee benchmarks.
+          - **UGC Rights & Usage/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **11 Conversion & CRO/**
+        - [[literacy/Marketing Literacy/11 Conversion & CRO/AI Personalization at Scale|AI Personalization at Scale]] — LLM-derived segments → dynamic content → closed-loop measurement.
+          - **AI Personalization at Scale/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/11 Conversion & CRO/Checkout Optimization 2026|Checkout Optimization 2026]] — One-click, passkeys, wallet SDKs (Apple · Google · Shop · PayPal), address auto-complete, AI fraud triage.
+          - **Checkout Optimization 2026/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/11 Conversion & CRO/CRO Hypothesis Framework|CRO Hypothesis Framework]] — We believe X for user-segment Y will move metric Z by W.
+          - **CRO Hypothesis Framework/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/11 Conversion & CRO/README|README]] — Turning traffic into revenue — user research, UX, experimentation, personalization, friction removal.
+          - **Conversion & CRO/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **12 Product-Led Growth/**
+        - [[literacy/Marketing Literacy/12 Product-Led Growth/Product-Qualified Leads|Product-Qualified Leads]] — Scoring signals from product usage that predict conversion.
+          - **Product-Qualified Leads/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/12 Product-Led Growth/README|README]] — Product as distribution — free / freemium / trial, activation loops, usage-based pricing, PQL scoring.
+          - **Product-Led Growth/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/12 Product-Led Growth/Reverse Trial|Reverse Trial]] — Start on paid, downgrade to free — pattern for land + expand.
+          - **Reverse Trial/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/12 Product-Led Growth/Usage-Based Pricing|Usage-Based Pricing]] — Metered, consumption, seat-blended models — aligning price with value.
+          - **Usage-Based Pricing/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **13 ABM (B2B)/**
+        - [[literacy/Marketing Literacy/13 ABM (B2B)/ABM Tiering|ABM Tiering]] — Strategic (1:1), lite (1:few), broad (1:many) — budget + effort split.
+          - **ABM Tiering/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/13 ABM (B2B)/Dark Social|Dark Social]] — Peer conversations, Slack communities, podcast mentions — measurement proxies.
+          - **Dark Social/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/13 ABM (B2B)/Intent Data 2026|Intent Data 2026]] — First-party + third-party signals — ethical sourcing, deprecation risks, aggregation patterns.
+          - **Intent Data 2026/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/13 ABM (B2B)/README|README]] — B2B account-centric motion — tiering, orchestration, intent data, buying-committee engagement.
+          - **Account-Based Marketing/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **14 Events & Field/**
+        - [[literacy/Marketing Literacy/14 Events & Field/Event ROI Modeling|Event ROI Modeling]] — Pipeline attribution, influenced deals, multi-touch weighting.
+          - **Event ROI Modeling/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/14 Events & Field/Hybrid Event Production|Hybrid Event Production]] — Venue + virtual + async — content capture → year-round atomization.
+          - **Hybrid Event Production/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/14 Events & Field/README|README]] — In-person, hybrid, and virtual events — user groups, conferences, roadshows, field ABM.
+          - **Events & Field Marketing/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **15 PR & Comms/**
+        - [[literacy/Marketing Literacy/15 PR & Comms/Analyst Relations|Analyst Relations]] — Inclusion in Magic Quadrant, Wave, Market Guide — briefing cadence, evidence requirements.
+          - **Analyst Relations/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/15 PR & Comms/Crisis Comms in the AI Era|Crisis Comms in the AI Era]] — Deepfake incidents, misinformation amplification, response-speed benchmarks.
+          - **Crisis Comms in the AI Era/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/15 PR & Comms/README|README]] — Earned media, analyst relations, executive visibility, crisis comms — AI-era narrative discipline.
+          - **PR & Comms/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **16 Data, Analytics & Measurement/**
+        - [[literacy/Marketing Literacy/16 Data, Analytics & Measurement/Attention Metrics|Attention Metrics]] — Attention metrics — the successor to viewability. Vendors (Adelaide AU, Realeyes, TVision, Lumen), what they measure, and when to actually use them.
+          - **Attention Metrics/**
+          - **What gets measured/**
+          - **When attention beats viewability/**
+          - **Using it well/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/16 Data, Analytics & Measurement/Incrementality Testing|Incrementality Testing]] — Incrementality testing — geo-lift, matched-market, holdouts, synthetic control, PSA ads. How to prove a channel actually caused the outcome.
+          - **Incrementality Testing/**
+          - **Methods/**
+          - **Good practice/**
+          - **Tooling/**
+          - **Common pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/16 Data, Analytics & Measurement/MMM Revival|MMM Revival]] — Why Marketing Mix Modeling returned (2024–2026) — privacy-driven MTA decay + open-source tooling (Google Meridian, Meta Robyn, Lightweight MMM, PyMC-Marketing). How to run one internally.
+          - **MMM Revival/**
+          - **Why it came back/**
+          - **What MMM outputs/**
+          - **Modern MMM stack (2026)/**
+          - **Workflow/**
+          - **Anti-patterns/**
+        - [[literacy/Marketing Literacy/16 Data, Analytics & Measurement/README|README]] — How we know what works — web analytics, MTA, MMM, incrementality, attention metrics, causal inference.
+          - **Data, Analytics & Measurement/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/16 Data, Analytics & Measurement/Unified Measurement|Unified Measurement]] — Unified Measurement — triangulate MMM + MTA + incrementality into one decision surface. No single method is complete; together they close the loop.
+          - **Unified Measurement/**
+          - **Why no single method suffices/**
+          - **Stitching pattern/**
+          - **Operating rhythm/**
+          - **Tooling (2026)/**
+          - **Pitfalls/**
+      - **17 CDP, Warehouse & Reverse ETL/**
+        - [[literacy/Marketing Literacy/17 CDP, Warehouse & Reverse ETL/Data Clean Rooms|Data Clean Rooms]] — Data clean rooms — privacy-preserving joins between first-party datasets for measurement, audience building, and co-marketing. Snowflake, Databricks, AMC, ADH, Disney.
+          - **Data Clean Rooms/**
+          - **Providers/**
+          - **Typical use cases/**
+          - **Core primitives/**
+          - **Governance/**
+          - **Limitations/**
+        - [[literacy/Marketing Literacy/17 CDP, Warehouse & Reverse ETL/Identity Resolution 2026|Identity Resolution 2026]] — Identity resolution 2026 — post-IDFA/cookieless stitching across devices and identifiers via deterministic + probabilistic + privacy-preserving methods.
+          - **Identity Resolution 2026/**
+          - **Types of identity/**
+          - **Graph model/**
+          - **2026 tools/**
+          - **Practical pattern/**
+          - **Pitfalls/**
+        - [[literacy/Marketing Literacy/17 CDP, Warehouse & Reverse ETL/README|README]] — Composable customer-data stack — warehouse-native CDPs, identity resolution, activation, zero-copy data sharing.
+          - **CDP · Data Warehouse · Reverse ETL/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/17 CDP, Warehouse & Reverse ETL/Warehouse-Native CDP|Warehouse-Native CDP]] — Warehouse-native CDP — operate on Snowflake/BigQuery/Databricks/Redshift truth without copying data into a packaged CDP. Composable stack.
+          - **Warehouse-Native CDP/**
+          - **Why the shift/**
+          - **Canonical stack (2026)/**
+          - **Data model/**
+          - **Activation patterns/**
+          - **Pitfalls/**
+      - **18 Experimentation/**
+        - [[literacy/Marketing Literacy/18 Experimentation/CUPED|CUPED]] — Controlled-experiment variance reduction via pre-experiment covariates.
+          - **CUPED/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/18 Experimentation/Experiment Design 101|Experiment Design 101]] — Hypothesis, metric, MDE, power, duration, guardrails.
+          - **Experiment Design 101/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/18 Experimentation/Multi-Armed Bandits|Multi-Armed Bandits]] — When they beat A/B — and when they don't.
+          - **Multi-Armed Bandits/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/18 Experimentation/README|README]] — Culture and infrastructure for running controlled experiments — from A/B tests to holdouts to multi-armed bandits.
+          - **Experimentation/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **19 MarTech Stack/**
+        - [[literacy/Marketing Literacy/19 MarTech Stack/AI Marketing Agent Stack|AI Marketing Agent Stack]] — Orchestrator · planner · executor · verifier · brand guardrails — matches MarkOS architecture.
+          - **AI Marketing Agent Stack/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/19 MarTech Stack/Canonical 2026 MarTech Stack|Canonical 2026 MarTech Stack]] — Reference architecture — CDP → activation → creative → media → measurement.
+          - **Canonical 2026 MarTech Stack/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/19 MarTech Stack/README|README]] — Composable marketing stack architecture — buy vs build, canonical stack 2026.
+          - **MarTech Stack/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **20 AI & Agentic Marketing (2026 Frontier)/**
+        - [[literacy/Marketing Literacy/20 AI & Agentic Marketing (2026 Frontier)/Agentic Commerce|Agentic Commerce]] — Agentic commerce — LLM agents transact on users' behalf. Agent-readable catalogs, structured offers, affiliate contracts, trusted-vendor registries. A new top-of-funnel.
+          - **Agentic Commerce/**
+          - **Surfaces (2026)/**
+          - **Brand implications/**
+          - **Risks/**
+          - **Emerging standards/**
+          - **Build posture/**
+        - [[literacy/Marketing Literacy/20 AI & Agentic Marketing (2026 Frontier)/Agentic Marketing Stack|Agentic Marketing Stack]] — Agentic marketing stack — orchestrator + specialist agents (planner, researcher, creator, auditor, publisher) with bounded autonomy and approval gates. Pattern mirrored in MarkOS.
+          - **Agentic Marketing Stack/**
+          - **Architecture/**
+          - **Bounded autonomy/**
+          - **Guardrails/**
+          - **State persistence/**
+          - **2026 landscape/**
+        - [[literacy/Marketing Literacy/20 AI & Agentic Marketing (2026 Frontier)/AI Creative Pipelines 2026|AI Creative Pipelines 2026]] — Canonical 2026 AI creative stack — text, image, video, audio, 3D — and the production pipeline that ships brand-consistent creative at scale.
+          - **AI Creative Pipelines 2026/**
+          - **Tool matrix/**
+          - **Pipeline stages/**
+          - **Brand guardrails/**
+          - **Provenance & compliance/**
+          - **Pitfalls/**
+        - [[literacy/Marketing Literacy/20 AI & Agentic Marketing (2026 Frontier)/LLM Observability for Marketing|LLM Observability for Marketing]] — LLM observability for marketing — tracing, evals, hallucination + brand-safety classifiers, cost telemetry. The feedback loop that makes AI creative production safe.
+          - **LLM Observability for Marketing/**
+          - **Three layers/**
+          - **Tooling (2026)/**
+          - **What to log/**
+          - **Eval dimensions/**
+          - **Feedback loop/**
+        - [[literacy/Marketing Literacy/20 AI & Agentic Marketing (2026 Frontier)/RAG-Grounded Personalization|RAG-Grounded Personalization]] — RAG-grounded personalization — LLM dynamic content fed with first-party retrieval context. Replaces rule-based dynamic content; gated by consent and brand guardrails.
+          - **RAG-Grounded Personalization/**
+          - **Architecture/**
+          - **Retrieval stack/**
+          - **Use cases/**
+          - **Guardrails/**
+          - **Measurement/**
+        - [[literacy/Marketing Literacy/20 AI & Agentic Marketing (2026 Frontier)/README|README]] — AI-native marketing — agents that plan, execute, verify; RAG-grounded personalization; agentic commerce.
+          - **AI & Agentic Marketing — 2026 Frontier/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **21 Privacy, Consent & Compliance/**
+        - [[literacy/Marketing Literacy/21 Privacy, Consent & Compliance/Cookie Deprecation Status 2026|Cookie Deprecation Status 2026]] — Third-party cookie timeline across Safari, Firefox, Chrome — where each browser stands in 2026, Privacy Sandbox status, and first-party + clean-room patterns that work.
+          - **Cookie Deprecation Status 2026/**
+          - **Browser state/**
+          - **Privacy Sandbox APIs (Chrome)/**
+          - **What actually works in 2026/**
+          - **Planning consequences/**
+          - **Pitfalls/**
+        - [[literacy/Marketing Literacy/21 Privacy, Consent & Compliance/EU AI Act for Marketers|EU AI Act for Marketers]] — EU AI Act marketer primer — risk tiers, deepfake/synthetic-media labelling, transparency obligations, penalties. Phased enforcement from Feb 2025 through 2027.
+          - **EU AI Act for Marketers/**
+          - **Risk tiers/**
+          - **Marketer-specific obligations/**
+          - **Enforcement timeline/**
+          - **Penalties/**
+          - **Checklist for marketing orgs/**
+        - [[literacy/Marketing Literacy/21 Privacy, Consent & Compliance/Google Consent Mode v2|Google Consent Mode v2]] — Google Consent Mode v2 — required for EEA/UK ad performance. ad_storage, ad_user_data, ad_personalization, analytics_storage signals. Basic vs Advanced implementations.
+          - **Google Consent Mode v2/**
+          - **The four signals/**
+          - **Basic vs Advanced mode/**
+          - **Implementation/**
+          - **What breaks without it/**
+          - **Pitfalls/**
+        - [[literacy/Marketing Literacy/21 Privacy, Consent & Compliance/README|README]] — Privacy as first-class product — GDPR, CCPA/CPRA, DMA, DSA, consent signalling, privacy-enhancing tech.
+          - **Privacy, Consent & Compliance/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/21 Privacy, Consent & Compliance/US State Privacy Patchwork|US State Privacy Patchwork]] — Navigating 15+ state laws with shared opt-out signals (GPC).
+          - **US State Privacy Patchwork/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **22 Commerce & Retail Media/**
+        - [[literacy/Marketing Literacy/22 Commerce & Retail Media/Agentic Checkout|Agentic Checkout]] — Agentic checkout — LLM-initiated transactions via platform agent APIs. Shop Pay agent, PayPal agent, Stripe Agent Commerce, OpenAI Commerce, Perplexity Shopping, Anthropic Computer Use.
+          - **Agentic Checkout/**
+          - **Two paths/**
+          - **Canonical players (2026)/**
+          - **Merchant enablement/**
+          - **Trust + safety/**
+          - **Attribution/**
+        - [[literacy/Marketing Literacy/22 Commerce & Retail Media/README|README]] — Shoppable surfaces + retail media networks + live + social commerce + agentic checkout.
+          - **Commerce & Retail Media/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/22 Commerce & Retail Media/Retail Media Network Landscape 2026|Retail Media Network Landscape 2026]] — Retail Media Networks (RMNs) in 2026 — closed-loop attribution, first-party data moat, on-site/off-site/CTV reach, landscape of top networks and what each is best at.
+          - **Retail Media Network Landscape 2026/**
+          - **Why RMNs are structurally strong/**
+          - **Leaders (2026)/**
+          - **Off-retailer extension/**
+          - **Buying motion/**
+          - **Pitfalls/**
+        - [[literacy/Marketing Literacy/22 Commerce & Retail Media/Social Commerce 2026|Social Commerce 2026]] — TikTok Shop ascendancy, Instagram/YouTube shopping parity, creator-commerce integration.
+          - **Social Commerce 2026/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **23 Localization & International/**
+        - [[literacy/Marketing Literacy/23 Localization & International/AI-Assisted Localization|AI-Assisted Localization]] — LLM translation with reviewer-in-the-loop, style guides as retrieval context.
+          - **AI-Assisted Localization/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/23 Localization & International/README|README]] — Going global — hreflang, translation quality, regional platforms, local payments, cultural adaptation.
+          - **Localization & International/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/23 Localization & International/Regional Platform Matrix|Regional Platform Matrix]] — Which platforms matter in JP · KR · CN · RU · MENA · LATAM · SEA.
+          - **Regional Platform Matrix/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **24 Sustainability & Responsible Marketing/**
+        - [[literacy/Marketing Literacy/24 Sustainability & Responsible Marketing/Ad Sustainability|Ad Sustainability]] — Measuring and reducing the carbon footprint of digital media (Scope3 · GreenAd).
+          - **Ad Sustainability/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/24 Sustainability & Responsible Marketing/EAA 2025 Compliance|EAA 2025 Compliance]] — European Accessibility Act — digital product + marketing surface requirements.
+          - **EAA 2025 Compliance/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/24 Sustainability & Responsible Marketing/EU Green Claims Directive|EU Green Claims Directive]] — Anti-greenwashing rules — substantiation requirements for environmental claims.
+          - **EU Green Claims Directive/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/24 Sustainability & Responsible Marketing/README|README]] — Ad sustainability, carbon reporting, inclusive creative, anti-greenwashing, ethical targeting.
+          - **Sustainability & Responsible Marketing/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **25 Marketing Ops & RevOps/**
+        - [[literacy/Marketing Literacy/25 Marketing Ops & RevOps/Lead Lifecycle & SLAs|Lead Lifecycle & SLAs]] — MQL → SQL → opportunity → customer, with stage-SLA and routing rules.
+          - **Lead Lifecycle & SLAs/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/25 Marketing Ops & RevOps/Marketing Planning Rhythm|Marketing Planning Rhythm]] — Annual → quarterly → monthly → weekly — stakeholder alignment checkpoints.
+          - **Marketing Planning Rhythm/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/25 Marketing Ops & RevOps/README|README]] — The machinery — systems ownership, lead lifecycle, SLAs, planning rhythms, attribution hygiene.
+          - **Marketing Ops & RevOps/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+      - **26 Pricing & Packaging/**
+        - [[literacy/Marketing Literacy/26 Pricing & Packaging/README|README]] — Price strategy as a marketing lever — tiers, entitlements, psychological pricing, value-based, usage-based.
+          - **Pricing & Packaging/**
+          - **Scope/**
+          - **Atomic notes/**
+          - **State of the art (2026)/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/26 Pricing & Packaging/Tier Design Patterns|Tier Design Patterns]] — Good-better-best, entry/expansion loops, fence mechanisms.
+          - **Tier Design Patterns/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/26 Pricing & Packaging/Usage-Based Pricing 2026|Usage-Based Pricing 2026]] — Metered compute, API calls, agent actions — aligning price with consumption.
+          - **Usage-Based Pricing 2026/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/26 Pricing & Packaging/Value-Based Pricing|Value-Based Pricing]] — Price to the value created, not cost to produce.
+          - **Value-Based Pricing/**
+          - **Definition/**
+          - **Why it matters (2026)/**
+          - **Mechanics/**
+          - **Pitfalls/**
+          - **Related/**
+      - **27 Pain-Point Playbooks/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/Attribution & Measurement Playbook|Attribution & Measurement Playbook]] — Fragmented data, conflicting channel reports, no causal confidence. MMM + incrementality + clean-room treatments.
+          - **Attribution & Measurement Playbook/**
+          - **Symptoms (diagnose)/**
+          - **Root causes (below the symptoms)/**
+          - **Treatments (what to do)/**
+          - **Literacy to consult/**
+          - **Message tailoring angle/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/Audience Mismatch Playbook|Audience Mismatch Playbook]] — Reach the wrong people. Bounce high, downstream conversion and retention poor. Re-segmentation + ICP sharpening treatments.
+          - **Audience Mismatch Playbook/**
+          - **Symptoms (diagnose)/**
+          - **Root causes (below the symptoms)/**
+          - **Treatments (what to do)/**
+          - **Literacy to consult/**
+          - **Message tailoring angle/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/Content Engagement Playbook|Content Engagement Playbook]] — Content published but not resonating. Low shares, low comments, low return visits. Treatments: hooks, distribution, community.
+          - **Content Engagement Playbook/**
+          - **Symptoms (diagnose)/**
+          - **Root causes (below the symptoms)/**
+          - **Treatments (what to do)/**
+          - **Literacy to consult/**
+          - **Message tailoring angle/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/High Acquisition Cost Playbook|High Acquisition Cost Playbook]] — Diagnostic + treatment for CAC/CPL/CPR trending above benchmark. Root causes, treatments, agent routing, message tailoring, and measurement.
+          - **High Acquisition Cost Playbook/**
+          - **Symptoms (diagnose)/**
+          - **Root causes (below the symptoms)/**
+          - **Treatments (what to do)/**
+          - **Literacy to consult/**
+          - **Message tailoring angle/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/Low Conversions Playbook|Low Conversions Playbook]] — Funnel-step CVR below benchmark at ad → landing, landing → lead, lead → trial. Diagnostic + CRO treatments + message tailoring.
+          - **Low Conversions Playbook/**
+          - **Symptoms (diagnose)/**
+          - **Root causes (below the symptoms)/**
+          - **Treatments (what to do)/**
+          - **Literacy to consult/**
+          - **Message tailoring angle/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/Organic Visibility Playbook|Organic Visibility Playbook]] — Rankings stagnant, organic share declining, AI-engine citations absent. Classical SEO + GEO treatments.
+          - **Organic Visibility Playbook/**
+          - **Symptoms (diagnose)/**
+          - **Root causes (below the symptoms)/**
+          - **Treatments (what to do)/**
+          - **Literacy to consult/**
+          - **Message tailoring angle/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/Pipeline Velocity Playbook|Pipeline Velocity Playbook]] — Leads stall mid-funnel. Nurture sequences fail to progress. Handoff gaps. Treatments via lifecycle + SLA design.
+          - **Pipeline Velocity Playbook/**
+          - **Symptoms (diagnose)/**
+          - **Root causes (below the symptoms)/**
+          - **Treatments (what to do)/**
+          - **Literacy to consult/**
+          - **Message tailoring angle/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/README|README]] — Deep playbooks per parent pain-point from the MarkOS taxonomy — diagnose, route, treat, measure. One note per of the 8 parent tags.
+          - **27 Pain-Point Playbooks/**
+          - **Playbooks/**
+          - **How to use/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/27 Pain-Point Playbooks/Retention & Churn Playbook|Retention & Churn Playbook]] — MRR churn rising, repeat-purchase declining, subscriber loss outpacing acquisition. Lifecycle + PLG treatments.
+          - **Retention & Churn Playbook/**
+          - **Symptoms (diagnose)/**
+          - **Root causes (below the symptoms)/**
+          - **Treatments (what to do)/**
+          - **Literacy to consult/**
+          - **Message tailoring angle/**
+      - **28 Message Crafting/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/Ad Message Crafting|Ad Message Crafting]] — Per-channel crafting playbook for paid ads — headline, description, creative, disclosure, per-platform guidance.
+          - **Ad Message Crafting/**
+          - **Constraints/**
+          - **Canonical structure/**
+          - **Hook patterns/**
+          - **Proof patterns/**
+          - **Anti-patterns (auto-reject)/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/Creator Brief Crafting|Creator Brief Crafting]] — Brief-crafting playbook for creator deliverables — brief structure, voice latitude, compliance, measurement.
+          - **Creator Brief Crafting/**
+          - **Constraints/**
+          - **Canonical structure/**
+          - **Hook patterns/**
+          - **Proof patterns/**
+          - **Anti-patterns (auto-reject)/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/Email Message Crafting|Email Message Crafting]] — Per-channel crafting playbook for email — subject, preview, body, CTA, format, deliverability + voice constraints.
+          - **Email Message Crafting/**
+          - **Constraints/**
+          - **Canonical structure/**
+          - **Hook patterns/**
+          - **Proof patterns/**
+          - **Anti-patterns (auto-reject)/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/Landing Page Message Crafting|Landing Page Message Crafting]] — Crafting playbook for LPs — H1, sub-head, first viewport, body, CTA, proof, trust.
+          - **Landing Page Message Crafting/**
+          - **Constraints/**
+          - **Canonical structure/**
+          - **Hook patterns/**
+          - **Proof patterns/**
+          - **Anti-patterns (auto-reject)/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/Push Message Crafting|Push Message Crafting]] — Crafting playbook for push — title ≤ 35, body ≤ 90, action verb, payoff, timing.
+          - **Push Message Crafting/**
+          - **Constraints/**
+          - **Canonical structure/**
+          - **Hook patterns/**
+          - **Proof patterns/**
+          - **Anti-patterns (auto-reject)/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/README|README]] — Per-channel message crafting playbooks — stage-6 of the Message Crafting Pipeline.
+          - **28 Message Crafting/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/SEO Article Crafting|SEO Article Crafting]] — Crafting playbook for SEO + GEO articles — structure that ranks in SERPs and gets cited by LLM answer engines.
+          - **SEO Article Crafting/**
+          - **Constraints/**
+          - **Canonical structure/**
+          - **Hook patterns/**
+          - **Proof patterns/**
+          - **Anti-patterns (auto-reject)/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/SMS Message Crafting|SMS Message Crafting]] — Crafting playbook for SMS — 160-char discipline, consent, opt-out, one CTA, deliverability.
+          - **SMS Message Crafting/**
+          - **Constraints/**
+          - **Canonical structure/**
+          - **Hook patterns/**
+          - **Proof patterns/**
+          - **Anti-patterns (auto-reject)/**
+        - [[literacy/Marketing Literacy/28 Message Crafting/Social Post Message Crafting|Social Post Message Crafting]] — Per-platform social crafting — LinkedIn, X, Instagram, TikTok, Threads, Reddit.
+          - **Social Post Message Crafting/**
+          - **Constraints/**
+          - **Canonical structure/**
+          - **Hook patterns/**
+          - **Proof patterns/**
+          - **Anti-patterns (auto-reject)/**
+      - **29 Brand System Templates/**
+        - [[literacy/Marketing Literacy/29 Brand System Templates/Brand Pack Template|Brand Pack Template]] — Fillable operator template for the complete brand pack.
+          - **Brand Pack Template/**
+          - **1. Identity/**
+          - **2. Personality/**
+          - **3. Positioning/**
+          - **4. Voice/**
+          - **5. Style (visual)/**
+        - [[literacy/Marketing Literacy/29 Brand System Templates/Claim Library Template|Claim Library Template]] — Fillable template for the substantiated claim library.
+          - **Claim Library Template/**
+          - **Schema/**
+          - **Example row/**
+          - **Claim-type rules/**
+          - **Review cadence/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/29 Brand System Templates/Neuro Spec Template|Neuro Spec Template]] — Fillable <neuro_spec> XML block for campaign plans.
+          - **Neuro Spec Template/**
+          - **Schema/**
+          - **Example (re-engagement email for trial lapsers)/**
+          - **Validation rules/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/29 Brand System Templates/README|README]] — Fillable operator templates for the brand system.
+          - **29 Brand System Templates/**
+          - **Related/**
+        - [[literacy/Marketing Literacy/29 Brand System Templates/Visual Style Token Template|Visual Style Token Template]] — Design-token schema for brand colors, type, spacing, motion, imagery.
+          - **Visual Style Token Template/**
+          - **Color/**
+          - **Type/**
+          - **Spacing + grid/**
+          - **Motion/**
+          - **Imagery/**
+        - [[literacy/Marketing Literacy/29 Brand System Templates/Voice Classifier Rubric|Voice Classifier Rubric]] — Scoring rubric used by the LLM voice classifier.
+          - **Voice Classifier Rubric/**
+          - **Inputs/**
+          - **Scoring dimensions/**
+          - **Scoring prompt (template)/**
+          - **Pass threshold/**
+          - **Related/**
+      - [[literacy/Marketing Literacy/README|README]] — Marketing Literacy — canonical 2026 knowledge base covering 27 marketing disciplines from foundational frameworks to the AI-agentic frontier. Top MOC.
+        - **Marketing Literacy/**
+        - **How this is organized/**
+        - **Foundations (00)/**
+        - **Strategy, Brand, Audience (01–03)/**
+        - **Channel disciplines (04–10)/**
+        - **Growth motions (11–14)/**
+    - [[literacy/README|README]] — Literacy root — canonical marketing knowledge base for MarkOS. Top pointer to Marketing Literacy MOC.
+      - **Literacy/**
+      - **Branches/**
+      - **Related/**
+  - **org/**
+    - **people/**
+    - **teams/**
+    - [[org/People & Context|People & Context]] — Org context, teams, stakeholders, review history, and dynamics
+      - **People & Context/**
+      - **Role & Org/**
+      - **Teams/**
+      - **Performance Reviews/**
+      - **Manager Timeline/**
+      - **People/**
+  - **perf/**
+    - **brag/**
+    - **competencies/**
+      - [[perf/competencies/README|README]] — Competencies
+        - **Competencies/**
+        - **How it works/**
+        - **Frontmatter fields/**
+        - **Tips/**
+    - **evidence/**
+    - [[perf/Brag Doc|Brag Doc]] — Index of quarterly brag notes — impact, competency evidence, technical growth, feedback per quarter
+      - **Brag Doc/**
+      - **Current Year/**
+      - **How This Works/**
+  - **reference/**
+    - [[reference/Contracts Registry|Contracts Registry]] — All 39 MarkOS F-NN OpenAPI contracts grouped by domain — onboarding, execution, reporting, integration, admin, enrichment, CRM families (F-58..F-64).
+      - **Contracts Registry/**
+      - **By domain/**
+      - **Onboarding (F-01)/**
+      - **Execution (F-02, F-03)/**
+      - **Reporting (F-04, F-05, F-09)/**
+      - **Integration (F-06, F-07)/**
+    - [[reference/Core Lib|Core Lib]] — Non-CRM business logic under lib/markos — LLM adapter, billing, governance, identity, RBAC, auth, outbound, telemetry, contracts, theme, packs.
+      - **Core Lib/**
+      - **lib/markos/llm — multi-provider adapter/**
+      - **lib/markos/billing — usage, entitlements, Stripe/**
+      - **lib/markos/governance — evidence, vendor, retention/**
+      - **lib/markos/identity — SSO + role mapping/**
+      - **lib/markos/rbac — IAM v3.2/**
+    - [[reference/CRM Domain|CRM Domain]] — End-to-end CRM domain — entities, workspace, identity graph, execution queue, outbound, copilot, reporting, attribution. Ties lib + components + contracts + migrations.
+      - **CRM Domain/**
+      - **Scope at a glance/**
+      - **lib/markos/crm — core business logic/**
+      - **Data model — tables that matter/**
+      - **Contracts (F-58..F-64)/**
+      - **UI — components/markos/crm (29 components)/**
+    - [[reference/Database Schema|Database Schema]] — Supabase migrations grouped by theme — tenant foundation, CRM, billing, governance, identity federation, plugin runtime, UI control plane, MIR lineage, literacy metadata.
+      - **Database Schema/**
+      - **Phase map (chronological)/**
+      - **Thematic grouping/**
+      - **Tenant & UI control plane (37, 51)/**
+      - **Literacy corpus (39, 96 + external Upstash Vector)/**
+      - **Operator LLM (47)/**
+    - [[reference/HTTP Layer|HTTP Layer]] — HTTP layer map — Next.js App Router under app/(markos) + REST handlers under api/*. Auth pattern, route groups, upstream deps, tenant posture.
+      - **HTTP Layer/**
+      - **app/ — Next.js App Router/**
+      - **api/ — REST handlers/**
+      - **Shared auth pattern/**
+      - **Onboarding ingress (CORS-enabled, no auth)/**
+      - **System / config (JWT-protected)/**
+    - [[reference/Infrastructure|Infrastructure]] — Meta/dev/infra — GSD .planning state, .protocol-lore routing, test suite (37 groups), scripts, config files, CI, Storybook, docs, research.
+      - **Infrastructure/**
+      - **.planning — GSD live state/**
+      - **.protocol-lore — agent boot routing/**
+      - **test/ — 37 groups/**
+      - **scripts//**
+      - **Top-level configuration/**
+    - [[reference/MarkOS Codebase Atlas|MarkOS Codebase Atlas]] — Root PageIndex-style MOC of the MarkOS codebase — one atlas node per domain, each pointing to its dedicated reference note.
+      - **MarkOS Codebase Atlas/**
+      - **What is MarkOS?/**
+      - **Atlas Tree (PageIndex schema)/**
+      - **Capability Matrix (high level)/**
+      - **How the system fits together/**
+      - **Agent boot order (when working in this repo)/**
+    - [[reference/MarkOS Protocol|MarkOS Protocol]] — Agentic marketing protocol layer — .agent/markos, GSD engineering methodology, onboarding engine, CLI. Tokenized registry, skills, hooks, agents.
+      - **MarkOS Protocol/**
+      - **.agent/markos — Marketing protocol/**
+      - **Structure/**
+      - **23 agents (by tier)/**
+      - **Knowledge gates/**
+      - **Taxonomy/**
+    - [[reference/MarkOS Repo|MarkOS Repo]] — Bridge note — maps the Obsidian vault to the MarkOS repository (GSD + MarkOS protocol + CRM code paths). Anchor for reference/ codebase notes.
+      - **MarkOS Repo/**
+      - **Canonical Entry Points/**
+      - **Split/**
+      - **CLI & Tests/**
+      - **Vault ↔ Code Cross-Refs/**
+      - **PageIndex/**
+    - [[reference/UI Components|UI Components]] — React component map — components/crm + components/markos. View components, copilot panels, execution queue, reporting cockpit, Zustand-like stores.
+      - **UI Components/**
+      - **Hierarchy/**
+      - **State model/**
+      - **Props-driven views/**
+      - **Storybook/**
+      - **Conventions/**
+  - **templates/**
+    - [[templates/Competency Note|Competency Note]] — {{title}}
+      - **{{title}}/**
+      - **Definition/**
+      - **Proficiency Levels/**
+      - **Growth Notes/**
+      - **Related/**
+    - [[templates/Decision Record|Decision Record]] — Decision: {{title}}
+      - **Decision: {{title}}/**
+      - **Context/**
+      - **Options Considered/**
+      - **Decision/**
+      - **Consequences/**
+      - **Related/**
+    - [[templates/Review Template|Review Template]] — Perf Review -- {{period}}
+      - **Perf Review -- {{period}}/**
+      - **Summary/**
+      - **Impact -- "What was delivered?"/**
+      - **Competencies -- "How knowledge and skills were applied"/**
+      - **Principles -- "How delivery happened"/**
+      - **Growth Plan/**
+    - [[templates/Thinking Note|Thinking Note]] — {{title}}
+      - **{{title}}/**
+      - **Question / Problem/**
+      - **Analysis/**
+      - **Conclusions/**
+      - **Next Steps/**
+      - **Feeds Into/**
+    - [[templates/Work Note|Work Note]] — {{title}}
+      - **{{title}}/**
+      - **Context/**
+      - **Notes/**
+      - **Action Items/**
+      - **Related/**
+  - **thinking/**
+    - [[thinking/2026-04-16-markos-saas-roadmap|2026-04-16-markos-saas-roadmap]] — MarkOS SaaS roadmap — 0-day shortlist, 4-quarter N-day plan (Q2-2026 → Q1-2027), architecture deltas for API/SDK/MCP/Zapier/Make/n8n/CLI multi-tenant cloud.
+      - **MarkOS SaaS Roadmap — 2026-Q2 → 2027-Q1/**
+      - **Mission/**
+      - **Decisions locked (reference)/**
+      - **Open questions — your turn/**
+      - **Artifact A — 0-day shortlist (ship in 2 weeks)/**
+      - **A1. Public OpenAPI 3.1 spec/**
+    - [[thinking/README|README]] — Thinking Space
+      - **Thinking Space/**
+      - **How This Works/**
+      - **When to Use/**
+      - **Linking Convention/**
+  - **work/**
+    - **1-1/**
+    - **active/**
+    - **archive/**
+    - **incidents/**
+    - **meetings/**
+      - [[work/meetings/README|README]] — Inbox for raw meeting exports — drop notes here, then run /om-intake to classify and route to the right vault notes
+        - **Meeting Notes Inbox/**
+        - **Naming Convention/**
+    - [[work/Index|Index]] — Central map of all work notes — active projects, completed work by quarter, decisions log
+      - **Work Notes/**
+      - **Incidents/**
+      - **Active Projects/**
+      - **Review Prep/**
+      - **Recently Completed/**
+      - **Completed/**
+  - [[AGENTS|AGENTS]] — Obsidian Mind
+    - **Obsidian Mind/**
+    - **Hooks/**
+    - **Commands/**
+    - **Memory/**
+    - **Subagents/**
+    - **What's Claude Code-specific/**
+  - [[CHANGELOG|CHANGELOG]] — Changelog
+    - **Changelog/**
+    - **v4.0 — 2026-04-09/**
+    - **Changed/**
+    - **v3.8 — 2026-04-09/**
+    - **Fixed/**
+    - **v3.7 — 2026-04-08/**
+  - [[CLAUDE|CLAUDE]] — Obsidian Mind
+    - **Obsidian Mind/**
+    - **Skills & Capabilities/**
+    - **Custom Slash Commands/**
+    - **Vault Structure/**
+    - **Obsidian CLI/**
+    - **Session Workflow/**
+  - [[CONTRIBUTING|CONTRIBUTING]] — Contributing
+    - **Contributing/**
+    - **Quick Start/**
+    - **Before You Open a PR/**
+    - **PR Title Format/**
+    - **Template Development Checklist/**
+    - **What NOT to Update/**
+  - [[GEMINI|GEMINI]] — Obsidian Mind
+    - **Obsidian Mind/**
+    - **Hooks/**
+    - **Commands/**
+    - **Memory/**
+    - **Subagents/**
+    - **What's Claude Code-specific/**
+  - [[Home|Home]] — MarkOS vault entry point — dashboards, quick links, current focus, links to Literacy library and codebase reference
+    - **Home/**
+    - **Current Focus/**
+    - **Active Work/**
+    - **Incidents/**
+    - **Quick Links/**
+    - **MarkOS Canon — Operator Doctrine/**
+  - [[README|README]] — 🔴 The Problem
+    - **🔴 The Problem/**
+    - **🟢 The Solution/**
+    - **⚡ See It In Action/**
+    - **🚀 Quick Start/**
+    - **🔍 Optional: QMD Semantic Search/**
+    - **📋 Requirements/**

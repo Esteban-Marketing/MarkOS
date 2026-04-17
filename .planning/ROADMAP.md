@@ -4,7 +4,8 @@
 
 > Archived milestone phase details are intentionally kept in the matching files under `.planning/milestones/`, while this roadmap stays summary-first for active planning work.
 
-- 🚧 **v3.9.0 Vertical Plugin Literacy Libraries** — Active milestone initialized 2026-04-15; phase planning starts at Phases 106-110
+- 🚧 **v4.0.0 SaaS Readiness 1.0** — Active milestone; phases 200-206 (API · SDK · MCP · webhooks · CLI · billing · SOC2-I). See section below.
+- ✅ **v3.9.0 Vertical Plugin Literacy Libraries** — Phases 106-110 completed; archived at `.planning/milestones/v3.9.0-ROADMAP.md` (2026-04-16)
 - ✅ **v3.8.0 Revenue CRM and Customer Intelligence Core** — Phases 100-105 completed; archived at `.planning/milestones/v3.8.0-ROADMAP.md` (2026-04-15)
 - ✅ **v3.7.0 Neuro-Adaptive Literacy Intelligence** — Phases 96-99.1 completed; archived at `.planning/milestones/v3.7.0-ROADMAP.md` (2026-04-14)
 - ✅ **v3.6.0 Deep Research Tailoring Engine** — Phases 91-95 completed; archived at `.planning/milestones/v3.6.0-ROADMAP.md` (2026-04-14)
@@ -13,79 +14,80 @@
 - ✅ **v3.1.0 Operator Surface Unification** — Phases 45-50 completed; archived at `.planning/milestones/v3.1.0-ROADMAP.md` (2026-04-03)
 - ✅ **v1.0 Initial Protocol** — Phases 1-7 shipped (2026-03-23)
 
-## Active Milestone: v3.9.0 — Vertical Plugin Literacy Libraries
+## Active Milestone: v4.0.0 — SaaS Readiness 1.0
 
-**Status:** Planning active — milestone direction is locked and phase work can now begin.
+**Status:** 🚧 Active — milestone kicked off 2026-04-16.
 
-**Goal:** Make MarkOS initialization feel domain-native by loading composable business-model and industry literacy packs that generate better starter examples, skeletons, prompts, and workspace artifacts from day one.
+**Goal:** Ship the first public SaaS release of MarkOS. API-first · MCP-native · SDK + CLI · webhooks · Claude Marketplace · self-serve billing · SOC 2 Type I foundation. Invest heaviest in foundations (Quality Baseline 15 gates) before feature velocity compounds.
 
-**Requirements to map:** LIB-01, LIB-02, LIB-03, LIB-04, INIT-01, INIT-02, INIT-03, GOV-01, GOV-02
+**Requirements to map:** API-01, API-02, SDK-01, MCP-01, WHK-01, CLI-01, BILL-01, BILL-02, COMP-01, QA-01..15.
 
-**Research/context:** `.planning/milestones/v3.9.0-PLUGIN-LITERACY-LIBRARIES-CONTEXT.md`
+**Research/context:** `obsidian/thinking/2026-04-16-markos-saas-roadmap.md`, `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`, [[MarkOS Canon]], [[Target ICP]], [[Brand Stance]].
 
-### Phase 106: Template Taxonomy and Selection Contracts
-**Goal:** Define the canonical library registry, pack metadata, selection rules, and operator override contract for base family plus industry overlay composition.
-**Requirements Mapped:** LIB-01, LIB-04, INIT-02
-**Depends on:** Shipped v3.8.0 onboarding, literacy, and plugin foundations
+### Phase 200: SaaS Readiness Wave 0 — 0-day shortlist
+**Goal:** Ship 8 lowest-friction changes in 2 weeks: public OpenAPI 3.1, CLI `markos generate`, webhook primitive, presetted onboarding, `llms.txt` + doc mirror, MCP server with Claude Marketplace listing, SDK auto-gen CI, Claude Marketplace landing + demo sandbox.
+**Requirements Mapped:** API-01, SDK-01, MCP-01, WHK-01, CLI-01, QA-01..15
+**Depends on:** v3.9.0 closure
 **Status:** 📋 Planned
-**Plans:** 2/2 plans complete
+**Plans:** 8 plans (see `.planning/phases/200-saas-readiness-wave-0/PLAN.md`)
 
 Plans:
-- [x] 106-01-PLAN.md — Wave 0–3: Ajv install + test stub; pack-schema.json + 7 manifests + pack-loader.cjs; template-family-map.cjs facade; resolvePackSelection + INDUSTRY_ALIAS_MAP
+- [ ] 200-01-PLAN.md — Public OpenAPI 3.1 merge + serve
+- [ ] 200-02-PLAN.md — CLI `markos generate <brief>` one-shot mode
+- [ ] 200-03-PLAN.md — Webhook subscription primitive
+- [ ] 200-04-PLAN.md — Presetted onboarding `--preset=<bucket>`
+- [ ] 200-05-PLAN.md — Public `llms.txt` + markdown doc mirror
+- [ ] 200-06-PLAN.md — MCP server (10 skills) + Claude Marketplace listing
+- [ ] 200-07-PLAN.md — SDK auto-gen CI (TS + Python)
+- [ ] 200-08-PLAN.md — Claude Marketplace landing + demo sandbox
 
-### Phase 107: Business-Model Starter Library Expansion
-**Goal:** Author and normalize the base starter packs for priority business families so each supported model has discipline-aware examples and initialization scaffolding.
-**Requirements Mapped:** LIB-03
-**Depends on:** Phase 106
-**Status:** ✅ Complete
-**Plans:** 6/6 plans complete
+### Phase 201: SaaS Tenancy Hardening
+**Goal:** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
+**Requirements Mapped:** API-02, QA-01..15
+**Depends on:** Phase 200
+**Status:** 📋 Planned
+**DISCUSS:** `.planning/phases/201-saas-tenancy-hardening/DISCUSS.md`
 
-Plans:
-- [x] 107-01-PLAN.md — Wave 1: B2B tone doc + 5-discipline skeleton
-- [x] 107-02-PLAN.md — Wave 1: B2C tone doc + 5-discipline skeleton
-- [x] 107-03-PLAN.md — Wave 1: SaaS tone doc (extends overlay) + 5-discipline skeleton
-- [x] 107-04-PLAN.md — Wave 1: Ecommerce tone doc (extends overlay) + 5-discipline skeleton
-- [x] 107-05-PLAN.md — Wave 1: Services tone doc (extends overlay) + 5-discipline skeleton
-- [x] 107-06-PLAN.md — Wave 2: Mutate 5 pack.json manifests (version + completeness + baseDoc + changelog)
+### Phase 202: MCP Server GA + Claude Marketplace Launch
+**Goal:** Graduate the 0-day MCP server to GA: session persistence, +20 skills, public marketplace approval, Cursor / Windsurf / Warp certified.
+**Requirements Mapped:** MCP-01, QA-01..15
+**Depends on:** Phase 200, Phase 201
+**Status:** 📋 Planned
+**DISCUSS:** `.planning/phases/202-mcp-server-ga-claude-marketplace/DISCUSS.md`
 
-### Phase 108: Industry Overlay Packs
-**Goal:** Add the first vertical overlays for Travel, IT, Marketing Services, and Professional Services and ensure they compose cleanly with the base family packs.
-**Requirements Mapped:** LIB-02
-**Depends on:** Phase 106, Phase 107
-**Status:** ✅ Complete
-**Verification:** 13/13 checks PASS — `57aebdf`
-- [x] 108-01-PLAN.md — Wave 0: Directory scaffolding for 4 industry skeleton dirs
-- [x] 108-02-PLAN.md — Wave 1: Travel industry overlay content (tone doc + 5 PROMPTS.md)
-- [x] 108-03-PLAN.md — Wave 1: IT & Technology industry overlay content (tone doc + 5 PROMPTS.md)
-- [x] 108-04-PLAN.md — Wave 1: Marketing Services industry overlay content (tone doc + 5 PROMPTS.md)
-- [x] 108-05-PLAN.md — Wave 1: Professional Services industry overlay content (tone doc + 5 PROMPTS.md)
-- [x] 108-06-PLAN.md — Wave 2: 4 industry manifest files + pack-loader overlay support
-- [x] 108-07-PLAN.md — Wave 3: Integration verification (Suite 108 tests 11/11 pass)
+### Phase 203: Webhook Subscription Engine GA
+**Goal:** Graduate webhook primitive to GA: delivery dashboard, DLQ + replay, signing-secret rotation, per-subscription rate-limits.
+**Requirements Mapped:** WHK-01, QA-01..15
+**Depends on:** Phase 200, Phase 201
+**Status:** 📋 Planned
+**DISCUSS:** `.planning/phases/203-webhook-subscription-engine-ga/DISCUSS.md`
 
-### Phase 109: Initialization and Workspace Hydration Integration
-**Goal:** Wire the library selection flow into onboarding, approval, and local workspace hydration so the correct packs appear automatically during project setup.
-**Requirements Mapped:** INIT-01, INIT-03
-**Depends on:** Phase 106 through Phase 108
-**Status:** ✅ Complete
-**Plans:** 4 plans
-Plans:
-- [x] 109-01-PLAN.md — Wave 1: resolveSkeleton overlay param (example-resolver.cjs)
-- [x] 109-02-PLAN.md — Wave 2: generateSkeletons packSelection param (skeleton-generator.cjs)
-- [x] 109-03-PLAN.md — Wave 3: handlers.cjs integration (require + packSelection block + both response payloads)
-- [x] 109-04-PLAN.md — Wave 4: Tests (overlay unit tests + handleApprove integration tests)
+### Phase 204: CLI `markos` v1 GA
+**Goal:** Graduate CLI to full GA: init · generate · plan · run · eval · login · keys · whoami · env · status · doctor. Cross-platform distribution (Homebrew · Scoop · npm · winget · apt).
+**Requirements Mapped:** CLI-01, QA-01..15
+**Depends on:** Phase 200, Phase 201
+**Status:** 📋 Planned
+**DISCUSS:** `.planning/phases/204-cli-markos-v1-ga/DISCUSS.md`
 
-### Phase 110: Diagnostics, Fallbacks, and Closeout Hardening
-**Goal:** Add graceful fallback behavior, coverage diagnostics, and regression safeguards so partial library support stays trustworthy and auditable.
-**Requirements Mapped:** GOV-01, GOV-02
-**Depends on:** Phase 106 through Phase 109
-**Status:** ✅ Complete (2026-04-15)
-**Plans:** 4 plans
+### Phase 205: Billing Self-Serve + BYOK
+**Goal:** Stripe-backed self-serve billing portal. Platform fee + metered AI + BYOK discount. Transparent invoices. Stripe Tax.
+**Requirements Mapped:** BILL-01, BILL-02, QA-01..15
+**Depends on:** Phase 201
+**Status:** 📋 Planned
+**DISCUSS:** `.planning/phases/205-billing-self-serve-byok/DISCUSS.md`
 
-Plans:
-- [x] 110-01-PLAN.md — Wave 1: getPackDiagnostics + getAvailablePackOptions in pack-loader.cjs + test stubs
-- [x] 110-02-PLAN.md — Wave 2: Override guard + packDiagnostics in handleApprove + GET /api/packs/resolution route
-- [x] 110-03-PLAN.md — Wave 3: Operator Override UI (data-step=4 in index.html + onboarding.js step 4 logic)
-- [x] 110-04-PLAN.md — Wave 3: Suite 110 real assertions + completeness graduation (9 packs partial→full)
+### Phase 206: SOC 2 Type I Foundation
+**Goal:** Engage auditor · author + ratify SOC 2 policies · automate evidence · first pen test · close first audit in v4.2.0.
+**Requirements Mapped:** COMP-01, QA-01..15
+**Depends on:** Phases 200–205
+**Status:** 📋 Planned
+**DISCUSS:** `.planning/phases/206-soc2-type1-foundation/DISCUSS.md`
+
+### Locked SaaS Decisions (2026-04-16)
+
+Summary: SaaS cloud first · platform fee + metered AI + BYOK discount · OpenAPI → SDKs → MCP → Webhooks → Zapier → Make → n8n order · 13 tier-1 connectors (Shopify · HubSpot · Stripe · Slack · Google Ads · Meta Ads · GA4 · Segment · Resend · Twilio · PostHog · Linear · Supabase) · 7 tier-1 languages v1 · SOC 2 Type I 6mo · Agency white-label upsell · Tiered autonomy · US-East → US+EU → APAC · Plugin + Agent marketplace Y1 · API-first + great UI · Target ICP: B2B SaaS + DTC + solopreneurs · Brand stance: developer-native · AI-first · quietly confident · Nango embedded.
+
+Full detail: `obsidian/thinking/2026-04-16-markos-saas-roadmap.md`.
 
 ## Archived Milestone Notes
 
