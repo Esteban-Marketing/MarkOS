@@ -1,0 +1,102 @@
+id: F-73-webhook-delivery-v1
+phase: 200
+name: Webhook Delivery
+status: active
+summary: Webhook delivery engine with signed HTTP POST + retry backoff.
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+
+delivery:
+  method: POST
+  content_type: application/json
+  signed_input: "{timestamp}.{body}"
+  signature_header: X-Markos-Signature
+  timestamp_header: X-Markos-Timestamp
+
+retry:
+  max_attempts: 24
+  backoff: exponential
+  base_delay_seconds: 5
+  max_delay_seconds: 86400
+  statuses:
+    pending: initial, awaiting first dispatch
+    retrying: failed but eligible for next attempt
+    delivered: 2xx response captured
+    failed: 24 attempts exhausted or unrecoverable
+
+paths:
+  /api/webhooks/test-fire:
+    post:
+      summary: Enqueue a synthetic delivery against an existing subscription
+      operationId: testFireWebhook
+      tags:
+        - webhooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subscription_id]
+              properties:
+                subscription_id: { type: string }
+                event: { type: string, default: approval.created }
+                payload: { type: object, additionalProperties: true }
+                skip_dispatch:
+                  type: boolean
+                  description: When true, enqueue only (useful for smoke tests).
+                  default: false
+      responses:
+        '200':
+          description: Delivery dispatched (sync path)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  delivery_id: { type: string, pattern: "^whdel_" }
+                  result:
+                    type: object
+                    properties:
+                      delivered: { type: boolean }
+                      status: { type: integer }
+                      attempt: { type: integer }
+        '202':
+          description: Delivery enqueued, not dispatched (skip_dispatch=true)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+                  delivery: { $ref: '#/components/schemas/WebhookDelivery' }
+        '404': { description: Subscription not found }
+
+components:
+  schemas:
+    WebhookDelivery:
+      type: object
+      required: [id, subscription_id, tenant_id, event, payload, attempt, status, created_at, updated_at]
+      properties:
+        id: { type: string, pattern: "^whdel_" }
+        subscription_id: { type: string }
+        tenant_id: { type: string }
+        event: { type: string }
+        payload: { type: object, additionalProperties: true }
+        attempt: { type: integer, minimum: 0, maximum: 24 }
+        status:
+          type: string
+          enum: [pending, retrying, delivered, failed]
+        response_code: { type: integer, nullable: true }
+        last_error: { type: string, nullable: true }
+        next_retry_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+storage:
+  table: markos_webhook_deliveries
+  rls: markos_tenant_memberships
+  migration: supabase/migrations/70_markos_webhook_subscriptions.sql

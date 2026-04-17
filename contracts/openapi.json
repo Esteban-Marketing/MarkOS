@@ -3,7 +3,7 @@
   "info": {
     "title": "MarkOS API",
     "version": "1.0.0",
-    "description": "Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 39 flow contracts.",
+    "description": "Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 41 flow contracts.",
     "contact": {
       "name": "MarkOS Engineering",
       "url": "https://markos.esteban.marketing"
@@ -168,6 +168,14 @@
     "F-64-REPORTING-DATA": {
       "source": "contracts/F-64-reporting-data-v1.yaml",
       "description": "MarkOS flow F-64-REPORTING-DATA"
+    },
+    "F-72-webhook-subscription-v1": {
+      "source": "contracts/F-72-webhook-subscription-v1.yaml",
+      "description": "MarkOS flow F-72-webhook-subscription-v1"
+    },
+    "F-73-webhook-delivery-v1": {
+      "source": "contracts/F-73-webhook-delivery-v1.yaml",
+      "description": "MarkOS flow F-73-webhook-delivery-v1"
     }
   },
   "tags": [
@@ -566,7 +574,7 @@
     },
     "/api/crm/funnel": {
       "get": {
-        "summary": "Return simple stage-count and value totals from canonical CRM records",
+        "summary": "Return canonical stage counts, values, and weighted forecast totals from CRM records",
         "responses": {
           "\"200\"": {
             "description": "Funnel rollups returned for the active pipeline and filters"
@@ -895,6 +903,181 @@
         "x-flow-version": "v1"
       }
     },
+    "/api/webhooks/list": {
+      "get": {
+        "summary": "List subscriptions for the calling tenant",
+        "operationId": "listWebhookSubscriptions",
+        "tags": [
+          "webhooks"
+        ],
+        "responses": {
+          "'200'": {
+            "description": "Subscription list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": "{ type: boolean }",
+                    "subscriptions": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/WebhookSubscription"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-flow-id": "F-72-webhook-subscription-v1",
+        "x-flow-name": "Webhook Subscription",
+        "x-domain": "general",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/webhooks/subscribe": {
+      "post": {
+        "summary": "Create a webhook subscription for the calling tenant",
+        "operationId": "createWebhookSubscription",
+        "tags": [
+          "webhooks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookSubscribeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "'201'": {
+            "description": "Subscription created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookSubscribeResponse"
+                }
+              }
+            }
+          },
+          "'400'": "{ description: Validation failed }",
+          "'401'": "{ description: Tenant context missing }"
+        },
+        "x-flow-id": "F-72-webhook-subscription-v1",
+        "x-flow-name": "Webhook Subscription",
+        "x-domain": "general",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/webhooks/test-fire": {
+      "post": {
+        "summary": "Enqueue a synthetic delivery against an existing subscription",
+        "operationId": "testFireWebhook",
+        "tags": [
+          "webhooks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": "[subscription_id]",
+                "properties": {
+                  "subscription_id": "{ type: string }",
+                  "event": "{ type: string, default: approval.created }",
+                  "payload": "{ type: object, additionalProperties: true }",
+                  "skip_dispatch": {
+                    "type": "boolean",
+                    "description": "When true, enqueue only (useful for smoke tests).",
+                    "default": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "'200'": {
+            "description": "Delivery dispatched (sync path)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": "{ type: boolean }",
+                    "delivery_id": "{ type: string, pattern: \"^whdel_\" }",
+                    "result": {
+                      "type": "object",
+                      "properties": {
+                        "delivered": "{ type: boolean }",
+                        "status": "{ type: integer }",
+                        "attempt": "{ type: integer }"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "'202'": {
+            "description": "Delivery enqueued, not dispatched (skip_dispatch=true)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": "{ type: boolean }",
+                    "delivery": "{ $ref: '#/components/schemas/WebhookDelivery' }"
+                  }
+                }
+              }
+            }
+          },
+          "'404'": "{ description: Subscription not found }"
+        },
+        "x-flow-id": "F-73-webhook-delivery-v1",
+        "x-flow-name": "Webhook Delivery",
+        "x-domain": "general",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/webhooks/unsubscribe": {
+      "post": {
+        "summary": "Deactivate a subscription (retained for audit, active=false)",
+        "operationId": "deactivateWebhookSubscription",
+        "tags": [
+          "webhooks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": "[id]",
+                "properties": {
+                  "id": "{ type: string }"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "'200'": "{ description: Subscription deactivated }",
+          "'404'": "{ description: Subscription not found }"
+        },
+        "x-flow-id": "F-72-webhook-subscription-v1",
+        "x-flow-name": "Webhook Subscription",
+        "x-domain": "general",
+        "x-flow-version": "v1"
+      }
+    },
     "/approve": {
       "post": {
         "summary": "Approve generated draft",
@@ -1219,6 +1402,64 @@
               "type": "string"
             }
           }
+        }
+      },
+      "F_72_webhook_subscription_v1_WebhookSubscribeRequest": {
+        "type": "object",
+        "required": "[url, events]",
+        "properties": {
+          "url": "{ type: string, format: uri }",
+          "events": {
+            "type": "array",
+            "items": "{ type: string }",
+            "minItems": 1
+          },
+          "secret": {
+            "type": "string",
+            "description": "Optional caller-provided secret; auto-generated if omitted."
+          }
+        }
+      },
+      "F_72_webhook_subscription_v1_WebhookSubscription": {
+        "type": "object",
+        "required": "[id, tenant_id, url, secret, events, active, created_at, updated_at]",
+        "properties": {
+          "id": "{ type: string, pattern: \"^whsub_\" }",
+          "tenant_id": "{ type: string }",
+          "url": "{ type: string, format: uri }",
+          "secret": "{ type: string }",
+          "events": "{ type: array, items: { type: string } }",
+          "active": "{ type: boolean }",
+          "created_at": "{ type: string, format: date-time }",
+          "updated_at": "{ type: string, format: date-time }"
+        }
+      },
+      "F_72_webhook_subscription_v1_WebhookSubscribeResponse": {
+        "type": "object",
+        "properties": {
+          "success": "{ type: boolean }",
+          "subscription": "{ $ref: '#/components/schemas/WebhookSubscription' }"
+        }
+      },
+      "F_73_webhook_delivery_v1_WebhookDelivery": {
+        "type": "object",
+        "required": "[id, subscription_id, tenant_id, event, payload, attempt, status, created_at, updated_at]",
+        "properties": {
+          "id": "{ type: string, pattern: \"^whdel_\" }",
+          "subscription_id": "{ type: string }",
+          "tenant_id": "{ type: string }",
+          "event": "{ type: string }",
+          "payload": "{ type: object, additionalProperties: true }",
+          "attempt": "{ type: integer, minimum: 0, maximum: 24 }",
+          "status": {
+            "type": "string",
+            "enum": "[pending, retrying, delivered, failed]"
+          },
+          "response_code": "{ type: integer, nullable: true }",
+          "last_error": "{ type: string, nullable: true }",
+          "next_retry_at": "{ type: string, format: date-time, nullable: true }",
+          "created_at": "{ type: string, format: date-time }",
+          "updated_at": "{ type: string, format: date-time }"
         }
       }
     }

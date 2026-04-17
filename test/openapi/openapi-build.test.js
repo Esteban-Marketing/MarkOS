@@ -69,7 +69,7 @@ test('x-markos-flows index is present', () => {
   assert.ok(flowCount > 0, `x-markos-flows must have entries, got ${flowCount}`);
 });
 
-test('all 39 F-NN contract files are represented in x-markos-flows', () => {
+test('all F-NN contract files are represented in x-markos-flows', () => {
   const doc = buildOpenApiDoc(CONTRACTS_DIR);
   const contractFiles = collectContractFileIds();
   const flowKeys = Object.keys(doc['x-markos-flows']);
@@ -77,10 +77,9 @@ test('all 39 F-NN contract files are represented in x-markos-flows', () => {
   // Each contract file should be referenced in x-markos-flows sources
   const sources = flowKeys.map(k => doc['x-markos-flows'][k].source);
 
-  assert.equal(
-    contractFiles.length,
-    39,
-    `Expected 39 F-NN contract files in contracts/, got ${contractFiles.length}`
+  assert.ok(
+    contractFiles.length >= 39,
+    `Expected at least 39 F-NN contract files in contracts/, got ${contractFiles.length}`
   );
 
   // Each contract file should appear in exactly one source entry
