@@ -69,7 +69,21 @@ function generateSecret(): string {
   return randomBytes(32).toString('hex');
 }
 
-export async function subscribe(store: WebhookStore, input: SubscribeInput): Promise<WebhookSubscription> {
+// Phase 201 Plan 08 Task 1: optional audit-emit carrier for subscribe/unsubscribe.
+// Backward-compatible: opts is optional; callers that don't pass it get the existing behaviour.
+export type WebhookAuditOpts = {
+  auditClient?: { from: (table: string) => unknown };
+  org_id?: string | null;
+  actor_id?: string;
+  actor_role?: string;
+};
+
+export async function subscribe(
+  store: WebhookStore,
+  input: SubscribeInput,
+  // _opts: TS signature carrier — runtime wiring lives in engine.cjs
+  _opts?: WebhookAuditOpts,
+): Promise<WebhookSubscription> {
   if (!input.tenant_id) throw new Error('tenant_id is required');
   assertValidUrl(input.url);
   assertValidEvents(input.events);
@@ -92,6 +106,8 @@ export async function unsubscribe(
   store: WebhookStore,
   tenant_id: string,
   id: string,
+  // _opts: TS signature carrier — runtime wiring lives in engine.cjs
+  _opts?: WebhookAuditOpts,
 ): Promise<WebhookSubscription> {
   const updated = await store.updateActive(tenant_id, id, false);
   if (!updated) throw new Error(`subscription not found: ${id}`);

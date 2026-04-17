@@ -1,0 +1,133 @@
+id: F-88-tenant-audit-query-v1
+flow_id: F-88-tenant-audit-query-v1
+flow_name: tenant_audit_query
+domain: tenancy
+phase: 201
+name: Tenant Audit Log Query
+version: v1
+status: active
+summary: |
+  Read-only query surface over the unified markos_audit_log (D-16). Tenant-admin + owner scope.
+  Hash chain fields (prev_hash, row_hash) are returned so callers can replay verification
+  against lib/markos/audit/chain-checker.cjs — the hash chain is per-tenant and tamper-evident.
+
+boundary:
+  tenant_scoped: true
+  requires_session: true
+  read_only: true
+
+decisions:
+  - D-16 single unified markos_audit_log
+  - D-17 per-tenant hash chain returned for verification
+
+paths:
+  /api/tenant/audit/list:
+    get:
+      summary: List audit entries for the active tenant
+      operationId: listTenantAudit
+      tags:
+        - tenancy
+        - audit
+      parameters:
+        - name: source_domain
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - auth
+              - tenancy
+              - orgs
+              - billing
+              - crm
+              - outbound
+              - webhooks
+              - approvals
+              - consent
+              - governance
+              - system
+        - name: action
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        '200':
+          description: Audit entries with chain pointers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuditEntry'
+                  has_more:
+                    type: boolean
+        '401':
+          description: unauthenticated
+        '403':
+          description: forbidden (not tenant-admin or owner)
+
+components:
+  schemas:
+    AuditEntry:
+      type: object
+      required:
+        - id
+        - occurred_at
+        - action
+        - source_domain
+        - prev_hash
+        - row_hash
+      properties:
+        id:
+          type: integer
+          format: int64
+        occurred_at:
+          type: string
+          format: date-time
+        action:
+          type: string
+        source_domain:
+          type: string
+        actor_id:
+          type: string
+          nullable: true
+        actor_role:
+          type: string
+          nullable: true
+        payload:
+          type: object
+          additionalProperties: true
+        prev_hash:
+          type: string
+        row_hash:
+          type: string
+
+security_considerations:
+  - Read-only surface — no UPDATE or DELETE paths on markos_audit_log (Plan 02 restrictive RLS blocks mutations).
+  - Result includes prev_hash + row_hash so a client can replay verify via lib/markos/audit/chain-checker.cjs.
+  - Limit capped at 500 to prevent pagination abuse; has_more flag signals caller to paginate via occurred_at cursor.
+  - Tenant isolation enforced by explicit .eq('tenant_id', tenant_id) filter + middleware-attached header.
