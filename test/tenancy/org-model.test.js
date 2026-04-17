@@ -55,10 +55,72 @@ test('Suite 201-01: rollback file exists + reverses every create', () => {
   assert.match(rb, /drop policy if exists markos_orgs_read_via_membership on markos_orgs/);
 });
 
-test('Suite 201-01: orgs contracts module exports canonical constants', { todo: 'implement after Task 2 writes contracts.ts' },
-  () => {
-    // This test becomes active once lib/markos/orgs/contracts.cjs exists.
-  });
+// --- Populated by Task 2 (library shape tests) ---
+test('Suite 201-01: contracts.cjs exports canonical constants', () => {
+  const c = require('../../lib/markos/orgs/contracts.cjs');
+  assert.deepEqual([...c.ORG_ROLES], ['owner', 'billing-admin', 'member', 'readonly']);
+  assert.deepEqual([...c.TENANT_STATUSES], ['active', 'suspended', 'offboarding', 'purged']);
+  assert.equal(c.DEFAULT_SEAT_QUOTA, 5);
+  assert.equal(c.isValidOrgRole('owner'), true);
+  assert.equal(c.isValidOrgRole('banana'), false);
+  assert.equal(Object.isFrozen(c.ORG_ROLES), true);
+});
 
-test('Suite 201-01: orgs api module exports createOrg / addOrgMember / countOrgActiveMembers', { todo: 'implement after Task 2 writes api.cjs' },
-  () => {});
+test('Suite 201-01: api.cjs exports all 5 helpers as functions', () => {
+  const a = require('../../lib/markos/orgs/api.cjs');
+  for (const name of ['createOrg', 'addOrgMember', 'listOrgsForUser', 'countOrgActiveMembers', 'getOrgByUserId']) {
+    assert.equal(typeof a[name], 'function', `${name} must be a function`);
+  }
+});
+
+test('Suite 201-01: createOrg rejects missing inputs', async () => {
+  const { createOrg } = require('../../lib/markos/orgs/api.cjs');
+  await assert.rejects(() => createOrg(null, {}), /supabase client/);
+  await assert.rejects(() => createOrg({ from: () => ({}) }, {}), /slug, name, owner_user_id/);
+});
+
+test('Suite 201-01: addOrgMember rejects invalid org_role', async () => {
+  const { addOrgMember } = require('../../lib/markos/orgs/api.cjs');
+  const mockClient = { from: () => ({}) };
+  await assert.rejects(
+    () => addOrgMember(mockClient, { org_id: 'o1', user_id: 'u1', org_role: 'banana' }),
+    /invalid org_role/
+  );
+});
+
+test('Suite 201-01: countOrgActiveMembers calls the RPC and handles null', async () => {
+  const { countOrgActiveMembers } = require('../../lib/markos/orgs/api.cjs');
+  let capturedArgs = null;
+  const mockClient = {
+    rpc: async (fn, args) => {
+      capturedArgs = { fn, args };
+      return { data: 7, error: null };
+    },
+  };
+  const n = await countOrgActiveMembers(mockClient, 'org-test');
+  assert.equal(n, 7);
+  assert.equal(capturedArgs.fn, 'count_org_active_members');
+  assert.deepEqual(capturedArgs.args, { p_org_id: 'org-test' });
+
+  // null data path
+  const mockClient2 = { rpc: async () => ({ data: null, error: null }) };
+  assert.equal(await countOrgActiveMembers(mockClient2, 'org-x'), 0);
+});
+
+test('Suite 201-01: createOrg uses DEFAULT_SEAT_QUOTA when not provided', async () => {
+  const { createOrg } = require('../../lib/markos/orgs/api.cjs');
+  let inserted = null;
+  const mockClient = {
+    from: (table) => ({
+      insert: (row) => {
+        inserted = { table, row };
+        return { select: () => ({ single: async () => ({ data: row, error: null }) }) };
+      },
+    }),
+  };
+  const result = await createOrg(mockClient, { slug: 'acme', name: 'Acme', owner_user_id: 'u1' });
+  assert.equal(result.seat_quota, 5);
+  assert.equal(result.status, 'active');
+  assert.equal(inserted.table, 'markos_orgs');
+  assert.match(result.id, /^org-/);
+});
