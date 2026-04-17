@@ -1,0 +1,138 @@
+id: F-81-passkey-webauthn-v1
+phase: 201
+name: Passkey (WebAuthn) Opt-In + Authentication
+status: active
+summary: |
+  WebAuthn registration + authentication ceremonies wrapped around @simplewebauthn/server v13.
+  Surfaced as an opt-in prompt on the user's second successful magic-link login (D-01).
+  Prompt card: components/markos/auth/PasskeyPrompt.tsx. Dismissal cookie: markos_passkey_prompt_dismissed (30 days).
+
+boundary:
+  tenant_scoped: false
+  public: false
+  requires_session: true
+
+decisions:
+  - D-01 passkey opt-in on second successful login; no password column
+
+paths:
+  /api/auth/passkey/register-options:
+    post:
+      summary: Issue WebAuthn registration options (server-side challenge) for the current session's user
+      operationId: passkeyRegisterOptions
+      tags: [auth, passkey]
+      responses:
+        '200':
+          description: PublicKeyCredentialCreationOptionsJSON + challenge_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationOptionsResponse'
+        '401': { description: unauthenticated }
+
+  /api/auth/passkey/register-verify:
+    post:
+      summary: Verify registration attestation and persist credential
+      operationId: passkeyRegisterVerify
+      tags: [auth, passkey]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterVerifyRequest'
+      responses:
+        '200':
+          description: Credential registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+        '400': { description: invalid_body | verification_failed | challenge_expired | challenge_not_found }
+        '401': { description: unauthenticated }
+
+  /api/auth/passkey/authenticate-options:
+    post:
+      summary: Issue authentication options for a user by user_id
+      operationId: passkeyAuthenticateOptions
+      tags: [auth, passkey]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties: { user_id: { type: string } }
+      responses:
+        '200':
+          description: PublicKeyCredentialRequestOptionsJSON + challenge_id
+        '400': { description: user_id_required }
+
+  /api/auth/passkey/authenticate-verify:
+    post:
+      summary: Verify authentication assertion and establish session
+      operationId: passkeyAuthenticateVerify
+      tags: [auth, passkey]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthVerifyRequest'
+      responses:
+        '200':
+          description: Verified; session cookie set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyResponse'
+        '400': { description: invalid_body | verification_failed | challenge_expired | credential_not_found }
+
+components:
+  schemas:
+    RegistrationOptionsResponse:
+      type: object
+      required: [options, challenge_id]
+      properties:
+        options: { type: object, description: 'PublicKeyCredentialCreationOptionsJSON from @simplewebauthn/server' }
+        challenge_id: { type: string, description: 'Opaque id of the server-stored challenge' }
+    RegisterVerifyRequest:
+      type: object
+      required: [challenge_id, attResponse]
+      properties:
+        challenge_id: { type: string }
+        attResponse: { type: object, description: 'RegistrationResponseJSON from @simplewebauthn/browser startRegistration' }
+    AuthVerifyRequest:
+      type: object
+      required: [user_id, challenge_id, authResponse]
+      properties:
+        user_id: { type: string }
+        challenge_id: { type: string }
+        authResponse: { type: object, description: 'AuthenticationResponseJSON from @simplewebauthn/browser startAuthentication' }
+    VerifyResponse:
+      type: object
+      required: [verified]
+      properties:
+        verified: { type: boolean }
+        credential_id: { type: string }
+    PasskeyCredential:
+      type: object
+      properties:
+        id: { type: string }
+        credential_id: { type: string }
+        public_key: { type: string, description: base64 }
+        counter: { type: integer }
+        device_type: { type: string, nullable: true }
+        backed_up: { type: boolean }
+        aaguid: { type: string, nullable: true }
+        nickname: { type: string, nullable: true }
+        last_used_at: { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
+
+security_considerations:
+  - Challenges are one-time — verifyRegistrationResponse + verifyAuthenticationResponse DELETE the challenge row after use.
+  - Challenge TTL is 120 seconds (lib/markos/auth/passkey.cjs PASSKEY_CHALLENGE_TTL_MS).
+  - Public keys are stored base64 in markos_passkey_credentials.public_key; RLS lets users read own credentials only.
+  - No hand-rolled CBOR / COSE / attestation parsing — all crypto is @simplewebauthn/server v13 (research D-01 "Do Not Hand-Roll").
+  - Counter check is part of verifyAuthenticationResponse; stale counters are rejected by the library.

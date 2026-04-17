@@ -1,0 +1,105 @@
+/* Phase 201 Surface 1 passkey prompt — inline dismissible card (NOT modal). */
+
+.promptCard {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px 24px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #0d9488;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+  max-width: 560px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heading {
+  margin: 0;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.body {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.primaryButton {
+  min-height: 44px;
+  padding: 8px 18px;
+  background: #0d9488;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.primaryButton:focus {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.secondaryButton {
+  min-height: 44px;
+  padding: 8px 18px;
+  background: transparent;
+  color: #475569;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.secondaryButton:focus {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.statusText {
+  margin: 0;
+  font-size: 14px;
+  color: #0f766e;
+}
+
+.errorText {
+  margin: 0;
+  font-size: 14px;
+  color: #9a3412;
+}
+
+.dismissButton {
+  background: transparent;
+  border: 0;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.dismissButton:focus {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
