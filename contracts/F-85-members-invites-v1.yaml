@@ -1,0 +1,172 @@
+id: F-85-members-invites-v1
+phase: 201
+name: Tenant Members + Invites
+status: active
+summary: |
+  Members management + invite lifecycle endpoints powering Surface 4 (/settings/members).
+  Seat-quota enforced at invite-create time and re-checked at accept time (D-06, D-08).
+
+boundary:
+  tenant_scoped: true
+  requires_session: true
+
+decisions:
+  - D-06 seat-pooled billing — quota lives on markos_orgs.seat_quota
+  - D-08 invite acceptance grants org readonly + tenant role; 7-day expiry
+
+paths:
+  /api/tenant/members/list:
+    get:
+      summary: List tenant members with seat usage
+      operationId: listTenantMembers
+      tags: [tenancy, members]
+      responses:
+        '200':
+          description: Members + seat usage
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [members, seat_usage]
+                properties:
+                  members:
+                    type: array
+                    items: { $ref: '#/components/schemas/TenantMembership' }
+                  seat_usage: { $ref: '#/components/schemas/SeatUsage' }
+        '401': { description: unauthenticated }
+
+  /api/tenant/members/remove:
+    post:
+      summary: Remove a tenant member
+      operationId: removeTenantMember
+      tags: [tenancy, members]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties:
+                user_id: { type: string }
+      responses:
+        '200':
+          description: Removed; audit emitted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean, enum: [true] }
+        '400': { description: user_id_required }
+        '401': { description: unauthenticated }
+        '404': { description: not_found }
+
+  /api/tenant/invites/create:
+    post:
+      summary: Create an invite (seat-quota gated)
+      operationId: createTenantInvite
+      tags: [tenancy, invites]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, tenant_role]
+              properties:
+                email: { type: string, format: email }
+                tenant_role:
+                  type: string
+                  enum: [owner, tenant-admin, manager, contributor, reviewer, billing-admin, readonly]
+      responses:
+        '201':
+          description: Invite created
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token, expires_at]
+                properties:
+                  token: { type: string }
+                  expires_at: { type: string, format: date-time }
+        '400': { description: seat_quota_reached | invalid_tenant_role | email_and_tenant_role_required }
+        '401': { description: unauthenticated }
+
+  /api/tenant/invites/accept:
+    post:
+      summary: Accept an invite via token
+      operationId: acceptTenantInvite
+      tags: [tenancy, invites]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+      responses:
+        '200':
+          description: Accepted; org + tenant membership inserted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [org_id, tenant_id, tenant_role]
+                properties:
+                  org_id: { type: string }
+                  tenant_id: { type: string }
+                  tenant_role: { type: string }
+        '400': { description: invite_not_found | invite_already_accepted | invite_withdrawn | invite_expired | invite_email_mismatch | seat_quota_reached | token_required }
+        '401': { description: unauthenticated }
+
+  /api/tenant/invites/withdraw:
+    post:
+      summary: Withdraw a pending invite
+      operationId: withdrawTenantInvite
+      tags: [tenancy, invites]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+      responses:
+        '200':
+          description: Withdrawn (idempotent)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean, enum: [true] }
+        '400': { description: token_required }
+        '401': { description: unauthenticated }
+
+components:
+  schemas:
+    TenantMembership:
+      type: object
+      required: [id, user_id, iam_role, created_at]
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        iam_role: { type: string }
+        created_at: { type: string, format: date-time }
+    SeatUsage:
+      type: object
+      required: [used, quota]
+      properties:
+        used: { type: integer }
+        quota: { type: integer }
+
+security_considerations:
+  - All mutations emit source_domain='tenancy' audit rows via enqueueAuditStaging.
+  - Invite token is 32-byte random (hex); never logged beyond 8-char prefix.
+  - acceptInvite re-checks seat quota at accept time per D-06.
+  - Email comparison is case-insensitive + trimmed; RLS prevents cross-tenant invite reads.

@@ -1,0 +1,106 @@
+id: F-86-tenant-lifecycle-v1
+phase: 201
+name: Tenant Lifecycle + GDPR Purge
+status: active
+summary: |
+  Offboarding state machine endpoints powering Surface 6 (/settings/danger) plus the cron-gated
+  purge runner that produces a GDPR export bundle per D-14 / D-15.
+
+boundary:
+  tenant_scoped: true
+  requires_session: true
+
+decisions:
+  - D-14 30-day offboarding grace window; cancellable by owner/tenant-admin
+  - D-15 GDPR export streams domain JSON files to S3/R2 with 7-day signed URL
+
+paths:
+  /api/tenant/lifecycle/offboard:
+    post:
+      summary: Initiate tenant offboarding (30-day purge timer)
+      operationId: initiateTenantOffboarding
+      tags: [tenancy, lifecycle]
+      responses:
+        '200':
+          description: Offboarding initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [purge_due_at]
+                properties:
+                  purge_due_at: { type: string, format: date-time }
+        '401': { description: unauthenticated }
+        '403': { description: forbidden (non-owner/tenant-admin) }
+        '409': { description: already_offboarding }
+
+  /api/tenant/lifecycle/cancel-offboard:
+    post:
+      summary: Cancel an in-progress offboarding within the 30-day grace window
+      operationId: cancelTenantOffboarding
+      tags: [tenancy, lifecycle]
+      responses:
+        '200':
+          description: Offboarding cancelled; tenant status=active
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string, enum: [active] }
+        '401': { description: unauthenticated }
+        '403': { description: forbidden }
+        '409': { description: not_offboarding }
+
+  /api/tenant/lifecycle/purge-cron:
+    post:
+      summary: Cron-gated purge runner (shared secret)
+      operationId: runTenantPurgeCron
+      tags: [tenancy, lifecycle, cron]
+      description: |
+        Requires x-markos-cron-secret header matching MARKOS_PURGE_CRON_SECRET env var.
+        Scans tenants with status='offboarding' AND purge_due_at<now, generates GDPR export
+        bundle via generateExportBundle (Pitfall-7 streaming), flips status='purged'.
+      responses:
+        '200':
+          description: All purges succeeded
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PurgeResult' }
+        '207':
+          description: Partial success (some tenants failed)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PurgeResult' }
+        '401': { description: unauthorised (missing or wrong cron secret) }
+
+components:
+  schemas:
+    PurgeResult:
+      type: object
+      required: [processed, purged, errors]
+      properties:
+        processed: { type: integer }
+        purged:
+          type: array
+          items:
+            type: object
+            required: [tenant_id, export_id]
+            properties:
+              tenant_id: { type: string }
+              export_id: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              tenant_id: { type: string }
+              stage: { type: string }
+              error: { type: string }
+
+security_considerations:
+  - MARKOS_PURGE_CRON_SECRET rotates at least quarterly; endpoint must be Vercel-cron-only.
+  - GDPR export signed URLs expire 7 days after generation (SIGNED_URL_TTL_SECONDS).
+  - Every lifecycle transition emits source_domain='tenancy' audit row (init, cancel, purged).
+  - runPurgeJob is idempotent per tenant: re-running skips already purge_ran_at!=null rows.

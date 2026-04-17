@@ -95,3 +95,13 @@ test('Suite 201-07: isTenantOffboarding returns days_remaining', async () => {
   assert.equal(r.offboarding, true);
   assert.ok(r.days_remaining >= 14 && r.days_remaining <= 16);
 });
+
+
+test('Suite 201-07: F-86 contract documents offboard + cancel-offboard + purge-cron', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const y = fs.readFileSync(path.join(__dirname, '..', '..', 'contracts', 'F-86-tenant-lifecycle-v1.yaml'), 'utf8');
+  assert.match(y, /\/api\/tenant\/lifecycle\/offboard/);
+  assert.match(y, /\/api\/tenant\/lifecycle\/cancel-offboard/);
+  assert.match(y, /\/api\/tenant\/lifecycle\/purge-cron/);
+});

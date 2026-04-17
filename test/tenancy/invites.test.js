@@ -149,3 +149,15 @@ test('Suite 201-07: acceptInvite auto-adds org readonly membership when user not
   assert.equal(c.state.tenantMemberships[0].iam_role, 'contributor');
   assert.ok(c.state.audit.some(a => a.action === 'invite.accepted'));
 });
+
+
+test('Suite 201-07: F-85 contract documents members + invites endpoints', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const y = fs.readFileSync(path.join(__dirname, '..', '..', 'contracts', 'F-85-members-invites-v1.yaml'), 'utf8');
+  assert.match(y, /\/api\/tenant\/members\/list/);
+  assert.match(y, /\/api\/tenant\/members\/remove/);
+  assert.match(y, /\/api\/tenant\/invites\/create/);
+  assert.match(y, /\/api\/tenant\/invites\/accept/);
+  assert.match(y, /\/api\/tenant\/invites\/withdraw/);
+});
