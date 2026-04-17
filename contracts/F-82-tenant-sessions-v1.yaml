@@ -1,0 +1,85 @@
+id: F-82-tenant-sessions-v1
+phase: 201
+name: Tenant Session Management
+status: active
+summary: |
+  Per-user, per-tenant session device list + revoke endpoints. Powers /settings/sessions (Surface 2).
+  30-day rolling session per D-04.
+
+boundary:
+  tenant_scoped: true
+  requires_session: true
+
+decisions:
+  - D-04 30-day rolling session + multi-device revoke via /settings/sessions
+
+paths:
+  /api/tenant/sessions/list:
+    get:
+      summary: List active sessions for the current user + tenant
+      operationId: listTenantSessions
+      tags: [tenancy, sessions]
+      responses:
+        '200':
+          description: List of active session devices
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SessionDevice'
+
+  /api/tenant/sessions/revoke:
+    post:
+      summary: Revoke a single session OR all other sessions
+      operationId: revokeTenantSessions
+      tags: [tenancy, sessions]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [session_id]
+                  properties:
+                    session_id: { type: string }
+                - type: object
+                  required: [all]
+                  properties:
+                    all: { type: boolean, enum: [true] }
+      responses:
+        '200':
+          description: Revoked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean, enum: [true] }
+                  revoked_count: { type: integer }
+        '400': { description: invalid_json | session_id_required | current_session_unknown }
+        '401': { description: unauthenticated }
+        '404': { description: not_found (session does not belong to user/tenant) }
+
+components:
+  schemas:
+    SessionDevice:
+      type: object
+      required: [session_id, last_seen_at, is_current]
+      properties:
+        session_id: { type: string }
+        device_label: { type: string, nullable: true }
+        user_agent: { type: string, nullable: true }
+        last_seen_at: { type: string, format: date-time }
+        location: { type: string, nullable: true }
+        is_current: { type: boolean }
+
+security_considerations:
+  - RLS on markos_sessions_devices limits reads to the owning user (auth.jwt()->>'sub').
+  - Revoke flips revoked_at — Supabase refresh token remains valid until next rotate; combine with client re-auth on middleware session check (Plan 08 wires this).
+  - SameSite=Lax session cookie (lib/markos/tenant/cookie-scope.cjs) blocks cross-subdomain CSRF per Pitfall 2.
+  - Session list never includes IP addresses; only hashed ip_hash (GDPR parity with signup).
