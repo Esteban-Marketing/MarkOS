@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Ready to execute
-last_updated: "2026-04-18T01:06:49.138Z"
+last_updated: "2026-04-18T04:08:07.051Z"
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 26
-  completed_plans: 23
-  percent: 88
+  completed_plans: 25
+  percent: 96
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,9 +17,87 @@ progress:
 ## Current Position
 
 Phase: 202 (mcp-server-ga-claude-marketplace) — EXECUTING
-Plan: 6 of 10
+Plan: 7 of 10
 
 ## What just happened (2026-04-18)
+
+- **Plan 202-07 shipped** (parallel executor, Wave 4) — 20 net-new tool handlers + 4 F-contracts + codegen.
+  - `lib/markos/mcp/tools/marketing/` +10 LLM handlers: `remix-draft.cjs` (Sonnet variants),
+    `rank-draft-variants.cjs` (Haiku scorer), `brief-to-plan.cjs` (Sonnet expander),
+    `generate-channel-copy.cjs` (Sonnet blocks), `expand-claim-evidence.cjs` (Sonnet + canon),
+    `clone-persona-voice.cjs` (Sonnet), `generate-subject-lines.cjs` (Haiku 10 candidates),
+    `optimize-cta.cjs` (Haiku alternatives), `generate-preview-text.cjs` (Haiku 5 candidates),
+    `audit-claim-strict.cjs` (Sonnet forces >=1 evidence).
+  - `lib/markos/mcp/tools/crm/` +5 handlers (4 simple reads wrapping `lib/markos/crm/*.cjs`
+    + 1 LLM `summarize-deal.cjs` Haiku): list_crm_entities / query_crm_timeline /
+    snapshot_pipeline / read_segment / summarize_deal. Every handler tenant-scoped (D-15)
+    with graceful-degrade fallback when downstream CRM libs unavailable.
+  - `lib/markos/mcp/tools/literacy/` +3 simple reads: `query-canon.cjs` (free-text),
+    `explain-archetype.cjs` (pack slug lookup), `walk-taxonomy.cjs` (children/parents/siblings).
+  - `lib/markos/mcp/tools/tenancy/` +2 READ-ONLY (D-01): `list-members.cjs`
+    (markos_tenant_memberships, RLS migration 51), `query-audit.cjs` (markos_audit_log,
+    F-88 read surface, RLS migration 82).
+  - 4 F-contracts: **F-90** (18 marketing+execution tools — widened from plan's 11
+    to include retained run_neuro_audit + research_audience + rank_execution_queue +
+    schedule_post so every descriptor has a schema entry; Rule 2 correctness fix),
+    **F-91** (5 crm), **F-92** (5 literacy: 2 retained + 3 new; explain_literacy.input
+    anyOf reshaped to mirror properties in each branch for AJV strict compatibility —
+    Rule 3 blocking fix), **F-93** (2 tenancy).
+  - `scripts/openapi/build-mcp-schemas.mjs`: Node ESM codegen that walks F-90..F-93,
+    resolves `$ref: "#/shared/..."` pointers, emits flat `{ tool_id: { input, output } }`
+    JSON to `lib/markos/mcp/_generated/tool-schemas.json`. Consumed at `ajv.cjs` module
+    load so strict AJV validators exist for all 30 tools at runtime (pipeline step 4a + 9).
+  - `lib/markos/mcp/tools/index.cjs`: TOOL_DEFINITIONS expanded 10 → 30 (Phase 200 retained
+    2 + Plan 202-06 wave-0 8 + Plan 202-07 net-new 20). listTools / invokeTool / getToolByName
+    exports unchanged. **Only `schedule_post` remains mutating** — D-01 tenancy minimal.
+  - New test suites: `marketing-net-new` (6) + `crm-net-new` (6) + `literacy-net-new` (4) +
+    `tenancy-net-new` (4) = 20 parametric assertions. `test/mcp/server.test.js` +5 Plan-202-07
+    tests (length===30, expected ids, mutating invariant, llm cost_model, registry coverage)
+    with 3 stale `length===10` updated to `===30` (Rule 1 migration from 10-tool snapshot).
+  - **Full MCP regression: 326/326 pass; Phase 201: 7/7 pass; all Plan 202-04/05/06 green.**
+  - Commits: `7cc1b49` (Task 1 RED) · `e8f6dd3` (Task 1 GREEN marketing+F-90) · `59d72a7`
+    (Task 2 RED) · `fd6d9ce` (Task 2 GREEN crm/literacy/tenancy+F-91..F-93) · `c22c729`
+    (Task 3 RED) · `50252d2` (Task 3 GREEN codegen+index.cjs+server.test.js).
+  - **Decisions:** (1) F-90 scope widened from 11 → 18 tools so every descriptor has a
+    compiled validator at module load (Rule 2 — schemas are correctness requirement).
+    (2) F-92 explain_literacy.input anyOf branches now carry properties metadata for
+    AJV strictRequired compatibility (Rule 3 — blocking fix; without it, ajv.cjs throws
+    at boot and every tools/call fails at pipeline step 9).
+    (3) Codegen uses `js-yaml` (pre-existing dep) rather than the plan's specified
+    `yaml` package — zero new deps added.
+
+- **Plan 202-09 shipped** (parallel executor, Wave 4) — Surface S1 `/settings/mcp` + 4 tenant APIs.
+  - 4 `/api/tenant/mcp/*` handlers: `usage.js` (rolling-24h spend vs cap + reset_at + plan_tier),
+    `sessions/list.js` (token_hash NEVER echoed), `sessions/revoke.js` (cross_tenant_forbidden
+    guard + `revokeSession` delegate with `reason='user_revoked_via_settings'`),
+    `cost-breakdown.js` (markos_audit_log aggregation by `payload.tool_id` over last 24h,
+    total_cost_cents desc + calls asc tie-break).
+
+  - Surface S1 `app/(markos)/settings/mcp/page.tsx` + `.module.css`: at-cap `role="alert"`
+    banner (#fef3c7/#d97706/#78350f), usage card (h1 "MCP server" Sora 28px + `role="meter"`
+    cost meter + reset timer + Refresh), top-tools list (clickable filter chips), sessions
+    `<table>` with `<caption>` + scope="col" + per-row Revoke, breakdown `<details>`
+    (filterable), revoke confirm native `<dialog>` (destructive #9a3412 filled + neutral
+    Cancel), toast `role="status" aria-live="polite"` with 200ms slide-in. 30s auto-refresh
+    on usage + sessions; breakdown manual. Every CSS class traces to Phase 201 ancestor
+    (sessions/members/danger).
+
+  - `contracts/F-95-mcp-cost-budget-v1.yaml`: 4 paths + 402 `budget_exhausted` -32001 envelope;
+    cross-references Plan 202-03 cost-meter for enforcement path.
+
+  - New suites: `test/mcp/mcp-usage-api.test.js` (12 handler cases) +
+    `test/mcp/mcp-settings-ui-a11y.test.js` (15 UI grep-shape + token cases).
+    27/27 green. Full MCP suite (Wave-1 + Wave-2 + Wave-3 + Wave-4) **277/277 green**.
+
+  - Commits: e679c7b (Task 1 RED) · c3857d8 (Task 1 GREEN + F-95) · 15dc6cc (Task 2 RED) ·
+    b6fbe2d (Task 2 GREEN).
+
+  - **Decisions:** (1) Secondary sort by calls ASC on cost-breakdown total-cost tie (higher
+    cost-per-call is the more informative signal; dictated by plan's own test).
+    (2) `/api/tenant/mcp/sessions/revoke` hardens cross-tenant with SELECT before UPDATE →
+    403 cross_tenant_forbidden (T-202-09-01 mitigation). (3) org_id optional on /usage with
+    fail-safe to plan_tier='free' (lowest cap) — prevents 401 cascade while preserving
+    tenant_id as authoritative scope.
 
 - **Plan 202-05 shipped** (parallel executor, Wave 3) — MCP observability + Bearer envelope ready.
   - `lib/markos/mcp/log-drain.cjs` + `.ts` dual-export: `emitLogLine` D-30 shape
