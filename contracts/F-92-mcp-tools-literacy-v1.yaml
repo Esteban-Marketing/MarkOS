@@ -32,12 +32,20 @@ tools:
     input:
       type: object
       additionalProperties: false
-      anyOf:
-        - required: [node_id]
-        - required: [archetype]
       properties:
         node_id: { type: string, maxLength: 200 }
         archetype: { type: string, maxLength: 200 }
+      # Each anyOf branch mirrors the same properties so AJV strict mode
+      # (strictRequired) accepts the `required` lists at the subschema level.
+      anyOf:
+        - required: [node_id]
+          properties:
+            node_id: { type: string, maxLength: 200 }
+            archetype: { type: string, maxLength: 200 }
+        - required: [archetype]
+          properties:
+            node_id: { type: string, maxLength: 200 }
+            archetype: { type: string, maxLength: 200 }
     output: { $ref: "#/shared/content_only" }
 
   query_canon:

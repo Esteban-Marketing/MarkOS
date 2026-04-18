@@ -34,9 +34,12 @@ function parse(res) {
   return JSON.parse(res.body || '{}');
 }
 
-test('listTools returns 10 tools with required fields', () => {
+test('listTools returns 30 tools with required fields (Plan 202-07 expansion)', () => {
+  // Plan 202-07 expanded the registry from 10 (Plan 202-06) to 30 (D-02 pitch:
+  // "30 tools, all live, zero stubs"). Every descriptor advertises name +
+  // description + inputSchema to MCP clients (handler/outputSchema internal).
   const tools = listTools();
-  assert.equal(tools.length, 10);
+  assert.equal(tools.length, 30);
   for (const tool of tools) {
     assert.equal(typeof tool.name, 'string');
     assert.equal(typeof tool.description, 'string');
@@ -88,17 +91,18 @@ test('invokeTool: unknown tool throws', async () => {
   await assert.rejects(invokeTool('nonexistent_tool', {}), /unknown tool/);
 });
 
-test('GET /api/mcp/session returns SERVER_INFO + tools', async () => {
+test('GET /api/mcp/session returns SERVER_INFO + 30 tools (Plan 202-07)', async () => {
   const req = makeReq({ method: 'GET' });
   const res = makeRes();
   await handleSession(req, res);
   assert.equal(res.statusCode, 200);
   const payload = parse(res);
   assert.equal(payload.server.name, SERVER_INFO.name);
-  assert.equal(payload.tools.length, 10);
+  // Plan 202-07 expanded the registry from 10 to 30 (D-02 pitch).
+  assert.equal(payload.tools.length, 30);
 });
 
-test('POST /api/mcp/session tools/list returns 10 tools', async () => {
+test('POST /api/mcp/session tools/list returns 30 tools (Plan 202-07)', async () => {
   const req = makeReq({ method: 'POST' });
   // Simulate streamed body
   const body = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list' });
@@ -111,7 +115,8 @@ test('POST /api/mcp/session tools/list returns 10 tools', async () => {
   const payload = parse(res);
   assert.equal(payload.jsonrpc, '2.0');
   assert.equal(payload.id, 1);
-  assert.equal(payload.result.tools.length, 10);
+  // Plan 202-07 expanded the registry from 10 to 30 (D-02 pitch).
+  assert.equal(payload.result.tools.length, 30);
 });
 
 test('POST /api/mcp/session initialize returns protocolVersion', async () => {

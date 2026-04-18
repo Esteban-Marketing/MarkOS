@@ -1,17 +1,19 @@
 id: F-90-mcp-tools-marketing-v1
 phase: 202
 plan: 07
-name: MCP Tools — Marketing (14)
+name: MCP Tools — Marketing + Execution (18)
 status: active
 summary: >-
-  JSON Schema input/output contracts for 14 MCP marketing tools — draft_message +
-  plan_campaign + generate_brief + audit_claim (retained from Phase 200 / Plan
-  202-06) plus 10 net-new from Plan 202-07 (remix_draft, rank_draft_variants,
-  brief_to_plan, generate_channel_copy, expand_claim_evidence, clone_persona_voice,
+  JSON Schema input/output contracts for 18 MCP marketing + execution tools —
+  draft_message + plan_campaign + generate_brief + audit_claim + run_neuro_audit
+  + research_audience (retained from Phase 200 / Plan 202-06), rank_execution_queue
+  + schedule_post (retained execution, the only mutating tool) plus 10 net-new
+  from Plan 202-07 (remix_draft, rank_draft_variants, brief_to_plan,
+  generate_channel_copy, expand_claim_evidence, clone_persona_voice,
   generate_subject_lines, optimize_cta, generate_preview_text, audit_claim_strict).
   Schemas are the source of truth consumed by scripts/openapi/build-mcp-schemas.mjs
   into lib/markos/mcp/_generated/tool-schemas.json for AJV runtime validation
-  (Plan 202-04). Every marketing tool is non-mutating.
+  (Plan 202-04). All tools non-mutating EXCEPT schedule_post (D-01 gate).
 
 references:
   - F-71-mcp-session-v2 (tool dispatch envelope)
@@ -212,7 +214,72 @@ tools:
         body: { type: string, minLength: 1, maxLength: 10000 }
     output: { $ref: "#/shared/llm_content_plus_usage" }
 
+  run_neuro_audit:
+    description: Run a neuro-audit pass over a draft and return scored issues.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [text]
+      additionalProperties: false
+      properties:
+        text: { type: string, minLength: 1, maxLength: 10000 }
+        brief: { type: object, additionalProperties: true }
+    output: { $ref: "#/shared/content_only" }
+
+  research_audience:
+    description: Return tenant-scoped audience research derived from pack-loader pain-point taxonomy.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      additionalProperties: false
+      required: [audience]
+      properties:
+        audience: { type: string, minLength: 1, maxLength: 500 }
+    output: { $ref: "#/shared/content_only" }
+
+  rank_execution_queue:
+    description: Rank pending execution queue items by priority + confidence. Tenant-scoped read.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      additionalProperties: false
+      required: []
+      properties:
+        limit: { type: integer, minimum: 1, maximum: 100 }
+    output: { $ref: "#/shared/content_only" }
+
+  schedule_post:
+    description: Schedule a channel-bound post for delivery. Mutating — requires approval round-trip (Plan 202-04 step 6).
+    latency_tier: simple
+    mutating: true
+    input:
+      type: object
+      required: [channel, content, scheduled_at]
+      additionalProperties: false
+      properties:
+        channel: { type: string, enum: [email, x, linkedin, sms] }
+        content: { type: string, minLength: 1, maxLength: 5000 }
+        scheduled_at: { type: string, format: date-time }
+        approval_token: { type: string, pattern: "^[0-9a-f]{32}$" }
+    output: { $ref: "#/shared/content_only" }
+
 shared:
+  content_only:
+    type: object
+    required: [content]
+    additionalProperties: true
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          required: [type, text]
+          properties:
+            type: { enum: [text] }
+            text: { type: string }
   llm_content_plus_usage:
     type: object
     required: [content, _usage]
