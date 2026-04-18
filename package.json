@@ -71,6 +71,7 @@
     "@upstash/redis": "^1.37.0",
     "@upstash/vector": "^1.2.3",
     "@vercel/edge-config": "^1.4.3",
+    "@vercel/queue": "^0.1.6",
     "ajv": "^8.18.0",
     "ajv-formats": "^3.0.1",
     "archiver": "^7.0.1",
