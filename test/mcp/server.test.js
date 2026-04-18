@@ -292,3 +292,81 @@ test('Suite 202-08: POST resources/read without uri param returns 400 missing ur
   );
   assert.equal(res.statusCode, 401);
 });
+
+// ---------------------------------------------------------------------------
+// Plan 202-07 extensions: 30-tool registry + _generated/tool-schemas.json
+// ---------------------------------------------------------------------------
+
+const { TOOL_DEFINITIONS } = require('../../lib/markos/mcp/tools/index.cjs');
+
+const EXPECTED_30 = [
+  // Phase 200 retained
+  'draft_message',
+  'run_neuro_audit',
+  // Plan 202-06 (8 wave-0 graduated)
+  'plan_campaign',
+  'research_audience',
+  'generate_brief',
+  'audit_claim',
+  'list_pain_points',
+  'rank_execution_queue',
+  'schedule_post',
+  'explain_literacy',
+  // Plan 202-07 marketing (10)
+  'remix_draft',
+  'rank_draft_variants',
+  'brief_to_plan',
+  'generate_channel_copy',
+  'expand_claim_evidence',
+  'clone_persona_voice',
+  'generate_subject_lines',
+  'optimize_cta',
+  'generate_preview_text',
+  'audit_claim_strict',
+  // Plan 202-07 CRM (5)
+  'list_crm_entities',
+  'query_crm_timeline',
+  'snapshot_pipeline',
+  'read_segment',
+  'summarize_deal',
+  // Plan 202-07 literacy (3)
+  'query_canon',
+  'explain_archetype',
+  'walk_taxonomy',
+  // Plan 202-07 tenancy (2)
+  'list_members',
+  'query_audit',
+];
+
+test('Suite 202-07: TOOL_DEFINITIONS.length === 30 (D-02 "30 tools, all live, zero stubs")', () => {
+  assert.equal(TOOL_DEFINITIONS.length, 30);
+});
+
+test('Suite 202-07: every expected tool_id from RESEARCH Tool Inventory is present', () => {
+  const names = TOOL_DEFINITIONS.map((d) => d.name);
+  for (const e of EXPECTED_30) {
+    assert.ok(names.includes(e), `missing tool: ${e}`);
+  }
+});
+
+test('Suite 202-07: only schedule_post is mutating (D-01 + T-202-07-06 accept)', () => {
+  const mutating = TOOL_DEFINITIONS.filter((d) => d.mutating === true).map((d) => d.name);
+  assert.deepEqual(mutating, ['schedule_post']);
+});
+
+test('Suite 202-07: every LLM-tier tool has a model in cost_model.model', () => {
+  for (const d of TOOL_DEFINITIONS) {
+    if (d.latency_tier === 'llm') {
+      assert.ok(d.cost_model && d.cost_model.model, `${d.name} is llm tier but missing cost_model.model`);
+    }
+  }
+});
+
+test('Suite 202-07: _generated/tool-schemas.json contains input + output for all 30 tools', () => {
+  const reg = require('../../lib/markos/mcp/_generated/tool-schemas.json');
+  for (const e of EXPECTED_30) {
+    assert.ok(reg[e], `_generated/tool-schemas.json missing: ${e}`);
+    assert.ok(reg[e].input, `${e} missing input schema`);
+    assert.ok(reg[e].output, `${e} missing output schema`);
+  }
+});
