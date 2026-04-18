@@ -2,21 +2,93 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Ready to plan
-last_updated: "2026-04-18T04:39:02.905Z"
+status: Executing Phase 203
+last_updated: "2026-04-18T06:29:34.371Z"
 progress:
   total_phases: 7
   completed_phases: 3
-  total_plans: 26
-  completed_plans: 26
+  total_plans: 36
+  completed_plans: 28
+  percent: 78
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 202 (mcp-server-ga-claude-marketplace) — **COMPLETE (10/10 plans)** — ready for `/gsd-verify-phase 202`
-Plan: Not started
+Phase: 203 (webhook-subscription-engine-ga) — EXECUTING
+Plan: Wave 1 complete (203-01 + 203-02 shipped in parallel)
+
+## What just happened (2026-04-18, Plan 203-02 close — parallel Wave 1)
+
+- **Plan 203-02 shipped** (parallel executor, Wave 1 — ran alongside 203-01) —
+  two-layer SSRF defense + Migration 72 DLQ/rotation schema substrate.
+
+  - `lib/markos/webhooks/ssrf-guard.cjs` + `.ts` dual-export: `assertUrlIsPublic`
+    blocks 6 IPv4 CIDRs (127/8, 10/8, 172.16/12, 192.168/16, 169.254/16 cloud
+    IMDS, 0/8) + 3 IPv6 prefixes (`::1`, `fc00::/7`, `fe80::/10`) + HTTPS-only.
+    `cidrContains` uses 32-bit-mask impl; `lookup` is dep-injectable for tests.
+
+  - `api/webhooks/subscribe.js`: pre-insert guard returns 400
+    `{success:false, error: private_ip | https_required | invalid_scheme}`
+    (category prefix stripped from `Error('private_ip:loopback')` etc) —
+    matches UI-SPEC Surface-1 locked copy.
+
+  - `lib/markos/webhooks/delivery.cjs`: dispatch-time SSRF re-check for
+    DNS-rebinding defense. On known-SSRF codes marks delivery FAILED with
+    `dlq_reason: ssrf_blocked:<code>` + `dlq_at = now()`, no retry. DNS
+    ENOTFOUND and other transient errors fall through to fetch (Rule 3
+    fix — preserves 203-01 `https://ex.test/hook` fixture compatibility).
+
+  - `supabase/migrations/72_markos_webhook_dlq_and_rotation.sql` (175 LOC):
+    - 5 rotation/override cols on `markos_webhook_subscriptions` (secret_v2,
+      grace_started_at, grace_ends_at, rotation_state, rps_override) with
+      CHECK constraint guarded by `do $$ ... pg_constraint $$` block.
+    - 4 DLQ cols on `markos_webhook_deliveries` (replayed_from self-ref FK,
+      dlq_reason, final_attempt, dlq_at) + `idx_deliveries_dlq_retention`
+      partial index WHERE status='failed'.
+    - `markos_webhook_secret_rotations` ledger table (10 cols, tenant_id FK,
+      state CHECK in active|rolled_back|finalized, grace_ends_at) with RLS +
+      `rotations_read_via_tenant` policy (tenant-membership gated) +
+      `idx_rotations_active` partial index WHERE state='active'.
+    - `markos_webhook_fleet_metrics_v1` view — 48h rollup per (tenant_id,
+      hour) with total/delivered/failed/retrying counts + avg_latency_ms
+      over delivered rows. S1 hero source (D-04).
+    - 3 rotation RPC stubs (`start_/rollback_/finalize_expired_webhook_rotation`)
+      declared with `raise exception 'body ships in Plan 203-05'` — downstream
+      plans reference signatures without waiting on Wave 3.
+
+  - `supabase/migrations/rollback/72_*.rollback.sql` (37 LOC): reverse-order
+    drops (functions → view → rotations table + policy + index → delivery
+    indexes + FK + 4 cols → subscription constraint + 5 cols). All `if exists`.
+
+  - New suites: `test/webhooks/ssrf-guard.test.js` (19 — 17 plan behaviors +
+    BLOCKED_V4 + cidrContains sanity) + `test/webhooks/migration-72.test.js`
+    (10 — 8 grep-shape + 2 live-pg skips when TEST_DATABASE_URL unset).
+    Full webhook suite: **93/93 green + 2 skips** (no 200-03 or 203-01 regression).
+
+  - Commits: `50e471a` (Task 1 RED) · `67b6ede` (Task 1 GREEN: SSRF lib +
+    subscribe + dispatch wiring) · `dab27d8` (Task 2 RED) · `dc2a146` (Task 2
+    GREEN: migration 72 + rollback + dispatch fall-through narrowing).
+
+  - **Decisions:** (1) Literal IPs (e.g. `127.0.0.1`) fall through DNS
+    short-circuit so errors carry the `:loopback` / `:private` / `:link-local`
+    suffix callers rely on. (2) Dispatch-time SSRF only acts on known guard
+    codes; DNS ENOTFOUND falls through (unresolvable hosts cannot SSRF).
+    (3) Constraint idempotency via `do $$ ... pg_constraint $$` guards (PG's
+    `alter table add constraint` has no `if not exists` clause pre-PG17).
+    (4) `on delete set null` on `replayed_from` FK preserves replay audit
+    trail even after parent deletion.
+
+  - **Downstream unlocks:** 203-03 (DLQ) + 203-04 (Replay) + 203-05 (Rotation
+    body-fill) + 203-07 (rps_override) + 203-09 (fleet-metrics view) all now
+    have their schema substrate in place.
+
+## Next step
+
+Wave-1 complete. Proceed to Wave 2 (Plans 203-03 + 203-04 + 203-06) per
+203-PLAN sequencing (DLQ + replay + rate-limit can run in parallel now
+that schema + SSRF substrate is locked).
 
 ## What just happened (2026-04-18, Plan 202-10 close)
 
