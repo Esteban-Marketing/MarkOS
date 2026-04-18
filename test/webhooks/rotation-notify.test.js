@@ -345,7 +345,6 @@ describe('notifyRotations', () => {
       },
     ];
 
-    const auditInserts = [];
     const client = mockSupabase({
       tableResponses: {
         markos_webhook_secret_rotations: () => ({ data: rotations, error: null }),
@@ -353,16 +352,24 @@ describe('notifyRotations', () => {
           data: [{ user_id: 'u1', users: { email: 'admin@example.com' } }],
           error: null,
         }),
-        markos_audit_log_staging: (state) => {
-          if (state.op === 'insert') auditInserts.push(state.row);
-          return { data: { id: 'a_' + auditInserts.length }, error: null };
-        },
       },
     });
 
+    // Inject enqueueAuditStaging via deps so we capture audit rows without
+    // needing the mock to implement .select().single() terminals.
+    const auditInserts = [];
+    const auditEmit = async (_client, entry) => {
+      auditInserts.push(entry);
+      return { staging_id: 'a_' + auditInserts.length };
+    };
+
     const redis = mockRedis();
     const resend = mockResend();
-    await notifyRotations(client, new Date(), { redis, resendClient: resend });
+    await notifyRotations(client, new Date(), {
+      redis,
+      resendClient: resend,
+      enqueueAuditStaging: auditEmit,
+    });
 
     assert.equal(auditInserts.length, 1);
     assert.equal(auditInserts[0].source_domain, 'webhooks');

@@ -5,6 +5,8 @@
 // Phase 203 Plan 01 Task 2: extended with Vercel Queues push consumer (queue/v2beta —
 // rename expected when Vercel exits beta; see deferred-items.md).
 // Phase 203 Plan 03 Task 2: extended with webhooks DLQ purge cron (D-08 7-day TTL).
+// Phase 203 Plan 06 Task 1: extended with webhook rotation notification cron (D-11
+// T-7/T-1/T-0 admin email sweep; shares MARKOS_WEBHOOK_CRON_SECRET with 03).
 // Vercel picks vercel.ts over vercel.json when both are present, so the rewrite block
 // from vercel.json is mirrored here to preserve the phase 200 onboarding routes.
 
@@ -32,6 +34,9 @@ export default {
     { path: '/api/cron/mcp-kpi-digest', schedule: '0 9 * * 1' },
     // Webhook DLQ purge (Plan 203-03) — hard-delete failed deliveries past 7d (D-08); audit row emitted per batch
     { path: '/api/cron/webhooks-dlq-purge', schedule: '30 3 * * *' },
+    // Webhook rotation notifications (Plan 203-06) — sweep active rotations at T-7/T-1/T-0 stages and email
+    // tenant admins (role in owner/admin). Redis SET NX EX 90d dedupes each rotation+stage to exactly one send.
+    { path: '/api/cron/webhooks-rotation-notify', schedule: '0 4 * * *' },
   ],
   functions: {
     // Phase 203 Plan 01: Vercel Queues push consumer (queue/v2beta — rename expected when
