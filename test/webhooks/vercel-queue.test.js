@@ -23,10 +23,11 @@ describe('api/webhooks/queues/deliver.js consumer', () => {
     const { asyncHandler } = consumer.__internals;
 
     // Seed memory stores with a subscription + delivery so processDelivery finds them.
+    // Use example.com (RFC 2606 — resolves to a public IP) so the 203-02 SSRF guard passes.
     const { getWebhookStores } = require('../../lib/markos/webhooks/store.cjs');
     const { subscriptions, deliveries } = getWebhookStores({ mode: 'memory' });
     await subscriptions.insert({
-      id: 'whsub_1', tenant_id: 't-1', url: 'https://ex.test/hook',
+      id: 'whsub_1', tenant_id: 't-1', url: 'https://example.com/hook',
       secret: 's', events: ['approval.created'], active: true,
       created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
     });
