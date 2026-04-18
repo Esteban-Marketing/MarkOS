@@ -2,14 +2,13 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Phase 202 complete — ready for /gsd-verify-phase 202
-last_updated: "2026-04-18T04:24:22Z"
+status: Ready to plan
+last_updated: "2026-04-18T04:39:02.905Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 26
   completed_plans: 26
-  percent: 100
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,7 +16,7 @@ progress:
 ## Current Position
 
 Phase: 202 (mcp-server-ga-claude-marketplace) — **COMPLETE (10/10 plans)** — ready for `/gsd-verify-phase 202`
-Plan: 10 of 10 shipped
+Plan: Not started
 
 ## What just happened (2026-04-18, Plan 202-10 close)
 
@@ -26,39 +25,53 @@ Plan: 10 of 10 shipped
     D-24 headline ("MCP-native marketing workbench. 30 tools. Claude-native by design."), D-21 pricing
     tiers (free: 30 read-only + $1/day; paid: all 30 + $100/day), `server.url` now
     `https://markos.dev/api/mcp`, `icon: /mcp-icon.png`, homepage + repository + categories.
+
   - `public/mcp-icon.png` — real 512x512 PNG (12561 bytes) via `sharp` + SVG source (solid
     teal #0d9488 + centered "MarkOS" wordmark). M3 enforced: no 1x1 fallback; task hard-fails
     if neither sharp nor canvas generator resolves.
+
   - `scripts/marketplace/`: validate-manifest.mjs (AJV + Anthropic schema URL + structural
     fallback), generate-icon.mjs (sharp-primary + canvas fallback + hard-fail), verify-icon.mjs
     (PNG IHDR dimension gate for CI), generate-tools-doc.mjs (one-shot codegen of docs/mcp-tools.md).
+
   - 5 docs shipped: `docs/mcp-tools.md` (30 auto-generated sections), `docs/vscode-mcp-setup.md`
     (D-08), `docs/oauth.md` (full PKCE + DCR curl walkthrough with RFC 7636/7591/7009/8414/8707/9728
     refs), `docs/mcp-redteam-checklist.md` (QA-11 manual checklist + D-31 Rolling Releases +
     D-19 observability alert), `docs/llms/phase-202-mcp.md` (LLM-friendly overview + 6 links).
+
   - `public/llms.txt` appended with `## Phase 202 — MCP Server GA` section (QA-15); Phase 201
     section preserved.
+
   - `scripts/load/mcp-smoke.mjs` — 60-concurrent × 60s k6-equivalent load harness (QA-07);
     gates p95 ≤ 300ms (D-18) + error_rate ≤ 1%; dry-run when `MARKOS_MCP_BEARER` unset.
+
   - `scripts/mcp/verify-cost-table.mjs` — manual Anthropic drift check vs MODEL_RATES; dry-run
     when `ANTHROPIC_API_KEY` unset.
+
   - `scripts/mcp/emit-kpi-digest.mjs` — pure-function module (`computeWeeklyKpi` + `sendDigest`
     with Resend email or console fallback); tracks D-23 (≥ 50 installs in 30 days).
+
   - `api/cron/mcp-kpi-digest.js` — Vercel cron wrapper, `MARKOS_MCP_CRON_SECRET`-gated
     (Plan 202-01 pattern mirrored).
+
   - `vercel.ts` — 5th cron entry `{ path: '/api/cron/mcp-kpi-digest', schedule: '0 9 * * 1' }`
     (Monday 9am UTC). Existing 4 crons preserved.
+
   - `contracts/openapi.json` regenerated: 85 paths / 59 flows (up from 69/51). F-89 OAuth (7 paths)
     + F-95 `/api/tenant/mcp/*` (4 paths) + F-71-v2 `/api/mcp/session` all merged.
     `test/openapi/openapi-build.test.js` extended with 3 Phase-202 path-coverage assertions.
+
   - 3 LLM eval suites with deterministic `fakeLLM` fixtures (QA-08 eval-as-test, CI-safe):
     plan-campaign-eval (4), draft-message-eval (4), audit-claim-eval (4).
+
   - 2 manifest/docs test suites: marketplace-manifest.test.js (14), docs-mirror.test.js (10).
     36 net-new assertions — all green. Full Phase 202 MCP regression: **362/362 green**
     (up from 326 at Plan 202-07 close).
+
   - Commits: `ffdbb60` (Task 1 RED) · `676e9b9` (Task 1 GREEN: marketplace + icon + validator)
     · `2e15c4e` (Task 2 RED) · `2456249` (Task 2 GREEN: 5 docs + llms.txt) · `257e0d9`
     (Task 3 RED) · `ff67ae2` (Task 3 GREEN: load smoke + cost verifier + KPI cron + openapi regen).
+
   - **Decisions:** (1) `sharp` chosen over `canvas` as primary icon generator — widely deployed
     on Vercel stacks; canvas remains fallback. (2) KPI digest module split: pure-function
     `emit-kpi-digest.mjs` + thin `api/cron/mcp-kpi-digest.js` wrapper — CLI-invocable +
@@ -66,6 +79,7 @@ Plan: 10 of 10 shipped
     env absent — CI-safe without production secrets. (4) Pre-existing per-operation `tags:`
     missing on 35 openapi paths logged to `deferred-items.md` (scope boundary; plan-10 regen
     actually improved the failure count from 2 to 1).
+
   - **Phase 202 closes at 10/10 plans.** Claude Marketplace + VS Code cert submissions now
     deliverable. QA-06 (Playwright) deferred per plan 202-10 `<phase_level_notes>` — documented
     for `/gsd-verify-work` to treat as testing-infra-phase work.
@@ -300,7 +314,7 @@ After verification clears, proceed to Phase 202 per ROADMAP.
 Phase: 201 (saas-tenancy-hardening)
 Plan: 1 of 8
 **Milestone:** v4.0.0 — SaaS Readiness 1.0 — active
-**Phase:** 201
+**Phase:** 203
 **Quality Baseline:** 15 gates defined in `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`; inherited by every subsequent phase.
 
 ## What just happened (2026-04-16)
