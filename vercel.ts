@@ -1,6 +1,7 @@
 // Phase 201 Plan 08 Task 1: Vercel configuration-as-TypeScript.
 // Registers cron schedules for audit drain, tenant purge, and signup buffer cleanup.
 // Phase 202 Plan 01 Task 3: extended with MCP session cleanup cron (D-06 retention).
+// Phase 202 Plan 10 Task 3: extended with weekly MCP KPI digest (D-23 install tracking).
 // Vercel picks vercel.ts over vercel.json when both are present, so the rewrite block
 // from vercel.json is mirrored here to preserve the phase 200 onboarding routes.
 
@@ -24,5 +25,7 @@ export default {
     { path: '/api/auth/cleanup-unverified-signups', schedule: '0 */1 * * *' },
     // MCP session cleanup (Plan 202-01) — hard-purge rows where expires_at or revoked_at + 7d has passed (D-06 retention)
     { path: '/api/mcp/session/cleanup', schedule: '0 */6 * * *' },
+    // MCP KPI digest (Plan 202-10) — weekly founders email: installs + top tools + p95 (D-23 >= 50 installs/30d)
+    { path: '/api/cron/mcp-kpi-digest', schedule: '0 9 * * 1' },
   ],
 };

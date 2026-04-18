@@ -5,7 +5,7 @@ openapi: 3.1.0
 info:
   title: MarkOS API
   version: 1.0.0
-  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 51 flow contracts.
+  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 59 flow contracts.
   contact:
     name: MarkOS Engineering
     url: "https://markos.esteban.marketing"
@@ -132,6 +132,9 @@ x-markos-flows:
   F-71-mcp-session-v1:
     source: contracts/F-71-mcp-session-v1.yaml
     description: MarkOS flow F-71-mcp-session-v1
+  F-71-mcp-session-v2:
+    source: contracts/F-71-mcp-session-v2.yaml
+    description: MarkOS flow F-71-mcp-session-v2
   F-72-webhook-subscription-v1:
     source: contracts/F-72-webhook-subscription-v1.yaml
     description: MarkOS flow F-72-webhook-subscription-v1
@@ -165,6 +168,27 @@ x-markos-flows:
   F-88-tenant-audit-query-v1:
     source: contracts/F-88-tenant-audit-query-v1.yaml
     description: MarkOS flow F-88-tenant-audit-query-v1
+  F-89-mcp-oauth-v1:
+    source: contracts/F-89-mcp-oauth-v1.yaml
+    description: MarkOS flow F-89-mcp-oauth-v1
+  F-90-mcp-tools-marketing-v1:
+    source: contracts/F-90-mcp-tools-marketing-v1.yaml
+    description: MarkOS flow F-90-mcp-tools-marketing-v1
+  F-91-mcp-tools-crm-v1:
+    source: contracts/F-91-mcp-tools-crm-v1.yaml
+    description: MarkOS flow F-91-mcp-tools-crm-v1
+  F-92-mcp-tools-literacy-v1:
+    source: contracts/F-92-mcp-tools-literacy-v1.yaml
+    description: MarkOS flow F-92-mcp-tools-literacy-v1
+  F-93-mcp-tools-tenancy-v1:
+    source: contracts/F-93-mcp-tools-tenancy-v1.yaml
+    description: MarkOS flow F-93-mcp-tools-tenancy-v1
+  F-94-mcp-resources-v1:
+    source: contracts/F-94-mcp-resources-v1.yaml
+    description: MarkOS flow F-94-mcp-resources-v1
+  F-95-mcp-cost-budget-v1:
+    source: contracts/F-95-mcp-cost-budget-v1.yaml
+    description: MarkOS flow F-95-mcp-cost-budget-v1
 tags:
   -     name: admin
     description: admin domain flows
@@ -191,6 +215,70 @@ tags:
   -     name: tracking
     description: tracking domain flows
 paths:
+  /.well-known/oauth-authorization-server:
+    get:
+      summary: RFC 8414 authorization server metadata (S256-only per D-05)
+      operationId: wellKnownOauthAuthorizationServer
+      tags: "[mcp, oauth]"
+      responses:
+        '200':
+          description: AS metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[issuer, authorization_endpoint, token_endpoint, registration_endpoint, code_challenge_methods_supported, grant_types_supported, response_types_supported]"
+                properties:
+                  issuer: "{ type: string, format: uri }"
+                  authorization_endpoint: "{ type: string, format: uri }"
+                  token_endpoint: "{ type: string, format: uri }"
+                  registration_endpoint: "{ type: string, format: uri }"
+                  revocation_endpoint: "{ type: string, format: uri }"
+                  code_challenge_methods_supported:
+                    type: array
+                    items: "{ type: string, enum: [S256] }"
+                  grant_types_supported:
+                    type: array
+                    items: "{ type: string, enum: [authorization_code] }"
+                  response_types_supported:
+                    type: array
+                    items: "{ type: string, enum: [code] }"
+                  scopes_supported:
+                    type: array
+                    items: "{ type: string }"
+                  token_endpoint_auth_methods_supported:
+                    type: array
+                    items: "{ type: string, enum: [none] }"
+      x-flow-id: F-89-mcp-oauth-v1
+      x-flow-name: MCP OAuth 2.1 + PKCE
+      x-domain: general
+      x-flow-version: v1
+  /.well-known/oauth-protected-resource:
+    get:
+      summary: RFC 9728 protected resource metadata
+      operationId: wellKnownOauthProtectedResource
+      tags: "[mcp, oauth]"
+      responses:
+        '200':
+          description: Protected resource metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[resource, authorization_servers, bearer_methods_supported]"
+                properties:
+                  resource: "{ type: string, format: uri, example: \"https://markos.dev/api/mcp\" }"
+                  authorization_servers:
+                    type: array
+                    items: "{ type: string, format: uri }"
+                  bearer_methods_supported:
+                    type: array
+                    items: "{ type: string, enum: [header] }"
+                  resource_documentation: "{ type: string, format: uri }"
+      x-flow-id: F-89-mcp-oauth-v1
+      x-flow-name: MCP OAuth 2.1 + PKCE
+      x-domain: general
+      x-flow-version: v1
   /admin/literacy/health:
     get:
       summary: Literacy subsystem health check
@@ -275,6 +363,71 @@ paths:
         - general
       x-flow-id: F-61-execution-recommendations-v1
       x-flow-name: Execution Recommendations
+      x-domain: general
+      x-flow-version: v1
+  /api/MCP Resources + Streaming + Notifications:
+    post:
+      summary: MCP Resources + Streaming + Notifications
+      operationId: MCP_Resources_Streaming_Notifications
+      responses:
+        200:
+          description: Success
+      tags:
+        - general
+      x-flow-id: F-94-mcp-resources-v1
+      x-flow-name: MCP Resources + Streaming + Notifications
+      x-domain: general
+      x-flow-version: v1
+  /api/MCP Tools — CRM (5):
+    post:
+      summary: MCP Tools — CRM (5)
+      operationId: MCP_Tools_CRM_5
+      responses:
+        200:
+          description: Success
+      tags:
+        - general
+      x-flow-id: F-91-mcp-tools-crm-v1
+      x-flow-name: MCP Tools — CRM (5)
+      x-domain: general
+      x-flow-version: v1
+  /api/MCP Tools — Literacy (5):
+    post:
+      summary: MCP Tools — Literacy (5)
+      operationId: MCP_Tools_Literacy_5
+      responses:
+        200:
+          description: Success
+      tags:
+        - general
+      x-flow-id: F-92-mcp-tools-literacy-v1
+      x-flow-name: MCP Tools — Literacy (5)
+      x-domain: general
+      x-flow-version: v1
+  /api/MCP Tools — Marketing + Execution (18):
+    post:
+      summary: MCP Tools — Marketing + Execution (18)
+      operationId: MCP_Tools_Marketing_Execution_18
+      responses:
+        200:
+          description: Success
+      tags:
+        - general
+      x-flow-id: F-90-mcp-tools-marketing-v1
+      x-flow-name: MCP Tools — Marketing + Execution (18)
+      x-domain: general
+      x-flow-version: v1
+  /api/MCP Tools — Tenancy (2):
+    post:
+      summary: MCP Tools — Tenancy (2)
+      operationId: MCP_Tools_Tenancy_2
+      responses:
+        200:
+          description: Success
+      tags:
+        - general
+      x-flow-id: F-93-mcp-tools-tenancy-v1
+      x-flow-name: MCP Tools — Tenancy (2)
       x-domain: general
       x-flow-version: v1
   /api/Outbound Consent:
@@ -752,10 +905,9 @@ paths:
       x-flow-version: v1
   /api/mcp/session:
     get:
-      summary: Return MCP server metadata + tool list
+      summary: MCP server metadata + tool list (public for discovery)
       operationId: getMcpSession
-      tags:
-        - mcp
+      tags: "[mcp]"
       responses:
         '200':
           description: Session metadata
@@ -763,26 +915,44 @@ paths:
             application/json:
               schema:
                 type: object
+                required: "[server, capabilities, tools]"
                 properties:
                   success: "{ type: boolean }"
                   server:
                     type: object
+                    required: "[name, version]"
                     properties:
-                      name: "{ type: string }"
-                      version: "{ type: string }"
+                      name: "{ type: string, enum: [markos] }"
+                      version: "{ type: string, pattern: \"^2\\\\.\" }"
+                  capabilities:
+                    type: object
+                    properties:
+                      tools: "{ type: object, properties: { listChanged: { type: boolean } } }"
+                      resources:
+                        type: object
+                        properties:
+                          subscribe: "{ type: boolean }"
+                          listChanged: "{ type: boolean }"
                   tools:
                     type: array
-                    items:
-                      $ref: "#/components/schemas/McpToolDescriptor"
-      x-flow-id: F-71-mcp-session-v1
-      x-flow-name: MCP Session
+                    items: "{ $ref: '#/components/schemas/McpToolDescriptor' }"
+                  _meta:
+                    type: object
+                    properties:
+                      req_id: "{ type: string, pattern: \"^mcp-req-\" }"
+      x-flow-id: F-71-mcp-session-v2
+      x-flow-name: MCP Session v2
       x-domain: general
       x-flow-version: v1
     post:
-      summary: JSON-RPC 2.0 request (initialize / tools/list / tools/call)
+      summary: "JSON-RPC 2.0 request. Bearer token required for tools/call + resources/*."
       operationId: postMcpSession
-      tags:
-        - mcp
+      tags: "[mcp]"
+      parameters:
+        -           name: Authorization
+          in: header
+          description: "Bearer <opaque_token> — required for tools/call + resources/* methods"
+          schema: "{ type: string, pattern: \"^Bearer \" }"
       requestBody:
         required: true
         content:
@@ -792,14 +962,38 @@ paths:
               required: "[jsonrpc, method]"
               properties:
                 jsonrpc: "{ type: string, enum: [\"2.0\"] }"
-                id: "{ oneOf: [{ type: string }, { type: integer }, { type: \"null\" }] }"
-                method: "{ type: string }"
+                id:
+                  oneOf:
+                    -                       { type: "string }"
+                    -                       { type: "integer }"
+                    -                       { type: "\"null\" }"
+                method:
+                  type: string
+                  enum:
+                    - initialize
+                    - tools/list
+                    - tools/call
+                    - resources/list
+                    - resources/read
+                    - resources/subscribe
+                    - resources/unsubscribe
+                    - notifications/initialized
                 params: "{ type: object, additionalProperties: true }"
       responses:
         '200':
-          description: JSON-RPC response envelope
-      x-flow-id: F-71-mcp-session-v1
-      x-flow-name: MCP Session
+          description: JSON-RPC response envelope (success or JSON-RPC error)
+          headers:
+            WWW-Authenticate:
+              schema: "{ type: string }"
+              description: Bearer resource_metadata URL when auth missing (RFC 9728)
+        '401':
+          description: Missing or invalid Bearer — WWW-Authenticate header present
+        '402':
+          description: Budget exhausted (code -32001) or paid-tier required
+        '429':
+          description: Rate-limited (code -32002) with Retry-After header
+      x-flow-id: F-71-mcp-session-v2
+      x-flow-name: MCP Session v2
       x-domain: general
       x-flow-version: v1
   /api/mcp/tools/{toolName}:
@@ -1202,6 +1396,143 @@ paths:
         '401': "{ description: unauthorised (missing or wrong cron secret) }"
       x-flow-id: F-86-tenant-lifecycle-v1
       x-flow-name: Tenant Lifecycle + GDPR Purge
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/mcp/cost-breakdown:
+    get:
+      summary: Per-tool cost aggregation over last 24h for /settings/mcp breakdown section
+      operationId: getMcpCostBreakdown
+      tags: "[mcp, tenant]"
+      parameters:
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+      responses:
+        '200':
+          description: Cost breakdown aggregated from audit log within the last 24 hours.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[by_tool, window_start, window_end, tenant_id]"
+                properties:
+                  by_tool:
+                    type: array
+                    items:
+                      type: object
+                      required: "[tool_id, calls, total_cost_cents]"
+                      properties:
+                        tool_id: "{ type: string }"
+                        calls: "{ type: integer, minimum: 0 }"
+                        total_cost_cents: "{ type: integer, minimum: 0 }"
+                  window_start: "{ type: string, format: date-time }"
+                  window_end: "{ type: string, format: date-time }"
+                  tenant_id: "{ type: string }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '405': "{ description: Non-GET method }"
+      x-flow-id: F-95-mcp-cost-budget-v1
+      x-flow-name: MCP Cost + Session Management (Surface S1)
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/mcp/sessions:
+    get:
+      summary: Active MCP sessions for tenant — tenant-admin visible
+      operationId: listMcpSessions
+      tags: "[mcp, tenant]"
+      parameters:
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+      responses:
+        '200':
+          description: Non-revoked MCP sessions scoped to tenant (token_hash NEVER echoed).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[sessions]"
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      type: object
+                      required: "[id, client_id, scopes, created_at, last_used_at, expires_at]"
+                      properties:
+                        id: "{ type: string, pattern: \"^mcp-sess-\" }"
+                        client_id: "{ type: string }"
+                        scopes: "{ type: array, items: { type: string } }"
+                        created_at: "{ type: string, format: date-time }"
+                        last_used_at: "{ type: string, format: date-time }"
+                        expires_at: "{ type: string, format: date-time }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '405': "{ description: Non-GET method }"
+      x-flow-id: F-95-mcp-cost-budget-v1
+      x-flow-name: MCP Cost + Session Management (Surface S1)
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/mcp/sessions/revoke:
+    post:
+      summary: Revoke an MCP session via /settings/mcp Revoke CTA
+      operationId: revokeMcpSession
+      tags: "[mcp, tenant]"
+      parameters:
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[session_id]"
+              properties:
+                session_id: "{ type: string, pattern: \"^mcp-sess-\" }"
+      responses:
+        '200':
+          description: Session revoked.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[revoked, session_id]"
+                properties:
+                  revoked: "{ type: boolean }"
+                  session_id: "{ type: string }"
+        '400': "{ description: Missing session_id }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '403': "{ description: Session belongs to a different tenant (cross_tenant_forbidden) }"
+        '404': "{ description: Session not found }"
+        '405': "{ description: Non-POST method }"
+      x-flow-id: F-95-mcp-cost-budget-v1
+      x-flow-name: MCP Cost + Session Management (Surface S1)
+      x-domain: general
+      x-flow-version: v1
+  /api/tenant/mcp/usage:
+    get:
+      summary: Current rolling-24h spend vs cap for session tenant (D-12 usage gauge backing)
+      operationId: getMcpUsage
+      tags: "[mcp, tenant]"
+      parameters:
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-org-id, in: header, required: false, schema: { type: string } }"
+      responses:
+        '200':
+          description: Usage snapshot for the session tenant.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[tenant_id, spent_cents, cap_cents, plan_tier, reset_at, window_start]"
+                properties:
+                  tenant_id: "{ type: string }"
+                  spent_cents: "{ type: integer, minimum: 0 }"
+                  cap_cents: "{ type: integer, minimum: 0 }"
+                  plan_tier: "{ type: string }"
+                  reset_at: "{ type: string, format: date-time }"
+                  window_start: "{ type: string, format: date-time }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '405': "{ description: Non-GET method }"
+      x-flow-id: F-95-mcp-cost-budget-v1
+      x-flow-name: MCP Cost + Session Management (Surface S1)
       x-domain: general
       x-flow-version: v1
   /api/tenant/members/list:
@@ -1649,6 +1980,165 @@ paths:
       x-flow-name: markosdb-migrate
       x-domain: migration
       x-flow-version: v1
+  /oauth/authorize:
+    get:
+      summary: Consent page bootstrap (redirects to /oauth/consent when authenticated; /login when not)
+      operationId: oauthAuthorize
+      tags: "[mcp, oauth]"
+      parameters:
+        -           { name: "client_id, in: query, required: true, schema: { type: string } }"
+        -           { name: "redirect_uri, in: query, required: true, schema: { type: string, format: uri } }"
+        -           { name: "response_type, in: query, required: true, schema: { type: string, enum: [code] } }"
+        -           { name: "code_challenge, in: query, required: true, schema: { type: string } }"
+        -           { name: "code_challenge_method, in: query, required: true, schema: { type: string, enum: [S256] } }"
+        -           { name: "scope, in: query, required: true, schema: { type: string } }"
+        -           { name: "state, in: query, required: true, schema: { type: string } }"
+        -           { name: "resource, in: query, required: true, schema: { type: string, format: uri } }"
+      responses:
+        '302':
+          description: Redirect to /oauth/consent or /login
+        '400':
+          description: invalid_request
+      x-flow-id: F-89-mcp-oauth-v1
+      x-flow-name: MCP OAuth 2.1 + PKCE
+      x-domain: general
+      x-flow-version: v1
+  /oauth/authorize/approve:
+    post:
+      summary: Approve consent → authorization_code redirect (D-07 tenant-bind at session)
+      operationId: oauthAuthorizeApprove
+      tags: "[mcp, oauth]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[state, target_tenant_id, csrf_token, client_id, redirect_uri, resource, scope, code_challenge, code_challenge_method]"
+              properties:
+                state: "{ type: string }"
+                target_tenant_id: "{ type: string }"
+                csrf_token: "{ type: string }"
+                client_id: "{ type: string }"
+                redirect_uri: "{ type: string, format: uri }"
+                resource: "{ type: string, format: uri }"
+                scope: "{ type: string }"
+                code_challenge: "{ type: string }"
+                code_challenge_method: "{ type: string, enum: [S256] }"
+      responses:
+        '302':
+          description: "Redirect to redirect_uri?code=...&state=..."
+        '400':
+          description: invalid_request
+        '401':
+          description: unauthorized
+        '403':
+          description: invalid_tenant
+      x-flow-id: F-89-mcp-oauth-v1
+      x-flow-name: MCP OAuth 2.1 + PKCE
+      x-domain: general
+      x-flow-version: v1
+  /oauth/register:
+    post:
+      summary: RFC 7591 Dynamic Client Registration (open per MCP spec)
+      operationId: oauthRegister
+      tags: "[mcp, oauth]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[client_name, redirect_uris]"
+              properties:
+                client_name: "{ type: string, minLength: 1 }"
+                redirect_uris:
+                  type: array
+                  minItems: 1
+                  items: "{ type: string, format: uri }"
+      responses:
+        '201':
+          description: Client registered
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[client_id, client_name, redirect_uris, grant_types, response_types, token_endpoint_auth_method]"
+                properties:
+                  client_id: "{ type: string, pattern: \"^mcp-cli-[0-9a-f]{32}$\" }"
+                  client_name: "{ type: string }"
+                  redirect_uris: "{ type: array, items: { type: string } }"
+                  grant_types: "{ type: array, items: { type: string, enum: [authorization_code] } }"
+                  response_types: "{ type: array, items: { type: string, enum: [code] } }"
+                  token_endpoint_auth_method: "{ type: string, enum: [none] }"
+        '400':
+          description: invalid_client_metadata / invalid_redirect_uri
+      x-flow-id: F-89-mcp-oauth-v1
+      x-flow-name: MCP OAuth 2.1 + PKCE
+      x-domain: general
+      x-flow-version: v1
+  /oauth/revoke:
+    post:
+      summary: RFC 7009 token revocation (anti-probing — always 200 for authenticated actor)
+      operationId: oauthRevoke
+      tags: "[mcp, oauth]"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: "[token]"
+              properties:
+                token: "{ type: string }"
+                token_type_hint: "{ type: string, enum: [access_token] }"
+      responses:
+        '200':
+          description: Revocation accepted (even for unknown tokens per RFC 7009 §2.2)
+        '401':
+          description: unauthorized (missing Phase-201 session)
+      x-flow-id: F-89-mcp-oauth-v1
+      x-flow-name: MCP OAuth 2.1 + PKCE
+      x-domain: general
+      x-flow-version: v1
+  /oauth/token:
+    post:
+      summary: PKCE exchange → opaque bearer token (RFC 7636 + 8707)
+      operationId: oauthToken
+      tags: "[mcp, oauth]"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: "[grant_type, code, code_verifier, client_id, redirect_uri, resource]"
+              properties:
+                grant_type: "{ type: string, enum: [authorization_code] }"
+                code: "{ type: string, minLength: 32 }"
+                code_verifier: "{ type: string, minLength: 43, maxLength: 128 }"
+                client_id: "{ type: string }"
+                redirect_uri: "{ type: string, format: uri }"
+                resource: "{ type: string, format: uri }"
+      responses:
+        '200':
+          description: Opaque bearer token issued (no refresh_token per D-06)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[access_token, token_type, expires_in]"
+                properties:
+                  access_token: "{ type: string, pattern: \"^[0-9a-f]{64}$\" }"
+                  token_type: "{ type: string, enum: [Bearer] }"
+                  expires_in: "{ type: integer, enum: [86400] }"
+                  scope: "{ type: string }"
+        '400':
+          description: invalid_grant / unsupported_grant_type / invalid_target / invalid_client
+      x-flow-id: F-89-mcp-oauth-v1
+      x-flow-name: MCP OAuth 2.1 + PKCE
+      x-domain: general
+      x-flow-version: v1
   /regenerate:
     post:
       summary: Regenerate a draft section
@@ -1801,6 +2291,29 @@ components:
         name: "{ type: string }"
         description: "{ type: string }"
         inputSchema: "{ type: object, additionalProperties: true }"
+    F_71_mcp_session_v2_McpToolDescriptor:
+      type: object
+      required: "[name, description, inputSchema]"
+      properties:
+        name: "{ type: string }"
+        description: "{ type: string }"
+        inputSchema: "{ type: object, additionalProperties: true }"
+    F_71_mcp_session_v2_McpSession:
+      type: object
+      required: "[id, user_id, tenant_id, org_id, scopes, plan_tier]"
+      properties:
+        id: "{ type: string, pattern: \"^mcp-sess-\" }"
+        user_id: "{ type: string }"
+        tenant_id: "{ type: string }"
+        org_id: "{ type: string }"
+        client_id: "{ type: string }"
+        scopes:
+          type: array
+          items: "{ type: string }"
+        plan_tier: "{ type: string }"
+        created_at: "{ type: string, format: date-time }"
+        last_used_at: "{ type: string, format: date-time }"
+        expires_at: "{ type: string, format: date-time }"
     F_72_webhook_subscription_v1_WebhookSubscribeRequest:
       type: object
       required: "[url, events]"

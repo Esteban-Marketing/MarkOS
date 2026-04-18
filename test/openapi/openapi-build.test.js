@@ -181,3 +181,34 @@ test('all path operations carry at least one tag', () => {
     `All path operations must have at least one tag. Missing: ${missing.join(', ')}`
   );
 });
+
+// -------------------------------------------------------------------------
+// Phase 202 Plan 10: F-89 OAuth + F-95 MCP cost-budget path coverage.
+// -------------------------------------------------------------------------
+
+test('Phase 202: openapi.json includes F-89 OAuth + .well-known paths', () => {
+  const doc = buildOpenApiDoc(CONTRACTS_DIR);
+  assert.ok(doc.paths['/oauth/register'], 'missing /oauth/register');
+  assert.ok(doc.paths['/oauth/authorize'], 'missing /oauth/authorize');
+  assert.ok(doc.paths['/oauth/token'], 'missing /oauth/token');
+  assert.ok(doc.paths['/oauth/revoke'], 'missing /oauth/revoke');
+  assert.ok(doc.paths['/.well-known/oauth-protected-resource'],
+    'missing /.well-known/oauth-protected-resource');
+  assert.ok(doc.paths['/.well-known/oauth-authorization-server'],
+    'missing /.well-known/oauth-authorization-server');
+});
+
+test('Phase 202: openapi.json includes F-95 /api/tenant/mcp/* backing paths', () => {
+  const doc = buildOpenApiDoc(CONTRACTS_DIR);
+  assert.ok(doc.paths['/api/tenant/mcp/usage'], 'missing /api/tenant/mcp/usage');
+  assert.ok(doc.paths['/api/tenant/mcp/sessions'], 'missing /api/tenant/mcp/sessions');
+  assert.ok(doc.paths['/api/tenant/mcp/sessions/revoke'],
+    'missing /api/tenant/mcp/sessions/revoke');
+  assert.ok(doc.paths['/api/tenant/mcp/cost-breakdown'],
+    'missing /api/tenant/mcp/cost-breakdown');
+});
+
+test('Phase 202: openapi.json includes F-71-v2 /api/mcp/session path', () => {
+  const doc = buildOpenApiDoc(CONTRACTS_DIR);
+  assert.ok(doc.paths['/api/mcp/session'], 'missing /api/mcp/session');
+});
