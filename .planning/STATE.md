@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 203
-last_updated: "2026-04-18T12:29:16.363Z"
+last_updated: "2026-04-18T12:44:36.981Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 36
-  completed_plans: 33
-  percent: 92
+  completed_plans: 34
+  percent: 94
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,7 +17,82 @@ progress:
 ## Current Position
 
 Phase: 203 (webhook-subscription-engine-ga) — EXECUTING
-Plan: Waves 1-3 complete (203-01..03-06 all shipped). Wave 4 in flight: 203-07 shipped. Remaining: 203-08 (breaker) · 203-09 (dashboard) · 203-10 (status page + Sentry).
+Plan: Waves 1-4 complete (203-01..03-07 all shipped). Wave 5 in flight (parallel): 203-08 shipped. Remaining: 203-09 (dashboard) · 203-10 (status page + Sentry) both in-flight as parallel siblings.
+
+## What just happened (2026-04-18, Plan 203-08 close — parallel Wave 5)
+
+- **Plan 203-08 shipped** (parallel executor, Wave 5 — co-executing with 203-09 + 203-10) —
+  Webhook circuit breaker (D-14 + D-15) + dispatch-gates extended with breaker as FIRST gate.
+  Closes the Wave-4 same-file-conflict risk between Plan 203-08 and Plan 203-10 via the
+  T-203-08-06 invariant (delivery.cjs un-edited by this plan; recordOutcome + classifyOutcome
+  exported as pure primitives for Plan 203-10's observability wrapper to import and invoke).
+
+  - `lib/markos/webhooks/breaker.cjs` + `.ts` dual-export: 4 functions (`recordOutcome`,
+    `canDispatch`, `classifyOutcome`, `getBreakerState`) + 3 constants (WINDOW_SIZE=20,
+    TRIP_THRESHOLD=0.5, HALF_OPEN_BACKOFF_SEC=[30,60,120,300,600]). D-14 trip threshold
+    (>50% strict) + D-15 exponential backoff capped at 600s. 4xx explicitly non-failure
+    (subscriber misrouting does not trip breaker). State storage: `cb:webhook:outcomes:
+    <sub_id>` LPUSH list trimmed to 20 with 1h TTL; `cb:webhook:state:<sub_id>` JSON blob
+    with TTL = backoff + 3600s. Redis-backed (shares @upstash/redis with 202-04 pipeline;
+    no new deps). RESEARCH §Pattern 4 verbatim.
+
+  - `lib/markos/webhooks/dispatch-gates.cjs` + `.ts`: EXTENDED additively — breaker gate
+    inserted as FIRST gate inside runDispatchGates (before rate-limit). On `state=open`
+    returns `{ status: 'breaker_open', retryAfterSec, reason: 'breaker_open', breaker:
+    { state, trips, probe_at } }` — short-circuits all downstream gates so Upstash
+    rate-limit state is never burned while breaker is tripped. `GateDisposition` TS
+    union extended with `GateBreakerOpen`. Half-open state lets exactly ONE probe through;
+    on success recordOutcome DELs the state key (recovery to closed), on failure the
+    trips counter increments and backoff deepens.
+
+  - Invariant locks (T-203-08-06 mitigation): `grep -c "require.*breaker" lib/markos/
+    webhooks/delivery.cjs = 0` AND `grep -c "recordOutcome" lib/markos/webhooks/delivery.
+    cjs = 0` AND `grep -c "canDispatch" lib/markos/webhooks/delivery.cjs = 0`. Plan
+    203-08 owns ONLY breaker.cjs + dispatch-gates.cjs edits; Plan 203-10 owns
+    delivery.cjs edits (observability wrapper that imports breaker's recordOutcome +
+    classifyOutcome). Wave-5 same-file conflict mathematically eliminated.
+
+  - Gate order verified: `awk '/canDispatch|checkWebhookRateLimit/{print NR}' lib/markos/
+    webhooks/dispatch-gates.cjs` — canDispatch at line 42, checkWebhookRateLimit at line
+    57. Breaker is FIRST gate.
+
+  - 2 new test suites: `test/webhooks/breaker.test.js` (23 — 22 behaviors 1a-1v plus
+    module-surface invariant) + `test/webhooks/circuit-breaker.test.js` (10 — integration
+    2a-2i plus gate-order invariant). Mock redis covers lpush/ltrim/lrange/expire/get/set
+    (ex)/del + Date.now injection for probe_at determinism. Test stubs extended:
+    mockLimiter in dispatch-gates.test.js + delivery.test.js gained `async get()
+    { return null }` (no-op for breaker closed); same object now serves as both Upstash
+    limiter stub AND redis stub. 33/33 new tests green.
+
+  - Plan-scope regression: 146/146 green across breaker + circuit-breaker + dispatch-gates
+    + delivery + rate-limit + 429-breach + signing + engine + api-endpoints + dlq +
+    replay + ssrf-guard (all 203-08 files + pre-existing non-sibling webhook suites).
+    Full `test/webhooks/*.test.js` has 27 failures — ALL from parallel Wave-5 siblings
+    (api-tenant 203-09, public-status/status-page/ui-s3-a11y/observability/settings-api
+    203-10); none caused by 203-08.
+
+  - Commits: `7aa3981` (Task 1 RED) · `432e319` (Task 1 GREEN: breaker library) ·
+    `49c2f6a` (Task 2 RED) · `7dba7af` (Task 2 GREEN: dispatch-gates extension).
+
+  - **Decisions:** (1) 4xx treated as 'success' for breaker (D-14 explicit reading
+    "5xx or timeout" — client-side misrouting is subscriber's problem; T-203-08-03 accept).
+    (2) Unknown HTTP result classified as 'failure' (fail-closed). (3) State key TTL =
+    backoff + 3600s pad — second trips within ~1h properly increment instead of resetting.
+    (4) recordOutcome('success') while state !== closed DELs the state key (recovery)
+    — production guarantee holds because canDispatch blocks dispatches during open state,
+    so recordOutcome is only reached from closed or half-open. (5) Test setup: outcomes
+    list seeded directly via redis.lpush in counter-increment tests (recording successes
+    would trigger recovery mid-setup — doesn't reflect production flow where open state
+    blocks all dispatch). (6) mockLimiter.get extended to no-op null instead of a parallel
+    redis mock — same pre-built object continues to serve Upstash limiter dep-injection
+    + redis dep-injection; zero new test infrastructure.
+
+  - **Downstream unlocks:** Plan 203-09 (dashboard) — `getBreakerState(redis, sub_id)`
+    returns the Surface 4 breaker badge data; F-100 BreakerState schema already shipped
+    by Plan 203-07. Plan 203-10 (observability + status page) — already landed
+    log-drain.cjs + sentry.cjs + queues/deliver.js swap; its delivery.cjs observability
+    wrapper can now import `recordOutcome` + `classifyOutcome` from `./breaker.cjs` and
+    call them in its finally block around fetch() (this plan did NOT touch delivery.cjs).
 
 ## What just happened (2026-04-18, Plan 203-07 close — solo Wave 4)
 
@@ -62,6 +137,7 @@ Plan: Waves 1-3 complete (203-01..03-06 all shipped). Wave 4 in flight: 203-07 s
     at subscribe-time (D-13 enforcement layer 1). Type-check first → 400
     `invalid_rps_override`; then ceiling-check → 400 `rps_override_
     exceeds_plan` with `ceiling` echoed. Extracted `checkSsrfOrReject`
+
     + `validateRpsOverride` helpers (S3776 cognitive-complexity fix,
     18 → under 15). `engine.cjs::subscribe` now persists `rps_override`
     on the row (null when caller omits).
@@ -89,6 +165,7 @@ Plan: Waves 1-3 complete (203-01..03-06 all shipped). Wave 4 in flight: 203-07 s
   - Commits: `5c3ecd6` (Task 1 RED) · `0e3462a` (Task 1 GREEN: rate-limit
     lib + subscribe-time rps_override validation) · `9d5d433` (Task 2 RED)
     · `190742b` (Task 2 GREEN: dispatch-gates + single pre-fetch indirection
+
     + F-100 + openapi regen).
 
   - **Decisions:** (1) T-203-07-06 invariant locked via grep acceptance:

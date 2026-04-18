@@ -71,7 +71,7 @@ Plans:
 **Requirements Mapped:** WHK-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
 **Status:** 📋 Planned — 10 plans across 5 waves
-**Plans:** 7/10 plans executed
+**Plans:** 8/10 plans executed
 **DISCUSS:** `.planning/phases/203-webhook-subscription-engine-ga/DISCUSS.md`
 
 Plans:
@@ -82,7 +82,7 @@ Plans:
 - [x] 203-05-PLAN.md — Rotation orchestrator + dual-sign dispatch + 3 tenant endpoints (Wave 3)
 - [x] 203-06-PLAN.md — T-7/T-1/T-0 notification cron + Surface 4 global banner (Wave 3)
 - [x] 203-07-PLAN.md — Per-subscription rate-limit (plan-tier + override) (Wave 4)
-- [ ] 203-08-PLAN.md — Circuit breaker (Redis sliding-window) (Wave 4)
+- [x] 203-08-PLAN.md — Circuit breaker (Redis sliding-window) (Wave 4)
 - [ ] 203-09-PLAN.md — Dashboard Surface 1 + Surface 2 + 5 tenant APIs (Wave 5)
 - [ ] 203-10-PLAN.md — Public status Surface 3 + Sentry + log-drain + docs + final OpenAPI (Wave 5)
 
