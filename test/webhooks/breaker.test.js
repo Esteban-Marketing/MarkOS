@@ -216,6 +216,12 @@ test('Plan 203-08 1m: 19 failures (below WINDOW_SIZE) → state remains closed',
 });
 
 // ---- 1n second trip (trips=2) uses backoff index 1 = 60s ----
+// NOTE: In production, recordOutcome is only called AFTER a dispatch. When state is open
+// with probe_at in the future, canDispatch blocks the dispatch so recordOutcome is never
+// invoked. The only legitimate flow that revisits recordOutcome while state exists is:
+// half-open probe → single outcome. For trip-counter increment tests we seed the
+// outcomes list directly via raw Redis so the pre-trip-check reads an existing state
+// and increments trips cleanly.
 
 test('Plan 203-08 1n: second trip uses HALF_OPEN_BACKOFF_SEC[1] = 60s', async () => {
   const redis = createMockRedis();
@@ -223,20 +229,23 @@ test('Plan 203-08 1n: second trip uses HALF_OPEN_BACKOFF_SEC[1] = 60s', async ()
   const fixedNow = 1_700_000_000_000;
   Date.now = () => fixedNow;
   try {
-    // seed first trip state to trips=1 (half-open elapsed)
+    // seed first trip state: trips=1, half-open elapsed
     await redis.set(
       'cb:webhook:state:sub1',
       JSON.stringify({ state: 'open', trips: 1, probe_at: fixedNow - 1 }),
       { ex: 3630 },
     );
-    // fill the outcomes window with >50% failures
-    for (let i = 0; i < 20; i += 1) {
-      await recordOutcome(redis, 'sub1', i < 11 ? 'failure' : 'success');
+    // Seed outcomes list DIRECTLY so no success interrupts the trip counter
+    // 19 prior failures already in the window (head = newest).
+    for (let i = 0; i < 19; i += 1) {
+      await redis.lpush('cb:webhook:outcomes:sub1', 'failure');
     }
-    const state = await getBreakerState(redis, 'sub1');
-    assert.equal(state.state, 'open');
-    assert.equal(state.trips, 2);
-    assert.equal(state.probe_at, fixedNow + HALF_OPEN_BACKOFF_SEC[1] * 1000);
+    await redis.expire('cb:webhook:outcomes:sub1', 3600);
+    // Single half-open probe FAIL record — 20th failure → rate 1.0 > 0.5 → trip
+    const out = await recordOutcome(redis, 'sub1', 'failure');
+    assert.equal(out.state, 'open');
+    assert.equal(out.trips, 2);
+    assert.equal(out.probe_at, fixedNow + HALF_OPEN_BACKOFF_SEC[1] * 1000);
   } finally {
     Date.now = originalNow;
   }
@@ -255,13 +264,14 @@ test('Plan 203-08 1o: trips=5 uses HALF_OPEN_BACKOFF_SEC[4] = 600s', async () =>
       JSON.stringify({ state: 'open', trips: 4, probe_at: fixedNow - 1 }),
       { ex: 3630 },
     );
-    for (let i = 0; i < 20; i += 1) {
-      await recordOutcome(redis, 'sub1', i < 11 ? 'failure' : 'success');
+    for (let i = 0; i < 19; i += 1) {
+      await redis.lpush('cb:webhook:outcomes:sub1', 'failure');
     }
-    const state = await getBreakerState(redis, 'sub1');
-    assert.equal(state.state, 'open');
-    assert.equal(state.trips, 5);
-    assert.equal(state.probe_at, fixedNow + HALF_OPEN_BACKOFF_SEC[4] * 1000);
+    await redis.expire('cb:webhook:outcomes:sub1', 3600);
+    const out = await recordOutcome(redis, 'sub1', 'failure');
+    assert.equal(out.state, 'open');
+    assert.equal(out.trips, 5);
+    assert.equal(out.probe_at, fixedNow + HALF_OPEN_BACKOFF_SEC[4] * 1000);
   } finally {
     Date.now = originalNow;
   }
@@ -280,13 +290,14 @@ test('Plan 203-08 1p: trips=10 still caps at HALF_OPEN_BACKOFF_SEC[4] = 600s', a
       JSON.stringify({ state: 'open', trips: 9, probe_at: fixedNow - 1 }),
       { ex: 3630 },
     );
-    for (let i = 0; i < 20; i += 1) {
-      await recordOutcome(redis, 'sub1', i < 11 ? 'failure' : 'success');
+    for (let i = 0; i < 19; i += 1) {
+      await redis.lpush('cb:webhook:outcomes:sub1', 'failure');
     }
-    const state = await getBreakerState(redis, 'sub1');
-    assert.equal(state.state, 'open');
-    assert.equal(state.trips, 10);
-    assert.equal(state.probe_at, fixedNow + HALF_OPEN_BACKOFF_SEC[4] * 1000);
+    await redis.expire('cb:webhook:outcomes:sub1', 3600);
+    const out = await recordOutcome(redis, 'sub1', 'failure');
+    assert.equal(out.state, 'open');
+    assert.equal(out.trips, 10);
+    assert.equal(out.probe_at, fixedNow + HALF_OPEN_BACKOFF_SEC[4] * 1000);
   } finally {
     Date.now = originalNow;
   }
@@ -394,14 +405,16 @@ test('Plan 203-08 1u: half-open probe failure → trips+=1 + backoff = HALF_OPEN
       JSON.stringify({ state: 'open', trips: 1, probe_at: fixedNow - 1 }),
       { ex: 3630 },
     );
-    // fill outcomes window with 11 failures + 9 successes (55% → triggers trip path)
-    for (let i = 0; i < 9; i += 1) await recordOutcome(redis, 'sub1', 'success');
-    for (let i = 0; i < 11; i += 1) await recordOutcome(redis, 'sub1', 'failure');
-
-    const state = await getBreakerState(redis, 'sub1');
-    assert.equal(state.state, 'open');
-    assert.equal(state.trips, 2);
-    assert.equal(state.probe_at, fixedNow + HALF_OPEN_BACKOFF_SEC[1] * 1000);
+    // Seed outcomes list directly so no intermediate success resets the trip counter.
+    // After canDispatch returns half-open the probe fires ONCE; we then record its failure.
+    for (let i = 0; i < 19; i += 1) {
+      await redis.lpush('cb:webhook:outcomes:sub1', 'failure');
+    }
+    await redis.expire('cb:webhook:outcomes:sub1', 3600);
+    const out = await recordOutcome(redis, 'sub1', 'failure');
+    assert.equal(out.state, 'open');
+    assert.equal(out.trips, 2);
+    assert.equal(out.probe_at, fixedNow + HALF_OPEN_BACKOFF_SEC[1] * 1000);
   } finally {
     Date.now = originalNow;
   }
