@@ -63,11 +63,15 @@ test('invokeTool: draft_message returns content for valid brief', async () => {
   assert.equal(payload.success, true);
 });
 
-test('invokeTool: list_pain_points returns pains array', async () => {
+test('invokeTool: list_pain_points returns tenant-scoped items array (202-06 graduated contract)', async () => {
+  // Plan 202-06 graduated list_pain_points from stub to live handler. Output shape
+  // changed from { pains: [string] } to { tenant_id, category, items: [{ id, name, description, score, category }] }.
+  // Legacy invokeTool passes a default session (tenant_id: null); items may be empty
+  // when no pack is loaded — assertion tolerates empty array.
   const result = await invokeTool('list_pain_points', {});
   const payload = JSON.parse(result.content[0].text);
-  assert.ok(Array.isArray(payload.pains));
-  assert.ok(payload.pains.length > 0);
+  assert.ok(Array.isArray(payload.items));
+  assert.ok('tenant_id' in payload, 'D-15 tenant scope — output embeds tenant_id');
 });
 
 test('invokeTool: run_neuro_audit returns audit shape', async () => {
