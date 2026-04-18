@@ -71,7 +71,7 @@ Plans:
 **Requirements Mapped:** WHK-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
 **Status:** 📋 Planned — 10 plans across 5 waves + 1 gap-closure plan (Wave 6)
-**Plans:** 10/10 plans complete · 1 gap-closure plan pending
+**Plans:** 11/11 plans complete
 **DISCUSS:** `.planning/phases/203-webhook-subscription-engine-ga/DISCUSS.md`
 
 Plans:
@@ -85,7 +85,7 @@ Plans:
 - [x] 203-08-PLAN.md — Circuit breaker (Redis sliding-window) (Wave 4)
 - [x] 203-09-PLAN.md — Dashboard Surface 1 + Surface 2 + 5 tenant APIs (Wave 5)
 - [x] 203-10-PLAN.md — Public status Surface 3 + Sentry + log-drain + docs + final OpenAPI (Wave 5)
-- [ ] 203-11-PLAN.md — Gap closure: wire RotationGraceBanner into layout-shell.tsx (Wave 6, gap_closure)
+- [x] 203-11-PLAN.md — Gap closure: wire RotationGraceBanner into layout-shell.tsx (Wave 6, gap_closure)
 
 ### Phase 204: CLI `markos` v1 GA
 **Goal:** Graduate CLI to full GA: init · generate · plan · run · eval · login · keys · whoami · env · status · doctor. Cross-platform distribution (Homebrew · Scoop · npm · winget · apt).

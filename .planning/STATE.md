@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 203
-last_updated: "2026-04-18T12:55:01.463Z"
+last_updated: "2026-04-18T15:01:18.522Z"
 progress:
   total_phases: 7
   completed_phases: 4
-  total_plans: 36
-  completed_plans: 36
+  total_plans: 37
+  completed_plans: 37
   percent: 100
 ---
 
@@ -16,8 +16,72 @@ progress:
 
 ## Current Position
 
-Phase: 203 (webhook-subscription-engine-ga) — ALL WAVES COMPLETE
-Plan: 10/10 shipped (Wave 5 closed — 203-08 breaker + 203-09 dashboard + 203-10 status page + observability + docs all green in parallel). Phase 203 ready for `/gsd-verify-phase 203`.
+Phase: 203 (webhook-subscription-engine-ga) — ALL WAVES COMPLETE + GAP CLOSURE SHIPPED
+Plan: 11/11 shipped (gap-closure Plan 203-11 closed VERIFICATION.md gap #1 — Surface 4 banner now mounted globally). Phase 203 ready for re-run `/gsd-verify-phase 203` — score should flip 11/12 → 12/12.
+
+## What just happened (2026-04-18, Plan 203-11 close — gap-closure solo Wave)
+
+- **Plan 203-11 shipped** (solo executor, gap-closure for VERIFICATION.md gap #1) —
+  Surface 4 rotation-grace banner wired into MarkOS workspace shell. ~121 LoC across
+  3 files; zero scope creep. 2 commits (RED + GREEN). Full webhook regression:
+  **359 pass + 2 skip, 0 fail** (was 352 + 2; delta = +7 new cases).
+
+  - `app/(markos)/_components/RotationBannerMount.tsx` (NEW, 46 LoC): client
+    component (`'use client'`) performing one-shot `useEffect` fetch of
+    `/api/tenant/webhooks/rotations/active` on mount; stores result in
+    `useState<Rotation[]>`; renders `<RotationGraceBanner rotations={rotations} />`.
+    Silent on `!res.ok` (401 pre-auth / 500 transient) and network errors — banner
+    self-renders null on empty list, so mount is ambient + zero-cost on pages
+    with no active rotations. No user-hideable toggle (UI-SPEC §Surface 4
+    security rule: active rotation is a live security-relevant state).
+
+  - `app/(markos)/layout-shell.tsx` (MODIFIED, +4 LoC): one import line +
+    JSX mount as first child of `<section className={styles.content}>` above
+    `{children}`, per UI-SPEC §Surface 4 Placement (rows 47, 157, 357, 380).
+    Scope-minimal edit — NAV_ITEMS, sidebar, `MarkOSAccessDeniedState` untouched.
+    `RotationGraceBanner.tsx` UNCHANGED (203-06 pure-display contract preserved).
+
+  - `test/webhooks/layout-shell-banner.test.js` (NEW, 71 LoC): 7 grep-shape
+    contract cases mirroring `settings-ui-a11y.test.js` posture. Asserts file
+    existence, `import RotationBannerMount` + `<RotationBannerMount />` in
+    layout, `'use client'` directive, fetch-URL literal, `<RotationGraceBanner
+    rotations={rotations} />` render site, `useEffect` + `useState` hooks, and
+    absence of `close`/`dismiss` tokens.
+
+  - **Handoff chain resolved:** 203-06 shipped the banner component and
+    explicitly deferred shell-wiring to 203-09; 203-09 added sidebar nav entries
+    for MCP + Webhooks but did NOT perform the promised shell mount + fetch;
+    203-11 is the surgical closure that handoff missed (~10-20 line fix).
+
+  - Commits: `ec6ca5c` (RED — wiring contract test) · `812124d` (GREEN — mount
+    component + layout-shell import + JSX mount).
+
+  - **Decisions:** (1) Split `import RotationGraceBanner from './RotationGraceBanner'`
+    from `import type { Rotation } from './RotationGraceBanner'` to satisfy the
+    grep-shape test regex that requires the default import as a standalone
+    statement (no named imports in same `{}`). TypeScript compiles identically;
+    split is grep-only. (2) Mount lives INSIDE `<section className={styles.content}>`
+    above `{children}` — reads as a system notice above every route's content
+    slot, including routes that render their own inner `<main>` (Surface 1/2).
+    (3) Silent `!res.ok` branch returns without touching DOM → no error text
+    leaks; mitigates threat T-203-11-01.
+
+  - **VERIFICATION.md impact:** Truth #12 ("Surface 4 rotation grace banner
+    is visible to tenant-admins across (markos) routes") status flips from
+    **FAILED** → **VERIFIED** on re-run. Phase 203 score 11/12 → 12/12.
+    `grep -r "import.*RotationGraceBanner\|import.*RotationBannerMount"
+    "app/(markos)"` now yields 3+ hits (was 0).
+
+## Next step
+
+**Phase 203 is gap-free at 11/11 plans.** Re-run phase verification to confirm
+the gap closure:
+
+```bash
+/gsd-verify-phase 203
+```
+
+Expected: 12/12 truths verified, status: verified.
 
 ## What just happened (2026-04-18, Plan 203-10 close — parallel Wave 5)
 
