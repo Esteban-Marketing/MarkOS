@@ -1,0 +1,179 @@
+/* Phase 203 Plan 10 Task 2 — Surface 3 /status/webhooks page styles.
+ * Standalone layout — NO workspace-shell classes. Mirrors invite/[token]/page.module.css
+ * posture. Hero grid rules duplicated from settings/webhooks/page.module.css per
+ * UI-SPEC co-location rule ("duplicate, do not cross-import"). */
+
+.page {
+  min-height: 100vh;
+  padding: 48px 24px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #f8fafc;
+}
+
+.contentCard {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 40px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 720px;
+  width: 100%;
+}
+
+.heading {
+  margin: 0;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.subheading {
+  margin: 0;
+  font-size: 16px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* ---- Hero grid (duplicated from S1 settings/webhooks/page.module.css) ---- */
+.heroGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.heroCard {
+  background: #f0fdfa;
+  border: 1px solid rgba(13, 148, 136, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.heroCard[data-dlq='alert'] {
+  background: #fef2f2;
+  border-color: rgba(154, 52, 18, 0.3);
+}
+
+.heroNumber {
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f766e;
+  line-height: 1.2;
+}
+
+.heroCard[data-dlq='alert'] .heroNumber {
+  color: #9a3412;
+}
+
+.heroLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---- Last updated ---- */
+.lastUpdated {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* ---- Status line (new) ---- */
+.statusLine {
+  margin: 8px 0 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #f0fdfa;
+  border-left: 4px solid #0d9488;
+}
+
+.statusLine[data-status='retrying'] {
+  background: #fef3c7;
+  border-left-color: #d97706;
+  color: #78350f;
+}
+
+.statusLine[data-status='elevated'] {
+  background: #fef2f2;
+  border-left-color: #dc2626;
+  color: #991b1b;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #0d9488;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.statusDot[data-status='retrying'] {
+  background: #d97706;
+}
+
+.statusDot[data-status='elevated'] {
+  background: #dc2626;
+}
+
+/* ---- Footer link ---- */
+.footer {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.footerLink {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0d9488;
+  text-decoration: underline;
+}
+
+.footerLink:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .page {
+    padding: 24px 16px;
+  }
+  .contentCard {
+    padding: 24px;
+    gap: 16px;
+  }
+  .heroGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
