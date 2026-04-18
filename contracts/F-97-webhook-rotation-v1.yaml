@@ -1,0 +1,179 @@
+id: F-97-webhook-rotation-v1
+flow_id: F-97
+phase: 203
+name: Webhook Signing-Secret Rotation
+title: Webhook Signing-Secret Rotation
+version: v1
+status: active
+domain: webhooks
+summary: >-
+  Tenant-admin triggered signing-secret rotation with a 30-day grace window.
+  During grace, outbound webhooks carry BOTH X-Markos-Signature-V1 (current
+  secret) and X-Markos-Signature-V2 (new secret) headers so subscribers can
+  verify with either. D-09 locks admin-trigger-only (no auto-scheduler);
+  D-10 locks dual-sign at dispatch; D-12 forbids post-grace restore (after
+  30 days the old secret is purged from the DB and cannot be recovered).
+  Rate-limited at 1 rotate per 5 minutes per tenant to defeat rotation-rollback
+  timing probes (RESEARCH §Threat Patterns, T-203-05-02).
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+
+grace_window:
+  days: 30
+  states:
+    - active
+    - rolled_back
+    - finalized
+
+paths:
+  /api/tenant/webhooks/subscriptions/{sub_id}/rotate:
+    post:
+      summary: Start a signing-secret rotation (D-09 admin-triggered)
+      operationId: startWebhookRotation
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: sub_id, in: path, required: true, schema: { type: string } }
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Rotation started — secret_v2 populated, grace window opened for 30 days.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, rotation_id, grace_ends_at]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+                  rotation_id: { type: string, pattern: "^whrot_" }
+                  grace_ends_at: { type: string, format: date-time }
+        '400': { description: missing_params }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '403': { description: Subscription belongs to another tenant (cross_tenant_forbidden) }
+        '404': { description: Subscription not found }
+        '409': { description: Rotation already active for this subscription (rotation_already_active) }
+        '429': { description: Rate-limited — 1 rotate per 5 minutes per tenant (rate_limited + Retry-After) }
+        '500': { description: rotate_failed (unexpected) }
+
+  /api/tenant/webhooks/subscriptions/{sub_id}/rotate/rollback:
+    post:
+      summary: Rollback an active rotation — restore old secret (D-12 grace-window only)
+      operationId: rollbackWebhookRotation
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: sub_id, in: path, required: true, schema: { type: string } }
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Rollback applied — secret_v2 discarded, grace columns nulled, rotation_state cleared.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+        '400': { description: missing_params }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '403': { description: Subscription belongs to another tenant (cross_tenant_forbidden) }
+        '404': { description: Subscription not found }
+        '409': { description: Past grace (past_grace) or no active rotation (rotation_not_active) — D-12 prevents post-grace restore }
+        '500': { description: rollback_failed (unexpected) }
+
+  /api/tenant/webhooks/rotations/active:
+    get:
+      summary: List active rotations for caller's tenant (Surface 4 grace banner)
+      operationId: listActiveWebhookRotations
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Active rotations with grace-window stage classification for S4 banner.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [rotations]
+                properties:
+                  rotations:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, subscription_id, url, grace_ends_at, stage]
+                      properties:
+                        id: { type: string, pattern: "^whrot_" }
+                        subscription_id: { type: string, pattern: "^whsub_" }
+                        url: { type: string, format: uri }
+                        grace_ends_at: { type: string, format: date-time }
+                        initiated_at: { type: string, format: date-time }
+                        stage:
+                          type: string
+                          enum: [t-7, t-1, t-0, normal]
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '405': { description: Non-GET method }
+        '500': { description: list_failed (unexpected) }
+
+errors:
+  rotation_already_active:
+    http_status: 409
+    description: The subscription already has an active rotation; finalize or rollback the current one before starting another.
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [rotation_already_active] }
+  past_grace:
+    http_status: 409
+    description: D-12 — rollback rejected because the grace window has closed. The old secret has been purged and cannot be restored.
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [past_grace] }
+  rotation_not_active:
+    http_status: 409
+    description: Rollback attempted but no active rotation exists for the subscription.
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [rotation_not_active] }
+  rate_limited:
+    http_status: 429
+    description: T-203-05-02 — 1 rotate per 5 minutes per tenant exceeded. Retry after the window.
+    shape:
+      type: object
+      required: [error, retry_after]
+      properties:
+        error: { type: string, enum: [rate_limited] }
+        retry_after: { type: integer, minimum: 1 }
+  cross_tenant_forbidden:
+    http_status: 403
+    description: Subscription belongs to a different tenant than the authenticated session (T-203-05-01).
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [cross_tenant_forbidden] }
+
+references:
+  subscription_contract: contracts/F-72-webhook-subscription-v1.yaml
+  delivery_contract: contracts/F-73-webhook-delivery-v1.yaml
+  rotation_lib: lib/markos/webhooks/rotation.cjs
+  signing_lib: lib/markos/webhooks/signing.cjs
+  plans:
+    - 203-05-PLAN.md
+    - 203-RESEARCH.md#pattern-3-dual-signature-rotation-stripe-canonical
+    - 203-RESEARCH.md#rotation-orchestrator-wave-3
+    - 203-CONTEXT.md#D-09-D-10-D-11-D-12

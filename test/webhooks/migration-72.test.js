@@ -56,15 +56,22 @@ test('2-static: migration 72 creates markos_webhook_secret_rotations table + RLS
   assert.match(sql, /where state = 'active'/i);
 });
 
-test('2-static: migration 72 declares 3 rotation RPC stubs', () => {
+test('2-static: migration 72 declares 3 rotation RPCs with Plan 203-05 bodies filled', () => {
   const sql = read(MIG_72);
   assert.match(sql, /create or replace function start_webhook_rotation/i);
   assert.match(sql, /create or replace function rollback_webhook_rotation/i);
   assert.match(sql, /create or replace function finalize_expired_webhook_rotations/i);
-  // All 3 should ship as plpgsql stubs; Plan 203-05 fills bodies.
-  assert.match(sql, /raise exception 'start_webhook_rotation: body ships in Plan 203-05'/);
-  assert.match(sql, /raise exception 'rollback_webhook_rotation: body ships in Plan 203-05'/);
-  assert.match(sql, /raise exception 'finalize_expired_webhook_rotations: body ships in Plan 203-05'/);
+  // Plan 203-05 filled the bodies. Assert they are no longer stubs and emit audit rows.
+  assert.doesNotMatch(sql, /raise exception 'start_webhook_rotation: body ships in Plan 203-05'/);
+  assert.doesNotMatch(sql, /raise exception 'rollback_webhook_rotation: body ships in Plan 203-05'/);
+  assert.doesNotMatch(sql, /raise exception 'finalize_expired_webhook_rotations: body ships in Plan 203-05'/);
+  // D-09 + D-10 + D-12 enforcement at DB layer.
+  assert.match(sql, /raise exception 'rotation_already_active'/);
+  assert.match(sql, /raise exception 'past_grace'/);
+  assert.match(sql, /raise exception 'rotation_not_active'/);
+  // Hash-chained audit emit per rotation event.
+  const auditCalls = sql.match(/append_markos_audit_row/g) || [];
+  assert.ok(auditCalls.length >= 3, `Expected ≥3 append_markos_audit_row calls (one per RPC), got ${auditCalls.length}`);
 });
 
 test('2-static: migration 72 creates fleet-metrics view aggregating 48h deliveries', () => {

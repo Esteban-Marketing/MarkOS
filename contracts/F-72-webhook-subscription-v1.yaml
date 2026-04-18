@@ -110,11 +110,37 @@ components:
         id: { type: string, pattern: "^whsub_" }
         tenant_id: { type: string }
         url: { type: string, format: uri }
-        secret: { type: string }
+        secret: { type: string, description: "V1 signing secret. Masked to last 8 chars in UI (UI-SPEC §Surface 2 Settings); never echoed in list/detail API responses during rotation." }
         events: { type: array, items: { type: string } }
         active: { type: boolean }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
+        # Phase 203 Plan 05 — rotation state columns (migration 72 Plan 203-02).
+        secret_v2:
+          type: string
+          nullable: true
+          readOnly: true
+          description: "Phase 203 D-10 — dual-sign secret during 30-day grace window. Never echoed in API responses (hashed or masked to last 8 chars in UI). Null outside an active rotation."
+        rotation_state:
+          type: string
+          nullable: true
+          enum: [active, rolled_back, null]
+          description: "Phase 203 D-09 — active during grace window; rolled_back after explicit D-12 rollback; null outside rotation."
+        grace_started_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Phase 203 D-10 — rotation grace window start; null outside rotation."
+        grace_ends_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Phase 203 D-10 — rotation grace window end (start + 30 days); null outside rotation. After grace closes the old secret is purged (D-12)."
+        rps_override:
+          type: integer
+          nullable: true
+          minimum: 1
+          description: "Phase 203 D-13 — per-subscription RPS override. May only LOWER the plan-tier default; cannot exceed plan ceiling."
     WebhookSubscribeResponse:
       type: object
       properties:

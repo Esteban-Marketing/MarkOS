@@ -5,7 +5,7 @@ openapi: 3.1.0
 info:
   title: MarkOS API
   version: 1.0.0
-  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 60 flow contracts.
+  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 61 flow contracts.
   contact:
     name: MarkOS Engineering
     url: "https://markos.esteban.marketing"
@@ -189,6 +189,9 @@ x-markos-flows:
   F-95-mcp-cost-budget-v1:
     source: contracts/F-95-mcp-cost-budget-v1.yaml
     description: MarkOS flow F-95-mcp-cost-budget-v1
+  F-97:
+    source: contracts/F-97-webhook-rotation-v1.yaml
+    description: MarkOS flow F-97
   F-98:
     source: contracts/F-98-webhook-dlq-v1.yaml
     description: MarkOS flow F-98
@@ -1705,6 +1708,46 @@ paths:
       x-flow-name: Tenant Switcher + Create-in-Org
       x-domain: general
       x-flow-version: v1
+  /api/tenant/webhooks/rotations/active:
+    get:
+      summary: "List active rotations for caller's tenant (Surface 4 grace banner)"
+      operationId: listActiveWebhookRotations
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+      responses:
+        '200':
+          description: Active rotations with grace-window stage classification for S4 banner.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[rotations]"
+                properties:
+                  rotations:
+                    type: array
+                    items:
+                      type: object
+                      required: "[id, subscription_id, url, grace_ends_at, stage]"
+                      properties:
+                        id: "{ type: string, pattern: \"^whrot_\" }"
+                        subscription_id: "{ type: string, pattern: \"^whsub_\" }"
+                        url: "{ type: string, format: uri }"
+                        grace_ends_at: "{ type: string, format: date-time }"
+                        initiated_at: "{ type: string, format: date-time }"
+                        stage:
+                          type: string
+                          enum: "[t-7, t-1, t-0, normal]"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '405': "{ description: Non-GET method }"
+        '500': "{ description: list_failed (unexpected) }"
+      x-flow-id: F-97
+      x-flow-name: Webhook Signing-Secret Rotation
+      x-domain: webhooks
+      x-flow-version: v1
   /api/tenant/webhooks/subscriptions/{sub_id}/deliveries/{delivery_id}/replay:
     post:
       summary: Replay a single failed webhook delivery (D-05 row-level Replay CTA)
@@ -1799,6 +1842,71 @@ paths:
         '500': "{ description: replay_failed (unexpected) }"
       x-flow-id: F-98
       x-flow-name: Webhook DLQ Replay
+      x-domain: webhooks
+      x-flow-version: v1
+  /api/tenant/webhooks/subscriptions/{sub_id}/rotate:
+    post:
+      summary: Start a signing-secret rotation (D-09 admin-triggered)
+      operationId: startWebhookRotation
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        -           { name: "sub_id, in: path, required: true, schema: { type: string } }"
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+      responses:
+        '200':
+          description: "Rotation started — secret_v2 populated, grace window opened for 30 days."
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[ok, rotation_id, grace_ends_at]"
+                properties:
+                  ok: "{ type: boolean, enum: [true] }"
+                  rotation_id: "{ type: string, pattern: \"^whrot_\" }"
+                  grace_ends_at: "{ type: string, format: date-time }"
+        '400': "{ description: missing_params }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '403': "{ description: Subscription belongs to another tenant (cross_tenant_forbidden) }"
+        '404': "{ description: Subscription not found }"
+        '409': "{ description: Rotation already active for this subscription (rotation_already_active) }"
+        '429': "{ description: Rate-limited — 1 rotate per 5 minutes per tenant (rate_limited + Retry-After) }"
+        '500': "{ description: rotate_failed (unexpected) }"
+      x-flow-id: F-97
+      x-flow-name: Webhook Signing-Secret Rotation
+      x-domain: webhooks
+      x-flow-version: v1
+  /api/tenant/webhooks/subscriptions/{sub_id}/rotate/rollback:
+    post:
+      summary: Rollback an active rotation — restore old secret (D-12 grace-window only)
+      operationId: rollbackWebhookRotation
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        -           { name: "sub_id, in: path, required: true, schema: { type: string } }"
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+      responses:
+        '200':
+          description: "Rollback applied — secret_v2 discarded, grace columns nulled, rotation_state cleared."
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[ok]"
+                properties:
+                  ok: "{ type: boolean, enum: [true] }"
+        '400': "{ description: missing_params }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '403': "{ description: Subscription belongs to another tenant (cross_tenant_forbidden) }"
+        '404': "{ description: Subscription not found }"
+        '409': "{ description: Past grace (past_grace) or no active rotation (rotation_not_active) — D-12 prevents post-grace restore }"
+        '500': "{ description: rollback_failed (unexpected) }"
+      x-flow-id: F-97
+      x-flow-name: Webhook Signing-Secret Rotation
       x-domain: webhooks
       x-flow-version: v1
   /api/tracking/identify:
@@ -2434,11 +2542,36 @@ components:
         id: "{ type: string, pattern: \"^whsub_\" }"
         tenant_id: "{ type: string }"
         url: "{ type: string, format: uri }"
-        secret: "{ type: string }"
+        secret: "{ type: string, description: \"V1 signing secret. Masked to last 8 chars in UI (UI-SPEC §Surface 2 Settings); never echoed in list/detail API responses during rotation.\" }"
         events: "{ type: array, items: { type: string } }"
         active: "{ type: boolean }"
         created_at: "{ type: string, format: date-time }"
         updated_at: "{ type: string, format: date-time }"
+        secret_v2:
+          type: string
+          nullable: true
+          readOnly: true
+          description: Phase 203 D-10 — dual-sign secret during 30-day grace window. Never echoed in API responses (hashed or masked to last 8 chars in UI). Null outside an active rotation.
+        rotation_state:
+          type: string
+          nullable: true
+          enum: "[active, rolled_back, null]"
+          description: Phase 203 D-09 — active during grace window; rolled_back after explicit D-12 rollback; null outside rotation.
+        grace_started_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Phase 203 D-10 — rotation grace window start; null outside rotation.
+        grace_ends_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Phase 203 D-10 — rotation grace window end (start + 30 days); null outside rotation. After grace closes the old secret is purged (D-12).
+        rps_override:
+          type: integer
+          nullable: true
+          minimum: 1
+          description: Phase 203 D-13 — per-subscription RPS override. May only LOWER the plan-tier default; cannot exceed plan ceiling.
     F_72_webhook_subscription_v1_WebhookSubscribeResponse:
       type: object
       properties:
