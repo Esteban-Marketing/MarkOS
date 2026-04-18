@@ -227,9 +227,11 @@ test('1o: POST /api/webhooks/subscribe with http:// → 400 {error:https_require
 });
 
 test('1p: POST /api/webhooks/subscribe with public HTTPS succeeds (guard passes)', async () => {
+  // Use example.com — a real public-IP resolvable host; matches 200-03
+  // regression suite fixture (test/webhooks/api-endpoints.test.js).
   const req = makeReq({
     method: 'POST',
-    body: { url: 'https://api.example.com/hook', events: ['approval.created'] },
+    body: { url: 'https://example.com/hook', events: ['approval.created'] },
   });
   const res = makeRes();
   await handleSubscribe(req, res);
@@ -274,7 +276,7 @@ test('1q: processDelivery rejects when dispatch-time lookup resolves to private 
   assert.equal(result.delivered, false);
   const row = await deliveries.findById(delivery.id);
   assert.equal(row.status, STATUS.FAILED);
-  assert.ok(row.dlq_reason && row.dlq_reason.startsWith('ssrf_blocked:'));
+  assert.ok(row.dlq_reason?.startsWith('ssrf_blocked:'));
   assert.ok(row.dlq_at);
 });
 
@@ -284,13 +286,13 @@ test('1q: processDelivery rejects when dispatch-time lookup resolves to private 
 
 test('BLOCKED_V4 exports 6 CIDRs covering required ranges', () => {
   assert.equal(BLOCKED_V4.length, 6);
-  const cidrs = BLOCKED_V4.map((b) => b.cidr);
-  assert.ok(cidrs.includes('127.0.0.0/8'));
-  assert.ok(cidrs.includes('10.0.0.0/8'));
-  assert.ok(cidrs.includes('172.16.0.0/12'));
-  assert.ok(cidrs.includes('192.168.0.0/16'));
-  assert.ok(cidrs.includes('169.254.0.0/16'));
-  assert.ok(cidrs.includes('0.0.0.0/8'));
+  const cidrs = new Set(BLOCKED_V4.map((b) => b.cidr));
+  assert.ok(cidrs.has('127.0.0.0/8'));
+  assert.ok(cidrs.has('10.0.0.0/8'));
+  assert.ok(cidrs.has('172.16.0.0/12'));
+  assert.ok(cidrs.has('192.168.0.0/16'));
+  assert.ok(cidrs.has('169.254.0.0/16'));
+  assert.ok(cidrs.has('0.0.0.0/8'));
 });
 
 test('cidrContains basic sanity: 10.0.0.0/8 contains 10.1.2.3 but not 11.0.0.1', () => {

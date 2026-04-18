@@ -53,11 +53,19 @@ export declare function enqueueDelivery(
   queue: Queue,
   input: EnqueueInput,
 ): Promise<WebhookDelivery>;
+export type ProcessDeliveryOptions = {
+  fetch?: typeof fetch;
+  now?: () => number;
+  // Phase 203-02 Task 1: dispatch-time SSRF re-check (DNS-rebinding defense).
+  // When provided, the SSRF guard uses this lookup instead of node:dns.
+  lookup?: (host: string, opts: { family: number }) => Promise<{ address: string; family: number }>;
+};
+
 export declare function processDelivery(
   deliveries: DeliveryStore,
   subscriptions: Pick<WebhookStore, 'findById'>,
   delivery_id: string,
-  options?: { fetch?: typeof fetch; now?: () => number },
+  options?: ProcessDeliveryOptions,
 ): Promise<
   | { delivered: true; status: number; attempt: number }
   | { delivered: false; reason?: string; attempt?: number; status?: DeliveryStatus; next_retry_at?: string; last_error?: string }

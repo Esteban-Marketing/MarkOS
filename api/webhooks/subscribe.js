@@ -3,6 +3,7 @@
 const { writeJson } = require('../../lib/markos/crm/api.cjs');
 const { subscribe } = require('../../lib/markos/webhooks/engine.cjs');
 const { getWebhookStores } = require('../../lib/markos/webhooks/store.cjs');
+const { assertUrlIsPublic } = require('../../lib/markos/webhooks/ssrf-guard.cjs');
 
 function resolveTenantId(req) {
   const auth = (req && (req.markosAuth || req.tenantContext)) || {};
@@ -36,6 +37,18 @@ async function handleSubscribe(req, res) {
     body = await readJsonBody(req);
   } catch {
     return writeJson(res, 400, { success: false, error: 'INVALID_JSON' });
+  }
+
+  // Phase 203-02 Task 1: SSRF guard at subscribe-time (BEFORE insert).
+  // Error body matches UI-SPEC Surface-1 locked copy — strip any ":name" suffix
+  // so clients see `private_ip` / `https_required` / `invalid_scheme` categories.
+  if (body && typeof body.url === 'string') {
+    try {
+      await assertUrlIsPublic(body.url);
+    } catch (ssrfErr) {
+      const code = String(ssrfErr?.message || 'invalid_url').split(':')[0];
+      return writeJson(res, 400, { success: false, error: code });
+    }
   }
 
   const { subscriptions } = getWebhookStores();
