@@ -138,10 +138,11 @@ create or replace view markos_webhook_fleet_metrics_v1 as
 comment on view markos_webhook_fleet_metrics_v1 is 'Phase 203 D-04: S1 hero banner source. Aggregates last 48h of deliveries per (tenant, hour).';
 
 -- ============================================================================
--- 5. Rotation RPC stubs - Plan 203-05 fills the bodies
+-- 5. Rotation RPCs — bodies filled by Plan 203-05
 -- ============================================================================
--- Signatures are declared here so downstream plans can reference them by name
--- without waiting on 203-05. Invoking any of these today raises an exception.
+-- Atomicity boundary for the rotation state machine (D-09 admin-trigger,
+-- D-10 dual-sign grace window, D-12 no post-grace restore). Each RPC emits a
+-- hash-chained audit row via append_markos_audit_row (Phase 201 Plan 02 pattern).
 
 create or replace function start_webhook_rotation(
   p_rotation_id     text,
@@ -152,7 +153,53 @@ create or replace function start_webhook_rotation(
   p_actor_id        text
 ) returns json as $$
 begin
-  raise exception 'start_webhook_rotation: body ships in Plan 203-05';
+  -- Assert no active rotation for this (tenant, subscription).
+  if exists (
+    select 1 from markos_webhook_subscriptions
+    where id = p_subscription_id
+      and tenant_id = p_tenant_id
+      and rotation_state = 'active'
+  ) then
+    raise exception 'rotation_already_active';
+  end if;
+
+  -- Insert the rotations ledger row.
+  insert into markos_webhook_secret_rotations (
+    id, subscription_id, tenant_id, initiated_by, initiated_at, state, grace_ends_at
+  ) values (
+    p_rotation_id, p_subscription_id, p_tenant_id, p_actor_id, now(), 'active', p_grace_ends_at
+  );
+
+  -- Flip the subscription into rotating state.
+  update markos_webhook_subscriptions
+    set secret_v2 = p_new_secret,
+        grace_started_at = now(),
+        grace_ends_at = p_grace_ends_at,
+        rotation_state = 'active',
+        updated_at = now()
+    where id = p_subscription_id
+      and tenant_id = p_tenant_id;
+
+  -- Hash-chained audit emit (Phase 201 Plan 02 pattern).
+  perform append_markos_audit_row(
+    p_tenant_id,
+    null,
+    'webhooks',
+    'secret.rotation_started',
+    p_actor_id,
+    'owner',
+    jsonb_build_object(
+      'rotation_id', p_rotation_id,
+      'subscription_id', p_subscription_id,
+      'grace_ends_at', p_grace_ends_at
+    ),
+    now()
+  );
+
+  return json_build_object(
+    'rotation_id', p_rotation_id,
+    'grace_ends_at', p_grace_ends_at
+  );
 end;
 $$ language plpgsql security definer;
 
@@ -161,15 +208,121 @@ create or replace function rollback_webhook_rotation(
   p_tenant_id       text,
   p_actor_id        text
 ) returns json as $$
+declare
+  v_rotation record;
 begin
-  raise exception 'rollback_webhook_rotation: body ships in Plan 203-05';
+  -- Locate the most recent active rotation matching (subscription, tenant).
+  select * into v_rotation
+  from markos_webhook_secret_rotations
+  where subscription_id = p_subscription_id
+    and tenant_id = p_tenant_id
+    and state = 'active'
+  order by initiated_at desc
+  limit 1;
+
+  if not found then
+    raise exception 'rotation_not_active';
+  end if;
+
+  -- D-12: rollback is valid only during grace; past-grace is unrecoverable.
+  if v_rotation.grace_ends_at <= now() then
+    raise exception 'past_grace';
+  end if;
+
+  -- Revert subscription: drop secret_v2 + grace columns + rotation_state.
+  update markos_webhook_subscriptions
+    set secret_v2 = null,
+        grace_started_at = null,
+        grace_ends_at = null,
+        rotation_state = null,
+        updated_at = now()
+    where id = p_subscription_id
+      and tenant_id = p_tenant_id;
+
+  -- Update the ledger row.
+  update markos_webhook_secret_rotations
+    set state = 'rolled_back',
+        rolled_back_at = now()
+    where id = v_rotation.id;
+
+  perform append_markos_audit_row(
+    p_tenant_id,
+    null,
+    'webhooks',
+    'secret.rotation_rolled_back',
+    p_actor_id,
+    'owner',
+    jsonb_build_object(
+      'rotation_id', v_rotation.id,
+      'subscription_id', p_subscription_id
+    ),
+    now()
+  );
+
+  return json_build_object(
+    'rotation_id', v_rotation.id,
+    'rolled_back', true
+  );
 end;
 $$ language plpgsql security definer;
 
 create or replace function finalize_expired_webhook_rotations(
   p_now timestamptz
 ) returns json as $$
+declare
+  v_row record;
+  v_results jsonb := '[]'::jsonb;
 begin
-  raise exception 'finalize_expired_webhook_rotations: body ships in Plan 203-05';
+  for v_row in
+    select r.id as rotation_id,
+           r.subscription_id,
+           r.tenant_id,
+           s.secret_v2
+      from markos_webhook_secret_rotations r
+      join markos_webhook_subscriptions s
+        on s.id = r.subscription_id
+       and s.tenant_id = r.tenant_id
+     where r.state = 'active'
+       and r.grace_ends_at < p_now
+  loop
+    -- Promote secret_v2 → secret; purge grace state.
+    update markos_webhook_subscriptions
+      set secret = coalesce(v_row.secret_v2, secret),
+          secret_v2 = null,
+          grace_started_at = null,
+          grace_ends_at = null,
+          rotation_state = null,
+          updated_at = now()
+      where id = v_row.subscription_id
+        and tenant_id = v_row.tenant_id;
+
+    -- Update ledger row.
+    update markos_webhook_secret_rotations
+      set state = 'finalized',
+          finalized_at = p_now
+      where id = v_row.rotation_id;
+
+    perform append_markos_audit_row(
+      v_row.tenant_id,
+      null,
+      'webhooks',
+      'secret.rotation_finalized',
+      'system:cron',
+      'system',
+      jsonb_build_object(
+        'rotation_id', v_row.rotation_id,
+        'subscription_id', v_row.subscription_id
+      ),
+      p_now
+    );
+
+    v_results := v_results || jsonb_build_object(
+      'rotation_id', v_row.rotation_id,
+      'subscription_id', v_row.subscription_id,
+      'finalized_at', p_now
+    );
+  end loop;
+
+  return v_results::json;
 end;
 $$ language plpgsql security definer;

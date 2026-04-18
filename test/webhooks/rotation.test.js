@@ -216,12 +216,17 @@ test('1h: listActiveRotations returns empty array (not null) when tenant has no 
   assert.deepEqual(res, []);
 });
 
-test('1g2: computeStage classifies by days remaining', () => {
+test('1g2: computeStage classifies by days remaining + GRACE_DAYS constant', () => {
   const now = Date.now();
+  // <=0 days → t-0
   assert.equal(computeStage(new Date(now - 1000).toISOString()), 't-0');
-  assert.equal(computeStage(new Date(now + 1000 * 60 * 60).toISOString()), 't-0'); // <1d but >0 rounds up to 1 via ceil? verify below
-  assert.equal(computeStage(new Date(now + 1.5 * 86400000).toISOString()), 't-1'); // ~2 days rounds to 2 via ceil, then falls below 7 → t-7; actually 2>1 → t-7
+  // 1-hour ahead → ceil(0.04) = 1 → t-1 (final day bucket)
+  assert.equal(computeStage(new Date(now + 1000 * 60 * 60).toISOString()), 't-1');
+  // 1.5 days → ceil = 2 → falls in <=7 bucket → t-7
+  assert.equal(computeStage(new Date(now + 1.5 * 86400000).toISOString()), 't-7');
+  // 6 days → ceil = 6 → t-7
   assert.equal(computeStage(new Date(now + 6 * 86400000).toISOString()), 't-7');
+  // 20 days → normal
   assert.equal(computeStage(new Date(now + 20 * 86400000).toISOString()), 'normal');
   assert.equal(GRACE_DAYS, 30);
 });

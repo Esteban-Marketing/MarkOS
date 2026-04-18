@@ -26,6 +26,10 @@ export type WebhookDelivery = {
   next_retry_at: string | null;
   created_at: string;
   updated_at: string;
+  // Phase 203-04/05 additive columns — documented in F-73 delivery contract.
+  replayed_from?: string | null;
+  dlq_reason?: string | null;
+  dlq_at?: string | null;
 };
 
 export type DeliveryStore = {
