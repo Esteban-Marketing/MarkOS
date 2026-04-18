@@ -2,21 +2,22 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Phase 201 plans complete — awaiting verification
-last_updated: "2026-04-17T00:00:00.000Z"
+status: Executing Phase 202
+last_updated: "2026-04-18T00:29:27.258Z"
 progress:
   total_phases: 7
-  completed_phases: 1
-  total_plans: 16
-  completed_plans: 16
+  completed_phases: 2
+  total_plans: 26
+  completed_plans: 17
+  percent: 65
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 201 (saas-tenancy-hardening) — PLANS COMPLETE, AWAITING VERIFICATION
-Plan: 8 of 8 shipped (`201-08-SUMMARY.md`)
+Phase: 202 (mcp-server-ga-claude-marketplace) — EXECUTING
+Plan: 1 of 10
 
 ## What just happened (2026-04-17)
 
@@ -30,6 +31,7 @@ Plan: 8 of 8 shipped (`201-08-SUMMARY.md`)
   - `@vercel/edge-config` ^1.4.3 added; `lib/markos/tenant/slug-cache.{cjs,ts}` read-through in
     middleware + write-through from `lib/markos/orgs/tenants.{cjs,ts}` and
     `switcher.createTenantInOrg`. Fulfils T-201-05-06 Plan 05 threat-model promise.
+
   - 4 new test suites: `audit-emitter-wiring`, `openapi-merge`, `docs-mirror`, `slug-cache` (21 tests).
   - Full phase-201 suite: **122/122 pass**. Auth + webhooks regression: **60/60 pass**.
   - Commits: 9f9b58e, aae5467, 1b148b3, cf7c84b, dc820e4, e6bcbf2, 3c5a9fd.
