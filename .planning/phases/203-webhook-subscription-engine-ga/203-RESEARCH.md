@@ -937,22 +937,22 @@ All F-NN YAML files land in `contracts/`; `scripts/openapi/build-openapi.cjs` gl
 
 **All other claims in this research are `[VERIFIED]` (via Read of existing source or npm view) or `[CITED]` (with specific URL to official docs).**
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Rotation notification channel**
    - What we know: D-11 locks email + dashboard banner (S4); Resend is the in-tree email sender (202-10 precedent).
    - What's unclear: Which admin role(s) receive the email? Any admin in the tenant, or only specific sub-owner? Need tenant-membership filter.
-   - Recommendation: Send to all users with `role IN ('owner', 'admin')` in the tenant's `markos_tenant_memberships` table. Planner: confirm with user on plan kick-off.
+   - RESOLVED: Recommendation: Send to all users with `role IN ('owner', 'admin')` in the tenant's `markos_tenant_memberships` table. Planner: confirm with user on plan kick-off.
 
 2. **DLQ retention purge source of truth**
    - What we know: D-08 locks 7-day TTL; `api/cron/webhooks-dlq-purge.js` runs daily.
    - What's unclear: Does purge HARD DELETE or move to a cold-storage table? SOC 2 evidence pipeline (Phase 206) may need rows retained longer than 7 days for audit.
-   - Recommendation: HARD DELETE the `markos_webhook_deliveries` row but keep the `markos_audit_log` trail (`source_domain='webhooks' action='webhook_delivery.failed'`) — audit is forever. Dashboard only reads deliveries table so UX matches D-08; SOC 2 reads audit.
+   - RESOLVED: Recommendation: HARD DELETE the `markos_webhook_deliveries` row but keep the `markos_audit_log` trail (`source_domain='webhooks' action='webhook_delivery.failed'`) — audit is forever. Dashboard only reads deliveries table so UX matches D-08; SOC 2 reads audit.
 
 3. **Fleet-metrics cache policy**
    - What we know: UI auto-refreshes every 30s; S3 public page caches 60s.
    - What's unclear: Is the Supabase view fast enough under load (Phase 206 SOC 2 may add 10× ingest)? Or do we need to introduce a lightweight rollup table right now?
-   - Recommendation: Ship as a view in Wave 5. Load test (QA-07) validates p95 at realistic volume. If it fails, upgrade to `markos_webhook_fleet_metrics_hourly` table populated by a 5-minute cron + Supabase `pg_cron` extension (already available). Document the upgrade path in `deferred-items.md`.
+   - RESOLVED: Recommendation: Ship as a view in Wave 5. Load test (QA-07) validates p95 at realistic volume. If it fails, upgrade to `markos_webhook_fleet_metrics_hourly` table populated by a 5-minute cron + Supabase `pg_cron` extension (already available). Document the upgrade path in `deferred-items.md`.
 
 ## Validation Architecture
 
