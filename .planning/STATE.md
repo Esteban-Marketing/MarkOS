@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Executing Phase 202
-last_updated: "2026-04-18T00:30:00.000Z"
+status: Ready to execute
+last_updated: "2026-04-18T00:48:13.362Z"
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 26
-  completed_plans: 18
-  percent: 69
+  completed_plans: 20
+  percent: 77
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,22 +17,53 @@ progress:
 ## Current Position
 
 Phase: 202 (mcp-server-ga-claude-marketplace) — EXECUTING
-Plan: 2 of 10
+Plan: 4 of 10
 
 ## What just happened (2026-04-18)
+
+- **Plan 202-02 shipped** (parallel executor, Wave 2) — OAuth 2.1 + PKCE + Surface S2 ready.
+  - `lib/markos/mcp/oauth.cjs` + `.ts` dual-export: `AUTH_CODE_TTL_SECONDS=60`,
+    `issueAuthorizationCode` (Redis `SET NX EX60` + `randomBytes(32)` hex),
+    `consumeAuthorizationCode` (GETDEL one-time), `verifyPKCE` (RFC 7636 length
+    gate + `timingSafeEqual`), `generateDCRClient` (`mcp-cli-<hex32>`),
+    `isAllowedRedirect` whitelist (https/loopback/vscode.dev/claude.ai).
+  - 7 endpoints: `/.well-known/oauth-protected-resource` (RFC 9728),
+    `/.well-known/oauth-authorization-server` (RFC 8414 S256-only), `/oauth/register`
+    (RFC 7591 DCR), `/oauth/authorize` (302 /login or /oauth/consent),
+    `/oauth/authorize/approve` (listTenantsForUser + D-07 tenant-bind +
+    `issueAuthorizationCode`), `/oauth/token` (PKCE + RFC 8707 exact-match +
+    `createSession` → Bearer 86400s; zero `refresh_token` per D-06), `/oauth/revoke`
+    (RFC 7009 anti-probing always-200 for authenticated actor + `revokeSession`).
+  - Surface S2 `app/(markos)/oauth/consent/page.tsx` + `.module.css`: Sora 28px
+    heading, scope chips, multi-tenant fieldset/legend picker, Approve/Deny, `What
+    is MCP?` details, `role="alert"` errors, 44px tap targets, prefers-reduced-motion.
+  - `contracts/F-89-mcp-oauth-v1.yaml`: 7 paths + RFC 7636/7591/8414/9728/8707/7009
+    references; mirrors F-71 YAML shape.
+  - New suites: `test/mcp/oauth.test.js` (47) + `test/mcp/consent-ui-a11y.test.js` (14).
+    61/61 green. Wave-1 regression 66/66 green. Phase 201 regression 25/25 green.
+  - Commits: b3a6cfa (RED 1+2) · d58d08a (Task 1 GREEN) · 4021bee (Task 2 GREEN)
+    · fc9ff52 (Task 3 RED) · c2ab450 (Task 3 GREEN).
+  - **Decisions:** (1) Triple-gate S256 enforcement prevents PKCE downgrade at 3
+    independent layers. (2) No refresh tokens (D-06) removes leak surface entirely.
+    (3) RFC 7009 anti-probing: 401 anon, 200 auth regardless of token validity.
 
 - **Plan 202-01 shipped** (parallel executor) — MCP session substrate ready.
   - Migration 88 (`markos_mcp_sessions`, opaque-token hash + 24h rolling TTL + RLS) + migration 89
     (`markos_mcp_cost_window` + atomic `check_and_charge_mcp_budget` plpgsql fn) with rollbacks.
+
   - `lib/markos/mcp/sessions.cjs` + `.ts` dual-export: hashToken, createSession (tenant-status guard),
     lookupSession (timingSafeEqual + token_hash strip), touchSession (24h extend), revokeSession
     (audit emit), listSessionsFor{Tenant,User}.
+
   - `api/mcp/session/cleanup.js` shared-secret cron + `vercel.ts` 4th cron entry at `0 */6 * * *`
     (preserves 201-02 drain · 201-07 purge · 201-03 signup cleanup).
+
   - Rule 3 blocking fix: `AUDIT_SOURCE_DOMAINS` extended 11 → 12 entries (`mcp`). writer.cjs +
     writer.ts + hash-chain.test.js locked-list regression updated in lockstep.
+
   - New suites: `test/mcp/session.test.js` (21) + `test/mcp/rls.test.js` (6) +
     `test/mcp/migration-idempotency.test.js` (4). 30/30 green. Phase 201 regression: 25/25 green.
+
   - Commits: b7ab22e (migrations) · 9e478c8 (audit whitelist) · 118f559 (sessions library) ·
     77e8d10 (cleanup cron).
 
