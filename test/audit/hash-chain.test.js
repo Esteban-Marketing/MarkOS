@@ -30,10 +30,12 @@ function mockSupabase(rpcResponse, insertResponse) {
   };
 }
 
-test('Suite 201-02: AUDIT_SOURCE_DOMAINS is the locked 11-entry list', () => {
+test('Suite 201-02: AUDIT_SOURCE_DOMAINS is the locked list (11 core + 1 MCP)', () => {
   assert.deepEqual([...AUDIT_SOURCE_DOMAINS], [
     'auth', 'tenancy', 'orgs', 'billing', 'crm', 'outbound',
     'webhooks', 'approvals', 'consent', 'governance', 'system',
+    // Phase 202 Plan 01: MCP session lifecycle + tool-call audit fabric.
+    'mcp',
   ]);
   assert.equal(Object.isFrozen(AUDIT_SOURCE_DOMAINS), true);
 });

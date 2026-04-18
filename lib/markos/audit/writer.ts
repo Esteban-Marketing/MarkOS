@@ -11,6 +11,8 @@ const writerCjs = require('./writer.cjs') as {
 export const AUDIT_SOURCE_DOMAINS = writerCjs.AUDIT_SOURCE_DOMAINS as readonly [
   'auth', 'tenancy', 'orgs', 'billing', 'crm', 'outbound',
   'webhooks', 'approvals', 'consent', 'governance', 'system',
+  // Phase 202 Plan 01: MCP session lifecycle + tool-call audit fabric.
+  'mcp',
 ];
 
 export type AuditSourceDomain = typeof AUDIT_SOURCE_DOMAINS[number];
