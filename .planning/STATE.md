@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 203
-last_updated: "2026-04-18T06:59:17.749Z"
+last_updated: "2026-04-18T12:29:16.363Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 36
-  completed_plans: 31
-  percent: 86
+  completed_plans: 33
+  percent: 92
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,7 +17,104 @@ progress:
 ## Current Position
 
 Phase: 203 (webhook-subscription-engine-ga) — EXECUTING
-Plan: Wave 1 complete (203-01 + 203-02) · Wave 2 in flight (203-03 + 203-04 shipped; 203-06 parallel)
+Plan: Waves 1-3 complete (203-01..03-06 all shipped). Wave 4 in flight: 203-07 shipped. Remaining: 203-08 (breaker) · 203-09 (dashboard) · 203-10 (status page + Sentry).
+
+## What just happened (2026-04-18, Plan 203-07 close — solo Wave 4)
+
+- **Plan 203-07 shipped** (solo executor, Wave 4) — Per-subscription rate-limit (D-13)
+  + dispatch-gates indirection module (T-203-07-06 single-insertion-point invariant).
+
+  - `lib/markos/webhooks/rate-limit.cjs` + `.ts`: `PLAN_TIER_RPS` frozen
+    `{ free: 10, team: 60, enterprise: 300 }` (D-13 locked); `resolvePerSubRps`
+    with `Math.min(override, ceiling)` (cap-not-raise — never allows override
+    to exceed plan ceiling); unknown `plan_tier` falls through to `free`
+    (fail-closed per T-203-07-04). `checkWebhookRateLimit(redisOrLimiter,
+    { subscription, plan_tier })` builds Upstash `Ratelimit` with
+    `slidingWindow(resolved_rps, '1 s')` + prefix `rl:webhook:sub`; per-
+    `(sub_id, resolved_rps)` bounded cache at 1024 entries (flipping
+    rps_override doesn't require a process restart). Breach returns
+    `{ ok: false, reason: 'sub_rps', retry_after, limit, error_429 }`
+    with `retry_after` clamped to ≥1. `buildRateLimitedEnvelope` shared
+    429 envelope. Shares @upstash/ratelimit + @upstash/redis instance with
+    202-04 MCP pipeline — zero new deps (RESEARCH §Standard Stack).
+
+  - `lib/markos/webhooks/dispatch-gates.cjs` + `.ts`: **SINGLE pre-fetch
+    indirection module** that Plan 203-08 will EXTEND additively.
+    `runDispatchGates({subId, tenantId, eventId, planTier, subscription,
+    redis})` → `{status: 'allowed'}` or `{status: 'rate_limited',
+    retryAfterSec, limit, reason}`. Explicit `// GATE: breaker (Plan 203-08
+    extends here as FIRST gate)` marker above the rate-limit gate.
+    Fall-through to `allowed` when `redis === undefined && !UPSTASH_
+    REDIS_REST_URL` (Rule 3 fix so 200-03 delivery suite + CI without
+    Upstash creds keep working; production consumers pass redis explicitly).
+    `handleGateBlock` writes `{status: 'retrying', next_attempt_at,
+    updated_at}` — attempt counter NOT set (transient block, not DLQ event;
+    24-cap preserved).
+
+  - `lib/markos/webhooks/delivery.cjs`: ONE pre-fetch `runDispatchGates`
+    call after subscription lookup, before SSRF re-check + dual-sign +
+    fetch. On non-`allowed` → `handleGateBlock` returns early.
+    **`checkWebhookRateLimit` NO LONGER imported directly** — dispatch-
+    gates is the sole consumer (T-203-07-06 invariant; grep=0 locked).
+    `ProcessDeliveryOptions` gains optional `redis` + `planTier`.
+
+  - `api/webhooks/subscribe.js`: `rps_override` body param validation
+    at subscribe-time (D-13 enforcement layer 1). Type-check first → 400
+    `invalid_rps_override`; then ceiling-check → 400 `rps_override_
+    exceeds_plan` with `ceiling` echoed. Extracted `checkSsrfOrReject`
+    + `validateRpsOverride` helpers (S3776 cognitive-complexity fix,
+    18 → under 15). `engine.cjs::subscribe` now persists `rps_override`
+    on the row (null when caller omits).
+
+  - `contracts/F-100-webhook-breaker-v1.yaml`: declarative-only
+    (`paths: {}`). Schemas: `RateLimitState` (plan_tier + ceiling_rps +
+    effective_rps + override_rps nullable), `BreakerState` (state:
+    closed|half-open|open + trips + probe_at + opened_at), `Webhook
+    SubscriptionDetail` (reserved shape for Plan 203-09 GET detail).
+    3 error envelopes: `rate_limited` 429 + Retry-After, `rps_override_
+    exceeds_plan` 400, `invalid_rps_override` 400. All 3 breaker states
+    declared so Plan 203-08 extends the same contract.
+
+  - `contracts/openapi.{json,yaml}`: regenerated via
+    `scripts/openapi/build-openapi.cjs`: **62 F-NN flows / 91 paths**
+    (up from 61/90 at Plan 203-05 close).
+
+  - Tests — 3 new suites + 1 extension: `rate-limit.test.js` (19),
+    `429-breach.test.js` (5), `dispatch-gates.test.js` (6),
+    `delivery.test.js` +3 (2c gate blocks fetch, 2d gate allowed,
+    2f repeated blocks don't burn 24-cap). **33 new tests green.**
+    Full webhook regression **227/229 + 2 skips** (up from 199/201).
+    200-03 baseline `signing + engine + delivery + api-endpoints` → 41/41.
+
+  - Commits: `5c3ecd6` (Task 1 RED) · `0e3462a` (Task 1 GREEN: rate-limit
+    lib + subscribe-time rps_override validation) · `9d5d433` (Task 2 RED)
+    · `190742b` (Task 2 GREEN: dispatch-gates + single pre-fetch indirection
+    + F-100 + openapi regen).
+
+  - **Decisions:** (1) T-203-07-06 invariant locked via grep acceptance:
+    `checkWebhookRateLimit` appears 0 times in delivery.cjs. Plan 203-08
+    extends dispatch-gates.cjs, never delivery.cjs — no parallel pre-fetch
+    branches. (2) Unknown plan_tier → free (fail-closed) at BOTH resolve
+    PerSubRps (lib) AND subscribe.js (handler) — aligned with 202-09
+    usage.js pattern. (3) Gate fall-through when no redis + no UPSTASH
+    env: preserves 200-03 delivery suite (5 tests never passed redis)
+    and CI runs without Upstash credentials; production consumers pass
+    redis explicitly via deps. (4) Per-(sub_id, resolved_rps) bounded
+    limiter cache (max 1024) handles rps_override flips without process
+    restart. (5) F-100 declarative-only (`paths: {}`) — Plan 203-09
+    mounts the handler; F-100 pre-declares RateLimitState + BreakerState
+    so Plan 203-08 references the same contract. (6) S3776 fix:
+    extracted checkSsrfOrReject + validateRpsOverride helpers in
+    subscribe.js to keep handleSubscribe under cognitive-complexity 15.
+
+  - **Downstream unlocks:** Plan 203-08 (breaker) extends
+    `dispatch-gates.cjs` by inserting the breaker check at the
+    `// GATE: breaker` marker as the FIRST gate — zero edits to
+    delivery.cjs needed (the architectural point of T-203-07-06). Plan
+    203-09 (dashboard) GET `/api/tenant/webhooks/subscriptions/{sub_id}`
+    joins F-100's RateLimitState + BreakerState into 200 body for
+    UI-SPEC Surface 2 RPS chip + Surface 4 breaker badge. Plan 203-10
+    (status page) emits the F-100 429 envelope through log-drain.cjs.
 
 ## What just happened (2026-04-18, Plan 203-04 close — parallel Wave 2)
 
