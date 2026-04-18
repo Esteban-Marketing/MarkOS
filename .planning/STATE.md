@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Ready to execute
-last_updated: "2026-04-18T00:48:13.362Z"
+last_updated: "2026-04-18T01:06:15.762Z"
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 26
-  completed_plans: 20
-  percent: 77
+  completed_plans: 22
+  percent: 85
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,9 +17,56 @@ progress:
 ## Current Position
 
 Phase: 202 (mcp-server-ga-claude-marketplace) — EXECUTING
-Plan: 4 of 10
+Plan: 6 of 10
 
 ## What just happened (2026-04-18)
+
+- **Plan 202-05 shipped** (parallel executor, Wave 3) — MCP observability + Bearer envelope ready.
+  - `lib/markos/mcp/log-drain.cjs` + `.ts` dual-export: `emitLogLine` D-30 shape
+    `{ domain:'mcp', req_id, session_id, tenant_id, tool_id, duration_ms, status, cost_cents,
+    error_code, timestamp }` with null coercion + JSON.stringify-safe round-trip.
+
+  - `lib/markos/mcp/sentry.cjs` + `.ts` dual-export: `captureToolError` + `setupSentryContext`
+    with lazy `@sentry/nextjs` import behind `SENTRY_DSN` gate; triple-safety (env-gated,
+    try/catch import, try/catch captureException); dep-injectable via `deps.sentry`;
+    `_internalResetForTests` for suite isolation.
+
+  - `sentry.server.config.ts` — `Sentry.init({ dsn, tracesSampleRate: 0.1, environment: VERCEL_ENV, release: VERCEL_GIT_COMMIT_SHA })`.
+  - `instrumentation.ts` — `register()` hook dynamic-imports sentry.server.config under
+    `NEXT_RUNTIME === 'nodejs' && SENTRY_DSN`; `onRequestError` forwards to `captureRequestError`.
+
+  - `next.config.ts` — `withSentryConfig(nextConfig, { org:'markos', project:'markos-web', silent: !CI })`.
+  - `lib/markos/mcp/server.cjs`: `SERVER_INFO.version` bumped 1.0.0 → **2.0.0** (marketplace v2
+    alignment); added `runToolCallThroughPipeline` (sole dispatch path into Plan 202-04 pipeline)
+
+    + `buildToolRegistryFromDefinitions` adapter. Additive merge with Plan 202-08's
+    `listResources/listResourceTemplates/readResource/subscribeResource/unsubscribeResource`.
+
+  - `api/mcp/session.js`: `mcp-req-<uuid>` (D-29) at every entry; `extractBearer` regex;
+    `WWW-Authenticate: Bearer resource_metadata="https://markos.dev/.well-known/oauth-protected-resource"`
+    on 401 (MCP 2025-06-18 + Marketplace cert); `tools/call` routed through pipeline;
+    `capabilities.resources: { subscribe: true, listChanged: false }` advertised at initialize;
+    `safeListResources` falls back to `listResourceTemplates()` for marketplace discovery.
+
+  - `lib/markos/mcp/pipeline.cjs`: finally block calls `emitLogLine` (replaces console.log
+    placeholder); catch block calls `captureToolError` on thrown exceptions; finally block also
+    fires `captureToolError` for `output_schema_violation` (non-throwing server-error path).
+
+  - `package.json`: `@sentry/nextjs ^10.49.0` (latest stable via `npm view`).
+  - New suite: `test/mcp/observability.test.js` (9 tests — D-30 shape, null coercion, graceful
+    degrade, tags/extra correctness, config-file greps). `server.test.js` extended +8 Plan 202-05
+    tests (v2 bump, req_id echo, Bearer gating, WWW-Authenticate, pipeline delegation).
+
+  - **49/49 green** across observability + server + pipeline; Wave-1 regression **106/106**;
+    Phase 201 regression **25/25**; full Phase 202 suite **178/178**.
+
+  - Commits: ebb0440 (RED obs) · bd27f6e (GREEN obs + Sentry init + package.json) · 4aecab5
+    (RED server ext) · 8279cb5 (GREEN pipeline + server v2 + session Bearer).
+
+  - **Decisions:** (1) Triple-safety on Sentry (DSN env gate + lazy import try/catch + captureException try/catch)
+    — captureToolError never throws. (2) req_id is server-generated via randomUUID; client `_meta.req_id` ignored
+    (T-202-05-10). (3) Additive parallel-wave composition — sibling 202-06 (list_pain_points) and 202-08
+    (resources + notifications/initialized) merged via targeted Edits, not rewrites.
 
 - **Plan 202-02 shipped** (parallel executor, Wave 2) — OAuth 2.1 + PKCE + Surface S2 ready.
   - `lib/markos/mcp/oauth.cjs` + `.ts` dual-export: `AUTH_CODE_TTL_SECONDS=60`,
@@ -27,6 +74,7 @@ Plan: 4 of 10
     `consumeAuthorizationCode` (GETDEL one-time), `verifyPKCE` (RFC 7636 length
     gate + `timingSafeEqual`), `generateDCRClient` (`mcp-cli-<hex32>`),
     `isAllowedRedirect` whitelist (https/loopback/vscode.dev/claude.ai).
+
   - 7 endpoints: `/.well-known/oauth-protected-resource` (RFC 9728),
     `/.well-known/oauth-authorization-server` (RFC 8414 S256-only), `/oauth/register`
     (RFC 7591 DCR), `/oauth/authorize` (302 /login or /oauth/consent),
@@ -34,15 +82,20 @@ Plan: 4 of 10
     `issueAuthorizationCode`), `/oauth/token` (PKCE + RFC 8707 exact-match +
     `createSession` → Bearer 86400s; zero `refresh_token` per D-06), `/oauth/revoke`
     (RFC 7009 anti-probing always-200 for authenticated actor + `revokeSession`).
+
   - Surface S2 `app/(markos)/oauth/consent/page.tsx` + `.module.css`: Sora 28px
     heading, scope chips, multi-tenant fieldset/legend picker, Approve/Deny, `What
     is MCP?` details, `role="alert"` errors, 44px tap targets, prefers-reduced-motion.
+
   - `contracts/F-89-mcp-oauth-v1.yaml`: 7 paths + RFC 7636/7591/8414/9728/8707/7009
     references; mirrors F-71 YAML shape.
+
   - New suites: `test/mcp/oauth.test.js` (47) + `test/mcp/consent-ui-a11y.test.js` (14).
     61/61 green. Wave-1 regression 66/66 green. Phase 201 regression 25/25 green.
+
   - Commits: b3a6cfa (RED 1+2) · d58d08a (Task 1 GREEN) · 4021bee (Task 2 GREEN)
     · fc9ff52 (Task 3 RED) · c2ab450 (Task 3 GREEN).
+
   - **Decisions:** (1) Triple-gate S256 enforcement prevents PKCE downgrade at 3
     independent layers. (2) No refresh tokens (D-06) removes leak surface entirely.
     (3) RFC 7009 anti-probing: 401 anon, 200 auth regardless of token validity.
