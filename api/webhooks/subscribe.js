@@ -4,6 +4,7 @@ const { writeJson } = require('../../lib/markos/crm/api.cjs');
 const { subscribe } = require('../../lib/markos/webhooks/engine.cjs');
 const { getWebhookStores } = require('../../lib/markos/webhooks/store.cjs');
 const { assertUrlIsPublic } = require('../../lib/markos/webhooks/ssrf-guard.cjs');
+const { PLAN_TIER_RPS, resolvePerSubRps } = require('../../lib/markos/webhooks/rate-limit.cjs');
 
 function resolveTenantId(req) {
   const auth = (req && (req.markosAuth || req.tenantContext)) || {};
@@ -26,6 +27,41 @@ async function readJsonBody(req) {
   });
 }
 
+// Phase 203-02 Task 1: SSRF guard at subscribe-time. Extracted so handleSubscribe
+// stays under the 15-complexity threshold (S3776).
+async function checkSsrfOrReject(res, url) {
+  if (typeof url !== 'string') return null; // nothing to check — engine.cjs will reject shape later
+  try {
+    await assertUrlIsPublic(url);
+    return null;
+  } catch (ssrfErr) {
+    const code = String(ssrfErr?.message || 'invalid_url').split(':')[0];
+    writeJson(res, 400, { success: false, error: code });
+    return 'rejected';
+  }
+}
+
+// Phase 203-07 Task 1: rps_override validation (D-13). Returns either
+//   { error: 'writeJson called' } when a response has been written, or
+//   { rps_override } on success. Keeps handleSubscribe flat.
+function validateRpsOverride(res, rawOverride, plan_tier) {
+  if (rawOverride === undefined || rawOverride === null) {
+    return { rps_override: null };
+  }
+  if (typeof rawOverride !== 'number' || !Number.isFinite(rawOverride) || rawOverride < 1) {
+    writeJson(res, 400, { success: false, error: 'invalid_rps_override' });
+    return { rejected: true };
+  }
+  const ceiling = Object.hasOwn(PLAN_TIER_RPS, plan_tier)
+    ? PLAN_TIER_RPS[plan_tier]
+    : PLAN_TIER_RPS.free;
+  if (rawOverride > ceiling) {
+    writeJson(res, 400, { success: false, error: 'rps_override_exceeds_plan', ceiling });
+    return { rejected: true };
+  }
+  return { rps_override: rawOverride };
+}
+
 async function handleSubscribe(req, res) {
   if (req.method !== 'POST') return writeJson(res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
 
@@ -39,17 +75,17 @@ async function handleSubscribe(req, res) {
     return writeJson(res, 400, { success: false, error: 'INVALID_JSON' });
   }
 
-  // Phase 203-02 Task 1: SSRF guard at subscribe-time (BEFORE insert).
-  // Error body matches UI-SPEC Surface-1 locked copy — strip any ":name" suffix
-  // so clients see `private_ip` / `https_required` / `invalid_scheme` categories.
+  // SSRF guard (BEFORE insert). Error body matches UI-SPEC Surface-1 locked copy.
   if (body && typeof body.url === 'string') {
-    try {
-      await assertUrlIsPublic(body.url);
-    } catch (ssrfErr) {
-      const code = String(ssrfErr?.message || 'invalid_url').split(':')[0];
-      return writeJson(res, 400, { success: false, error: code });
-    }
+    const ssrfOutcome = await checkSsrfOrReject(res, body.url);
+    if (ssrfOutcome === 'rejected') return;
   }
+
+  // rps_override (D-13).
+  const plan_tier = (typeof body?.plan_tier === 'string' && body.plan_tier) || 'free';
+  const validation = validateRpsOverride(res, body?.rps_override, plan_tier);
+  if (validation.rejected) return;
+  const { rps_override } = validation;
 
   const { subscriptions } = getWebhookStores();
   try {
@@ -58,6 +94,7 @@ async function handleSubscribe(req, res) {
       url: body.url,
       events: body.events,
       secret: body.secret,
+      rps_override,
     });
     return writeJson(res, 201, { success: true, subscription: row });
   } catch (error) {
@@ -69,3 +106,6 @@ module.exports = async function handler(req, res) {
   return handleSubscribe(req, res);
 };
 module.exports.handleSubscribe = handleSubscribe;
+// Expose for tests + dependents that want to validate at the same layer.
+module.exports.resolvePerSubRps = resolvePerSubRps;
+module.exports.PLAN_TIER_RPS = PLAN_TIER_RPS;
