@@ -36,6 +36,7 @@ Give operators one trustworthy, auditable system for launching and running reven
 - [x] Tenant-aware and approval-aware architecture patterns already exist and should be extended, not replaced.
 - [x] v3.8.0 now ships tenant-safe CRM records, tracking, lifecycle timelines, pipeline execution, native outbound, and approval-aware AI assistance.
 - [x] CRM-native reporting and attribution are now operational inside the same governed source of truth.
+- [x] Webhook Subscription Engine GA shipped (Phase 203, v4.0.0 SaaS Readiness milestone): durable Supabase + Vercel Queues substrate, tenant-admin dashboard (Surfaces 1+2), public status page (Surface 3), rotation grace banner (Surface 4), DLQ + replay, signing-secret rotation with 30-day grace + T-7/T-1/T-0 Resend notifications, per-sub rate-limit, circuit breaker, SSRF guard, observability (Sentry + log-drain), full docs. 11/11 plans, 12/12 must-haves verified, 7/7 human UAT passed.
 
 ### Active
 
@@ -90,4 +91,4 @@ This document evolves at phase transitions and milestone boundaries.
 ---
 ## Metadata
 
-Last updated: 2026-04-15 after the v3.9.0 milestone discussion and draft setup.
+Last updated: 2026-04-18 after Phase 203 (Webhook Subscription Engine GA) completion under v4.0.0 SaaS Readiness milestone.
