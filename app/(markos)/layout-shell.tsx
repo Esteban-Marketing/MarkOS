@@ -1,6 +1,7 @@
 import React, { type ReactNode } from "react";
 
 import styles from "./layout-shell.module.css";
+import RotationBannerMount from "./_components/RotationBannerMount";
 
 const NAV_ITEMS = [
   { href: "/markos", label: "Dashboard", route: "dashboard" },
@@ -60,7 +61,10 @@ export function MarkOSLayoutShell({
             </ul>
           </nav>
         </aside>
-        <section className={styles.content}>{children}</section>
+        <section className={styles.content}>
+          <RotationBannerMount />
+          {children}
+        </section>
       </div>
     </main>
   );
