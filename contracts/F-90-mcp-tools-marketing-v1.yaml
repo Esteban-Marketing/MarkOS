@@ -1,0 +1,234 @@
+id: F-90-mcp-tools-marketing-v1
+phase: 202
+plan: 07
+name: MCP Tools — Marketing (14)
+status: active
+summary: >-
+  JSON Schema input/output contracts for 14 MCP marketing tools — draft_message +
+  plan_campaign + generate_brief + audit_claim (retained from Phase 200 / Plan
+  202-06) plus 10 net-new from Plan 202-07 (remix_draft, rank_draft_variants,
+  brief_to_plan, generate_channel_copy, expand_claim_evidence, clone_persona_voice,
+  generate_subject_lines, optimize_cta, generate_preview_text, audit_claim_strict).
+  Schemas are the source of truth consumed by scripts/openapi/build-mcp-schemas.mjs
+  into lib/markos/mcp/_generated/tool-schemas.json for AJV runtime validation
+  (Plan 202-04). Every marketing tool is non-mutating.
+
+references:
+  - F-71-mcp-session-v2 (tool dispatch envelope)
+  - F-89-mcp-oauth-v1 (auth surface)
+
+tools:
+  draft_message:
+    description: Generate a single marketing draft from a channel + audience + pain + promise + brand brief.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [channel, audience, pain, promise, brand]
+      additionalProperties: false
+      properties:
+        channel: { type: string, enum: [email, x, linkedin, sms] }
+        audience: { type: string, minLength: 1, maxLength: 500 }
+        pain: { type: string, minLength: 1, maxLength: 1000 }
+        promise: { type: string, minLength: 1, maxLength: 1000 }
+        brand: { type: string, minLength: 1, maxLength: 200 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  plan_campaign:
+    description: Produce a campaign plan outline grounded in brand canon from an objective + audience + optional budget.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [objective, audience]
+      additionalProperties: false
+      properties:
+        objective: { type: string, minLength: 1, maxLength: 1000 }
+        audience: { type: string, minLength: 1, maxLength: 500 }
+        budget: { type: string, maxLength: 200 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  generate_brief:
+    description: Generate a structured marketing brief from a freeform prompt.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [prompt]
+      additionalProperties: false
+      properties:
+        prompt: { type: string, minLength: 1, maxLength: 5000 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  audit_claim:
+    description: Verify whether a marketing claim is supported by canon evidence.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [claim]
+      additionalProperties: false
+      properties:
+        claim: { type: string, minLength: 1, maxLength: 2000 }
+        model: { type: string, maxLength: 200 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  audit_claim_strict:
+    description: Stricter claim auditor — Sonnet-powered; forces canon citation + confidence score.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [claim]
+      additionalProperties: false
+      properties:
+        claim: { type: string, minLength: 1, maxLength: 2000 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  remix_draft:
+    description: Remix an existing draft per a directive (shorter/more formal/different angle). Returns N variants.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [draft, directive]
+      additionalProperties: false
+      properties:
+        draft: { type: string, minLength: 1, maxLength: 10000 }
+        directive: { type: string, minLength: 1, maxLength: 500 }
+        variants: { type: integer, minimum: 1, maximum: 5 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  rank_draft_variants:
+    description: Score N drafts against brand voice + neuro-audit + claim-check. Returns ranked list.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [variants]
+      additionalProperties: false
+      properties:
+        variants:
+          type: array
+          minItems: 2
+          maxItems: 10
+          items: { type: string, minLength: 1, maxLength: 10000 }
+        brief: { type: object, additionalProperties: true }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  brief_to_plan:
+    description: Expand a brief into a 5-step execution plan (research → pain → promise → drafts → schedule).
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [brief]
+      additionalProperties: false
+      properties:
+        brief:
+          type: object
+          required: [channel, audience, pain, promise, brand]
+          additionalProperties: true
+          properties:
+            channel: { type: string }
+            audience: { type: string }
+            pain: { type: string }
+            promise: { type: string }
+            brand: { type: string }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  generate_channel_copy:
+    description: Produce channel-ready blocks (subject + preview + body + CTA) for a specific channel.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [channel, brief]
+      additionalProperties: false
+      properties:
+        channel: { type: string, enum: [email, x, linkedin, sms] }
+        brief: { type: object, additionalProperties: true }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  expand_claim_evidence:
+    description: Given a marketing claim, return supporting canon evidence + suggested strengthening variants.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [claim]
+      additionalProperties: false
+      properties:
+        claim: { type: string, minLength: 1, maxLength: 2000 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  clone_persona_voice:
+    description: Given a persona archetype + topic, return a voice-cloned draft with voice markers.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [persona_slug, topic]
+      additionalProperties: false
+      properties:
+        persona_slug: { type: string, minLength: 1, maxLength: 200 }
+        topic: { type: string, minLength: 1, maxLength: 1000 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  generate_subject_lines:
+    description: Return 10 ranked subject-line candidates for a draft body.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [body]
+      additionalProperties: false
+      properties:
+        body: { type: string, minLength: 1, maxLength: 10000 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  optimize_cta:
+    description: Return alternative CTA options ranked by a historical click-weight heuristic.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [draft]
+      additionalProperties: false
+      properties:
+        draft: { type: string, minLength: 1, maxLength: 10000 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+  generate_preview_text:
+    description: Email-specific preview-text candidates (5) given subject + body.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [subject, body]
+      additionalProperties: false
+      properties:
+        subject: { type: string, minLength: 1, maxLength: 500 }
+        body: { type: string, minLength: 1, maxLength: 10000 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+shared:
+  llm_content_plus_usage:
+    type: object
+    required: [content, _usage]
+    additionalProperties: true
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          required: [type, text]
+          properties:
+            type: { enum: [text] }
+            text: { type: string }
+      _usage:
+        type: object
+        required: [input_tokens, output_tokens]
+        properties:
+          input_tokens: { type: integer, minimum: 0 }
+          output_tokens: { type: integer, minimum: 0 }
