@@ -22,6 +22,9 @@ function makeRes() {
     res.statusCode = code;
     if (headers) Object.assign(res.headers, headers);
   };
+  res.setHeader = (k, v) => {
+    res.headers[k] = v;
+  };
   res.end = (b) => {
     res.body = b;
   };
@@ -137,4 +140,94 @@ test('POST /api/mcp/tools/unknown returns 404', async () => {
   const res = makeRes();
   await handleToolInvocation(req, res);
   assert.equal(res.statusCode, 404);
+});
+
+// ---------------------------------------------------------------------------
+// Plan 202-05 extensions: Bearer auth + WWW-Authenticate + req_id + version v2
+// ---------------------------------------------------------------------------
+
+function mockReqBody(method, body, headers = {}) {
+  const chunks = body ? [Buffer.from(typeof body === 'string' ? body : JSON.stringify(body))] : [];
+  return {
+    method,
+    headers,
+    on(evt, cb) {
+      if (evt === 'data') chunks.forEach((c) => cb(c));
+      if (evt === 'end') setImmediate(cb);
+    },
+  };
+}
+
+test('Suite 202-05: SERVER_INFO.version bumped to 2.0.0 (matches marketplace.json v2)', () => {
+  assert.equal(SERVER_INFO.version, '2.0.0');
+});
+
+test('Suite 202-05: GET /api/mcp/session returns SERVER_INFO + _meta.req_id without auth', async () => {
+  const res = makeRes();
+  await handleSession({ method: 'GET', headers: {}, on() {} }, res);
+  assert.equal(res.statusCode, 200);
+  const parsed = JSON.parse(res.body);
+  assert.equal(parsed.server.version, '2.0.0');
+  assert.ok(parsed._meta.req_id.startsWith('mcp-req-'));
+});
+
+test('Suite 202-05: POST initialize succeeds without Bearer (capability negotiation)', async () => {
+  const res = makeRes();
+  await handleSession(mockReqBody('POST', { jsonrpc: '2.0', id: 1, method: 'initialize' }), res);
+  assert.equal(res.statusCode, 200);
+  const parsed = JSON.parse(res.body);
+  assert.equal(parsed.result.protocolVersion, '2025-06-18');
+  assert.equal(parsed.result.capabilities.resources.subscribe, true);
+  assert.ok(parsed.result._meta.req_id);
+});
+
+test('Suite 202-05: POST tools/list succeeds without Bearer (marketplace introspection)', async () => {
+  const res = makeRes();
+  await handleSession(mockReqBody('POST', { jsonrpc: '2.0', id: 2, method: 'tools/list' }), res);
+  assert.equal(res.statusCode, 200);
+  const parsed = JSON.parse(res.body);
+  assert.ok(Array.isArray(parsed.result.tools));
+});
+
+test('Suite 202-05: POST tools/call without Bearer returns 401 + WWW-Authenticate header (Pitfall 8)', async () => {
+  const res = makeRes();
+  await handleSession(mockReqBody('POST', { jsonrpc: '2.0', id: 3, method: 'tools/call', params: { name: 'draft_message', arguments: {} } }), res);
+  assert.equal(res.statusCode, 401);
+  assert.match(res.headers['WWW-Authenticate'] || '', /Bearer resource_metadata="https:\/\/.*\/.well-known\/oauth-protected-resource"/);
+  const parsed = JSON.parse(res.body);
+  assert.equal(parsed.error.code, -32600);
+  assert.match(parsed.error.message, /invalid_token/);
+  assert.ok(parsed.error.data.req_id);
+});
+
+test('Suite 202-05: req_id echoes back in JSON-RPC envelope on every method', async () => {
+  const res = makeRes();
+  await handleSession(mockReqBody('POST', { jsonrpc: '2.0', id: 'x', method: 'initialize' }), res);
+  const parsed = JSON.parse(res.body);
+  assert.match(parsed.result._meta.req_id, /^mcp-req-[0-9a-f-]{36}$/);
+});
+
+test('Suite 202-05: unknown method returns -32601 method_not_found with req_id in error.data', async () => {
+  const res = makeRes();
+  // ghost method — must still pass Bearer requirement first
+  await handleSession(mockReqBody('POST', { jsonrpc: '2.0', id: 5, method: 'fake/method' }, { authorization: 'Bearer ' + 'a'.repeat(64) }), res);
+  const parsed = JSON.parse(res.body);
+  assert.equal(parsed.error.code, -32601);
+  assert.ok(parsed.error.data.req_id);
+});
+
+test('Suite 202-05: pipeline integration — tools/call with Bearer delegates to runToolCallThroughPipeline', async () => {
+  // With no @upstash/redis env vars, pipeline will return an error; we assert the HTTP path is wired.
+  const res = makeRes();
+  await handleSession(
+    mockReqBody(
+      'POST',
+      { jsonrpc: '2.0', id: 10, method: 'tools/call', params: { name: 'ghost_tool', arguments: {} } },
+      { authorization: 'Bearer ' + 'a'.repeat(64) },
+    ),
+    res,
+  );
+  // No session → 401 (from pipeline lookupSession returning null) — proves delegation occurred.
+  // Could also be 500 if infrastructure unavailable; either way NOT 404 (which would indicate tools/call skipped the pipeline).
+  assert.ok([401, 500].includes(res.statusCode), `expected 401 or 500, got ${res.statusCode}`);
 });
