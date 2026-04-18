@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 203
-last_updated: "2026-04-18T06:46:02.910Z"
+last_updated: "2026-04-18T06:59:17.749Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 36
-  completed_plans: 30
-  percent: 83
+  completed_plans: 31
+  percent: 86
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -83,6 +83,7 @@ Plan: Wave 1 complete (203-01 + 203-02) · Wave 2 in flight (203-03 + 203-04 shi
     verify with either secret during the 30-day rotation grace (D-10 → Plan
     203-05). (2) Replay library stores RAW body (no pre-signed blob); signing
     at delivery.cjs dispatch ensures each attempt carries a CURRENT timestamp
+
     + fresh HMAC (D-06 closes the replay-attack oracle via 300s skew window).
     (3) Batch idempotency uses 5-min bucket = Math.floor(now/300_000) — rapid
     re-clicks inside the window produce the SAME key; Vercel Queues dedupes

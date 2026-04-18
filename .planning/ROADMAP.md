@@ -80,7 +80,7 @@ Plans:
 - [x] 203-03-PLAN.md — DLQ library + 7-day TTL purge cron (Wave 2)
 - [x] 203-04-PLAN.md — Replay endpoints + dual-sign foundation + batch idempotency (Wave 2)
 - [ ] 203-05-PLAN.md — Rotation orchestrator + dual-sign dispatch + 3 tenant endpoints (Wave 3)
-- [ ] 203-06-PLAN.md — T-7/T-1/T-0 notification cron + Surface 4 global banner (Wave 3)
+- [x] 203-06-PLAN.md — T-7/T-1/T-0 notification cron + Surface 4 global banner (Wave 3)
 - [ ] 203-07-PLAN.md — Per-subscription rate-limit (plan-tier + override) (Wave 4)
 - [ ] 203-08-PLAN.md — Circuit breaker (Redis sliding-window) (Wave 4)
 - [ ] 203-09-PLAN.md — Dashboard Surface 1 + Surface 2 + 5 tenant APIs (Wave 5)
