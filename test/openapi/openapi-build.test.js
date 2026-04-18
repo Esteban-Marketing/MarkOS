@@ -212,3 +212,39 @@ test('Phase 202: openapi.json includes F-71-v2 /api/mcp/session path', () => {
   const doc = buildOpenApiDoc(CONTRACTS_DIR);
   assert.ok(doc.paths['/api/mcp/session'], 'missing /api/mcp/session');
 });
+
+// -------------------------------------------------------------------------
+// Phase 203 Plan 10: F-96 fleet + F-97 rotation + F-98 DLQ + F-99 status path coverage.
+// -------------------------------------------------------------------------
+
+test('Phase 203: openapi.json includes F-96 /api/tenant/webhooks/fleet-metrics', () => {
+  const doc = buildOpenApiDoc(CONTRACTS_DIR);
+  assert.ok(
+    doc.paths['/api/tenant/webhooks/fleet-metrics'],
+    'missing /api/tenant/webhooks/fleet-metrics (F-96)',
+  );
+});
+
+test('Phase 203: openapi.json includes F-97 rotate + rollback + finalize paths', () => {
+  const doc = buildOpenApiDoc(CONTRACTS_DIR);
+  assert.ok(
+    doc.paths['/api/tenant/webhooks/subscriptions/{sub_id}/rotate'],
+    'missing /api/tenant/webhooks/subscriptions/{sub_id}/rotate (F-97)',
+  );
+});
+
+test('Phase 203: openapi.json includes F-98 DLQ replay paths', () => {
+  const doc = buildOpenApiDoc(CONTRACTS_DIR);
+  assert.ok(
+    doc.paths['/api/tenant/webhooks/subscriptions/{sub_id}/dlq/replay'],
+    'missing /api/tenant/webhooks/subscriptions/{sub_id}/dlq/replay (F-98 batch)',
+  );
+});
+
+test('Phase 203: openapi.json includes F-99 public status path', () => {
+  const doc = buildOpenApiDoc(CONTRACTS_DIR);
+  assert.ok(
+    doc.paths['/api/public/webhooks/status'],
+    'missing /api/public/webhooks/status (F-99)',
+  );
+});

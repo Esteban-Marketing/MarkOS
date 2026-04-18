@@ -5,7 +5,7 @@ openapi: 3.1.0
 info:
   title: MarkOS API
   version: 1.0.0
-  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 62 flow contracts.
+  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 64 flow contracts.
   contact:
     name: MarkOS Engineering
     url: "https://markos.esteban.marketing"
@@ -192,12 +192,18 @@ x-markos-flows:
   F-95-mcp-cost-budget-v1:
     source: contracts/F-95-mcp-cost-budget-v1.yaml
     description: MarkOS flow F-95-mcp-cost-budget-v1
+  F-96:
+    source: contracts/F-96-webhook-dashboard-v1.yaml
+    description: MarkOS flow F-96
   F-97:
     source: contracts/F-97-webhook-rotation-v1.yaml
     description: MarkOS flow F-97
   F-98:
     source: contracts/F-98-webhook-dlq-v1.yaml
     description: MarkOS flow F-98
+  F-99:
+    source: contracts/F-99-webhook-status-v1.yaml
+    description: MarkOS flow F-99
 tags:
   -     name: admin
     description: admin domain flows
@@ -1071,6 +1077,67 @@ paths:
       x-flow-name: ai-interview-parse-answer
       x-domain: enrichment
       x-flow-version: v1
+  /api/public/webhooks/status:
+    get:
+      summary: "Public platform-wide webhook delivery status (no auth, 60s cache)"
+      operationId: getPublicWebhookStatus
+      tags:
+        - webhooks
+        - public
+      responses:
+        '200':
+          description: ">-"
+          headers:
+            Cache-Control:
+              description: "public, max-age=60, s-maxage=60, stale-while-revalidate=60"
+              schema: "{ type: string }"
+            Access-Control-Allow-Origin:
+              description: "Always '*' — no sensitive data in aggregate response"
+              schema: "{ type: string }"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[total_24h, success_rate, avg_latency_ms, dlq_count, last_updated]"
+                properties:
+                  total_24h:
+                    type: integer
+                    minimum: 0
+                    description: Total webhook deliveries attempted across all tenants in the last 24h
+                  success_rate:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    description: Fraction (0-1) of deliveries that returned 2xx or 4xx-ACK
+                  avg_latency_ms:
+                    type: integer
+                    minimum: 0
+                    description: Mean round-trip latency (dispatch → subscriber 2xx) in ms
+                  dlq_count:
+                    type: integer
+                    minimum: 0
+                    description: Current count of failed deliveries in the 7-day DLQ window
+                  last_updated:
+                    type: string
+                    format: date-time
+                    description: Server-side ISO timestamp of the aggregate snapshot
+        '405':
+          description: Non-GET method
+        '500':
+          description: "status_unavailable (aggregation failed; UI falls back to \"Elevated failure rate.\")"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[error]"
+                properties:
+                  error:
+                    type: string
+                    enum: "[status_unavailable]"
+      x-flow-id: F-99
+      x-flow-name: Public Webhook Status
+      x-domain: webhooks
+      x-flow-version: v1
   /api/settings/custom-domain/add:
     post:
       summary: Request a new custom domain for the active org
@@ -1724,6 +1791,39 @@ paths:
       x-flow-name: Tenant Switcher + Create-in-Org
       x-domain: general
       x-flow-version: v1
+  /api/tenant/webhooks/fleet-metrics:
+    get:
+      summary: Surface 1 hero banner — 24h deliveries / success rate / avg latency / DLQ count
+      operationId: getWebhookFleetMetrics
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+      responses:
+        '200':
+          description: "Fleet metrics over the last 24h for the session's tenant."
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[tenant_id, total_24h, success_rate, avg_latency_ms, dlq_count, window_start, window_end]"
+                properties:
+                  tenant_id: "{ type: string }"
+                  total_24h: "{ type: integer, minimum: 0 }"
+                  success_rate: "{ type: number, minimum: 0, maximum: 100 }"
+                  avg_latency_ms: "{ type: number, minimum: 0 }"
+                  dlq_count: "{ type: integer, minimum: 0 }"
+                  window_start: "{ type: string, format: date-time }"
+                  window_end: "{ type: string, format: date-time }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '405': "{ description: Non-GET method }"
+        '500': "{ description: fleet_metrics_failed (unexpected aggregation error) }"
+      x-flow-id: F-96
+      x-flow-name: Webhook Tenant Dashboard (Surfaces 1 + 2)
+      x-domain: webhooks
+      x-flow-version: v1
   /api/tenant/webhooks/rotations/active:
     get:
       summary: "List active rotations for caller's tenant (Surface 4 grace banner)"
@@ -1762,6 +1862,155 @@ paths:
         '500': "{ description: list_failed (unexpected) }"
       x-flow-id: F-97
       x-flow-name: Webhook Signing-Secret Rotation
+      x-domain: webhooks
+      x-flow-version: v1
+  /api/tenant/webhooks/subscriptions:
+    get:
+      summary: Surface 1 subscriptions table — tenant-scoped list with rate_limit + breaker_state decoration
+      operationId: listTenantWebhookSubscriptions
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-org-id, in: header, required: false, schema: { type: string } }"
+      responses:
+        '200':
+          description: Decorated subscriptions — secret columns are never echoed (T-203-09-02).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[subscriptions]"
+                properties:
+                  subscriptions:
+                    type: array
+                    items:
+                      type: object
+                      required: "[id, url, events, active, status_chip, breaker_state, rate_limit]"
+                      properties:
+                        id: "{ type: string }"
+                        url: "{ type: string, format: uri }"
+                        events: "{ type: array, items: { type: string } }"
+                        active: "{ type: boolean }"
+                        created_at: "{ type: string, format: date-time }"
+                        rotation_state: "{ type: [string, 'null'], enum: [active, rolled_back, null] }"
+                        grace_ends_at: "{ type: [string, 'null'], format: date-time }"
+                        status_chip: "{ type: string, enum: [Healthy, Half-open, Tripped] }"
+                        breaker_state:
+                          $ref: "#/components/schemas/BreakerState"
+                        rate_limit:
+                          $ref: "#/components/schemas/RateLimitState"
+                        last_delivery_at: "{ type: [string, 'null'], format: date-time }"
+                        success_rate: "{ type: number, minimum: 0, maximum: 100 }"
+                        total_24h: "{ type: integer, minimum: 0 }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '405': "{ description: Non-GET method }"
+        '500': "{ description: db_error }"
+      x-flow-id: F-96
+      x-flow-name: Webhook Tenant Dashboard (Surfaces 1 + 2)
+      x-domain: webhooks
+      x-flow-version: v1
+  /api/tenant/webhooks/subscriptions/{sub_id}:
+    get:
+      summary: Surface 2 detail endpoint — subscription + last-100 deliveries + DLQ count + RateLimitState + BreakerState + rotation
+      operationId: getTenantWebhookSubscription
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        -           { name: "sub_id, in: path, required: true, schema: { type: string } }"
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-org-id, in: header, required: false, schema: { type: string } }"
+      responses:
+        '200':
+          description: Full subscription detail. Secret columns excluded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[subscription, deliveries, dlq_count, rate_limit, breaker_state]"
+                properties:
+                  subscription:
+                    type: object
+                    required: "[id, url, events, active]"
+                    properties:
+                      id: "{ type: string }"
+                      url: "{ type: string, format: uri }"
+                      events: "{ type: array, items: { type: string } }"
+                      active: "{ type: boolean }"
+                      created_at: "{ type: string, format: date-time }"
+                      updated_at: "{ type: string, format: date-time }"
+                      rotation_state: "{ type: [string, 'null'] }"
+                      grace_started_at: "{ type: [string, 'null'], format: date-time }"
+                      grace_ends_at: "{ type: [string, 'null'], format: date-time }"
+                  deliveries:
+                    type: array
+                    items:
+                      type: object
+                  dlq_count: "{ type: integer, minimum: 0 }"
+                  rate_limit:
+                    $ref: "#/components/schemas/RateLimitState"
+                  breaker_state:
+                    $ref: "#/components/schemas/BreakerState"
+                  rotation:
+                    oneOf:
+                      -                         type: "null"
+                      -                         type: object
+                        required: "[id, stage, grace_ends_at]"
+                        properties:
+                          id: "{ type: string }"
+                          stage: "{ type: string, enum: ['t-7', 't-1', 't-0', 'normal'] }"
+                          grace_ends_at: "{ type: string, format: date-time }"
+                          initiated_at: "{ type: string, format: date-time }"
+                  metrics:
+                    type: object
+                    properties:
+                      total_24h: "{ type: integer, minimum: 0 }"
+                      success_rate: "{ type: number, minimum: 0, maximum: 100 }"
+                      avg_latency_ms: "{ type: number, minimum: 0 }"
+                      last_delivery_at: "{ type: [string, 'null'], format: date-time }"
+        '400': "{ description: missing_params }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '403': "{ description: Subscription belongs to another tenant (cross_tenant_forbidden) }"
+        '404': "{ description: subscription_not_found }"
+        '405': "{ description: Non-GET method }"
+        '500': "{ description: db_error }"
+      x-flow-id: F-96
+      x-flow-name: Webhook Tenant Dashboard (Surfaces 1 + 2)
+      x-domain: webhooks
+      x-flow-version: v1
+  /api/tenant/webhooks/subscriptions/{sub_id}/delete:
+    post:
+      summary: Surface 2 Danger-zone delete — soft-deletes subscription + cancels in-flight deliveries
+      operationId: deleteTenantWebhookSubscription
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        -           { name: "sub_id, in: path, required: true, schema: { type: string } }"
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+      responses:
+        '200':
+          description: ">-"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[ok]"
+                properties:
+                  ok: "{ type: boolean, enum: [true] }"
+        '400': "{ description: missing_params }"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '403': "{ description: cross_tenant_forbidden }"
+        '404': "{ description: subscription_not_found }"
+        '405': "{ description: Non-POST method }"
+        '500': "{ description: db_error }"
+      x-flow-id: F-96
+      x-flow-name: Webhook Tenant Dashboard (Surfaces 1 + 2)
       x-domain: webhooks
       x-flow-version: v1
   /api/tenant/webhooks/subscriptions/{sub_id}/deliveries/{delivery_id}/replay:
@@ -1923,6 +2172,50 @@ paths:
         '500': "{ description: rollback_failed (unexpected) }"
       x-flow-id: F-97
       x-flow-name: Webhook Signing-Secret Rotation
+      x-domain: webhooks
+      x-flow-version: v1
+  /api/tenant/webhooks/subscriptions/{sub_id}/update:
+    post:
+      summary: Surface 2 Settings save — url / events / rps_override with SSRF re-check + ceiling check
+      operationId: updateTenantWebhookSubscription
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        -           { name: "sub_id, in: path, required: true, schema: { type: string } }"
+        -           { name: "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+        -           { name: "x-markos-org-id, in: header, required: false, schema: { type: string } }"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url: "{ type: string, format: uri }"
+                events: "{ type: array, items: { type: string } }"
+                rps_override: "{ type: [number, 'null'], minimum: 1 }"
+      responses:
+        '200':
+          description: "Subscription updated. Audit row emitted (source_domain=webhooks, action=subscription.updated)."
+          content:
+            application/json:
+              schema:
+                type: object
+                required: "[ok]"
+                properties:
+                  ok: "{ type: boolean, enum: [true] }"
+                  subscription: "{ type: object }"
+        '400':
+          description: ">-"
+        '401': "{ description: Missing x-markos-user-id or x-markos-tenant-id }"
+        '403': "{ description: cross_tenant_forbidden }"
+        '404': "{ description: subscription_not_found }"
+        '405': "{ description: Non-POST method }"
+        '500': "{ description: db_error }"
+      x-flow-id: F-96
+      x-flow-name: Webhook Tenant Dashboard (Surfaces 1 + 2)
       x-domain: webhooks
       x-flow-version: v1
   /api/tracking/identify:
@@ -2872,3 +3165,19 @@ components:
           type: string
         row_hash:
           type: string
+    F_96_BreakerState:
+      type: object
+      required: "[state]"
+      properties:
+        state: "{ type: string, enum: [closed, half-open, open] }"
+        trips: "{ type: integer, minimum: 0 }"
+        probe_at: "{ type: [string, 'null'], format: date-time }"
+        opened_at: "{ type: [string, 'null'], format: date-time }"
+    F_96_RateLimitState:
+      type: object
+      required: "[plan_tier, ceiling_rps, effective_rps]"
+      properties:
+        plan_tier: "{ type: string, enum: [free, team, enterprise] }"
+        ceiling_rps: "{ type: integer, minimum: 1 }"
+        effective_rps: "{ type: integer, minimum: 1 }"
+        override_rps: "{ type: [integer, 'null'], minimum: 1 }"

@@ -1,0 +1,94 @@
+id: F-99-webhook-status-v1
+flow_id: F-99
+phase: 203
+name: Public Webhook Status
+title: Public Webhook Status
+version: v1
+status: active
+domain: webhooks
+summary: >-
+  Public, unauthenticated webhook status page backing surface 3 (/status/webhooks).
+  Returns platform-wide aggregated metrics (total deliveries 24h, success rate,
+  average latency, DLQ count, last updated) — NO per-tenant detail. Cached for
+  60 seconds at origin + CDN. Lineage matches the Stripe and Vercel public
+  status-page patterns. T-203-10-01 mitigation: aggregation strips tenant_id
+  before emission.
+
+boundary:
+  tenant_scoped: false
+  public: true
+  manager_scope_cross_tenant: false
+
+paths:
+  /api/public/webhooks/status:
+    get:
+      summary: Public platform-wide webhook delivery status (no auth, 60s cache)
+      operationId: getPublicWebhookStatus
+      tags:
+        - webhooks
+        - public
+      responses:
+        '200':
+          description: >-
+            Platform-wide aggregate metrics across all tenants over the last 24h.
+            Cached `public, max-age=60, s-maxage=60, stale-while-revalidate=60`.
+            CORS-open so the payload can be embedded in third-party status
+            dashboards.
+          headers:
+            Cache-Control:
+              description: public, max-age=60, s-maxage=60, stale-while-revalidate=60
+              schema: { type: string }
+            Access-Control-Allow-Origin:
+              description: Always '*' — no sensitive data in aggregate response
+              schema: { type: string }
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [total_24h, success_rate, avg_latency_ms, dlq_count, last_updated]
+                properties:
+                  total_24h:
+                    type: integer
+                    minimum: 0
+                    description: Total webhook deliveries attempted across all tenants in the last 24h
+                  success_rate:
+                    type: number
+                    minimum: 0
+                    maximum: 1
+                    description: Fraction (0-1) of deliveries that returned 2xx or 4xx-ACK
+                  avg_latency_ms:
+                    type: integer
+                    minimum: 0
+                    description: Mean round-trip latency (dispatch → subscriber 2xx) in ms
+                  dlq_count:
+                    type: integer
+                    minimum: 0
+                    description: Current count of failed deliveries in the 7-day DLQ window
+                  last_updated:
+                    type: string
+                    format: date-time
+                    description: Server-side ISO timestamp of the aggregate snapshot
+        '405':
+          description: Non-GET method
+        '500':
+          description: status_unavailable (aggregation failed; UI falls back to "Elevated failure rate.")
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error]
+                properties:
+                  error:
+                    type: string
+                    enum: [status_unavailable]
+
+references:
+  ui_spec: .planning/phases/203-webhook-subscription-engine-ga/203-UI-SPEC.md (Surface 3)
+  context: .planning/phases/203-webhook-subscription-engine-ga/203-CONTEXT.md (T-203-10-01 aggregation-only)
+  docs: docs/webhooks/status.md
+  lineage:
+    - Stripe status page pattern (public, 60s cache, platform-aggregated)
+    - Vercel status page pattern (standalone layout, no workspace shell)
+  plans:
+    - 203-09-PLAN.md (aggregateFleetMetrics library shared with Surface 1)
+    - 203-10-PLAN.md (this contract + Surface 3 page + docs shipping)

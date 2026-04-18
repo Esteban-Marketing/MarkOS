@@ -39,6 +39,14 @@
 - [Red-team checklist](https://markos.dev/docs/mcp-redteam-checklist): Manual verification for injection, cross-tenant, budget, approval-token, rate-limit, D-31 rolling releases, D-19 observability alerts.
 - [Phase 202 LLM Summary](https://markos.dev/docs/llms/phase-202-mcp): Contracts (F-89/F-90..F-95) + decisions + MCP 2025-06-18 alignment.
 
+## Phase 203 — Webhooks
+
+- [Webhooks integration guide](https://markos.dev/docs/webhooks): Node.js/Python/Go signature verification, 300s skew window, dual-sign during rotation, header reference.
+- [Secret rotation](https://markos.dev/docs/webhooks/rotation): 30-day dual-sign grace (D-09..D-12), T-7/T-1/T-0 notifications, rollback window, post-grace purge.
+- [Dead-letter queue](https://markos.dev/docs/webhooks/dlq): 24-attempt cap, 7-day retention (D-08), single + batch admin replay (D-05), x-markos-replayed-from header.
+- [Public status page](https://markos.dev/docs/webhooks/status): /status/webhooks (F-99, 60s cache, no auth); 4 platform-wide hero numbers; Stripe/Vercel lineage.
+- [Phase 203 LLM Summary](https://markos.dev/docs/llms/phase-203-webhooks): Contracts (F-72/F-73 extended + F-96..F-100) + decisions + durability substrate.
+
 ## Optional
 
 - [Full Docs (concatenated markdown)](https://markos.dev/docs/llms-full.txt): Single-file concatenation of all documentation pages for LLM ingestion.

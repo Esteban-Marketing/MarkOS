@@ -1,0 +1,310 @@
+id: F-96-webhook-dashboard-v1
+flow_id: F-96
+phase: 203
+name: Webhook Tenant Dashboard (Surfaces 1 + 2)
+title: Webhook Tenant Dashboard
+version: v1
+status: active
+domain: webhooks
+summary: >-
+  Tenant-admin API surface backing /settings/webhooks (Surface 1 — hero fleet
+  metrics + subscriptions table) and /settings/webhooks/{sub_id} (Surface 2 —
+  3-tab detail). Declares the 5 new tenant APIs introduced in Plan 203-09 on
+  top of the 4 already shipped in Waves 2-4 (replay single, replay batch,
+  rotate, rollback, rotations/active). Every handler follows the 202-09 tenant
+  guard pattern: method gate → x-markos-user-id + x-markos-tenant-id (401 if
+  missing) → SELECT-before-mutate with cross_tenant_forbidden 403 → library
+  delegate → JSON envelope.
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+
+references:
+  - D-01
+  - D-02
+  - D-03
+  - D-04
+  - D-05
+  - D-06
+  - D-07
+  - D-08
+  - D-09
+  - D-10
+  - D-11
+  - D-12
+  - D-13
+  - D-14
+  - D-15
+  - D-16
+  - F-72
+  - F-73
+  - F-97
+  - F-98
+  - F-100
+
+paths:
+  /api/tenant/webhooks/fleet-metrics:
+    get:
+      summary: Surface 1 hero banner — 24h deliveries / success rate / avg latency / DLQ count
+      operationId: getWebhookFleetMetrics
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Fleet metrics over the last 24h for the session's tenant.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [tenant_id, total_24h, success_rate, avg_latency_ms, dlq_count, window_start, window_end]
+                properties:
+                  tenant_id: { type: string }
+                  total_24h: { type: integer, minimum: 0 }
+                  success_rate: { type: number, minimum: 0, maximum: 100 }
+                  avg_latency_ms: { type: number, minimum: 0 }
+                  dlq_count: { type: integer, minimum: 0 }
+                  window_start: { type: string, format: date-time }
+                  window_end: { type: string, format: date-time }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '405': { description: Non-GET method }
+        '500': { description: fleet_metrics_failed (unexpected aggregation error) }
+
+  /api/tenant/webhooks/subscriptions:
+    get:
+      summary: Surface 1 subscriptions table — tenant-scoped list with rate_limit + breaker_state decoration
+      operationId: listTenantWebhookSubscriptions
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-org-id, in: header, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Decorated subscriptions — secret columns are never echoed (T-203-09-02).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [subscriptions]
+                properties:
+                  subscriptions:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, url, events, active, status_chip, breaker_state, rate_limit]
+                      properties:
+                        id: { type: string }
+                        url: { type: string, format: uri }
+                        events: { type: array, items: { type: string } }
+                        active: { type: boolean }
+                        created_at: { type: string, format: date-time }
+                        rotation_state: { type: [string, 'null'], enum: [active, rolled_back, null] }
+                        grace_ends_at: { type: [string, 'null'], format: date-time }
+                        status_chip: { type: string, enum: [Healthy, Half-open, Tripped] }
+                        breaker_state:
+                          $ref: '#/components/schemas/BreakerState'
+                        rate_limit:
+                          $ref: '#/components/schemas/RateLimitState'
+                        last_delivery_at: { type: [string, 'null'], format: date-time }
+                        success_rate: { type: number, minimum: 0, maximum: 100 }
+                        total_24h: { type: integer, minimum: 0 }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '405': { description: Non-GET method }
+        '500': { description: db_error }
+
+  /api/tenant/webhooks/subscriptions/{sub_id}:
+    get:
+      summary: Surface 2 detail endpoint — subscription + last-100 deliveries + DLQ count + RateLimitState + BreakerState + rotation
+      operationId: getTenantWebhookSubscription
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: sub_id, in: path, required: true, schema: { type: string } }
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-org-id, in: header, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Full subscription detail. Secret columns excluded.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [subscription, deliveries, dlq_count, rate_limit, breaker_state]
+                properties:
+                  subscription:
+                    type: object
+                    required: [id, url, events, active]
+                    properties:
+                      id: { type: string }
+                      url: { type: string, format: uri }
+                      events: { type: array, items: { type: string } }
+                      active: { type: boolean }
+                      created_at: { type: string, format: date-time }
+                      updated_at: { type: string, format: date-time }
+                      rotation_state: { type: [string, 'null'] }
+                      grace_started_at: { type: [string, 'null'], format: date-time }
+                      grace_ends_at: { type: [string, 'null'], format: date-time }
+                  deliveries:
+                    type: array
+                    items:
+                      type: object
+                  dlq_count: { type: integer, minimum: 0 }
+                  rate_limit:
+                    $ref: '#/components/schemas/RateLimitState'
+                  breaker_state:
+                    $ref: '#/components/schemas/BreakerState'
+                  rotation:
+                    oneOf:
+                      - type: 'null'
+                      - type: object
+                        required: [id, stage, grace_ends_at]
+                        properties:
+                          id: { type: string }
+                          stage: { type: string, enum: ['t-7', 't-1', 't-0', 'normal'] }
+                          grace_ends_at: { type: string, format: date-time }
+                          initiated_at: { type: string, format: date-time }
+                  metrics:
+                    type: object
+                    properties:
+                      total_24h: { type: integer, minimum: 0 }
+                      success_rate: { type: number, minimum: 0, maximum: 100 }
+                      avg_latency_ms: { type: number, minimum: 0 }
+                      last_delivery_at: { type: [string, 'null'], format: date-time }
+        '400': { description: missing_params }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '403': { description: Subscription belongs to another tenant (cross_tenant_forbidden) }
+        '404': { description: subscription_not_found }
+        '405': { description: Non-GET method }
+        '500': { description: db_error }
+
+  /api/tenant/webhooks/subscriptions/{sub_id}/update:
+    post:
+      summary: Surface 2 Settings save — url / events / rps_override with SSRF re-check + ceiling check
+      operationId: updateTenantWebhookSubscription
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: sub_id, in: path, required: true, schema: { type: string } }
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-org-id, in: header, required: false, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url: { type: string, format: uri }
+                events: { type: array, items: { type: string } }
+                rps_override: { type: [number, 'null'], minimum: 1 }
+      responses:
+        '200':
+          description: Subscription updated. Audit row emitted (source_domain=webhooks, action=subscription.updated).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+                  subscription: { type: object }
+        '400':
+          description: >-
+            private_ip (SSRF block) / https_required / invalid_scheme / invalid_url / invalid_events /
+            invalid_rps_override / rps_override_exceeds_plan (echoes ceiling) / missing_params
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '403': { description: cross_tenant_forbidden }
+        '404': { description: subscription_not_found }
+        '405': { description: Non-POST method }
+        '500': { description: db_error }
+
+  /api/tenant/webhooks/subscriptions/{sub_id}/delete:
+    post:
+      summary: Surface 2 Danger-zone delete — soft-deletes subscription + cancels in-flight deliveries
+      operationId: deleteTenantWebhookSubscription
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: sub_id, in: path, required: true, schema: { type: string } }
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: >-
+            Subscription soft-deleted (active=false). In-flight deliveries (pending|retrying) are
+            transitioned to status='cancelled' with dlq_reason='subscription_deleted'. Audit row
+            emitted (source_domain=webhooks, action=subscription.deleted).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+        '400': { description: missing_params }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '403': { description: cross_tenant_forbidden }
+        '404': { description: subscription_not_found }
+        '405': { description: Non-POST method }
+        '500': { description: db_error }
+
+errors:
+  cross_tenant_forbidden:
+    http: 403
+    code: cross_tenant_forbidden
+    description: >-
+      The authenticated tenant_id does not own the subscription referenced by
+      sub_id. Every handler SELECTs subscription.tenant_id + compares before
+      mutating (T-203-09-01 mitigation).
+  subscription_not_found:
+    http: 404
+    code: subscription_not_found
+  private_ip:
+    http: 400
+    code: private_ip
+    description: >-
+      SSRF guard rejected the URL at subscribe or update time. Category-prefixed
+      error from assertUrlIsPublic (private_ip:loopback, :private, :link-local,
+      :cloud-metadata, :v6-loopback, etc.) is flattened to "private_ip" in the
+      response envelope.
+  https_required:
+    http: 400
+    code: https_required
+  rps_override_exceeds_plan:
+    http: 400
+    code: rps_override_exceeds_plan
+    description: >-
+      Per-sub RPS override must not exceed the plan-tier ceiling (D-13).
+      Response body echoes { ceiling } so the UI can display the correct cap.
+
+components:
+  schemas:
+    BreakerState:
+      # Re-declared here so F-96 is self-contained; canonical shape lives in F-100.
+      type: object
+      required: [state]
+      properties:
+        state: { type: string, enum: [closed, half-open, open] }
+        trips: { type: integer, minimum: 0 }
+        probe_at: { type: [string, 'null'], format: date-time }
+        opened_at: { type: [string, 'null'], format: date-time }
+    RateLimitState:
+      type: object
+      required: [plan_tier, ceiling_rps, effective_rps]
+      properties:
+        plan_tier: { type: string, enum: [free, team, enterprise] }
+        ceiling_rps: { type: integer, minimum: 1 }
+        effective_rps: { type: integer, minimum: 1 }
+        override_rps: { type: [integer, 'null'], minimum: 1 }
