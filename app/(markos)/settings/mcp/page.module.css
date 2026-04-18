@@ -1,0 +1,503 @@
+/*
+ * Phase 202 Plan 09 Surface S1 — /settings/mcp styles.
+ * Every class traces to a Phase 201 ancestor file per UI-SPEC §Component Reuse Map:
+ *   - sessions/page.module.css → .page, .contentCard, .heading, .subheading, .sessionsTable, .revokeButton, .toast
+ *   - members/page.module.css → .seatBar → .costMeter* rename
+ *   - danger/page.module.css  → .dialog family, .purgeBanner → .atCapBanner rename, .cancelButton, .deleteFilledButton
+ */
+
+.page {
+  padding: 24px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contentCard {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 900px;
+}
+
+.heading {
+  margin: 0;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.subheading {
+  margin: 0;
+  font-size: 16px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.subsectionHeading {
+  margin: 0;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.refreshButton {
+  min-height: 44px;
+  padding: 8px 14px;
+  background: transparent;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+
+.refreshButton:hover {
+  color: #0d9488;
+  border-color: #0d9488;
+}
+
+.refreshButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.refreshButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.budgetRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.budgetLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.costMeterTrack {
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.costMeterFill {
+  height: 100%;
+  background: #0d9488;
+  border-radius: 999px;
+  transition: width 180ms ease-out;
+}
+
+.budgetValueRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.resetTimer {
+  font-size: 14px;
+  color: #475569;
+  font-weight: 400;
+}
+
+.loadingText {
+  margin: 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.topTools {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topToolsList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.topToolsList li {
+  display: block;
+}
+
+.topToolEntry {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #0f172a;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 120ms ease-out, border-color 120ms ease-out;
+}
+
+.topToolEntry:hover {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.topToolEntry:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.topToolName {
+  font-weight: 600;
+}
+
+.topToolCost {
+  color: #475569;
+}
+
+.emptyState {
+  font-size: 14px;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.emptyState a {
+  color: #0d9488;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.emptyState a:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.sessionsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.sessionsTable caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
+.sessionsTable th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sessionsTable td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #0f172a;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.revokeButton {
+  min-height: 44px;
+  padding: 8px 14px;
+  background: transparent;
+  color: #9a3412;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid #fca5a5;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 120ms ease-out;
+}
+
+.revokeButton:hover {
+  background: rgba(252, 165, 165, 0.1);
+}
+
+.revokeButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.breakdownSummary {
+  font-size: 16px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.breakdownSummary:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.filterChip {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #e6fffb;
+  color: #0f766e;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+}
+
+.filterClear {
+  background: transparent;
+  color: #0f766e;
+  border: 0;
+  padding: 0;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.filterClear:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.breakdownTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+.breakdownTable caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
+.breakdownTable th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.breakdownTable td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #0f172a;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.dialog {
+  border: 0;
+  border-radius: 24px;
+  padding: 28px;
+  width: min(520px, calc(100vw - 32px));
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+}
+
+.dialog::backdrop {
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.dialogHeading {
+  margin: 0 0 12px;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.dialogBody {
+  margin: 0 0 16px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.cancelButton {
+  min-height: 44px;
+  padding: 10px 18px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancelButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.deleteFilledButton {
+  min-height: 44px;
+  padding: 10px 18px;
+  background: #9a3412;
+  color: #ffffff;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 120ms ease-out;
+}
+
+.deleteFilledButton:hover {
+  background: #7c2d12;
+}
+
+.deleteFilledButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+.deleteFilledButton:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+.atCapBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 20px;
+  background: #fef3c7;
+  color: #78350f;
+  border-left: 4px solid #d97706;
+  border-radius: 14px;
+  font-size: 14px;
+  max-width: 900px;
+}
+
+.upgradeLink {
+  color: #78350f;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.upgradeLink:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 12px 16px;
+  background: #ffffff;
+  border-left: 4px solid #0f766e;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+  animation: toastSlideIn 200ms ease-out;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .costMeterFill {
+    transition: none !important;
+  }
+  .refreshButton,
+  .topToolEntry,
+  .revokeButton,
+  .deleteFilledButton {
+    transition: none !important;
+  }
+  .toast {
+    animation: none !important;
+  }
+}
