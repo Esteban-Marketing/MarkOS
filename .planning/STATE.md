@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 203
-last_updated: "2026-04-18T06:40:55.501Z"
+last_updated: "2026-04-18T06:46:02.910Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 36
-  completed_plans: 29
-  percent: 81
+  completed_plans: 30
+  percent: 83
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,7 +17,88 @@ progress:
 ## Current Position
 
 Phase: 203 (webhook-subscription-engine-ga) — EXECUTING
-Plan: Wave 1 complete (203-01 + 203-02) · Wave 2 in flight (203-03 shipped; 203-04 + 203-06 parallel)
+Plan: Wave 1 complete (203-01 + 203-02) · Wave 2 in flight (203-03 + 203-04 shipped; 203-06 parallel)
+
+## What just happened (2026-04-18, Plan 203-04 close — parallel Wave 2)
+
+- **Plan 203-04 shipped** (parallel executor, Wave 2 — ran alongside 203-03 + 203-06) —
+  Webhook delivery replay path + dual-sign primitive foundation for Plan 203-05.
+  Closes D-06 (fresh HMAC + current ts on every replay, NO original sig/ts reuse),
+  D-07 (replay only from status='failed'; no auto-retry loops), and RESEARCH §Pitfall 7
+  (batch idempotencyKey keyed on 5-min bucket prevents rapid-click double-dispatch).
+
+  - `lib/markos/webhooks/signing.cjs` + `.ts`: new `signPayloadDualSign(v1Secret,
+    v2Secret, body, now)` → `{ headers: { X-Markos-Signature-V1, X-Markos-Signature-V2?,
+    X-Markos-Timestamp } }`. When v2Secret=null (no rotation active), only V1 +
+    Timestamp. When both provided, shared Timestamp across V1+V2. V1 output
+    byte-for-byte matches existing `signPayload` (backward compat).
+
+  - `lib/markos/webhooks/replay.cjs` + `.ts`: net-new library. `replaySingle`
+    fetches tenant-scoped original, validates D-07 (status='failed'), inserts
+    new row `{ id: del_<uuid>, attempt: 0, replayed_from: orig.id, body: orig.body
+    raw, status: 'pending' }`, calls `queue.push(newRow.id)`, emits
+    `source_domain='webhooks', action='delivery.replay_single'` audit row.
+    `replayBatch` dedupes delivery_ids, enforces `BATCH_CAP=100` (T-203-04-03),
+    returns `{ batch_id, count, replayed, skipped }`. Per-row skipped collection
+    for `not_found | not_failed | cross_tenant_forbidden | cross_subscription`.
+    Batch queue.push carries `idempotencyKey: 'replay-{orig_id}-{5min-bucket}'`
+    via `IDEMPOTENCY_BUCKET_MS=300_000`.
+
+  - `api/tenant/webhooks/subscriptions/[sub_id]/deliveries/[delivery_id]/replay.js`:
+    POST single handler, 202-09 pattern — method gate, x-markos-user-id +
+    x-markos-tenant-id headers (401), SELECT subscription.tenant_id (403
+    cross_tenant_forbidden), delegate replaySingle, typed-error→HTTP mapper
+    (`not_found→404, cross_tenant_forbidden→403, cross_subscription→400,
+    not_failed→409, else 500`).
+
+  - `api/tenant/webhooks/subscriptions/[sub_id]/dlq/replay.js`: POST batch
+    handler. Body `{ delivery_ids: string[] }`; 400 empty_batch + 400
+    batch_too_large (>100) at handler + library (defense-in-depth); returns
+    `{ ok, batch_id, count, replayed, skipped }`.
+
+  - `contracts/F-98-webhook-dlq-v1.yaml`: net-new — 2 paths, 5 error envelopes
+    (empty_batch/batch_too_large/cross_tenant_forbidden/not_failed/already_replayed),
+    block-form tags (not inline) so `parseContractYaml` tokenizes as arrays.
+
+  - `contracts/F-73-webhook-delivery-v1.yaml`: extended `WebhookDelivery` schema
+    with `replayed_from` + `dlq_at` + `final_attempt` + `dlq_reason` (migration
+    72 columns from Plan 203-02). `outbound_headers:` block documents
+    `X-Markos-Signature-V1/V2`, `x-markos-replayed-from`, `x-markos-attempt`.
+
+  - `contracts/openapi.json` + `.yaml` regenerated: 60 flows / 87 paths (up
+    from 59/85).
+
+  - 3 test suites: `signing.test.js` extended 8→11 (regression preserved);
+    `replay.test.js` (11 new); `replay-idempotency.test.js` (10 new). Plan
+    delta: **+32 tests, all green**. Full webhook regression **143 pass + 2
+    skip** (up from 124/2). OpenAPI build 15/16 (1 pre-existing inherited from
+    Phase 202, documented in `deferred-items.md`).
+
+  - Commits: `d175def` (Task 1 RED) · `a8f071b` (Task 1 GREEN — signing +
+    replay library) · `428eff1` (Task 2 RED) · `9104daa` (Task 2 GREEN —
+    endpoints + F-98 + F-73 extension + openapi regen).
+
+  - **Decisions:** (1) signPayloadDualSign defensively requires v1Secret but
+    allows v2Secret=null — shared Timestamp across V1+V2 lets subscribers
+    verify with either secret during the 30-day rotation grace (D-10 → Plan
+    203-05). (2) Replay library stores RAW body (no pre-signed blob); signing
+    at delivery.cjs dispatch ensures each attempt carries a CURRENT timestamp
+    + fresh HMAC (D-06 closes the replay-attack oracle via 300s skew window).
+    (3) Batch idempotency uses 5-min bucket = Math.floor(now/300_000) — rapid
+    re-clicks inside the window produce the SAME key; Vercel Queues dedupes
+    server-side (T-203-04-04, RESEARCH §Pitfall 7). (4) F-98 uses block-form
+    `tags:` because the repo's minimal YAML parser keeps inline-array syntax
+    as literal strings; 35 pre-existing offending paths logged to
+    `deferred-items.md` (scope boundary — out-of-scope for this plan).
+    (5) Relative-path depth Rule-3 fix: single-replay handler is 7 components
+    deep, not 6 (dlq-replay is 6) — corrected `../` count in 3 require sites.
+
+  - **Downstream unlocks:** Plan 203-05 (rotation) can now wire
+    `signPayloadDualSign(v1, v2, body)` at dispatch during grace; the
+    primitive + test suite are ready. Plan 203-08 (dashboard) has both
+    single and batch replay endpoints to wire into the S2 DLQ tab. Plan
+    203-09 (fleet metrics) can distinguish original vs replayed deliveries
+    via F-73 `replayed_from` column.
 
 ## What just happened (2026-04-18, Plan 203-03 close — parallel Wave 2)
 

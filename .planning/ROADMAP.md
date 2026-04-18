@@ -71,14 +71,14 @@ Plans:
 **Requirements Mapped:** WHK-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
 **Status:** 📋 Planned — 10 plans across 5 waves
-**Plans:** 3/10 plans executed
+**Plans:** 4/10 plans executed
 **DISCUSS:** `.planning/phases/203-webhook-subscription-engine-ga/DISCUSS.md`
 
 Plans:
 - [x] 203-01-PLAN.md — Supabase + Vercel Queues adapter swap (Wave 1)
 - [x] 203-02-PLAN.md — SSRF guard + Migration 72 DLQ/rotation schema (Wave 1)
 - [x] 203-03-PLAN.md — DLQ library + 7-day TTL purge cron (Wave 2)
-- [ ] 203-04-PLAN.md — Replay endpoints + dual-sign foundation + batch idempotency (Wave 2)
+- [x] 203-04-PLAN.md — Replay endpoints + dual-sign foundation + batch idempotency (Wave 2)
 - [ ] 203-05-PLAN.md — Rotation orchestrator + dual-sign dispatch + 3 tenant endpoints (Wave 3)
 - [ ] 203-06-PLAN.md — T-7/T-1/T-0 notification cron + Surface 4 global banner (Wave 3)
 - [ ] 203-07-PLAN.md — Per-subscription rate-limit (plan-tier + override) (Wave 4)
