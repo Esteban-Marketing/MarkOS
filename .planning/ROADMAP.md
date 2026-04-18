@@ -67,11 +67,24 @@ Plans:
 **DISCUSS:** `.planning/phases/202-mcp-server-ga-claude-marketplace/DISCUSS.md`
 
 ### Phase 203: Webhook Subscription Engine GA
-**Goal:** Graduate webhook primitive to GA: delivery dashboard, DLQ + replay, signing-secret rotation, per-subscription rate-limits.
+**Goal:** Graduate 200-03 webhook primitive to GA: durable Supabase + Vercel Queues substrate, tenant-admin dashboard (2 surfaces), DLQ + replay, signing-secret rotation with 30-day grace + T-7/T-1/T-0 notifications + Surface 4 banner, per-subscription rate-limits + circuit breaker, public status page, full observability + docs.
 **Requirements Mapped:** WHK-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
-**Status:** 📋 Planned
+**Status:** 📋 Planned — 10 plans across 5 waves
+**Plans:** 10 plans
 **DISCUSS:** `.planning/phases/203-webhook-subscription-engine-ga/DISCUSS.md`
+
+Plans:
+- [ ] 203-01-PLAN.md — Supabase + Vercel Queues adapter swap (Wave 1)
+- [ ] 203-02-PLAN.md — SSRF guard + Migration 72 DLQ/rotation schema (Wave 1)
+- [ ] 203-03-PLAN.md — DLQ library + 7-day TTL purge cron (Wave 2)
+- [ ] 203-04-PLAN.md — Replay endpoints + dual-sign foundation + batch idempotency (Wave 2)
+- [ ] 203-05-PLAN.md — Rotation orchestrator + dual-sign dispatch + 3 tenant endpoints (Wave 3)
+- [ ] 203-06-PLAN.md — T-7/T-1/T-0 notification cron + Surface 4 global banner (Wave 3)
+- [ ] 203-07-PLAN.md — Per-subscription rate-limit (plan-tier + override) (Wave 4)
+- [ ] 203-08-PLAN.md — Circuit breaker (Redis sliding-window) (Wave 4)
+- [ ] 203-09-PLAN.md — Dashboard Surface 1 + Surface 2 + 5 tenant APIs (Wave 5)
+- [ ] 203-10-PLAN.md — Public status Surface 3 + Sentry + log-drain + docs + final OpenAPI (Wave 5)
 
 ### Phase 204: CLI `markos` v1 GA
 **Goal:** Graduate CLI to full GA: init · generate · plan · run · eval · login · keys · whoami · env · status · doctor. Cross-platform distribution (Homebrew · Scoop · npm · winget · apt).
