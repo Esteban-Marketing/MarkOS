@@ -48,3 +48,43 @@ missing list. Delta: 37 → 35.
 **Resolution path:** Batch-fix during a future openapi-infra plan (e.g. 203-10 or
 204-xx) that either (a) rewrites every inline `tags: [...]` to block form across
 all contracts OR (b) upgrades `parseContractYaml` to tokenize inline-array values.
+
+**Plan 203-10 contribution:** F-99 uses block-form `tags:` → no net-new paths
+added to the missing list. Count stays at 35.
+
+## 2. QA-06 Playwright E2E suite — phase-infra deferral (per 202-10 precedent)
+
+**Status:** DEFERRED across the whole milestone.
+
+**Origin:** QA-06 in `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`
+calls for Playwright E2E coverage across every surface added by a phase. Phase 202
+Plan 202-10 explicitly deferred Playwright (see `.planning/STATE.md` note:
+"QA-06 (Playwright) deferred per plan 202-10 `<phase_level_notes>` — documented
+for `/gsd-verify-work` to treat as testing-infra-phase work"). Phase 203 inherits
+that decision.
+
+**What Phase 203 ships in lieu of Playwright:**
+- Grep-based a11y assertions (`test/webhooks/ui-s3-a11y.test.js`,
+  `test/webhooks/ui-s4-a11y.test.js`) cover locked-copy, ARIA markers, CSS
+  tokens, and standalone-vs-shell layout invariants.
+- Surface behavior covered by unit tests against the handler layer
+  (`test/webhooks/public-status.test.js`, `test/webhooks/settings-api.test.js`,
+  `test/webhooks/api-tenant.test.js`).
+
+**Resolution path:** Cross-phase testing-infra plan (likely 204-xx or later) that
+spins up a Playwright harness + fixtures for Phase 201/202/203 surfaces together.
+Rationale: setting up a single-phase Playwright stack is high-cost / low-payoff
+when the milestone already queues ~4 surfaces in 203 alone; batching is cheaper.
+
+## 3. QA-08 LLM eval-as-test — webhook domain has no LLM surfaces
+
+**Status:** NOT APPLICABLE to Phase 203 (gracefully deferred).
+
+**Origin:** QA-08 in `QUALITY-BASELINE.md` requires deterministic eval fixtures
+for every LLM-producing surface (Phase 202 shipped 3 such suites for
+plan_campaign / draft_message / audit_claim). Phase 203 webhooks produce NO
+LLM output — every handler is a pure I/O + HMAC + Redis breaker path. There is
+no LLM surface to eval.
+
+**Resolution:** No action required. Phase verifier should accept "not applicable"
+for 203 with this note as evidence.

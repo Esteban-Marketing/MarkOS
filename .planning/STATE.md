@@ -3,21 +3,116 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 203
-last_updated: "2026-04-18T12:44:36.981Z"
+last_updated: "2026-04-18T12:50:43.787Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 36
-  completed_plans: 34
-  percent: 94
+  completed_plans: 35
+  percent: 97
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 203 (webhook-subscription-engine-ga) — EXECUTING
-Plan: Waves 1-4 complete (203-01..03-07 all shipped). Wave 5 in flight (parallel): 203-08 shipped. Remaining: 203-09 (dashboard) · 203-10 (status page + Sentry) both in-flight as parallel siblings.
+Phase: 203 (webhook-subscription-engine-ga) — ALL WAVES COMPLETE
+Plan: 10/10 shipped (Wave 5 closed — 203-08 breaker + 203-09 dashboard + 203-10 status page + observability + docs all green in parallel). Phase 203 ready for `/gsd-verify-phase 203`.
+
+## What just happened (2026-04-18, Plan 203-10 close — parallel Wave 5)
+
+- **Plan 203-10 shipped** (parallel executor, Wave 5 — co-executing with 203-08 + 203-09) —
+  Phase-close: Surface 3 public status page + observability primitives (log-drain +
+  Sentry + delivery.cjs post-fetch wrapper) + QA-07 load smoke + 5 docs + llms.txt +
+  final OpenAPI regen (64 F-NN flows / 97 paths).
+
+  - `lib/markos/webhooks/log-drain.cjs` + `.ts`: `emitLogLine` mirrors 202-05 MCP
+    shape with `domain='webhook'` + D-30 fields (req_id, tenant_id, sub_id, delivery_id,
+    event_type, delivery_attempt, duration_ms, status, error_code). JSON.stringify
+    wrapped in try/catch so emission never throws.
+
+  - `lib/markos/webhooks/sentry.cjs` + `.ts`: `captureToolError` with triple-safety
+    (SENTRY_DSN env gate + lazy `@sentry/nextjs` import try/catch + captureException
+    try/catch). Tags `{ domain: 'webhook', event_type, sub_id, status: 'error' }`.
+
+  - `lib/markos/webhooks/delivery.cjs`: observability wrapper. Imports recordOutcome +
+    classifyOutcome from Plan 203-08's breaker.cjs — SINGLE post-fetch insertion point
+    (T-203-10-07 invariant). try/catch/finally wraps fetch(): catch fires captureToolError
+    + classifies AbortError/timeout vs network_error; finally runs recordBreakerOutcomeSafe
+    (sync + async throw swallow per RESEARCH §Pitfall 2) then emitLogLine. Gate-blocked
+    deliveries get a DEDICATED emitLogLine at their own call-site (observeAndHandleGateBlock
+    helper). S3776 complexity fix via 4 extracted helpers (Plan 203-07 precedent).
+
+  - `api/webhooks/queues/deliver.js`: Plan 203-01's safe-require stubs replaced with real
+    module imports.
+
+  - `api/public/webhooks/status.js`: public GET backing F-99. 60s cache + CORS-open.
+    New `aggregatePlatformWide` helper queries the fleet-metrics view with NO tenant_id
+    filter — Plan 203-10 does NOT edit Plan 203-09's metrics.cjs. Response emits only
+    5 aggregate fields (no tenant_id → T-203-10-01 info-disclosure mitigation).
+
+  - `app/(markos)/status/webhooks/page.tsx` + `.module.css`: Surface 3 STANDALONE (no
+    workspace shell). Mirrors invite/[token]/page.tsx posture. All UI-SPEC Surface 3
+    locked copy + a11y markers. Hero grid duplicated from Surface 1 (co-location rule).
+    Data-attribute state variants (operational/retrying/elevated). Responsive + reduced-motion.
+
+  - `contracts/F-99-webhook-status-v1.yaml`: single GET path + full schema + Stripe/Vercel
+    lineage refs. Block-form tags: (ZERO contribution to the 35 deferred tags-missing paths).
+
+  - `scripts/load/webhooks-smoke.mjs`: QA-07 60-concurrent × 60s targeting test-fire.
+    Gates p95 ≤ 500ms + error_rate ≤ 0.01. Dry-run when MARKOS_WEBHOOK_SMOKE_BASE_URL
+    unset.
+
+  - 5 docs: webhooks.md (Node.js + Python + Go verify + dual-sig) + rotation.md +
+    dlq.md + status.md + llms/phase-203-webhooks.md. Every doc cites DISCUSS.md /
+    canonical_refs (Dimension 11 — grep ≥3 per file).
+
+  - `public/llms.txt`: Phase 203 section with 5 link entries.
+
+  - `contracts/openapi.{json,yaml}` regenerated: **64 F-NN flows / 97 paths** (up from
+    62/91 at Plan 203-07 close). `test/openapi/openapi-build.test.js` + 4 Phase-203
+    path assertions (F-96, F-97, F-98, F-99).
+
+  - `.planning/phases/203-webhook-subscription-engine-ga/deferred-items.md`: QA-06
+    (Playwright phase-infra deferral) + QA-08 (no webhook LLM surface) added per
+    202-10 precedent.
+
+  - 4 new test suites: observability.test.js (12) + public-status.test.js (6) +
+    status-page.test.js (8) + ui-s3-a11y.test.js (9) = 35/35 green. Full webhook
+    regression **333/336** (2 pre-existing skips + 1 pre-existing 35-tags-missing
+    deferred).
+
+  - Commits: `94d5f78` (RED all suites) · `38ca91a` (Task 1a GREEN — log-drain +
+    sentry libs + queues/deliver.js swap) · `df60b46` (Task 3 GREEN — smoke + 5 docs
+    + F-99 + OpenAPI regen) · `fcab6b2` (Task 1b GREEN — delivery.cjs observability
+    wrapper) · `9350cc3` (Task 2 GREEN — public endpoint + Surface 3).
+
+  - **Decisions:** (1) Platform-wide aggregation owned by Plan 203-10 (aggregatePlatformWide
+    helper), not by extending 203-09's metrics.cjs — preserves Wave-5 single-owner
+    invariant (symmetric with T-203-10-07 for delivery.cjs). (2) S3776 cognitive-complexity
+    fix via 4 module-local helpers (recordBreakerOutcomeSafe, deriveLogStatus,
+    observeAndHandleGateBlock, checkSsrfReject). (3) Gate-blocked deliveries get a DEDICATED
+    emitLogLine call-site — no double emission; 100% dispatch observability. (4) F-99 uses
+    block-form tags: → zero Phase-203 contribution to deferred-items 35-tags-missing.
+    (5) QA-06 Playwright deferred to cross-phase testing-infra plan per 202-10 precedent;
+    QA-08 LLM eval not applicable (no LLM surfaces in webhook domain).
+
+  - **T-203-10-07 invariant verified:** delivery.cjs is the SOLE Wave-5 owner — 203-08's
+    `7dba7af` shows breaker.cjs as its only lib change; 203-09's commits ship metrics.cjs
+    + api/tenant/webhooks endpoints (delivery.cjs untouched); 203-10 owns `fcab6b2` +
+    `9350cc3`. Zero three-way overlap.
+
+## Next step
+
+**Phase 203 closed at 10/10 plans.** Run phase verification:
+
+```bash
+/gsd-verify-phase 203
+```
+
+All 16 phase decisions (D-01..D-16) delivered across 10 plans. Wave 5 parallel execution
+proved the single-owner-per-wave invariant for high-contention files (delivery.cjs +
+dispatch-gates.cjs — zero merge conflicts despite 3-agent parallelism).
 
 ## What just happened (2026-04-18, Plan 203-08 close — parallel Wave 5)
 
@@ -54,6 +149,7 @@ Plan: Waves 1-4 complete (203-01..03-07 all shipped). Wave 5 in flight (parallel
 
   - Gate order verified: `awk '/canDispatch|checkWebhookRateLimit/{print NR}' lib/markos/
     webhooks/dispatch-gates.cjs` — canDispatch at line 42, checkWebhookRateLimit at line
+
     57. Breaker is FIRST gate.
 
   - 2 new test suites: `test/webhooks/breaker.test.js` (23 — 22 behaviors 1a-1v plus
@@ -85,6 +181,7 @@ Plan: Waves 1-4 complete (203-01..03-07 all shipped). Wave 5 in flight (parallel
     would trigger recovery mid-setup — doesn't reflect production flow where open state
     blocks all dispatch). (6) mockLimiter.get extended to no-op null instead of a parallel
     redis mock — same pre-built object continues to serve Upstash limiter dep-injection
+
     + redis dep-injection; zero new test infrastructure.
 
   - **Downstream unlocks:** Plan 203-09 (dashboard) — `getBreakerState(redis, sub_id)`
