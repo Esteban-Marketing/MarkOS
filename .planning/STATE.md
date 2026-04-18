@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 202
-last_updated: "2026-04-18T00:29:27.258Z"
+last_updated: "2026-04-18T00:30:00.000Z"
 progress:
   total_phases: 7
   completed_phases: 2
   total_plans: 26
-  completed_plans: 17
-  percent: 65
+  completed_plans: 18
+  percent: 69
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,7 +17,24 @@ progress:
 ## Current Position
 
 Phase: 202 (mcp-server-ga-claude-marketplace) — EXECUTING
-Plan: 1 of 10
+Plan: 2 of 10
+
+## What just happened (2026-04-18)
+
+- **Plan 202-01 shipped** (parallel executor) — MCP session substrate ready.
+  - Migration 88 (`markos_mcp_sessions`, opaque-token hash + 24h rolling TTL + RLS) + migration 89
+    (`markos_mcp_cost_window` + atomic `check_and_charge_mcp_budget` plpgsql fn) with rollbacks.
+  - `lib/markos/mcp/sessions.cjs` + `.ts` dual-export: hashToken, createSession (tenant-status guard),
+    lookupSession (timingSafeEqual + token_hash strip), touchSession (24h extend), revokeSession
+    (audit emit), listSessionsFor{Tenant,User}.
+  - `api/mcp/session/cleanup.js` shared-secret cron + `vercel.ts` 4th cron entry at `0 */6 * * *`
+    (preserves 201-02 drain · 201-07 purge · 201-03 signup cleanup).
+  - Rule 3 blocking fix: `AUDIT_SOURCE_DOMAINS` extended 11 → 12 entries (`mcp`). writer.cjs +
+    writer.ts + hash-chain.test.js locked-list regression updated in lockstep.
+  - New suites: `test/mcp/session.test.js` (21) + `test/mcp/rls.test.js` (6) +
+    `test/mcp/migration-idempotency.test.js` (4). 30/30 green. Phase 201 regression: 25/25 green.
+  - Commits: b7ab22e (migrations) · 9e478c8 (audit whitelist) · 118f559 (sessions library) ·
+    77e8d10 (cleanup cron).
 
 ## What just happened (2026-04-17)
 
