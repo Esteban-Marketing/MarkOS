@@ -13,6 +13,8 @@ const NAV_ITEMS = [
   { href: "/markos/segments", label: "Segments", route: "segments" },
   { href: "/markos/campaigns", label: "Campaigns", route: "campaigns" },
   { href: "/markos/settings/theme", label: "Settings", route: "settings" },
+  { href: "/settings/mcp", label: "MCP", route: "settings-mcp" },
+  { href: "/settings/webhooks", label: "Webhooks", route: "settings-webhooks" },
 ] as const;
 
 export function MarkOSAccessDeniedState() {

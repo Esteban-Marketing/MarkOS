@@ -1,0 +1,456 @@
+/*
+ * Phase 203 Plan 09 Task 2 — Surface 1 /settings/webhooks styles.
+ *
+ * Every class traces to a Phase 201 or 202 ancestor per 203-UI-SPEC §Component Reuse Map
+ * OR is one of the 3 documented 203-new conventions:
+ *   1. max-width 1040px on top-level cards (6-col subscriptions table needs width)
+ *   2. border-radius 16px for nested cards (secretPanel + dangerCard)
+ *   3. dark mono code block (#0f172a bg + #e2e8f0 text) — S2 only
+ *
+ * Ancestor map:
+ *   .page, .contentCard, .heading, .subheading, .cardHeaderRow, .toast, .emptyState,
+ *   .visuallyHidden, .dialog family, .cancelButton    → 202 mcp/page.module.css
+ *   .subscriptionsTable (was .sessionsTable)           → 201 sessions/page.module.css
+ *   .primaryFilledButton                               → 201 invite/[token]/.acceptButton
+ *   .testFireButton (was .refreshButton)               → 202 mcp/.refreshButton
+ *   .eventChip / .overflowChip (was .scopeChip)        → 202 oauth consent/.scopeChip
+ *   .successBarTrack/.successBarFill (was .costMeter*) → 201 members/.seatBar*
+ *   .statusChip (was .currentBadge, 3 data-variants)   → 201 sessions/.currentBadge
+ */
+
+.page {
+  padding: 24px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.contentCard {
+  background: #ffffff;
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1040px; /* 203-new convention #1 — 6-col table needs room */
+}
+
+.heading {
+  margin: 0;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 28px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.subheading {
+  margin: 0;
+  font-size: 16px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.cardHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.loadingText {
+  margin: 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+/* ----------------------- Primary filled CTA (derived from invite/.acceptButton) */
+.primaryFilledButton {
+  min-height: 48px;
+  padding: 12px 22px;
+  background: #0d9488;
+  color: #ffffff;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 120ms ease-out;
+}
+.primaryFilledButton:hover {
+  background: #0b877c;
+}
+.primaryFilledButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+.primaryFilledButton:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* ----------------------- Hero grid (new; derived from 202 budgetRow container) */
+.heroGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+@media (max-width: 959px) {
+  .heroGrid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 639px) {
+  .heroGrid { grid-template-columns: 1fr; gap: 12px; }
+}
+
+.heroCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+}
+@media (min-width: 960px) {
+  .heroCard:not(:last-child) {
+    border-right: 1px solid #f1f5f9;
+  }
+}
+
+.heroNumber {
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 32px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.1;
+}
+.heroNumber[data-variant='success'] { color: #0d9488; }
+.heroNumber[data-variant='dlq-alert'] { color: #9a3412; }
+
+.heroLabel {
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ----------------------- Subscriptions table (mirrors 202 sessionsTable) */
+.subscriptionsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+.subscriptionsTable caption {
+  caption-side: top;
+  text-align: left;
+  padding-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+.subscriptionsTable th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0;
+}
+.subscriptionsTable td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #0f172a;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.urlCell {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  color: #0f172a;
+  text-decoration: none;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+.urlCell:hover {
+  color: #0d9488;
+  text-decoration: underline;
+}
+.urlCell:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ----------------------- Event chip cluster (mirrors 202 scopeChip) */
+.eventChipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.eventChip {
+  background: #e6fffb;
+  color: #0f766e;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.overflowChip {
+  background: #f1f5f9;
+  color: #334155;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ----------------------- Status chip (breaker state, 3 data-variants) */
+.statusChip {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+.statusChip[data-state='closed'] {
+  background: #e6fffb;
+  color: #0f766e;
+}
+.statusChip[data-state='half-open'] {
+  background: #fef3c7;
+  color: #78350f;
+  border: 1px solid #d97706;
+}
+.statusChip[data-state='open'] {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+/* ----------------------- Success-rate mini-bar (mirrors 202 costMeter*) */
+.successRateCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 120px;
+}
+.successBarTrack {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.successBarFill {
+  height: 100%;
+  background: #0d9488;
+  border-radius: 999px;
+  transition: width 180ms ease-out;
+}
+.successBarFill[data-alert='true'] {
+  background: #9a3412;
+}
+
+/* ----------------------- Actions (View link + Test fire ghost) */
+.actionsCell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.viewLink {
+  color: #0d9488;
+  text-decoration: underline;
+  font-weight: 600;
+  font-size: 14px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 4px;
+}
+.viewLink:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.testFireButton {
+  min-height: 44px;
+  padding: 6px 12px;
+  background: transparent;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 120ms ease-out, border-color 120ms ease-out;
+}
+.testFireButton:hover {
+  color: #0d9488;
+  border-color: #0d9488;
+}
+.testFireButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+.testFireButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ----------------------- Empty state (mirrors 202) */
+.emptyState {
+  font-size: 14px;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.emptyState a {
+  color: #0d9488;
+  text-decoration: underline;
+  font-weight: 600;
+}
+.emptyState a:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ----------------------- Dialog family (copied from 202 mcp) */
+.dialog {
+  border: 0;
+  border-radius: 24px;
+  padding: 28px;
+  width: min(520px, calc(100vw - 32px));
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  color: #0f172a;
+}
+.dialog::backdrop {
+  background: rgba(15, 23, 42, 0.35);
+}
+.dialogHeading {
+  margin: 0 0 12px;
+  font-family: 'Sora', 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+.dialogBody {
+  margin: 0 0 16px;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+.cancelButton {
+  min-height: 44px;
+  padding: 10px 18px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cancelButton:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+
+/* ----------------------- Field (mirrors members .field) */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 600;
+}
+.field input {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 14px;
+  color: #0f172a;
+  background: #ffffff;
+}
+.field input:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+}
+.fieldHelp {
+  font-size: 12px;
+  font-weight: 400;
+  color: #64748b;
+}
+.formError {
+  margin: 0;
+  padding: 10px 14px;
+  background: #fef2f2;
+  color: #991b1b;
+  border-left: 4px solid #dc2626;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ----------------------- Toast (copy-verbatim from 202) */
+.toast {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 12px 16px;
+  background: #ffffff;
+  border-left: 4px solid #0f766e;
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+  animation: toastSlideIn 200ms ease-out;
+}
+@keyframes toastSlideIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ----------------------- Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .successBarFill,
+  .primaryFilledButton,
+  .testFireButton,
+  .urlCell {
+    transition: none !important;
+  }
+  .toast {
+    animation: none !important;
+  }
+}
