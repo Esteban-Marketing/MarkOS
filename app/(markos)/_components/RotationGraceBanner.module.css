@@ -1,0 +1,109 @@
+/* Phase 203 Plan 06 Task 2 — Surface 4: Global rotation grace banner.
+ *
+ * Token sources (copy-and-rename, per UI-SPEC §Design-Token Alignment Table):
+ *   - Warn bg/text/border: 201 danger/page.module.css .purgeBanner +
+ *     202 /settings/mcp/page.module.css .atCapBanner.
+ *   - Error escalation (T-0): 201 invite/[token]/page.module.css .errorMessage.
+ *   - Focus ring + 44px tap target: every 201 + 202 surface.
+ *
+ * UI-SPEC §Surface 4 explicit constraints:
+ *   - Padding: 12px 20px
+ *   - Background: #fef3c7 (T-7, T-1) -> #fef2f2 (T-0)
+ *   - Border-left: 4px solid #d97706 (T-7, T-1) -> #dc2626 (T-0)
+ *   - Text: #78350f (T-7, T-1) -> #991b1b (T-0)
+ *   - role="status" (ambient; no alert-severity escalation)
+ *   - NO dismiss button (security anti-pattern)
+ */
+
+.rotationGraceBanner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: #fef3c7;
+  color: #78350f;
+  border-left: 4px solid #d97706;
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  /* No border-radius — banner spans the shell header width, seam-free with layout. */
+}
+
+.rotationGraceBanner strong {
+  color: #78350f;
+  font-weight: 600;
+}
+
+.graceLink {
+  color: #78350f;
+  font-weight: 600;
+  text-decoration: underline;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 120ms ease-out;
+}
+
+.graceLink:hover {
+  color: #451a03;
+}
+
+.graceLink:focus-visible {
+  outline: 2px solid #0d9488;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Pulse dot — used in T-1 variant for low-key escalation signal.
+ * Static in 203 (no keyframes); prefers-reduced-motion-safe by default.
+ * Size + color mirror UI-SPEC §Component Inventory Surface 4. */
+.pulseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #d97706;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* T-0 escalation — final-day banner swaps to error-alert token family.
+ * Matches 201 invite/[token]/page.module.css .errorMessage palette so the
+ * escalation reads as "this is now error-severity" without breaking
+ * role="status" ambient a11y (content change alone is the signal). */
+[data-stage="t-0"].rotationGraceBanner {
+  background: #fef2f2;
+  color: #991b1b;
+  border-left-color: #dc2626;
+}
+
+[data-stage="t-0"].rotationGraceBanner strong {
+  color: #991b1b;
+}
+
+[data-stage="t-0"] .graceLink {
+  color: #991b1b;
+}
+
+[data-stage="t-0"] .graceLink:hover {
+  color: #7f1d1d;
+}
+
+[data-stage="t-0"] .pulseDot {
+  background: #dc2626;
+}
+
+/* Multi-rotation variant keeps the warn palette — we surface the aggregate
+ * count without escalating, since individual rotations may still be in
+ * their T-7 grace window. */
+[data-stage="multi"].rotationGraceBanner {
+  background: #fef3c7;
+  color: #78350f;
+  border-left-color: #d97706;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graceLink {
+    transition: none;
+  }
+}
