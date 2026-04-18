@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 203
-last_updated: "2026-04-18T06:29:34.371Z"
+last_updated: "2026-04-18T06:40:55.501Z"
 progress:
   total_phases: 7
   completed_phases: 3
   total_plans: 36
-  completed_plans: 28
-  percent: 78
+  completed_plans: 29
+  percent: 81
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,7 +17,67 @@ progress:
 ## Current Position
 
 Phase: 203 (webhook-subscription-engine-ga) — EXECUTING
-Plan: Wave 1 complete (203-01 + 203-02 shipped in parallel)
+Plan: Wave 1 complete (203-01 + 203-02) · Wave 2 in flight (203-03 shipped; 203-04 + 203-06 parallel)
+
+## What just happened (2026-04-18, Plan 203-03 close — parallel Wave 2)
+
+- **Plan 203-03 shipped** (parallel executor, Wave 2 — ran alongside 203-04 + 203-06) —
+  DLQ library + daily purge cron. Completes the Wave-2 DLQ substrate every
+  downstream plan (203-04 replay, 203-09 dashboard DLQ tab, 203-10 status metrics)
+  builds on.
+
+  - `lib/markos/webhooks/dlq.cjs` + `.ts` dual-export: 5 exports
+    (`listDLQ`, `countDLQ`, `markFailed`, `markDelivered`, `purgeExpired`) +
+    `DLQ_WINDOW_DAYS=7` constant (D-08 locked). `listDLQ` + `countDLQ` THROW if
+    `tenant_id` missing (T-203-03-03 defense-in-depth). `.eq('tenant_id', ...)`
+    always first filter. `purgeExpired` double-filter
+    (`status='failed' AND dlq_at < now-7d`) backed by migration 72's
+    `idx_deliveries_dlq_retention` partial index.
+
+  - `api/cron/webhooks-dlq-purge.js` — POST-only handler gated by
+    `MARKOS_WEBHOOK_CRON_SECRET` (header OR Bearer); delegates to
+    `purgeExpired(supabase)`; returns `{ success, count, duration_ms }`.
+    Mirrors Plan 202-01 cleanup.js / 202-10 mcp-kpi-digest.js patterns;
+    exports `handle(req, res, deps)` seam for unit tests.
+
+  - `vercel.ts` — 6th cron entry
+    `{ path: '/api/cron/webhooks-dlq-purge', schedule: '30 3 * * *' }`
+    (daily 03:30 UTC — offset from 02:00 lifecycle-purge + 02:30
+    cleanup-unverified-signups). All 5 prior crons + Plan 203-01 queue
+    trigger preserved.
+
+  - Audit emit on purge batch: `enqueueAuditStaging(client, { source_domain:
+    'webhooks', action: 'dlq.purged', tenant_id: 'system', actor_id:
+    'system:cron', actor_role: 'system', payload: { count, older_than: '7d',
+    purged_at } })` — fire-and-forget (catch swallows staging failure).
+    T-203-03-05 mitigation: audit log retains batch row forever even after
+    DLQ rows are hard-deleted.
+
+  - 2 test suites: `test/webhooks/dlq.test.js` (17) +
+    `test/webhooks/dlq-purge-cron.test.js` (9) = **26/26 green**. 200-03
+    regression (signing + engine + delivery + api-endpoints) **38/38 preserved**.
+    Audit hash-chain regression **7/7 preserved** (AUDIT_SOURCE_DOMAINS
+    untouched — 200-03 SUMMARY confirms 'webhooks' already at index 6).
+
+  - Commits: `8357fc5` (Task 1 RED) · `ad962d5` (Task 1 GREEN: DLQ library +
+    dual-export) · `8881353` (Task 2 RED) · `3f64522` (Task 2 GREEN: cron
+    wrapper + vercel.ts 6th cron entry).
+
+  - **Decisions:** (1) `enqueueAuditStaging` is `(client, entry)` — 2-arg
+    signature, not the single-object form the plan assumed. `purgeExpired`
+    passes the same Supabase client used for the DELETE. (2) `tenant_id:
+    'system'` sentinel on cross-tenant system audit rows (markos_audit_log_
+    staging is `text NOT NULL` with no FK; `writer.cjs:validateEntry` rejects
+    null). Downstream 203-10 can query `tenant_id='system' AND action='dlq.
+    purged'` for all batches. (3) POST-only cron (tighter than cleanup.js's
+    POST-or-GET) — Vercel crons POST by default. (4) `DLQ_WINDOW_MS` module
+    constant shared by read (listDLQ) and write (purgeExpired) paths —
+    flipping D-08 edits one constant.
+
+  - **Downstream unlocks:** Plan 203-04 replay iterator (`listDLQ` row set +
+    `markFailed` / `markDelivered` transitions) · Plan 203-09 DLQ dashboard
+    pane (`listDLQ` + `countDLQ` back the UI) · Plan 203-10 status page
+    (purge audit query + p95 duration_ms metric).
 
 ## What just happened (2026-04-18, Plan 203-01 close — parallel Wave 1)
 
@@ -70,6 +130,7 @@ Plan: Wave 1 complete (203-01 + 203-02 shipped in parallel)
   - 4 new test suites: `store-supabase.test.js` (11) + `adapter-supabase.test.js`
     (8) + `adapter-queues.test.js` (4) + `vercel-queue.test.js` (8) — 31
     Wave-1 tests, all green. 200-03 regression (signing + engine + delivery
+
     + api-endpoints): **35/35 preserved**. Full webhooks suite: **93 pass +
     2 skips**.
 
@@ -120,16 +181,20 @@ Plan: Wave 1 complete (203-01 + 203-02 shipped in parallel)
     - 5 rotation/override cols on `markos_webhook_subscriptions` (secret_v2,
       grace_started_at, grace_ends_at, rotation_state, rps_override) with
       CHECK constraint guarded by `do $$ ... pg_constraint $$` block.
+
     - 4 DLQ cols on `markos_webhook_deliveries` (replayed_from self-ref FK,
       dlq_reason, final_attempt, dlq_at) + `idx_deliveries_dlq_retention`
       partial index WHERE status='failed'.
+
     - `markos_webhook_secret_rotations` ledger table (10 cols, tenant_id FK,
       state CHECK in active|rolled_back|finalized, grace_ends_at) with RLS +
       `rotations_read_via_tenant` policy (tenant-membership gated) +
       `idx_rotations_active` partial index WHERE state='active'.
+
     - `markos_webhook_fleet_metrics_v1` view — 48h rollup per (tenant_id,
       hour) with total/delivered/failed/retrying counts + avg_latency_ms
       over delivered rows. S1 hero source (D-04).
+
     - 3 rotation RPC stubs (`start_/rollback_/finalize_expired_webhook_rotation`)
       declared with `raise exception 'body ships in Plan 203-05'` — downstream
       plans reference signatures without waiting on Wave 3.
