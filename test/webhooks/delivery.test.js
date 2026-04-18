@@ -216,3 +216,130 @@ test('processDelivery: unknown delivery id returns not_found', async () => {
   assert.equal(result.delivered, false);
   assert.equal(result.reason, 'not_found');
 });
+
+// ---------------------------------------------------------------------------
+// Phase 203-07 Task 2: dispatch-gates integration behaviors 2c, 2d, 2f.
+// ---------------------------------------------------------------------------
+
+function mockLimiter(results) {
+  let i = 0;
+  return {
+    async limit() {
+      const r = results[Math.min(i, results.length - 1)];
+      i += 1;
+      return r;
+    },
+  };
+}
+
+test('Plan 203-07 2c: rate-limit gate blocks dispatch (no fetch), transitions to retrying, attempt NOT incremented', async () => {
+  const subs = createInMemoryStore();
+  const deliveries = createInMemoryDeliveryStore();
+  const queue = createInMemoryQueue();
+  const subscription = await subscribe(subs, {
+    tenant_id: 't-1',
+    url: 'https://example.com/hook',
+    events: ['approval.created'],
+    secret: 's',
+    rps_override: null,
+  });
+  const row = await enqueueDelivery(deliveries, queue, {
+    subscription,
+    event: 'approval.created',
+    payload: {},
+  });
+
+  const fetchImpl = mockFetch([buildOkResponse(200)]);
+  // Limiter breaches; reset 5s in the future.
+  const limiter = mockLimiter([{ success: false, reset: Date.now() + 5_000, remaining: 0 }]);
+
+  const result = await processDelivery(deliveries, subs, row.id, {
+    fetch: fetchImpl,
+    now: () => 1_700_000_000_000,
+    redis: limiter,
+    planTier: 'team',
+  });
+
+  // Fetch must NOT have been called.
+  assert.equal(fetchImpl.calls.length, 0);
+  assert.equal(result.delivered, false);
+  assert.equal(result.status, 'rate_limited');
+
+  // Row transitioned to retrying with next_attempt_at set; attempt unchanged (0).
+  const stored = await deliveries.findById(row.id);
+  assert.equal(stored.status, STATUS.RETRYING);
+  assert.equal(stored.attempt, 0);
+  assert.ok(stored.next_attempt_at);
+});
+
+test('Plan 203-07 2d: rate-limit gate allowed → dispatch proceeds through fetch', async () => {
+  const subs = createInMemoryStore();
+  const deliveries = createInMemoryDeliveryStore();
+  const queue = createInMemoryQueue();
+  const subscription = await subscribe(subs, {
+    tenant_id: 't-1',
+    url: 'https://example.com/hook',
+    events: ['approval.created'],
+    secret: 's',
+  });
+  const row = await enqueueDelivery(deliveries, queue, {
+    subscription,
+    event: 'approval.created',
+    payload: {},
+  });
+
+  const fetchImpl = mockFetch([buildOkResponse(204)]);
+  const limiter = mockLimiter([{ success: true, remaining: 59, reset: Date.now() + 1_000 }]);
+
+  const result = await processDelivery(deliveries, subs, row.id, {
+    fetch: fetchImpl,
+    now: () => 1_700_000_000_000,
+    redis: limiter,
+    planTier: 'team',
+  });
+  assert.equal(result.delivered, true);
+  assert.equal(result.status, 204);
+  assert.equal(fetchImpl.calls.length, 1);
+  const stored = await deliveries.findById(row.id);
+  assert.equal(stored.status, STATUS.DELIVERED);
+  assert.equal(stored.attempt, 1);
+});
+
+test('Plan 203-07 2f: repeated gate blocks do NOT accumulate the attempt counter (24-cap not burned)', async () => {
+  const subs = createInMemoryStore();
+  const deliveries = createInMemoryDeliveryStore();
+  const queue = createInMemoryQueue();
+  const subscription = await subscribe(subs, {
+    tenant_id: 't-1',
+    url: 'https://example.com/hook',
+    events: ['approval.created'],
+    secret: 's',
+  });
+  const row = await enqueueDelivery(deliveries, queue, {
+    subscription,
+    event: 'approval.created',
+    payload: {},
+  });
+
+  const fetchImpl = mockFetch([buildOkResponse(200)]);
+  const limiter = mockLimiter([
+    { success: false, reset: Date.now() + 2_000, remaining: 0 },
+    { success: false, reset: Date.now() + 2_000, remaining: 0 },
+    { success: false, reset: Date.now() + 2_000, remaining: 0 },
+  ]);
+
+  for (let i = 0; i < 3; i += 1) {
+    await processDelivery(deliveries, subs, row.id, {
+      fetch: fetchImpl,
+      now: () => 1_700_000_000_000,
+      redis: limiter,
+      planTier: 'team',
+    });
+  }
+
+  assert.equal(fetchImpl.calls.length, 0, 'no fetch call should happen when gate blocks');
+  const stored = await deliveries.findById(row.id);
+  // 3 gate blocks must NOT have incremented the attempt counter.
+  assert.equal(stored.attempt, 0, `attempt should remain 0, got ${stored.attempt}`);
+  assert.equal(stored.status, STATUS.RETRYING);
+});
