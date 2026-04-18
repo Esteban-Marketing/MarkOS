@@ -15,18 +15,12 @@ const { handleCallback } = require('@vercel/queue');
 const { processDelivery } = require('../../../lib/markos/webhooks/delivery.cjs');
 const { getWebhookStores } = require('../../../lib/markos/webhooks/store.cjs');
 
-// Safe-require observability shims. Plan 203-10 will ship real modules; until then these
-// degrade to no-ops so the consumer never crashes on module-load.
-let emitLogLine = () => {};
-let captureToolError = () => {};
-try {
-  // eslint-disable-next-line global-require
-  ({ emitLogLine } = require('../../../lib/markos/webhooks/log-drain.cjs'));
-} catch { /* Plan 203-10 target — safe no-op until then */ }
-try {
-  // eslint-disable-next-line global-require
-  ({ captureToolError } = require('../../../lib/markos/webhooks/sentry.cjs'));
-} catch { /* Plan 203-10 target — safe no-op until then */ }
+// Phase 203 Plan 10 Task 1 — real observability modules landed; safe-require stubs replaced.
+// log-drain.cjs emits D-30 JSON lines on every outcome (finally block below).
+// sentry.cjs captures uncaught dispatch exceptions (triple-safety: DSN env gate + lazy
+// @sentry/nextjs import + try/catch around captureException).
+const { emitLogLine } = require('../../../lib/markos/webhooks/log-drain.cjs');
+const { captureToolError } = require('../../../lib/markos/webhooks/sentry.cjs');
 
 async function asyncHandler(message, metadata) {
   const delivery_id = message?.delivery_id;
