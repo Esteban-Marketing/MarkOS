@@ -206,3 +206,86 @@ test('Suite 202-01: listSessionsForUser returns rows for that user only', async 
   assert.equal(list.length, 1);
   assert.equal(list[0].user_id, 'u1');
 });
+
+// ---------------------------------------------------------------------------
+// Task 3: Cron cleanup endpoint (api/mcp/session/cleanup.js)
+// ---------------------------------------------------------------------------
+const { handleCleanup } = require('../../api/mcp/session/cleanup.js');
+
+function mockRes() {
+  return {
+    statusCode: 200,
+    headers: {},
+    body: null,
+    writeHead(code, headers) { this.statusCode = code; if (headers) Object.assign(this.headers, headers); },
+    setHeader(k, v) { this.headers[k] = v; },
+    end(b) { this.body = b; return this; },
+  };
+}
+
+function cleanupClient(purgedRows = []) {
+  const state = { orFilters: [] };
+  return {
+    from: () => ({
+      delete: () => ({
+        or: (filter) => {
+          state.orFilters.push(filter);
+          return {
+            select: async () => ({ data: purgedRows, error: null }),
+          };
+        },
+      }),
+    }),
+    state,
+  };
+}
+
+test('Suite 202-01: cleanup endpoint rejects when MARKOS_MCP_CRON_SECRET unset', async () => {
+  delete process.env.MARKOS_MCP_CRON_SECRET;
+  const req = { method: 'POST', headers: {} };
+  const res = mockRes();
+  await handleCleanup(req, res, { client: cleanupClient() });
+  assert.equal(res.statusCode, 401);
+});
+
+test('Suite 202-01: cleanup endpoint rejects when secret header mismatches', async () => {
+  process.env.MARKOS_MCP_CRON_SECRET = 'expected';
+  const req = { method: 'POST', headers: { 'x-markos-cron-secret': 'wrong' } };
+  const res = mockRes();
+  await handleCleanup(req, res, { client: cleanupClient() });
+  assert.equal(res.statusCode, 401);
+  delete process.env.MARKOS_MCP_CRON_SECRET;
+});
+
+test('Suite 202-01: cleanup endpoint returns { success:true, purged:n } on Bearer auth', async () => {
+  process.env.MARKOS_MCP_CRON_SECRET = 'xyz';
+  const req = { method: 'POST', headers: { authorization: 'Bearer xyz' } };
+  const res = mockRes();
+  await handleCleanup(req, res, { client: cleanupClient([{ id: 'a' }, { id: 'b' }]) });
+  assert.equal(res.statusCode, 200);
+  const parsed = JSON.parse(res.body);
+  assert.equal(parsed.success, true);
+  assert.equal(parsed.purged, 2);
+  delete process.env.MARKOS_MCP_CRON_SECRET;
+});
+
+test('Suite 202-01: cleanup endpoint accepts x-markos-cron-secret header', async () => {
+  process.env.MARKOS_MCP_CRON_SECRET = 'xyz';
+  const req = { method: 'POST', headers: { 'x-markos-cron-secret': 'xyz' } };
+  const res = mockRes();
+  await handleCleanup(req, res, { client: cleanupClient([]) });
+  assert.equal(res.statusCode, 200);
+  const parsed = JSON.parse(res.body);
+  assert.equal(parsed.success, true);
+  assert.equal(parsed.purged, 0);
+  delete process.env.MARKOS_MCP_CRON_SECRET;
+});
+
+test('Suite 202-01: cleanup endpoint rejects non-POST/GET methods', async () => {
+  process.env.MARKOS_MCP_CRON_SECRET = 'xyz';
+  const req = { method: 'DELETE', headers: { 'x-markos-cron-secret': 'xyz' } };
+  const res = mockRes();
+  await handleCleanup(req, res, { client: cleanupClient() });
+  assert.equal(res.statusCode, 405);
+  delete process.env.MARKOS_MCP_CRON_SECRET;
+});
