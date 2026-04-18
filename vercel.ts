@@ -4,6 +4,7 @@
 // Phase 202 Plan 10 Task 3: extended with weekly MCP KPI digest (D-23 install tracking).
 // Phase 203 Plan 01 Task 2: extended with Vercel Queues push consumer (queue/v2beta —
 // rename expected when Vercel exits beta; see deferred-items.md).
+// Phase 203 Plan 03 Task 2: extended with webhooks DLQ purge cron (D-08 7-day TTL).
 // Vercel picks vercel.ts over vercel.json when both are present, so the rewrite block
 // from vercel.json is mirrored here to preserve the phase 200 onboarding routes.
 
@@ -29,6 +30,8 @@ export default {
     { path: '/api/mcp/session/cleanup', schedule: '0 */6 * * *' },
     // MCP KPI digest (Plan 202-10) — weekly founders email: installs + top tools + p95 (D-23 >= 50 installs/30d)
     { path: '/api/cron/mcp-kpi-digest', schedule: '0 9 * * 1' },
+    // Webhook DLQ purge (Plan 203-03) — hard-delete failed deliveries past 7d (D-08); audit row emitted per batch
+    { path: '/api/cron/webhooks-dlq-purge', schedule: '30 3 * * *' },
   ],
   functions: {
     // Phase 203 Plan 01: Vercel Queues push consumer (queue/v2beta — rename expected when
