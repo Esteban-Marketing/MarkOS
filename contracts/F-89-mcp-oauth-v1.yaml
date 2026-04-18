@@ -1,0 +1,211 @@
+id: F-89-mcp-oauth-v1
+phase: 202
+name: MCP OAuth 2.1 + PKCE
+status: active
+summary: OAuth 2.1 + PKCE endpoints required by MCP 2025-06-18. Conforms to RFC 8414 (AS metadata), RFC 9728 (RS metadata), RFC 7591 (DCR), RFC 7636 (PKCE S256), RFC 8707 (resource indicator), RFC 7009 (revocation). No refresh tokens; opaque 32-byte bearer tokens with 24h rolling TTL.
+
+paths:
+  /.well-known/oauth-protected-resource:
+    get:
+      summary: RFC 9728 protected resource metadata
+      operationId: wellKnownOauthProtectedResource
+      tags: [mcp, oauth]
+      responses:
+        '200':
+          description: Protected resource metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [resource, authorization_servers, bearer_methods_supported]
+                properties:
+                  resource: { type: string, format: uri, example: "https://markos.dev/api/mcp" }
+                  authorization_servers:
+                    type: array
+                    items: { type: string, format: uri }
+                  bearer_methods_supported:
+                    type: array
+                    items: { type: string, enum: [header] }
+                  resource_documentation: { type: string, format: uri }
+  /.well-known/oauth-authorization-server:
+    get:
+      summary: RFC 8414 authorization server metadata (S256-only per D-05)
+      operationId: wellKnownOauthAuthorizationServer
+      tags: [mcp, oauth]
+      responses:
+        '200':
+          description: AS metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [issuer, authorization_endpoint, token_endpoint, registration_endpoint, code_challenge_methods_supported, grant_types_supported, response_types_supported]
+                properties:
+                  issuer: { type: string, format: uri }
+                  authorization_endpoint: { type: string, format: uri }
+                  token_endpoint: { type: string, format: uri }
+                  registration_endpoint: { type: string, format: uri }
+                  revocation_endpoint: { type: string, format: uri }
+                  code_challenge_methods_supported:
+                    type: array
+                    items: { type: string, enum: [S256] }
+                  grant_types_supported:
+                    type: array
+                    items: { type: string, enum: [authorization_code] }
+                  response_types_supported:
+                    type: array
+                    items: { type: string, enum: [code] }
+                  scopes_supported:
+                    type: array
+                    items: { type: string }
+                  token_endpoint_auth_methods_supported:
+                    type: array
+                    items: { type: string, enum: [none] }
+  /oauth/register:
+    post:
+      summary: RFC 7591 Dynamic Client Registration (open per MCP spec)
+      operationId: oauthRegister
+      tags: [mcp, oauth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [client_name, redirect_uris]
+              properties:
+                client_name: { type: string, minLength: 1 }
+                redirect_uris:
+                  type: array
+                  minItems: 1
+                  items: { type: string, format: uri }
+      responses:
+        '201':
+          description: Client registered
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [client_id, client_name, redirect_uris, grant_types, response_types, token_endpoint_auth_method]
+                properties:
+                  client_id: { type: string, pattern: "^mcp-cli-[0-9a-f]{32}$" }
+                  client_name: { type: string }
+                  redirect_uris: { type: array, items: { type: string } }
+                  grant_types: { type: array, items: { type: string, enum: [authorization_code] } }
+                  response_types: { type: array, items: { type: string, enum: [code] } }
+                  token_endpoint_auth_method: { type: string, enum: [none] }
+        '400':
+          description: invalid_client_metadata / invalid_redirect_uri
+  /oauth/authorize:
+    get:
+      summary: Consent page bootstrap (redirects to /oauth/consent when authenticated; /login when not)
+      operationId: oauthAuthorize
+      tags: [mcp, oauth]
+      parameters:
+        - { name: client_id, in: query, required: true, schema: { type: string } }
+        - { name: redirect_uri, in: query, required: true, schema: { type: string, format: uri } }
+        - { name: response_type, in: query, required: true, schema: { type: string, enum: [code] } }
+        - { name: code_challenge, in: query, required: true, schema: { type: string } }
+        - { name: code_challenge_method, in: query, required: true, schema: { type: string, enum: [S256] } }
+        - { name: scope, in: query, required: true, schema: { type: string } }
+        - { name: state, in: query, required: true, schema: { type: string } }
+        - { name: resource, in: query, required: true, schema: { type: string, format: uri } }
+      responses:
+        '302':
+          description: Redirect to /oauth/consent or /login
+        '400':
+          description: invalid_request
+  /oauth/authorize/approve:
+    post:
+      summary: Approve consent → authorization_code redirect (D-07 tenant-bind at session)
+      operationId: oauthAuthorizeApprove
+      tags: [mcp, oauth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [state, target_tenant_id, csrf_token, client_id, redirect_uri, resource, scope, code_challenge, code_challenge_method]
+              properties:
+                state: { type: string }
+                target_tenant_id: { type: string }
+                csrf_token: { type: string }
+                client_id: { type: string }
+                redirect_uri: { type: string, format: uri }
+                resource: { type: string, format: uri }
+                scope: { type: string }
+                code_challenge: { type: string }
+                code_challenge_method: { type: string, enum: [S256] }
+      responses:
+        '302':
+          description: Redirect to redirect_uri?code=...&state=...
+        '400':
+          description: invalid_request
+        '401':
+          description: unauthorized
+        '403':
+          description: invalid_tenant
+  /oauth/token:
+    post:
+      summary: PKCE exchange → opaque bearer token (RFC 7636 + 8707)
+      operationId: oauthToken
+      tags: [mcp, oauth]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [grant_type, code, code_verifier, client_id, redirect_uri, resource]
+              properties:
+                grant_type: { type: string, enum: [authorization_code] }
+                code: { type: string, minLength: 32 }
+                code_verifier: { type: string, minLength: 43, maxLength: 128 }
+                client_id: { type: string }
+                redirect_uri: { type: string, format: uri }
+                resource: { type: string, format: uri }
+      responses:
+        '200':
+          description: Opaque bearer token issued (no refresh_token per D-06)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [access_token, token_type, expires_in]
+                properties:
+                  access_token: { type: string, pattern: "^[0-9a-f]{64}$" }
+                  token_type: { type: string, enum: [Bearer] }
+                  expires_in: { type: integer, enum: [86400] }
+                  scope: { type: string }
+        '400':
+          description: invalid_grant / unsupported_grant_type / invalid_target / invalid_client
+  /oauth/revoke:
+    post:
+      summary: RFC 7009 token revocation (anti-probing — always 200 for authenticated actor)
+      operationId: oauthRevoke
+      tags: [mcp, oauth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token: { type: string }
+                token_type_hint: { type: string, enum: [access_token] }
+      responses:
+        '200':
+          description: Revocation accepted (even for unknown tokens per RFC 7009 §2.2)
+        '401':
+          description: unauthorized (missing Phase-201 session)
+
+references:
+  rfc_8414: https://datatracker.ietf.org/doc/html/rfc8414
+  rfc_9728: https://datatracker.ietf.org/doc/html/rfc9728
+  rfc_7591: https://datatracker.ietf.org/doc/html/rfc7591
+  rfc_7636: https://datatracker.ietf.org/doc/html/rfc7636
+  rfc_8707: https://datatracker.ietf.org/doc/html/rfc8707
+  rfc_7009: https://datatracker.ietf.org/doc/html/rfc7009
+  mcp_spec_2025_06_18: https://modelcontextprotocol.io/specification/2025-06-18/basic/authorization
