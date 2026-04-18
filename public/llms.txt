@@ -31,6 +31,14 @@
 - [GDPR Export](https://markos.dev/docs/gdpr-export): D-15 signed-URL zip bundle shape, BUNDLE_DOMAINS, 7-day TTL, hash-chain replay verification.
 - [Phase 201 LLM Summary](https://markos.dev/docs/llms/phase-201-tenancy): Decisions · artifacts · contracts (F-80..F-88) · migrations (81..87).
 
+## Phase 202 — MCP Server GA
+
+- [MCP tool reference (30 tools)](https://markos.dev/docs/mcp-tools): All 30 live tools — marketing, CRM, literacy, tenancy — with inputSchema summary, latency tier, and mutating flags.
+- [VS Code MCP setup](https://markos.dev/docs/vscode-mcp-setup): `.vscode/mcp.json` snippet + OAuth consent walkthrough + troubleshooting (401, DCR, token expiry).
+- [OAuth 2.1 + PKCE flow](https://markos.dev/docs/oauth): Full RFC 7636/7591/8707/9728 flow with curl examples for register → authorize → token → revoke.
+- [Red-team checklist](https://markos.dev/docs/mcp-redteam-checklist): Manual verification for injection, cross-tenant, budget, approval-token, rate-limit, D-31 rolling releases, D-19 observability alerts.
+- [Phase 202 LLM Summary](https://markos.dev/docs/llms/phase-202-mcp): Contracts (F-89/F-90..F-95) + decisions + MCP 2025-06-18 alignment.
+
 ## Optional
 
 - [Full Docs (concatenated markdown)](https://markos.dev/docs/llms-full.txt): Single-file concatenation of all documentation pages for LLM ingestion.
