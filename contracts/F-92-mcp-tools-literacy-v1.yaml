@@ -1,0 +1,94 @@
+id: F-92-mcp-tools-literacy-v1
+phase: 202
+plan: 07
+name: MCP Tools — Literacy (5)
+status: active
+summary: >-
+  JSON Schema contracts for 5 MCP literacy tools: list_pain_points +
+  explain_literacy (retained from Plan 202-06) plus 3 net-new from Plan
+  202-07 (query_canon, explain_archetype, walk_taxonomy). All simple-tier
+  (non-LLM), non-mutating, tenant-scoped reads via pack-loader.
+
+references:
+  - F-71-mcp-session-v2 (tool dispatch envelope)
+
+tools:
+  list_pain_points:
+    description: List canonical pain-point taxonomy entries, tenant-scoped, optionally filtered by category.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      additionalProperties: false
+      required: []
+      properties:
+        category: { type: string, maxLength: 200 }
+    output: { $ref: "#/shared/content_only" }
+
+  explain_literacy:
+    description: Explain a literacy node or archetype slug, returning description + examples + canonical slug.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      additionalProperties: false
+      anyOf:
+        - required: [node_id]
+        - required: [archetype]
+      properties:
+        node_id: { type: string, maxLength: 200 }
+        archetype: { type: string, maxLength: 200 }
+    output: { $ref: "#/shared/content_only" }
+
+  query_canon:
+    description: Free-text search over tenant brand canon; returns top-K matches with title + text snippet.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      required: [query]
+      additionalProperties: false
+      properties:
+        query: { type: string, minLength: 1, maxLength: 1000 }
+        limit: { type: integer, minimum: 1, maximum: 50 }
+    output: { $ref: "#/shared/content_only" }
+
+  explain_archetype:
+    description: Return tenant-scoped archetype description + examples + voice markers for a given archetype slug.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      required: [archetype_slug]
+      additionalProperties: false
+      properties:
+        archetype_slug: { type: string, minLength: 1, maxLength: 200 }
+    output: { $ref: "#/shared/content_only" }
+
+  walk_taxonomy:
+    description: Traverse tenant literacy taxonomy neighbors (children / parents / siblings) from a node id.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      required: [node_id, direction]
+      additionalProperties: false
+      properties:
+        node_id: { type: string, minLength: 1, maxLength: 200 }
+        direction: { type: string, enum: [children, parents, siblings] }
+    output: { $ref: "#/shared/content_only" }
+
+shared:
+  content_only:
+    type: object
+    required: [content]
+    additionalProperties: true
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          required: [type, text]
+          properties:
+            type: { enum: [text] }
+            text: { type: string }

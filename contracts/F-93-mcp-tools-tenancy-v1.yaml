@@ -1,0 +1,59 @@
+id: F-93-mcp-tools-tenancy-v1
+phase: 202
+plan: 07
+name: MCP Tools — Tenancy (2)
+status: active
+summary: >-
+  JSON Schema contracts for 2 MCP tenancy READ-ONLY tools: list_members
+  (markos_tenant_memberships) and query_audit (markos_audit_log). Both
+  non-mutating (D-01 tenancy minimal), tenant-scoped (D-15) with Phase 201
+  RLS as backstop (migration 51 + migration 82). query_audit consumes the
+  F-88 read surface (tenant-admin audit query).
+
+references:
+  - F-71-mcp-session-v2 (tool dispatch envelope)
+  - F-88-tenant-audit-query-v1 (audit read endpoint)
+
+tools:
+  list_members:
+    description: List tenant members with their IAM roles and join dates. Read-only.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      additionalProperties: false
+      required: []
+      properties: {}
+    output: { $ref: "#/shared/content_only" }
+
+  query_audit:
+    description: Query tenant audit log with optional since_iso / actions filters. Read-only. Uses F-88 surface.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      additionalProperties: false
+      required: []
+      properties:
+        since_iso: { type: string, format: date-time }
+        actions:
+          type: array
+          maxItems: 50
+          items: { type: string, minLength: 1, maxLength: 200 }
+        limit: { type: integer, minimum: 1, maximum: 200 }
+    output: { $ref: "#/shared/content_only" }
+
+shared:
+  content_only:
+    type: object
+    required: [content]
+    additionalProperties: true
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          required: [type, text]
+          properties:
+            type: { enum: [text] }
+            text: { type: string }

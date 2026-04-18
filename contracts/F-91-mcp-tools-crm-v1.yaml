@@ -1,0 +1,113 @@
+id: F-91-mcp-tools-crm-v1
+phase: 202
+plan: 07
+name: MCP Tools — CRM (5)
+status: active
+summary: >-
+  JSON Schema contracts for 5 MCP CRM tools: list_crm_entities, query_crm_timeline,
+  snapshot_pipeline, read_segment (simple-tier reads), and summarize_deal (LLM
+  Haiku summary). All non-mutating (D-01 read-only CRM). Every handler filters
+  reads on session.tenant_id (D-15) with Phase 201 RLS (migration 51) as backstop.
+
+references:
+  - F-71-mcp-session-v2 (tool dispatch envelope)
+  - F-89-mcp-oauth-v1 (auth surface)
+
+tools:
+  list_crm_entities:
+    description: List CRM entities (contacts / accounts / deals) for the tenant, filtered by kind + optional filter.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      required: [kind]
+      additionalProperties: false
+      properties:
+        kind: { type: string, enum: [contact, account, deal] }
+        filter: { type: object, additionalProperties: true }
+        limit: { type: integer, minimum: 1, maximum: 200 }
+    output: { $ref: "#/shared/content_only" }
+
+  query_crm_timeline:
+    description: Return the tenant-scoped CRM activity timeline for a given entity.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      required: [entity_id]
+      additionalProperties: false
+      properties:
+        entity_id: { type: string, minLength: 1, maxLength: 200 }
+        entity_kind: { type: string, enum: [contact, account, deal] }
+        limit: { type: integer, minimum: 1, maximum: 100 }
+    output: { $ref: "#/shared/content_only" }
+
+  snapshot_pipeline:
+    description: Return tenant-scoped pipeline snapshot — stages with count + aggregate value.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      additionalProperties: false
+      required: []
+      properties:
+        pipeline_slug: { type: string, maxLength: 200 }
+    output: { $ref: "#/shared/content_only" }
+
+  read_segment:
+    description: Return tenant-scoped segment membership (entity ids) for a given segment key.
+    latency_tier: simple
+    mutating: false
+    input:
+      type: object
+      required: [segment_key]
+      additionalProperties: false
+      properties:
+        segment_key: { type: string, minLength: 1, maxLength: 200 }
+    output: { $ref: "#/shared/content_only" }
+
+  summarize_deal:
+    description: Summarize a CRM deal (status + highlights + next-step suggestions) via Haiku LLM.
+    latency_tier: llm
+    mutating: false
+    input:
+      type: object
+      required: [deal_id]
+      additionalProperties: false
+      properties:
+        deal_id: { type: string, minLength: 1, maxLength: 200 }
+    output: { $ref: "#/shared/llm_content_plus_usage" }
+
+shared:
+  content_only:
+    type: object
+    required: [content]
+    additionalProperties: true
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          required: [type, text]
+          properties:
+            type: { enum: [text] }
+            text: { type: string }
+  llm_content_plus_usage:
+    type: object
+    required: [content, _usage]
+    additionalProperties: true
+    properties:
+      content:
+        type: array
+        items:
+          type: object
+          required: [type, text]
+          properties:
+            type: { enum: [text] }
+            text: { type: string }
+      _usage:
+        type: object
+        required: [input_tokens, output_tokens]
+        properties:
+          input_tokens: { type: integer, minimum: 0 }
+          output_tokens: { type: integer, minimum: 0 }
