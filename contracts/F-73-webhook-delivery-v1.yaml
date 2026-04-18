@@ -15,6 +15,19 @@ delivery:
   signature_header: X-Markos-Signature
   timestamp_header: X-Markos-Timestamp
 
+# Phase 203 Plan 04 Task 2 — outbound headers extended for replay + dual-sign rotation.
+# signPayloadDualSign (Plan 203-05 dispatch path) emits X-Markos-Signature-V1 always and
+# X-Markos-Signature-V2 conditionally (during rotation grace). Replay dispatch additionally
+# emits X-Markos-Replayed-From (original delivery timestamp) and X-Markos-Attempt (per-attempt
+# counter, starts at 1 on the wire). D-06 forbids preserving the ORIGINAL signature/timestamp.
+outbound_headers:
+  X-Markos-Signature: legacy single-version signature (200-03 callers before rotation ships)
+  X-Markos-Signature-V1: current rotation V1 signature (Plan 203-05)
+  X-Markos-Signature-V2: rotation grace V2 signature (Plan 203-05; absent when no rotation active)
+  X-Markos-Timestamp: unix seconds; shared across V1/V2; freshly signed per attempt
+  x-markos-replayed-from: original delivery created_at ISO string when the current attempt is a replay (D-06)
+  x-markos-attempt: 1-based attempt counter (delivery.cjs increments per dispatch)
+
 retry:
   max_attempts: 24
   backoff: exponential
@@ -95,6 +108,24 @@ components:
         next_retry_at: { type: string, format: date-time, nullable: true }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
+        # Phase 203 Plan 02/04 additions (migration 72 columns).
+        replayed_from:
+          type: string
+          nullable: true
+          description: Original delivery_id if this row is a replay (null otherwise). Self-ref FK with on delete set null.
+        dlq_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp set when delivery transitions to status=failed after the 24-attempt cap (D-07 terminal DLQ marker).
+        final_attempt:
+          type: integer
+          nullable: true
+          description: Final attempt counter at the moment the delivery was marked failed.
+        dlq_reason:
+          type: string
+          nullable: true
+          description: Categorized failure reason (e.g. ssrf_blocked, 5xx_exhausted, timeout_exhausted).
 
 storage:
   table: markos_webhook_deliveries

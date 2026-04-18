@@ -1,0 +1,160 @@
+id: F-98-webhook-dlq-v1
+flow_id: F-98
+phase: 203
+name: Webhook DLQ Replay
+title: Webhook DLQ Replay
+version: v1
+status: active
+domain: webhooks
+summary: >-
+  Tenant-admin triggered replay of failed webhook deliveries. Two paths — single
+  (from the Deliveries tab row expand) and batch (from the DLQ tab checkboxes).
+  Replay re-signs with a FRESH HMAC + CURRENT timestamp (D-06 prevents replay-attack
+  via the 300s skew window). Batch uses Vercel Queues idempotencyKey keyed on
+  (original_id, 5-min bucket) so rapid re-clicks do not double-dispatch (RESEARCH
+  §Pitfall 7). Authorization mirrors the 202-09 tenant-scope guard pattern.
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+
+paths:
+  /api/tenant/webhooks/subscriptions/{sub_id}/deliveries/{delivery_id}/replay:
+    post:
+      summary: Replay a single failed webhook delivery (D-05 row-level Replay CTA)
+      operationId: replayWebhookDelivery
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: sub_id, in: path, required: true, schema: { type: string } }
+        - { name: delivery_id, in: path, required: true, schema: { type: string } }
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Replay enqueued — a new delivery row was inserted with replayed_from pointing at the original.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, original_id, new_id]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+                  original_id: { type: string }
+                  new_id: { type: string, pattern: "^del_" }
+        '400': { description: missing_params or cross_subscription }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '403': { description: Subscription belongs to another tenant (cross_tenant_forbidden) }
+        '404': { description: Subscription or delivery not found }
+        '409': { description: Delivery is not in status=failed (D-07 — replay only from DLQ) }
+        '500': { description: replay_failed (unexpected) }
+
+  /api/tenant/webhooks/subscriptions/{sub_id}/dlq/replay:
+    post:
+      summary: Replay a batch of failed deliveries from the DLQ tab (D-05 checkbox + Replay)
+      operationId: replayWebhookBatch
+      tags:
+        - webhooks
+        - tenant
+      parameters:
+        - { name: sub_id, in: path, required: true, schema: { type: string } }
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [delivery_ids]
+              properties:
+                delivery_ids:
+                  type: array
+                  maxItems: 100
+                  items: { type: string }
+      responses:
+        '200':
+          description: Batch replay enqueued — each replayed delivery_id carries a Vercel Queues idempotencyKey bucketed by 5-min windows (RESEARCH Pitfall 7).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, batch_id, count, replayed, skipped]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+                  batch_id: { type: string, pattern: "^batch_" }
+                  count: { type: integer, minimum: 0, maximum: 100 }
+                  replayed:
+                    type: array
+                    items:
+                      type: object
+                      required: [original_id, new_id]
+                      properties:
+                        original_id: { type: string }
+                        new_id: { type: string, pattern: "^del_" }
+                  skipped:
+                    type: array
+                    items:
+                      type: object
+                      required: [original_id, reason]
+                      properties:
+                        original_id: { type: string }
+                        reason:
+                          type: string
+                          enum: [not_found, not_failed, cross_tenant_forbidden, cross_subscription]
+        '400': { description: empty_batch or batch_too_large (>100 ids) }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '403': { description: Subscription belongs to another tenant (cross_tenant_forbidden) }
+        '404': { description: Subscription not found }
+        '500': { description: replay_failed (unexpected) }
+
+errors:
+  empty_batch:
+    http_status: 400
+    description: delivery_ids is missing or an empty array.
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [empty_batch] }
+  batch_too_large:
+    http_status: 400
+    description: delivery_ids.length exceeds 100 (T-203-04-03 DoS mitigation).
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [batch_too_large] }
+  cross_tenant_forbidden:
+    http_status: 403
+    description: Subscription belongs to a different tenant than the authenticated session (T-203-04-02 EoP mitigation).
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [cross_tenant_forbidden] }
+  not_failed:
+    http_status: 409
+    description: The target delivery is not in status=failed. D-07 requires replay only from the DLQ.
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [not_failed] }
+  already_replayed:
+    http_status: 409
+    description: Redundant replay request inside the same 5-min idempotency bucket (Vercel Queues dedupe).
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [already_replayed] }
+
+references:
+  delivery_contract: contracts/F-73-webhook-delivery-v1.yaml
+  replay_lib: lib/markos/webhooks/replay.cjs
+  plans:
+    - 203-04-PLAN.md
+    - 203-RESEARCH.md#pitfall-7-idempotency-key-double-dispatch
+    - 203-CONTEXT.md#D-06-D-07
