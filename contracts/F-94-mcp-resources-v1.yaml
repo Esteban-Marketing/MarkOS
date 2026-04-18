@@ -1,0 +1,151 @@
+id: F-94-mcp-resources-v1
+phase: 202
+name: MCP Resources + Streaming + Notifications
+status: active
+summary: >-
+  MCP 2025-06-18 Resources capability — 3 tenant-scoped resources with subscribe +
+  notifications/resources/updated broadcast. Adds resources/list, resources/templates/list,
+  resources/read, resources/subscribe, resources/unsubscribe JSON-RPC methods. SSE streaming
+  for LLM-backed tools via notifications/progress (when the client sends _meta.progressToken).
+
+capability:
+  resources:
+    subscribe: true
+    listChanged: false
+
+resources:
+  - uriTemplate: mcp://markos/canon/{tenant}
+    name: canon
+    title: Brand canon for tenant
+    mimeType: application/json
+  - uriTemplate: mcp://markos/literacy/{tenant}
+    name: literacy
+    title: Literacy library for tenant
+    mimeType: application/json
+  - uriTemplate: mcp://markos/tenant/status
+    name: tenant-status
+    title: Current tenant health
+    mimeType: application/json
+
+methods:
+  resources/list:
+    summary: List per-tenant resources for the authenticated session
+    response:
+      type: object
+      required: [resources]
+      properties:
+        resources:
+          type: array
+          items:
+            type: object
+            required: [uri, name, mimeType]
+            properties:
+              uri: { type: string }
+              name: { type: string }
+              mimeType: { type: string, enum: [application/json] }
+  resources/templates/list:
+    summary: List parameterized resource templates (RFC 6570)
+    response:
+      type: object
+      required: [resourceTemplates]
+      properties:
+        resourceTemplates:
+          type: array
+          items:
+            type: object
+            required: [uriTemplate, name, mimeType]
+            properties:
+              uriTemplate: { type: string }
+              name: { type: string }
+              title: { type: string }
+              mimeType: { type: string }
+  resources/read:
+    summary: Read resource contents for a specific URI (tenant-scoped)
+    params:
+      type: object
+      required: [uri]
+      properties: { uri: { type: string } }
+    response:
+      type: object
+      required: [contents]
+      properties:
+        contents:
+          type: array
+          items:
+            type: object
+            required: [uri, mimeType, text]
+            properties:
+              uri: { type: string }
+              mimeType: { type: string }
+              text: { type: string }
+    errors:
+      - code: -32002
+        message: resource_not_found
+      - code: -32600
+        message: cross_tenant_blocked
+  resources/subscribe:
+    summary: Register session to receive notifications/resources/updated for a URI
+    params:
+      type: object
+      required: [uri]
+      properties: { uri: { type: string } }
+    response:
+      type: object
+      properties:
+        subscribed: { type: boolean }
+        uri: { type: string }
+  resources/unsubscribe:
+    summary: Deregister subscription
+    params:
+      type: object
+      required: [uri]
+      properties: { uri: { type: string } }
+    response:
+      type: object
+      properties:
+        unsubscribed: { type: boolean }
+        uri: { type: string }
+
+notifications:
+  notifications/resources/updated:
+    summary: Server pushes to every subscribed session when canon/literacy/tenant-status row changes
+    params:
+      type: object
+      required: [uri]
+      properties:
+        uri: { type: string }
+  notifications/progress:
+    summary: Per-tool progress events for LLM-backed tools (D-26)
+    params:
+      type: object
+      required: [progressToken, progress]
+      properties:
+        progressToken:
+          oneOf:
+            - { type: string }
+            - { type: integer }
+        progress: { type: number, minimum: 0 }
+        total: { type: number }
+        message: { type: string }
+  notifications/initialized:
+    summary: Client-to-server lifecycle signal after initialize handshake (server no-op)
+    params:
+      type: object
+      additionalProperties: true
+
+security_notes:
+  tenant_scope:
+    - "resources/read enforces `{tenant}` placeholder === session.tenant_id; otherwise cross_tenant_blocked (T-202-08-01)."
+    - "tenant-status URI has no placeholder and always resolves to session.tenant_id."
+  subscription_lifecycle:
+    - "Per-URI Redis SET `subs:mcp:<uri>` with 24h TTL matching session TTL; orphan subs expire naturally (T-202-08-02)."
+    - "broadcastResourceUpdated reaps disconnected SSE channels automatically (T-202-08-08)."
+  streaming_progress:
+    - "pipeline emits notifications/progress only when tool.latency_tier === 'llm' AND _meta.progressToken present (D-26)."
+    - "writeSseFrame JSON.stringify's the data object — newlines auto-escape, no raw concat (T-202-08-07)."
+
+references:
+  mcp_spec: https://modelcontextprotocol.io/specification/2025-06-18/server/resources
+  streaming_spec: https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#notifications/progress
+  sse_spec: https://html.spec.whatwg.org/multipage/server-sent-events.html
+  rfc_6570: https://www.rfc-editor.org/rfc/rfc6570
