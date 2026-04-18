@@ -1,0 +1,169 @@
+id: F-95-mcp-cost-budget-v1
+phase: 202
+name: MCP Cost + Session Management (Surface S1)
+status: active
+summary: >-
+  Tenant-admin API surface backing /settings/mcp page — usage gauge, sessions
+  list, revoke CTA, cost breakdown. Feeds Surface S1 from UI-SPEC. The 402
+  budget-exhausted error shape is documented here; enforcement lives in Plan
+  202-03 cost-meter and is emitted by the tool pipeline (Plan 202-04).
+
+paths:
+  /api/tenant/mcp/usage:
+    get:
+      summary: Current rolling-24h spend vs cap for session tenant (D-12 usage gauge backing)
+      operationId: getMcpUsage
+      tags: [mcp, tenant]
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-org-id, in: header, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Usage snapshot for the session tenant.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [tenant_id, spent_cents, cap_cents, plan_tier, reset_at, window_start]
+                properties:
+                  tenant_id: { type: string }
+                  spent_cents: { type: integer, minimum: 0 }
+                  cap_cents: { type: integer, minimum: 0 }
+                  plan_tier: { type: string }
+                  reset_at: { type: string, format: date-time }
+                  window_start: { type: string, format: date-time }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '405': { description: Non-GET method }
+
+  /api/tenant/mcp/sessions:
+    get:
+      summary: Active MCP sessions for tenant — tenant-admin visible
+      operationId: listMcpSessions
+      tags: [mcp, tenant]
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Non-revoked MCP sessions scoped to tenant (token_hash NEVER echoed).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [sessions]
+                properties:
+                  sessions:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, client_id, scopes, created_at, last_used_at, expires_at]
+                      properties:
+                        id: { type: string, pattern: "^mcp-sess-" }
+                        client_id: { type: string }
+                        scopes: { type: array, items: { type: string } }
+                        created_at: { type: string, format: date-time }
+                        last_used_at: { type: string, format: date-time }
+                        expires_at: { type: string, format: date-time }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '405': { description: Non-GET method }
+
+  /api/tenant/mcp/sessions/revoke:
+    post:
+      summary: Revoke an MCP session via /settings/mcp Revoke CTA
+      operationId: revokeMcpSession
+      tags: [mcp, tenant]
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session_id]
+              properties:
+                session_id: { type: string, pattern: "^mcp-sess-" }
+      responses:
+        '200':
+          description: Session revoked.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [revoked, session_id]
+                properties:
+                  revoked: { type: boolean }
+                  session_id: { type: string }
+        '400': { description: Missing session_id }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '403': { description: Session belongs to a different tenant (cross_tenant_forbidden) }
+        '404': { description: Session not found }
+        '405': { description: Non-POST method }
+
+  /api/tenant/mcp/cost-breakdown:
+    get:
+      summary: Per-tool cost aggregation over last 24h for /settings/mcp breakdown section
+      operationId: getMcpCostBreakdown
+      tags: [mcp, tenant]
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Cost breakdown aggregated from audit log within the last 24 hours.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [by_tool, window_start, window_end, tenant_id]
+                properties:
+                  by_tool:
+                    type: array
+                    items:
+                      type: object
+                      required: [tool_id, calls, total_cost_cents]
+                      properties:
+                        tool_id: { type: string }
+                        calls: { type: integer, minimum: 0 }
+                        total_cost_cents: { type: integer, minimum: 0 }
+                  window_start: { type: string, format: date-time }
+                  window_end: { type: string, format: date-time }
+                  tenant_id: { type: string }
+        '401': { description: Missing x-markos-user-id or x-markos-tenant-id }
+        '405': { description: Non-GET method }
+
+errors:
+  budget_exhausted:
+    code: -32001
+    http_status: 402
+    shape:
+      type: object
+      required: [jsonrpc, error]
+      properties:
+        jsonrpc: { type: string, enum: ["2.0"] }
+        error:
+          type: object
+          required: [code, message, data]
+          properties:
+            code: { type: integer, enum: [-32001] }
+            message: { type: string, enum: [budget_exhausted] }
+            data:
+              type: object
+              required: [error, reset_at, spent_cents, cap_cents, req_id]
+              properties:
+                error: { type: string, enum: [budget_exhausted] }
+                reset_at: { type: string, format: date-time }
+                spent_cents: { type: integer, minimum: 0 }
+                cap_cents: { type: integer, minimum: 0 }
+                req_id: { type: string }
+
+references:
+  cost_meter: lib/markos/mcp/cost-meter.cjs
+  cost_table: lib/markos/mcp/cost-table.cjs
+  sessions_lib: lib/markos/mcp/sessions.cjs
+  ui_spec: .planning/phases/202-mcp-server-ga-claude-marketplace/202-UI-SPEC.md
+  plans:
+    - 202-01-PLAN.md (sessions + cost window substrate)
+    - 202-03-PLAN.md (cost-guard layer + 402 envelope)
