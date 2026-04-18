@@ -63,6 +63,11 @@ export type ProcessDeliveryOptions = {
   // Phase 203-02 Task 1: dispatch-time SSRF re-check (DNS-rebinding defense).
   // When provided, the SSRF guard uses this lookup instead of node:dns.
   lookup?: (host: string, opts: { family: number }) => Promise<{ address: string; family: number }>;
+  // Phase 203-07 Task 2: dispatch-gates dependencies.
+  // `redis` is the Upstash handle (or a pre-built limiter for tests); `planTier` resolves the
+  // D-13 ceiling when the subscription row doesn't carry it inline yet. Both are optional.
+  redis?: unknown;
+  planTier?: string;
 };
 
 export declare function processDelivery(

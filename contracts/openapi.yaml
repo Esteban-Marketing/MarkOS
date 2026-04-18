@@ -5,7 +5,7 @@ openapi: 3.1.0
 info:
   title: MarkOS API
   version: 1.0.0
-  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 61 flow contracts.
+  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 62 flow contracts.
   contact:
     name: MarkOS Engineering
     url: "https://markos.esteban.marketing"
@@ -42,6 +42,9 @@ x-markos-flows:
   F-10:
     source: contracts/F-10-literacy-admin-health-v1.yaml
     description: MarkOS flow F-10
+  F-100:
+    source: contracts/F-100-webhook-breaker-v1.yaml
+    description: MarkOS flow F-100
   F-11:
     source: contracts/F-11-literacy-admin-query-v1.yaml
     description: MarkOS flow F-11
@@ -463,6 +466,19 @@ paths:
       x-flow-id: F-62-outbound-send-v1
       x-flow-name: Outbound Send
       x-domain: general
+      x-flow-version: v1
+  /api/Webhook Rate-Limit & Breaker State:
+    post:
+      summary: "Webhook Rate-Limit & Breaker State"
+      operationId: Webhook_Rate_Limit_Breaker_State
+      responses:
+        200:
+          description: Success
+      tags:
+        - webhooks
+      x-flow-id: F-100
+      x-flow-name: "Webhook Rate-Limit & Breaker State"
+      x-domain: webhooks
       x-flow-version: v1
   /api/auth/callback:
     get:
@@ -2401,6 +2417,62 @@ paths:
       x-flow-version: v1
 components:
   schemas:
+    F_100_RateLimitState:
+      type: object
+      required: "[plan_tier, ceiling_rps, effective_rps]"
+      properties:
+        plan_tier:
+          type: string
+          enum: "[free, team, enterprise]"
+          description: "Subscription tenant's plan tier (D-13). Unknown tiers fall through to 'free' at dispatch for fail-closed safety."
+        ceiling_rps:
+          type: integer
+          minimum: 1
+          description: "Plan-tier RPS ceiling (free=10, team=60, enterprise=300). D-13 locked."
+        effective_rps:
+          type: integer
+          minimum: 1
+          description: "The actual per-sub RPS enforced at dispatch — min(override_rps || ceiling_rps, ceiling_rps)."
+        override_rps:
+          type: integer
+          nullable: true
+          minimum: 1
+          description: Per-sub override (rps_override column). Null when unset. Cannot exceed ceiling_rps — subscribe-time rejects with rps_override_exceeds_plan.
+    F_100_BreakerState:
+      type: object
+      required: "[state]"
+      properties:
+        state:
+          type: string
+          enum: "[closed, half-open, open]"
+          description: Circuit breaker state (Plan 203-08). closed = healthy; half-open = probing; open = all dispatches gated.
+        trips:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: Count of trips in the rolling window. Null before first trip.
+        probe_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Next half-open probe timestamp (exponential backoff 30s → 1m → 2m → 5m → 10m, capped at 10m). Null outside half-open."
+        opened_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Timestamp when the breaker last transitioned to 'open'. Null before first trip."
+    F_100_WebhookSubscriptionDetail:
+      type: object
+      description: "Plan 203-09 will mount the GET /api/tenant/webhooks/subscriptions/{sub_id} handler whose 200 body matches this shape (extending F-72 WebhookSubscription with rate_limit + breaker_state sub-objects)."
+      required: "[subscription_id, rate_limit, breaker_state]"
+      properties:
+        subscription_id:
+          type: string
+          pattern: ^whsub_
+        rate_limit:
+          $ref: "#/components/schemas/RateLimitState"
+        breaker_state:
+          $ref: "#/components/schemas/BreakerState"
     F_63A_MutationFamily:
       type: string
       enum:

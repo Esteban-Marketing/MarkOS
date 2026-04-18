@@ -1,0 +1,167 @@
+id: F-100-webhook-breaker-v1
+flow_id: F-100
+phase: 203
+name: Webhook Rate-Limit & Breaker State
+title: Webhook Rate-Limit & Breaker State
+version: v1
+status: active
+domain: webhooks
+summary: >-
+  Read-only envelope describing per-subscription rate-limit + circuit-breaker
+  state. Exposed via GET /api/tenant/webhooks/subscriptions/{sub_id} detail
+  response (handler lands in Plan 203-09). Enforcement lives in
+  lib/markos/webhooks/rate-limit.cjs (Plan 203-07) + lib/markos/webhooks/breaker.cjs
+  (Plan 203-08), wired through lib/markos/webhooks/dispatch-gates.cjs — the
+  SINGLE pre-fetch indirection module in the delivery hot path. D-13 locks
+  plan-tier RPS (Free 10 / Team 60 / Enterprise 300); override can ONLY lower
+  the ceiling, never raise (enforced in api/webhooks/subscribe.js).
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+
+plan_tier_rps:
+  free: 10
+  team: 60
+  enterprise: 300
+  override_semantics: "Per-sub override may only LOWER the plan ceiling (Math.min). Exceeding the ceiling is rejected at subscribe-time with 400 rps_override_exceeds_plan."
+
+breaker_states:
+  - closed
+  - half-open
+  - open
+
+# F-100 is declarative-only this plan — no net-new paths. The shape is surfaced
+# by Plan 203-09's GET subscription-detail endpoint (which joins the schemas
+# defined here into its 200 response body). Keeping `paths: {}` preserves the
+# openapi-merge contract (every F-NN file registers itself in x-markos-flows).
+paths: {}
+
+components:
+  schemas:
+    RateLimitState:
+      type: object
+      required: [plan_tier, ceiling_rps, effective_rps]
+      properties:
+        plan_tier:
+          type: string
+          enum: [free, team, enterprise]
+          description: "Subscription tenant's plan tier (D-13). Unknown tiers fall through to 'free' at dispatch for fail-closed safety."
+        ceiling_rps:
+          type: integer
+          minimum: 1
+          description: "Plan-tier RPS ceiling (free=10, team=60, enterprise=300). D-13 locked."
+        effective_rps:
+          type: integer
+          minimum: 1
+          description: "The actual per-sub RPS enforced at dispatch — min(override_rps || ceiling_rps, ceiling_rps)."
+        override_rps:
+          type: integer
+          nullable: true
+          minimum: 1
+          description: "Per-sub override (rps_override column). Null when unset. Cannot exceed ceiling_rps — subscribe-time rejects with rps_override_exceeds_plan."
+
+    BreakerState:
+      type: object
+      required: [state]
+      properties:
+        state:
+          type: string
+          enum: [closed, half-open, open]
+          description: "Circuit breaker state (Plan 203-08). closed = healthy; half-open = probing; open = all dispatches gated."
+        trips:
+          type: integer
+          nullable: true
+          minimum: 0
+          description: "Count of trips in the rolling window. Null before first trip."
+        probe_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Next half-open probe timestamp (exponential backoff 30s → 1m → 2m → 5m → 10m, capped at 10m). Null outside half-open."
+        opened_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: "Timestamp when the breaker last transitioned to 'open'. Null before first trip."
+
+    WebhookSubscriptionDetail:
+      type: object
+      description: "Plan 203-09 will mount the GET /api/tenant/webhooks/subscriptions/{sub_id} handler whose 200 body matches this shape (extending F-72 WebhookSubscription with rate_limit + breaker_state sub-objects)."
+      required: [subscription_id, rate_limit, breaker_state]
+      properties:
+        subscription_id:
+          type: string
+          pattern: "^whsub_"
+        rate_limit:
+          $ref: '#/components/schemas/RateLimitState'
+        breaker_state:
+          $ref: '#/components/schemas/BreakerState'
+
+errors:
+  rate_limited:
+    http_status: 429
+    description: "Per-subscription RPS cap breached at dispatch (D-13). The delivery is POSTPONED, not failed — next_attempt_at is set to now + retry_after. The attempt counter is NOT incremented (transient block, not a DLQ event)."
+    shape:
+      type: object
+      required: [error, sub_id, retry_after, limit]
+      properties:
+        error:
+          type: string
+          enum: [rate_limited]
+        sub_id:
+          type: string
+          pattern: "^whsub_"
+        retry_after:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+    headers:
+      Retry-After:
+        description: "Seconds until the sliding-window allows dispatch again (same as body.retry_after)."
+        schema: { type: integer, minimum: 1 }
+
+  rps_override_exceeds_plan:
+    http_status: 400
+    description: "Subscribe-time rejection (D-13 cap-not-raise). Returned when the caller's rps_override body param is greater than the plan-tier ceiling."
+    shape:
+      type: object
+      required: [error, ceiling]
+      properties:
+        error:
+          type: string
+          enum: [rps_override_exceeds_plan]
+        ceiling:
+          type: integer
+          minimum: 1
+
+  invalid_rps_override:
+    http_status: 400
+    description: "Subscribe-time rejection when rps_override is non-numeric, non-finite, or < 1."
+    shape:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          enum: [invalid_rps_override]
+
+references:
+  rate_limit_lib: lib/markos/webhooks/rate-limit.cjs
+  dispatch_gates_lib: lib/markos/webhooks/dispatch-gates.cjs
+  breaker_lib: lib/markos/webhooks/breaker.cjs (Plan 203-08)
+  delivery: lib/markos/webhooks/delivery.cjs (runDispatchGates insertion point)
+  subscribe: api/webhooks/subscribe.js (rps_override validation)
+  related_flows:
+    - F-72-webhook-subscription-v1 (subscription schema — rps_override column)
+    - F-73-webhook-delivery-v1 (delivery schema — retry/attempt semantics)
+  plans:
+    - 203-07-PLAN.md (rate-limit gate — this plan)
+    - 203-08-PLAN.md (breaker gate — extends dispatch-gates.cjs additively)
+    - 203-09-PLAN.md (GET subscription-detail handler that exposes this surface)
+  decisions:
+    - D-13 (plan-tier RPS + override semantics)
+    - D-14 (breaker trip threshold — Plan 203-08)
+    - D-15 (breaker half-open backoff — Plan 203-08)
