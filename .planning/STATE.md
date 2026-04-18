@@ -2,24 +2,83 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Ready to execute
-last_updated: "2026-04-18T04:08:07.051Z"
+status: Phase 202 complete — ready for /gsd-verify-phase 202
+last_updated: "2026-04-18T04:24:22Z"
 progress:
   total_phases: 7
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 26
-  completed_plans: 25
-  percent: 96
+  completed_plans: 26
+  percent: 100
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 202 (mcp-server-ga-claude-marketplace) — EXECUTING
-Plan: 7 of 10
+Phase: 202 (mcp-server-ga-claude-marketplace) — **COMPLETE (10/10 plans)** — ready for `/gsd-verify-phase 202`
+Plan: 10 of 10 shipped
 
-## What just happened (2026-04-18)
+## What just happened (2026-04-18, Plan 202-10 close)
+
+- **Plan 202-10 shipped** (final plan for Phase 202, Wave 5) — Claude Marketplace launch artifact set.
+  - `.claude-plugin/marketplace.json` v1.0.0 → **v2.0.0**: 30-tool listing mirroring TOOL_DEFINITIONS,
+    D-24 headline ("MCP-native marketing workbench. 30 tools. Claude-native by design."), D-21 pricing
+    tiers (free: 30 read-only + $1/day; paid: all 30 + $100/day), `server.url` now
+    `https://markos.dev/api/mcp`, `icon: /mcp-icon.png`, homepage + repository + categories.
+  - `public/mcp-icon.png` — real 512x512 PNG (12561 bytes) via `sharp` + SVG source (solid
+    teal #0d9488 + centered "MarkOS" wordmark). M3 enforced: no 1x1 fallback; task hard-fails
+    if neither sharp nor canvas generator resolves.
+  - `scripts/marketplace/`: validate-manifest.mjs (AJV + Anthropic schema URL + structural
+    fallback), generate-icon.mjs (sharp-primary + canvas fallback + hard-fail), verify-icon.mjs
+    (PNG IHDR dimension gate for CI), generate-tools-doc.mjs (one-shot codegen of docs/mcp-tools.md).
+  - 5 docs shipped: `docs/mcp-tools.md` (30 auto-generated sections), `docs/vscode-mcp-setup.md`
+    (D-08), `docs/oauth.md` (full PKCE + DCR curl walkthrough with RFC 7636/7591/7009/8414/8707/9728
+    refs), `docs/mcp-redteam-checklist.md` (QA-11 manual checklist + D-31 Rolling Releases +
+    D-19 observability alert), `docs/llms/phase-202-mcp.md` (LLM-friendly overview + 6 links).
+  - `public/llms.txt` appended with `## Phase 202 — MCP Server GA` section (QA-15); Phase 201
+    section preserved.
+  - `scripts/load/mcp-smoke.mjs` — 60-concurrent × 60s k6-equivalent load harness (QA-07);
+    gates p95 ≤ 300ms (D-18) + error_rate ≤ 1%; dry-run when `MARKOS_MCP_BEARER` unset.
+  - `scripts/mcp/verify-cost-table.mjs` — manual Anthropic drift check vs MODEL_RATES; dry-run
+    when `ANTHROPIC_API_KEY` unset.
+  - `scripts/mcp/emit-kpi-digest.mjs` — pure-function module (`computeWeeklyKpi` + `sendDigest`
+    with Resend email or console fallback); tracks D-23 (≥ 50 installs in 30 days).
+  - `api/cron/mcp-kpi-digest.js` — Vercel cron wrapper, `MARKOS_MCP_CRON_SECRET`-gated
+    (Plan 202-01 pattern mirrored).
+  - `vercel.ts` — 5th cron entry `{ path: '/api/cron/mcp-kpi-digest', schedule: '0 9 * * 1' }`
+    (Monday 9am UTC). Existing 4 crons preserved.
+  - `contracts/openapi.json` regenerated: 85 paths / 59 flows (up from 69/51). F-89 OAuth (7 paths)
+    + F-95 `/api/tenant/mcp/*` (4 paths) + F-71-v2 `/api/mcp/session` all merged.
+    `test/openapi/openapi-build.test.js` extended with 3 Phase-202 path-coverage assertions.
+  - 3 LLM eval suites with deterministic `fakeLLM` fixtures (QA-08 eval-as-test, CI-safe):
+    plan-campaign-eval (4), draft-message-eval (4), audit-claim-eval (4).
+  - 2 manifest/docs test suites: marketplace-manifest.test.js (14), docs-mirror.test.js (10).
+    36 net-new assertions — all green. Full Phase 202 MCP regression: **362/362 green**
+    (up from 326 at Plan 202-07 close).
+  - Commits: `ffdbb60` (Task 1 RED) · `676e9b9` (Task 1 GREEN: marketplace + icon + validator)
+    · `2e15c4e` (Task 2 RED) · `2456249` (Task 2 GREEN: 5 docs + llms.txt) · `257e0d9`
+    (Task 3 RED) · `ff67ae2` (Task 3 GREEN: load smoke + cost verifier + KPI cron + openapi regen).
+  - **Decisions:** (1) `sharp` chosen over `canvas` as primary icon generator — widely deployed
+    on Vercel stacks; canvas remains fallback. (2) KPI digest module split: pure-function
+    `emit-kpi-digest.mjs` + thin `api/cron/mcp-kpi-digest.js` wrapper — CLI-invocable +
+    unit-testable. (3) Dry-run fallback everywhere: all scripts short-circuit with TODO when
+    env absent — CI-safe without production secrets. (4) Pre-existing per-operation `tags:`
+    missing on 35 openapi paths logged to `deferred-items.md` (scope boundary; plan-10 regen
+    actually improved the failure count from 2 to 1).
+  - **Phase 202 closes at 10/10 plans.** Claude Marketplace + VS Code cert submissions now
+    deliverable. QA-06 (Playwright) deferred per plan 202-10 `<phase_level_notes>` — documented
+    for `/gsd-verify-work` to treat as testing-infra-phase work.
+
+## Next step
+
+Run phase verification for 202:
+
+```bash
+/gsd-verify-phase 202
+```
+
+## What just happened (2026-04-18, earlier — Plan 202-07)
 
 - **Plan 202-07 shipped** (parallel executor, Wave 4) — 20 net-new tool handlers + 4 F-contracts + codegen.
   - `lib/markos/mcp/tools/marketing/` +10 LLM handlers: `remix-draft.cjs` (Sonnet variants),
@@ -28,36 +87,45 @@ Plan: 7 of 10
     `clone-persona-voice.cjs` (Sonnet), `generate-subject-lines.cjs` (Haiku 10 candidates),
     `optimize-cta.cjs` (Haiku alternatives), `generate-preview-text.cjs` (Haiku 5 candidates),
     `audit-claim-strict.cjs` (Sonnet forces >=1 evidence).
+
   - `lib/markos/mcp/tools/crm/` +5 handlers (4 simple reads wrapping `lib/markos/crm/*.cjs`
     + 1 LLM `summarize-deal.cjs` Haiku): list_crm_entities / query_crm_timeline /
     snapshot_pipeline / read_segment / summarize_deal. Every handler tenant-scoped (D-15)
     with graceful-degrade fallback when downstream CRM libs unavailable.
+
   - `lib/markos/mcp/tools/literacy/` +3 simple reads: `query-canon.cjs` (free-text),
     `explain-archetype.cjs` (pack slug lookup), `walk-taxonomy.cjs` (children/parents/siblings).
+
   - `lib/markos/mcp/tools/tenancy/` +2 READ-ONLY (D-01): `list-members.cjs`
     (markos_tenant_memberships, RLS migration 51), `query-audit.cjs` (markos_audit_log,
     F-88 read surface, RLS migration 82).
+
   - 4 F-contracts: **F-90** (18 marketing+execution tools — widened from plan's 11
     to include retained run_neuro_audit + research_audience + rank_execution_queue +
     schedule_post so every descriptor has a schema entry; Rule 2 correctness fix),
     **F-91** (5 crm), **F-92** (5 literacy: 2 retained + 3 new; explain_literacy.input
     anyOf reshaped to mirror properties in each branch for AJV strict compatibility —
     Rule 3 blocking fix), **F-93** (2 tenancy).
+
   - `scripts/openapi/build-mcp-schemas.mjs`: Node ESM codegen that walks F-90..F-93,
     resolves `$ref: "#/shared/..."` pointers, emits flat `{ tool_id: { input, output } }`
     JSON to `lib/markos/mcp/_generated/tool-schemas.json`. Consumed at `ajv.cjs` module
     load so strict AJV validators exist for all 30 tools at runtime (pipeline step 4a + 9).
+
   - `lib/markos/mcp/tools/index.cjs`: TOOL_DEFINITIONS expanded 10 → 30 (Phase 200 retained
     2 + Plan 202-06 wave-0 8 + Plan 202-07 net-new 20). listTools / invokeTool / getToolByName
     exports unchanged. **Only `schedule_post` remains mutating** — D-01 tenancy minimal.
+
   - New test suites: `marketing-net-new` (6) + `crm-net-new` (6) + `literacy-net-new` (4) +
     `tenancy-net-new` (4) = 20 parametric assertions. `test/mcp/server.test.js` +5 Plan-202-07
     tests (length===30, expected ids, mutating invariant, llm cost_model, registry coverage)
     with 3 stale `length===10` updated to `===30` (Rule 1 migration from 10-tool snapshot).
+
   - **Full MCP regression: 326/326 pass; Phase 201: 7/7 pass; all Plan 202-04/05/06 green.**
   - Commits: `7cc1b49` (Task 1 RED) · `e8f6dd3` (Task 1 GREEN marketing+F-90) · `59d72a7`
     (Task 2 RED) · `fd6d9ce` (Task 2 GREEN crm/literacy/tenancy+F-91..F-93) · `c22c729`
     (Task 3 RED) · `50252d2` (Task 3 GREEN codegen+index.cjs+server.test.js).
+
   - **Decisions:** (1) F-90 scope widened from 11 → 18 tools so every descriptor has a
     compiled validator at module load (Rule 2 — schemas are correctness requirement).
     (2) F-92 explain_literacy.input anyOf branches now carry properties metadata for
