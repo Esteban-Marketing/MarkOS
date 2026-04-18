@@ -229,6 +229,9 @@ function mockLimiter(results) {
       i += 1;
       return r;
     },
+    // Plan 203-08: breaker.canDispatch reads state via redis.get — mock returns null
+    // so the breaker gate resolves to closed and the rate-limit gate below still fires.
+    async get() { return null; },
   };
 }
 

@@ -22,6 +22,9 @@ function mockLimiter(results) {
       i += 1;
       return r;
     },
+    // Plan 203-08: breaker.canDispatch reads state via redis.get — the pre-built limiter
+    // path now doubles as a redis stub for the breaker gate. Returning null = breaker closed.
+    async get() { return null; },
   };
 }
 
