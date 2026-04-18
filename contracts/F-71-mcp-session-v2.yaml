@@ -1,0 +1,158 @@
+id: F-71-mcp-session-v2
+supersedes: F-71-mcp-session-v1
+phase: 202
+name: MCP Session v2
+status: active
+summary: >-
+  MCP 2025-06-18 session endpoint. OAuth 2.1 + PKCE bearer auth (F-89), 24h
+  rolling session persistence (markos_mcp_sessions), per-tenant 24h cost meter
+  (markos_mcp_cost_window), 10 tools live (Plan 202-06 — expands to 30 in
+  F-90..F-93). Supersedes F-71-v1 (Phase 200 10-stub-tool pre-GA).
+
+transport:
+  http_session_endpoint: /api/mcp/session
+  dispatch_endpoint: /api/mcp/tools/{toolName}
+  protocol: json-rpc-2.0
+  protocol_version: "2025-06-18"
+  auth: oauth2.1+pkce (see F-89-mcp-oauth-v1)
+
+tools:
+  - draft_message
+  - plan_campaign
+  - research_audience
+  - run_neuro_audit
+  - generate_brief
+  - audit_claim
+  - list_pain_points
+  - rank_execution_queue
+  - schedule_post
+  - explain_literacy
+
+paths:
+  /api/mcp/session:
+    get:
+      summary: MCP server metadata + tool list (public for discovery)
+      operationId: getMcpSession
+      tags: [mcp]
+      responses:
+        '200':
+          description: Session metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [server, capabilities, tools]
+                properties:
+                  success: { type: boolean }
+                  server:
+                    type: object
+                    required: [name, version]
+                    properties:
+                      name: { type: string, enum: [markos] }
+                      version: { type: string, pattern: "^2\\." }
+                  capabilities:
+                    type: object
+                    properties:
+                      tools: { type: object, properties: { listChanged: { type: boolean } } }
+                      resources:
+                        type: object
+                        properties:
+                          subscribe: { type: boolean }
+                          listChanged: { type: boolean }
+                  tools:
+                    type: array
+                    items: { $ref: '#/components/schemas/McpToolDescriptor' }
+                  _meta:
+                    type: object
+                    properties:
+                      req_id: { type: string, pattern: "^mcp-req-" }
+    post:
+      summary: JSON-RPC 2.0 request. Bearer token required for tools/call + resources/*.
+      operationId: postMcpSession
+      tags: [mcp]
+      parameters:
+        - name: Authorization
+          in: header
+          description: Bearer <opaque_token> — required for tools/call + resources/* methods
+          schema: { type: string, pattern: "^Bearer " }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [jsonrpc, method]
+              properties:
+                jsonrpc: { type: string, enum: ["2.0"] }
+                id:
+                  oneOf:
+                    - { type: string }
+                    - { type: integer }
+                    - { type: "null" }
+                method:
+                  type: string
+                  enum:
+                    - initialize
+                    - tools/list
+                    - tools/call
+                    - resources/list
+                    - resources/read
+                    - resources/subscribe
+                    - resources/unsubscribe
+                    - notifications/initialized
+                params: { type: object, additionalProperties: true }
+      responses:
+        '200':
+          description: JSON-RPC response envelope (success or JSON-RPC error)
+          headers:
+            WWW-Authenticate:
+              schema: { type: string }
+              description: Bearer resource_metadata URL when auth missing (RFC 9728)
+        '401':
+          description: Missing or invalid Bearer — WWW-Authenticate header present
+        '402':
+          description: Budget exhausted (code -32001) or paid-tier required
+        '429':
+          description: Rate-limited (code -32002) with Retry-After header
+
+components:
+  schemas:
+    McpToolDescriptor:
+      type: object
+      required: [name, description, inputSchema]
+      properties:
+        name: { type: string }
+        description: { type: string }
+        inputSchema: { type: object, additionalProperties: true }
+    McpSession:
+      type: object
+      required: [id, user_id, tenant_id, org_id, scopes, plan_tier]
+      properties:
+        id: { type: string, pattern: "^mcp-sess-" }
+        user_id: { type: string }
+        tenant_id: { type: string }
+        org_id: { type: string }
+        client_id: { type: string }
+        scopes:
+          type: array
+          items: { type: string }
+        plan_tier: { type: string }
+        created_at: { type: string, format: date-time }
+        last_used_at: { type: string, format: date-time }
+        expires_at: { type: string, format: date-time }
+
+marketplace:
+  listing_manifest: .claude-plugin/marketplace.json
+  submission_status: pending
+  version: "2.0.0"
+
+references:
+  mcp_spec: https://modelcontextprotocol.io/specification/2025-06-18
+  oauth_contract: F-89-mcp-oauth-v1
+  cost_contract: F-95-mcp-cost-budget-v1
+  resources_contract: F-94-mcp-resources-v1
+  tools_contracts:
+    - F-90-mcp-tools-marketing-v1
+    - F-91-mcp-tools-crm-v1
+    - F-92-mcp-tools-literacy-v1
+    - F-93-mcp-tools-tenancy-v1
