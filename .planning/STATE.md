@@ -19,6 +19,82 @@ progress:
 Phase: 203 (webhook-subscription-engine-ga) — EXECUTING
 Plan: Wave 1 complete (203-01 + 203-02 shipped in parallel)
 
+## What just happened (2026-04-18, Plan 203-01 close — parallel Wave 1)
+
+- **Plan 203-01 shipped** (parallel executor, Wave 1 — ran alongside 203-02) —
+  Supabase + Vercel Queues adapter swap. Closes D-16 durability gate that
+  blocked every downstream 203 plan (RESEARCH §Pitfall 1 in-memory data loss
+  on Fluid Compute instance turnover).
+
+  - `lib/markos/webhooks/store-supabase.cjs` + `.ts` dual-export:
+    `createSupabaseSubscriptionsStore(client)` + `createSupabaseDeliveriesStore(client)`
+    shape-verbatim from 203-RESEARCH.md §Code Examples lines 631-719.
+    Every cross-tenant query filters `.eq('tenant_id', tenant_id)` FIRST
+    (T-203-01-02 mitigation — 5 occurrences). Typed errors prefixed
+    `store-supabase.<method>:` (Phase 202 pattern).
+
+  - `lib/markos/webhooks/store.cjs` rewritten with `WEBHOOK_STORE_MODE` switch.
+    Memory mode preserves 200-03 singleton behavior verbatim (`_subscriptionsMemo`,
+    `_deliveriesMemo`, `_queueMemo`). Supabase mode lazy-constructs
+    `createClient(URL, SERVICE_ROLE_KEY, { auth: { persistSession: false },
+    db: { schema: 'public' } })` per RESEARCH §Pitfall 6. Rule 3 fix:
+    default falls back to memory when `SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY`
+    absent, so 200-03 regression suites (api-endpoints.test.js) keep passing
+    without any env-var setup.
+
+  - `lib/markos/webhooks/store-vercel-queue.cjs` + `.ts`:
+    `createVercelQueueClient({ topic, deps })` with lazy `sendFn = deps.send
+    || require('@vercel/queue').send`. `push()` rejects falsy `delivery_id`,
+    honors `options.idempotencyKey` pass-through for Plan 203-04.
+
+  - `api/webhooks/queues/deliver.js` — `handleCallback(asyncHandler, {
+    visibilityTimeoutSeconds: 120, retry })` push consumer. Delegates to
+    `processDelivery(deliveries, subscriptions, delivery_id)` via
+    `getWebhookStores()`. `retry` callback returns `{ acknowledge: true }`
+    when `deliveryCount > 24` (engine.cjs MAX_ATTEMPTS parity — app-level
+    DLQ via `markos_webhook_deliveries.status='failed'`), otherwise
+    `{ afterSeconds: min(86400, 5 * 2^min(count, 15)) }`. Safe-require
+    shims for `log-drain.cjs` + `sentry.cjs` (Plan 203-10 targets).
+    `module.exports.__internals = { asyncHandler, retry, options }` for
+    unit tests (Phase 202 plan 202-05 pattern).
+
+  - `vercel.ts`: `functions` block additively registers
+    `api/webhooks/queues/deliver.js` with `experimentalTriggers:
+    [{ type: 'queue/v2beta', topic: 'markos-webhook-delivery',
+    retryAfterSeconds: 60 }]`. All 5 existing `crons` entries preserved
+    (audit/drain, lifecycle/purge-cron, cleanup-unverified-signups,
+    mcp/session/cleanup, cron/mcp-kpi-digest).
+
+  - `@vercel/queue@^0.1.6` installed via `npm install --save --ignore-scripts`.
+
+  - 4 new test suites: `store-supabase.test.js` (11) + `adapter-supabase.test.js`
+    (8) + `adapter-queues.test.js` (4) + `vercel-queue.test.js` (8) — 31
+    Wave-1 tests, all green. 200-03 regression (signing + engine + delivery
+    + api-endpoints): **35/35 preserved**. Full webhooks suite: **93 pass +
+    2 skips**.
+
+  - Commits: `347d5e1` (Task 1 RED) · `088e4e7` (Task 1 GREEN: Supabase
+    adapters + mode switch + @vercel/queue install) · `5268b6c` (Task 2 RED)
+    · `2d2a529` (Task 2 GREEN: Vercel Queues client + consumer +
+    vercel.ts v2beta trigger).
+
+  - **Decisions:** (1) Default-mode fallback to memory when SUPABASE env
+    absent (Rule 3 graceful degrade) — preserves 200-03 regression without
+    requiring tests to set `WEBHOOK_STORE_MODE=memory`. (2) Safe-require
+    shims (try/catch) for `log-drain.cjs` + `sentry.cjs` so consumer
+    doesn't crash before Plan 203-10 ships those modules. (3) Expose
+    consumer internals via `module.exports.__internals` — keeps
+    `handleCallback` as the public export while enabling unit tests.
+    (4) Test seed URL changed to `https://example.com/hook` (RFC 2606
+    public) so 203-02 SSRF guard falls through to the fetch stub
+    deterministically.
+
+  - **Downstream unlocks:** Every `getWebhookStores()` caller (existing 4
+    api/webhooks/{subscribe,unsubscribe,list,test-fire}.js endpoints)
+    transparently picks up Supabase-backed subscriptions + deliveries +
+    Vercel Queues push when `WEBHOOK_STORE_MODE=supabase` — zero caller
+    edits required. D-16 gate cleared for Plans 203-03 through 203-10.
+
 ## What just happened (2026-04-18, Plan 203-02 close — parallel Wave 1)
 
 - **Plan 203-02 shipped** (parallel executor, Wave 1 — ran alongside 203-01) —
