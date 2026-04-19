@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp -r \".temp/obsidian-mind-main/brain\" \"obsidian/\")",
+      "Bash(cp -r \".temp/obsidian-mind-main/bases\" \"obsidian/\")",
+      "Bash(cp -r \".temp/obsidian-mind-main/org\" \"obsidian/\")",
+      "Bash(cp -r \".temp/obsidian-mind-main/perf\" \"obsidian/\")",
+      "Bash(cp -r \".temp/obsidian-mind-main/reference\" \"obsidian/\")",
+      "Bash(mkdir -p \"tools/pageindex\")",
+      "Bash(cp -r \".temp/PageIndex-main/pageindex\" \".temp/PageIndex-main/run_pageindex.py\" \".temp/PageIndex-main/requirements.txt\" \".temp/PageIndex-main/LICENSE\" \".temp/PageIndex-main/README.md\" \".temp/PageIndex-main/cookbook\" \".temp/PageIndex-main/examples\" \"tools/pageindex/\")",
+      "Bash(node \"scripts/pageindex/build-vault-index.mjs\")",
+      "Bash(node \"scripts/literacy/scaffold-literacy.mjs\")",
+      "Bash(node \"scripts/literacy/scaffold-canon-playbooks.mjs\")",
+      "Bash(node \"scripts/planning/scaffold-phases-201-206.mjs\")",
+      "Skill(gsd-autonomous)",
+      "Skill(gsd-autonomous:*)",
+      "Bash(git add *)",
+      "Bash(node __TRACKED_VAR__/.claude/get-shit-done/bin/gsd-tools.cjs phase-plan-index 200)"
+    ]
+  }
+}

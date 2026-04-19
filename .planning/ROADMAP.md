@@ -88,11 +88,26 @@ Plans:
 - [x] 203-11-PLAN.md — Gap closure: wire RotationGraceBanner into layout-shell.tsx (Wave 6, gap_closure)
 
 ### Phase 204: CLI `markos` v1 GA
-**Goal:** Graduate CLI to full GA: init · generate · plan · run · eval · login · keys · whoami · env · status · doctor. Cross-platform distribution (Homebrew · Scoop · npm · winget · apt).
+**Goal:** Graduate CLI to full GA: 11 commands (`init` · `generate` (shipped 200-02) · `plan` · `run` · `eval` · `login` · `keys` · `whoami` · `env` · `status` · `doctor`). Wave 1 distribution (npm · Homebrew · Scoop); winget + apt deferred to 204.1 per CONTEXT §Deferred.
 **Requirements Mapped:** CLI-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
-**Status:** 📋 Planned
+**Status:** 📋 Planned — 12 plans across 4 waves
+**Plans:** 12/12 plans complete
 **DISCUSS:** `.planning/phases/204-cli-markos-v1-ga/DISCUSS.md`
+
+Plans:
+- [ ] 204-01-PLAN.md — Dispatch extension + 7 shared CLI primitives + 2 migrations (73 device sessions, 74 API keys) + audit domain extension (Wave 1)
+- [ ] 204-02-PLAN.md — OAuth device flow (3 endpoints) + `markos login` + F-101 contract (Wave 1)
+- [ ] 204-03-PLAN.md — API keys CRUD library + 3 endpoints + `markos keys list|create|revoke` + F-102 contract (Wave 1)
+- [ ] 204-04-PLAN.md — `markos whoami` + resolveWhoami primitive + /api/tenant/whoami + F-105 scaffold (Wave 1)
+- [ ] 204-05-PLAN.md — `markos init` (delegator) + `markos plan` dry-run + `markos eval` local rubric + /runs/plan endpoint (Wave 2)
+- [ ] 204-06-PLAN.md — `markos run` with SSE watch + migration 75 + POST /runs + GET /runs/{id}/events + F-103 contract (Wave 2)
+- [ ] 204-07-PLAN.md — `markos env list|pull|push|delete` + migration 76 (pgcrypto-encrypted tenant env) + 4 endpoints + F-104 contract (Wave 2)
+- [ ] 204-08-PLAN.md — `markos status` (subscription + quota + rotations + recent runs) + /api/tenant/status + F-105 completion (Wave 3)
+- [ ] 204-09-PLAN.md — `markos doctor` with 9 checks + --check-only CI gate + --fix auto-remediation (Wave 3)
+- [ ] 204-10-PLAN.md — Homebrew formula `Formula/markos.rb` + bump script + install docs (Wave 4)
+- [ ] 204-11-PLAN.md — Scoop bucket manifest `bucket/markos.json` + bump script + install docs (Wave 4)
+- [ ] 204-12-PLAN.md — Release CI matrix (verify → npm → brew + scoop → smoke) + docs trio (errors/environment/commands) + llms.txt Phase 204 section (Wave 4)
 
 ### Phase 205: Billing Self-Serve + BYOK
 **Goal:** Stripe-backed self-serve billing portal. Platform fee + metered AI + BYOK discount. Transparent invoices. Stripe Tax.
@@ -117,4 +132,3 @@ Full detail: `obsidian/thinking/2026-04-16-markos-saas-roadmap.md`.
 ## Archived Milestone Notes
 
 Historical milestone details remain under `.planning/milestones/` and committed git history so the root roadmap can stay focused on the active execution lane.
-

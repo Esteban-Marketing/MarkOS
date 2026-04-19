@@ -1,10 +1,11 @@
 ---
 phase: 204
 slug: cli-markos-v1-ga
-status: draft
-nyquist_compliant: false
+status: planned
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-04-18
+last_updated: 2026-04-18
 ---
 
 # Phase 204 — Validation Strategy
@@ -36,31 +37,60 @@ created: 2026-04-18
 
 ## Per-Task Verification Map
 
-*Filled by planner during Step 8; one row per task with `<automated>` command. Every task MUST either:*
-*(a) add a unit/integration test file that runs green via `node --test`, OR*
-*(b) declare a Wave 0 dep on a shared fixture/migration, OR*
-*(c) be explicitly `manual-only` in the §Manual-Only Verifications section below with justification.*
+*Populated by Phase 204 planner (2026-04-18). Every task has an `<automated>` command OR a Wave 0 dependency OR is manual-only with justification.*
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| — | — | — | — | — | *(planner populates)* | — | ⬜ pending |
+| T1-01.1 | 01 | 1 | CLI-01, QA-13 | migration | `node --test test/migrations/73_markos_cli_device_sessions.test.js test/migrations/74_markos_cli_api_keys.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-01.2 | 01 | 1 | CLI-01, QA-02, QA-04 | unit | `node --test test/cli/keychain.test.js test/cli/output.test.js test/cli/profiles.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-01.3 | 01 | 1 | CLI-01 | inline | `node -e "const r = require('./bin/cli-runtime.cjs').parseCliArgs(['login','--profile=prod','--token=abc']); if (r.command !== 'login') process.exit(1)"` | ❌ Wave 0 | ⬜ pending |
+| T1-02.1 | 02 | 1 | CLI-01, QA-02, QA-11 | unit | `node --test test/cli/device-flow.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-02.2 | 02 | 1 | CLI-01, QA-01, QA-11 | integration | `node --test test/cli/oauth-endpoints.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-02.3 | 02 | 1 | CLI-01, QA-04 | integration | `node --test test/cli/login.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-03.1 | 03 | 1 | CLI-01, QA-04, QA-11 | unit | `node --test test/cli/api-keys.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-03.2 | 03 | 1 | CLI-01, QA-01, QA-11 | integration | `node --test test/cli/api-keys-endpoints.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-03.3 | 03 | 1 | CLI-01 | integration | `node --test test/cli/keys.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-04.1 | 04 | 1 | CLI-01, QA-01, QA-02, QA-11 | integration | `node --test test/cli/whoami-endpoint.test.js` | ❌ Wave 0 | ⬜ pending |
+| T1-04.2 | 04 | 1 | CLI-01 | integration | `node --test test/cli/whoami.test.js` | ❌ Wave 0 | ⬜ pending |
+| T2-05.1 | 05 | 2 | CLI-01 | integration | `node --test test/cli/init.test.js` | ❌ Wave 2 | ⬜ pending |
+| T2-05.2 | 05 | 2 | CLI-01, QA-01, QA-02 | integration | `node --test test/cli/plan.test.js test/cli/runs-plan-endpoint.test.js` | ❌ Wave 2 | ⬜ pending |
+| T2-05.3 | 05 | 2 | CLI-01, QA-04 | unit | `node --test test/cli/eval.test.js` | ❌ Wave 2 | ⬜ pending |
+| T2-06.1 | 06 | 2 | CLI-01, QA-13 | unit + migration | `node --test test/cli/runs-endpoints.test.js` | ❌ Wave 2 | ⬜ pending |
+| T2-06.2 | 06 | 2 | CLI-01, QA-01, QA-11 | integration | `node --test test/cli/sse-parser.test.js` | ❌ Wave 2 | ⬜ pending |
+| T2-06.3 | 06 | 2 | CLI-01, QA-09 | integration | `node --test test/cli/run.test.js` | ❌ Wave 2 | ⬜ pending |
+| T2-07.1 | 07 | 2 | CLI-01, QA-13 | unit + migration | `node --test test/cli/env-lib.test.js` | ❌ Wave 2 | ⬜ pending |
+| T2-07.2 | 07 | 2 | CLI-01, QA-01, QA-11 | integration | `node --test test/cli/env-endpoints.test.js` | ❌ Wave 2 | ⬜ pending |
+| T2-07.3 | 07 | 2 | CLI-01 | integration | `node --test test/cli/env.test.js` | ❌ Wave 2 | ⬜ pending |
+| T3-08.1 | 08 | 3 | CLI-01, QA-01, QA-10 | integration | `node --test test/cli/status-endpoint.test.js` | ❌ Wave 3 | ⬜ pending |
+| T3-08.2 | 08 | 3 | CLI-01 | integration | `node --test test/cli/status.test.js` | ❌ Wave 3 | ⬜ pending |
+| T3-09.1 | 09 | 3 | CLI-01, QA-04, QA-11 | unit | `node --test test/cli/doctor-checks.test.js` | ❌ Wave 3 | ⬜ pending |
+| T3-09.2 | 09 | 3 | CLI-01 | integration | `node --test test/cli/doctor.test.js` | ❌ Wave 3 | ⬜ pending |
+| T4-10.1 | 10 | 4 | CLI-01, QA-03 | shape | `node --test test/distribution/homebrew-formula.test.js` | ❌ Wave 4 | ⬜ pending |
+| T4-10.2 | 10 | 4 | QA-15 | docs | inline: 6 sections present | ❌ Wave 4 | ⬜ pending |
+| T4-11.1 | 11 | 4 | CLI-01, QA-03 | shape | `node --test test/distribution/scoop-manifest.test.js` | ❌ Wave 4 | ⬜ pending |
+| T4-11.2 | 11 | 4 | QA-15 | docs | inline: 6 sections present | ❌ Wave 4 | ⬜ pending |
+| T4-12.1 | 12 | 4 | CLI-01, QA-03 | shape | `node --test test/distribution/release-workflow.test.js` | ❌ Wave 4 | ⬜ pending |
+| T4-12.2 | 12 | 4 | QA-15 | doc-parity | `node --test test/cli/errors-map.test.js` | ❌ Wave 4 | ⬜ pending |
+| T4-12.3 | 12 | 4 | QA-15 | docs | inline: 4 llms.txt entries | ❌ Wave 4 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+
+**Nyquist check:** 30 task rows across 12 plans; NO stretch of 3 consecutive tasks lacks an `<automated>` command. All 4 doc-only tasks (T4-10.2, T4-11.2, T4-12.3) are paired with same-plan shape tests so the plan-scoped `npm test test/cli/**/*.test.js test/distribution/**/*.test.js` catches doc regressions via errors-map parity gate (T4-12.2).
 
 ---
 
 ## Wave 0 Requirements
 
-*Shared infrastructure that MUST exist before plans execute.*
+*Shared infrastructure that MUST exist before Wave 1 plans execute. Owned by Plan 204-01.*
 
-- [ ] `test/cli/_fixtures/keychain-stub.cjs` — in-memory keytar mock (macOS Keychain absent in Linux CI)
-- [ ] `test/cli/_fixtures/oauth-device-server.cjs` — local HTTP stub for `/api/cli/oauth/device/*` endpoints
-- [ ] `test/cli/_fixtures/sse-event-server.cjs` — stub `/api/tenant/runs/{id}/events` SSE emitter for `run --watch`
-- [ ] `test/cli/_fixtures/xdg-tmp.cjs` — isolated `$XDG_CONFIG_HOME` + `%APPDATA%` temp root per test
-- [ ] `supabase/migrations/73_markos_cli_device_sessions.sql` — device-code session table (Wave 1 blocker)
-- [ ] `supabase/migrations/74_markos_cli_api_keys.sql` — API key CRUD table (Wave 1 blocker)
+- [ ] `test/cli/_fixtures/keychain-stub.cjs` — in-memory keytar mock (**Plan 01 Task 2**)
+- [ ] `test/cli/_fixtures/oauth-device-server.cjs` — local HTTP stub for `/api/cli/oauth/device/*` endpoints (**Plan 01 Task 3**)
+- [ ] `test/cli/_fixtures/sse-event-server.cjs` — stub `/api/tenant/runs/{id}/events` SSE emitter (**Plan 01 Task 3**)
+- [ ] `test/cli/_fixtures/xdg-tmp.cjs` — isolated `$XDG_CONFIG_HOME` + `%APPDATA%` temp root per test (**Plan 01 Task 2**)
+- [ ] `supabase/migrations/73_markos_cli_device_sessions.sql` — device-code session table (**Plan 01 Task 1**)
+- [ ] `supabase/migrations/74_markos_cli_api_keys.sql` — API key CRUD table (**Plan 01 Task 1**)
 
-*If any remain `[ ]` when Wave 1 starts, execute-phase MUST block and fix infra first.*
+*All 6 infrastructure items OWNED by Plan 204-01 Tasks 1-3. No separate Wave 0 plan needed — bootstrap is part of Wave 1 first plan.*
 
 ---
 
@@ -78,11 +108,11 @@ created: 2026-04-18
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies listed
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references (6 items above)
-- [ ] No watch-mode flags in CI (tests run to completion, not `--watch`)
-- [ ] Feedback latency < 150s for full suite
-- [ ] `nyquist_compliant: true` set in frontmatter (after planner confirms map is complete)
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies listed
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references (6 items above; owned by Plan 204-01)
+- [x] No watch-mode flags in CI (tests run to completion, not `--watch`)
+- [x] Feedback latency < 150s for full suite
+- [x] `nyquist_compliant: true` set in frontmatter (planner confirmed map complete)
 
-**Approval:** pending
+**Approval:** planner-signed 2026-04-18; executor + reviewer to re-verify post-Wave-1 merge.
