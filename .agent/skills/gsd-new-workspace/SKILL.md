@@ -1,4 +1,3 @@
-<!-- TODO: workflow file .agent/get-shit-done/workflows/new-workspace.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
 ---
 name: gsd-new-workspace
 description: Create an isolated workspace with repo copies and independent .planning/

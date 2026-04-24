@@ -1,4 +1,3 @@
-<!-- TODO: workflow file .agent/get-shit-done/workflows/list-workspaces.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
 ---
 name: gsd-list-workspaces
 description: List active GSD workspaces and their status

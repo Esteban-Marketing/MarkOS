@@ -1,10 +1,21 @@
 ---
 artifact: 207-01-CONTRACT-LOCK
-status: draft
+status: approved
 phase: 207
 produced_by: 207-01-PLAN.md (Task 1)
 requires_acceptance_before: [207-02, 207-03, 207-04, 207-05, 207-06]
 last_updated: 2026-04-23
+approved_at: 2026-04-23
+approved_by: estebanooortz (auto-mode sign-off)
+approval_scope: |
+  Zod schemas (AgentRun, AgentRunEvent, AgentChain, AgentChainEdge, AgentSideEffect,
+  AgentFailure), 15-state machine, RETRY_POLICY + PRIORITY_CONCURRENCY constants,
+  side-effect idempotency key, cost model, task handoff rule, 5 adoption adapters,
+  F-106..F-111 range, migrations 101-106. Downstream plans 207-02..06 cleared to
+  consume verbatim.
+resolved_open_questions:
+  chain_scheduler: "Vercel Queues (reuse Phase 203 webhook queue substrate; pg_cron fallback only if Queues rate-limit breaches); locked in Plan 207-03 Task 4."
+  run_engine_cjs_future: "Thin shim preserving all v1 exports (no retirement in this phase); locked in Plan 207-06 Task 5."
 ---
 
 # Phase 207 Contract Lock — AgentRun v2 Orchestration Substrate

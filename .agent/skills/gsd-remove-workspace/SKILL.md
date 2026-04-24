@@ -1,4 +1,3 @@
-<!-- TODO: workflow file .agent/get-shit-done/workflows/remove-workspace.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
 ---
 name: gsd-remove-workspace
 description: Remove a GSD workspace and clean up worktrees

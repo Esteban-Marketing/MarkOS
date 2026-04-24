@@ -1,4 +1,3 @@
-<!-- TODO: workflow file .agent/get-shit-done/workflows/forensics.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
 ---
 name: gsd-forensics
 description: Post-mortem investigation for failed GSD workflows — analyzes git history, artifacts, and state to diagnose what went wrong

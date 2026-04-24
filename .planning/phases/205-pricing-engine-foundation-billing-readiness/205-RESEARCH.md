@@ -595,17 +595,21 @@ Autonomous/bounded-auto-approve is explicitly deferred. All PRC output flows thr
 
 ---
 
-## Open Decisions (Require Sign-off)
+## Approved Decisions (sign-off applied 2026-04-23)
 
-Consolidated — the plans should NOT proceed to execution until these are answered.
+Previously "Open Decisions (Require Sign-off)." All 7 now resolved per recommended path. Downstream plans 205-01..08 MUST treat these as locked input. Any drift forces a RESEARCH refresh, not ad-hoc plan edits.
 
-1. **First execution slice.** Recommendation: **MarkOS Tenant 0 (SaaS business_type)**. Smallest blast radius, dogfood gate already exists via Plan 205-08. Operator sign-off required to confirm.
-2. **Source-quality-score admissibility threshold.** Recommendation: `source_quality_score >= 0.7 AND extraction_confidence >= 0.6` admits a knowledge record as recommendation evidence. Lower scores are stored but not surfaced on Recommendation cards. Sign-off on threshold numbers.
-3. **`pricing-catalog.ts` long-term fate.** Recommendation: keep as compatibility adapter; retarget to read approved `PricingRecommendation` snapshots. Alternative (rejected here): rip out entirely in 205-07. Sign-off needed before 205-07.
-4. **Crawler policy.** Recommendation: 205 ships manual-entry + tenant-initiated single-URL fetch only. Bulk scheduled crawl is deferred to a dedicated phase (likely 212 or later) that includes legal/TOS review. Sign-off: no bulk crawl in 205.
-5. **BYOK pricing posture.** Recommendation: `byok_discount_posture = 'recommendation_input'` by default. Actual price/margin effect is a per-recommendation decision, not a global rule. Sign-off on default.
-6. **Public pricing activation policy for Tenant 0.** Recommendation: 205-08 generates a recommendation but does NOT unresolve the `{{MARKOS_PRICING_ENGINE_PENDING}}` placeholder on public docs until Phase 213 readiness validation. Sign-off on keeping public pricing placeholder through 205.
-7. **PRC-05 (Pricing Page Optimizer) phase home.** Recommendation: Phase 211 content loop. Sign-off to defer.
+| # | Decision | Approved value | Locked rationale |
+|---|----------|---------------|-----------------|
+| 1 | First execution slice | **MarkOS Tenant 0 (SaaS business_type)** | Smallest blast radius; Plan 205-08 dogfood gate already exists. No other tenant affected during 205 ramp. |
+| 2 | Source-quality-score admissibility | **`source_quality_score >= 0.7 AND extraction_confidence >= 0.6`** | Lower scores stored but hidden from Recommendation cards. Matches Evidence Map SQS posture planned for Phase 209. |
+| 3 | `pricing-catalog.ts` long-term fate | **Keep as compatibility adapter; retarget to read approved `PricingRecommendation` snapshots** | Non-breaking. 205-07 (Stripe handoff) updates the adapter instead of ripping it out. Existing billing call sites survive. |
+| 4 | Crawler policy | **Manual-entry + tenant-initiated single-URL fetch only; bulk crawl deferred to future dedicated phase** | 205 ships without TOS/legal risk. Bulk scheduled crawl requires legal review; parked for future phase (candidate 212+). |
+| 5 | BYOK pricing posture | **`byok_discount_posture = 'recommendation_input'` (default)** | Actual price/margin is a per-recommendation decision, not a global rule. Policy engine gets a signal; recommendations get final say. |
+| 6 | Public pricing activation for Tenant 0 | **205-08 generates recommendation BUT does NOT unresolve `{{MARKOS_PRICING_ENGINE_PENDING}}` on public docs until Phase 213** | Public placeholder stays through 205. Tenant 0 public prices only unresolve after SOC2-I evidence (Phase 206) + dogfood validation (Phase 213) clear. |
+| 7 | PRC-05 (Pricing Page Optimizer) phase home | **Phase 211 content loop** | Requires content/social/revenue loop before the pricing-page CRO test rig is coherent. Defer from 205. |
+
+**Approval scope:** these 7 decisions unblock `/gsd-plan-phase 205 --research` and subsequent `/gsd-execute-phase 205`. If any later real-world evidence contradicts a decision, refresh RESEARCH and re-run plan-phase — do not edit plans directly.
 
 ---
 

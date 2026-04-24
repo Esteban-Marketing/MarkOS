@@ -1,4 +1,3 @@
-<!-- TODO: workflow file .agent/get-shit-done/workflows/manager.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
 ---
 name: gsd-manager
 description: Interactive command center for managing multiple phases from one terminal

@@ -1,4 +1,4 @@
-<!-- TODO: workflow file .agent/get-shit-done/workflows/workstreams.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
+<!-- UPSTREAM-MISSING: no workflow file exists for this skill in upstream GSD release. Execution_context will not resolve until workflow authored locally or upstream. -->
 ---
 name: gsd-workstreams
 description: Manage parallel workstreams — list, create, switch, status, progress, complete, and resume

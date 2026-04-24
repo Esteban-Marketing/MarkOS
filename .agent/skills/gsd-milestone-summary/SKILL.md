@@ -1,4 +1,3 @@
-<!-- TODO: workflow file .agent/get-shit-done/workflows/milestone-summary.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
 ---
 name: gsd-milestone-summary
 description: Generate a comprehensive project summary from milestone artifacts for team onboarding and review
