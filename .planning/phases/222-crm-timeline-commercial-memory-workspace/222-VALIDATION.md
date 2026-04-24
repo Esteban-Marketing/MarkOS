@@ -45,9 +45,25 @@ created: 2026-04-24
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 222-NN-MM | NN | W | REQ-XX | unit/integration/contract/regression/negative/e2e | `vitest run test/crm360/<file>.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-01-01 | 01 | 1 | CRM-01, CRM-02, CDP-02, CDP-05, QA-02 | wave-0 + unit + integration + migration | `vitest run test/crm360/customer360.test.ts test/crm360/opportunity.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-01-02 | 01 | 1 | CRM-01, CRM-05, QA-01 | unit + integration + contract | `vitest run test/crm360/legacy-adapter.test.ts test/crm360/pricing-guard.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-02-01 | 02 | 2 | CRM-01, CRM-03, QA-02 | unit + integration | `vitest run test/crm360/lifecycle.test.ts test/crm360/stage-router.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-02-02 | 02 | 2 | CRM-03, CDP-04, TASK-02, QA-01 | unit + integration + contract | `vitest run test/crm360/emit.test.ts test/crm360/multi-role-ownership.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-03-01 | 03 | 2 | CRM-01, QA-02 | migration | `node -e "..."` (see 222-03-PLAN.md Task 1 verify) | ⬜ TBD | ⬜ pending |
+| 222-03-02 | 03 | 2 | CRM-01, CDP-04, TASK-03, QA-01 | unit + integration + contract | `vitest run test/crm360/timeline-extensions.test.ts test/crm360/timeline-api.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-03-03 | 03 | 2 | CRM-01 | component + storybook + chromatic | `npx chromatic --project-token=... --exit-zero-on-changes --only-changed` (Warning 8 disposition; file-presence precondition runs first) | ⬜ TBD | ⬜ pending |
+| 222-04-01 | 04 | 3 | CRM-02, CRM-05, QA-02 | unit + integration + migration | `vitest run test/crm360/nba.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-04-02 | 04 | 3 | CRM-02, CRM-04, TASK-01, TASK-03, QA-01 | unit + integration + contract + regression | `vitest run test/crm360/execution-nba-refactor.test.ts test/crm360/nba-recompute.test.ts && npm test` | ⬜ TBD | ⬜ pending |
+| 222-05-01 | 05 | 4 | CRM-03, CRM-04, QA-02 | unit + integration + migration | `vitest run test/crm360/committee.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-05-02 | 05 | 4 | CRM-01..05, CDP-01..05, TASK-04, TASK-05, QA-01 | contract + integration | `vitest run test/crm360/api-crm360.test.ts test/crm360/mcp-tools.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-05-03 | 05 | 4 | CRM-02, CRM-03, TASK-02, TASK-04, QA-03..08 | component + storybook + brief-register + reporting-extend | `node -e "..."` (file-presence + brief-registry token scan + reporting.ts token scan; see 222-05-PLAN.md Task 3 verify) | ⬜ TBD | ⬜ pending |
+| 222-06-01 | 06 | 5 | QA-02, TASK-01, all | integration + RLS suite | `vitest run test/crm360/drift-reconciliation.test.ts test/crm360/rls-suite.test.ts` | ⬜ TBD | ⬜ pending |
+| 222-06-02 | 06 | 5 | QA-03..15 | e2e + visual regression | `npx playwright test e2e/crm360/ --reporter=line` (Blocker 4 fix; file-presence + chromatic-include precondition runs first) then `npx chromatic --project-token=...` | ⬜ TBD | ⬜ pending |
+| 222-06-03 | 06 | 5 | all (closeout) | docs | `node -e "..."` SUMMARY + STATE + ROADMAP presence + F-113..121 + migrations 106..112 token scan | ⬜ TBD | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+
+**Note (Warning 11 fix):** Rows populated from each plan's `<verification>` per-task table. `nyquist_compliant` remains `false` in frontmatter — only execute-phase flips it to `true` once tests actually pass. `wave_0_complete` remains `false` until 222-01 Task 1 ships Vitest + Playwright configs + fixture factories.
 
 ---
 
