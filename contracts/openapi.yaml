@@ -5,7 +5,7 @@ openapi: 3.1.0
 info:
   title: MarkOS API
   version: 1.0.0
-  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 66 flow contracts.
+  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 67 flow contracts.
   contact:
     name: MarkOS Engineering
     url: "https://markos.esteban.marketing"
@@ -51,6 +51,9 @@ x-markos-flows:
   F-102:
     source: contracts/F-102-cli-api-keys-v1.yaml
     description: MarkOS flow F-102
+  F-105:
+    source: contracts/F-105-cli-whoami-status-v1.yaml
+    description: MarkOS flow F-105
   F-11:
     source: contracts/F-11-literacy-admin-query-v1.yaml
     description: MarkOS flow F-11
@@ -2044,6 +2047,27 @@ paths:
       x-flow-name: Tenant Session Management
       x-domain: general
       x-flow-version: v1
+  /api/tenant/status:
+    get:
+      summary: Populated by Plan 204-08 (placeholder — do not rely on this shape yet)
+      operationId: cliStatus
+      x-markos-phase: 204-08-PLAN
+      tags:
+        - cli
+        - status
+      responses:
+        '200':
+          description: PLACEHOLDER — Plan 204-08 will define the concrete probe envelope.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusEnvelope"
+        '501':
+          description: not_implemented — Plan 204-08 has not landed yet.
+      x-flow-id: F-105
+      x-flow-name: CLI Whoami + Status
+      x-domain: cli
+      x-flow-version: v1
   /api/tenant/switcher/create-tenant:
     post:
       summary: Create a new tenant inside an existing org
@@ -2525,6 +2549,39 @@ paths:
       x-flow-id: F-96
       x-flow-name: Webhook Tenant Dashboard (Surfaces 1 + 2)
       x-domain: webhooks
+      x-flow-version: v1
+  /api/tenant/whoami:
+    get:
+      summary: "Observability envelope — resolves Bearer or legacy session to { tenant, user, role, key } context"
+      operationId: cliWhoami
+      tags:
+        - cli
+        - whoami
+      parameters:
+        -           { name: "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+        -           { name: "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+      responses:
+        '200':
+          description: "Caller resolved. Envelope is safe to log — key_fingerprint only, never plaintext."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WhoamiEnvelope"
+        '401':
+          description: "No credentials OR invalid_token OR revoked_token. See components.schemas.*"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  -                     { $ref: "'#/components/schemas/UnauthorizedError' }"
+                  -                     { $ref: "'#/components/schemas/InvalidTokenError' }"
+                  -                     { $ref: "'#/components/schemas/RevokedTokenError' }"
+        '405': "{ description: \"method_not_allowed — whoami is GET-only\" }"
+        '500': "{ description: \"whoami_failed — unexpected server error\" }"
+      x-flow-id: F-105
+      x-flow-name: CLI Whoami + Status
+      x-domain: cli
       x-flow-version: v1
   /api/tracking/identify:
     post:
@@ -3162,6 +3219,69 @@ components:
       required: "[error]"
       properties:
         error: "{ type: string, enum: [method_not_allowed] }"
+    F_105_WhoamiEnvelope:
+      type: object
+      description: Observability envelope returned by GET /api/tenant/whoami. NEVER contains Bearer plaintext or key_hash.
+      required: "[tenant_id, tenant_name, role, email, user_id, scope]"
+      properties:
+        tenant_id:
+          type: string
+          description: Primary key from markos_tenants.
+        tenant_name:
+          type: string
+          description: Display name from markos_tenants.name.
+        role:
+          type: string
+          enum: "[owner, admin, member, readonly]"
+          description: "Caller's role from markos_tenant_memberships. Drives client-side UI gates."
+        email:
+          type: string
+          format: email
+          description: "Caller's email from markos_users.email."
+        user_id:
+          type: string
+          description: Primary key from markos_users.
+        key_fingerprint:
+          type: "[string, 'null']"
+          pattern: "^[a-f0-9]{8}$"
+          description: First 8 hex chars of sha256(Bearer). Null when the caller used legacy session headers (no API key involved).
+        scope:
+          type: string
+          enum: "[cli, session]"
+          description: cli = Bearer auth; session = legacy x-markos-user-id + x-markos-tenant-id headers.
+        last_used_at:
+          type: "[string, 'null']"
+          format: date-time
+          description: markos_cli_api_keys.last_used_at. Null for legacy session path.
+    F_105_UnauthorizedError:
+      type: object
+      description: No Bearer token AND no legacy session headers present. Client must authenticate.
+      required: "[error]"
+      properties:
+        error: "{ type: string, enum: [unauthorized] }"
+    F_105_InvalidTokenError:
+      type: object
+      description: "Bearer token did not match any row in markos_cli_api_keys (unknown, malformed, or the legacy session user_id is orphaned)."
+      required: "[error]"
+      properties:
+        error: "{ type: string, enum: [invalid_token] }"
+    F_105_RevokedTokenError:
+      type: object
+      description: "Bearer token matched a revoked row. CLI must run `markos login` to mint a fresh key."
+      required: "[error, hint]"
+      properties:
+        error: "{ type: string, enum: [revoked_token] }"
+        hint: "{ type: string }"
+    F_105_StatusEnvelope:
+      type: object
+      description: PLACEHOLDER — Plan 204-08 replaces this with the concrete status probe envelope. Do not rely on any field here yet.
+      x-markos-phase: 204-08-PLAN
+      required: "[status]"
+      properties:
+        status:
+          type: string
+          enum: "[placeholder]"
+          description: "Always 'placeholder' until Plan 204-08 ships."
     F_63A_MutationFamily:
       type: string
       enum:

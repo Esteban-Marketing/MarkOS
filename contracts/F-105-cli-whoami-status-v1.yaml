@@ -1,0 +1,220 @@
+id: F-105-cli-whoami-status-v1
+flow_id: F-105
+phase: 204
+name: CLI Whoami + Status
+title: CLI Whoami + Status (observability envelope + system status placeholder)
+version: v1
+status: active
+domain: cli
+summary: >-
+  Observability envelope for the `markos` CLI. Two paths belong to this flow:
+  (1) /api/tenant/whoami — SHIPPED in Plan 204-04. Accepts either an
+  Authorization: Bearer mks_ak_* token (NEW — CLI flow) OR the legacy
+  x-markos-user-id + x-markos-tenant-id session headers (Phase 201
+  compatibility). Returns { tenant_id, tenant_name, role, email, user_id,
+  key_fingerprint, scope, last_used_at }. NEVER returns the Bearer plaintext
+  or key_hash — only key_fingerprint (first 8 hex of sha256). (2)
+  /api/tenant/status — PLACEHOLDER. Populated by Plan 204-08 with the
+  server-side status probe envelope. Scaffolded here so the contract + openapi
+  path count stabilise and Plan 08 inherits the whoami auth pattern verbatim.
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+
+references:
+  - D-02
+  - D-06
+  - D-10
+  - A1
+  - A8
+  - CLI-01
+  - QA-01
+  - QA-02
+  - QA-04
+  - QA-11
+  - QA-15
+
+auth_modes:
+  bearer:
+    header: "Authorization: Bearer mks_ak_<64 hex>"
+    resolution: "sha256(bearer) → markos_cli_api_keys.key_hash → lib/markos/cli/whoami.cjs::resolveWhoami"
+    tenant_context: "derived from the minted key (tenant_id + user_id fields)"
+  legacy_session:
+    headers:
+      - "x-markos-user-id"
+      - "x-markos-tenant-id"
+    resolution: "lib/markos/cli/whoami.cjs::resolveSessionWhoami"
+    tenant_context: "asserted by the caller via header; enforced by RLS at the query layer"
+
+paths:
+  /api/tenant/whoami:
+    get:
+      summary: Observability envelope — resolves Bearer or legacy session to { tenant, user, role, key } context
+      operationId: cliWhoami
+      tags:
+        - cli
+        - whoami
+      parameters:
+        - { name: Authorization, in: header, required: false, schema: { type: string, pattern: "^Bearer mks_ak_[a-f0-9]{64}$" } }
+        - { name: x-markos-user-id, in: header, required: false, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Caller resolved. Envelope is safe to log — key_fingerprint only, never plaintext.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WhoamiEnvelope'
+        '401':
+          description: "No credentials OR invalid_token OR revoked_token. See components.schemas.*"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/UnauthorizedError' }
+                  - { $ref: '#/components/schemas/InvalidTokenError' }
+                  - { $ref: '#/components/schemas/RevokedTokenError' }
+        '405': { description: "method_not_allowed — whoami is GET-only" }
+        '500': { description: "whoami_failed — unexpected server error" }
+
+  /api/tenant/status:
+    # x-markos-phase: 204-08-PLAN (placeholder marker — Plan 204-08 replaces this block)
+    # TODO(204-08): replace with full status probe envelope (connector health,
+    # migration state, agent_run DAG, billing cap). Do NOT remove the
+    # x-markos-phase marker until Plan 08 lands — downstream executors grep for
+    # it to locate scaffolding.
+    get:
+      summary: "Populated by Plan 204-08 (placeholder — do not rely on this shape yet)"
+      operationId: cliStatus
+      x-markos-phase: 204-08-PLAN
+      tags:
+        - cli
+        - status
+      responses:
+        '200':
+          description: "PLACEHOLDER — Plan 204-08 will define the concrete probe envelope."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusEnvelope'
+        '501':
+          description: "not_implemented — Plan 204-08 has not landed yet."
+
+components:
+  schemas:
+    WhoamiEnvelope:
+      type: object
+      description: "Observability envelope returned by GET /api/tenant/whoami. NEVER contains Bearer plaintext or key_hash."
+      required: [tenant_id, tenant_name, role, email, user_id, scope]
+      properties:
+        tenant_id:
+          type: string
+          description: "Primary key from markos_tenants."
+        tenant_name:
+          type: string
+          description: "Display name from markos_tenants.name."
+        role:
+          type: string
+          enum: [owner, admin, member, readonly]
+          description: "Caller's role from markos_tenant_memberships. Drives client-side UI gates."
+        email:
+          type: string
+          format: email
+          description: "Caller's email from markos_users.email."
+        user_id:
+          type: string
+          description: "Primary key from markos_users."
+        key_fingerprint:
+          type: [string, 'null']
+          pattern: "^[a-f0-9]{8}$"
+          description: "First 8 hex chars of sha256(Bearer). Null when the caller used legacy session headers (no API key involved)."
+        scope:
+          type: string
+          enum: [cli, session]
+          description: "cli = Bearer auth; session = legacy x-markos-user-id + x-markos-tenant-id headers."
+        last_used_at:
+          type: [string, 'null']
+          format: date-time
+          description: "markos_cli_api_keys.last_used_at. Null for legacy session path."
+
+    UnauthorizedError:
+      type: object
+      description: "No Bearer token AND no legacy session headers present. Client must authenticate."
+      required: [error]
+      properties:
+        error: { type: string, enum: [unauthorized] }
+
+    InvalidTokenError:
+      type: object
+      description: "Bearer token did not match any row in markos_cli_api_keys (unknown, malformed, or the legacy session user_id is orphaned)."
+      required: [error]
+      properties:
+        error: { type: string, enum: [invalid_token] }
+
+    RevokedTokenError:
+      type: object
+      description: "Bearer token matched a revoked row. CLI must run `markos login` to mint a fresh key."
+      required: [error, hint]
+      properties:
+        error: { type: string, enum: [revoked_token] }
+        hint:  { type: string }
+
+    StatusEnvelope:
+      type: object
+      # PLACEHOLDER — Plan 204-08 will populate this schema with the real probe
+      # response shape (connector health map, migration status, agent_run DAG,
+      # billing cap, degraded subsystems). Until then, this stub keeps openapi
+      # validation + path-count stable.
+      description: "PLACEHOLDER — Plan 204-08 replaces this with the concrete status probe envelope. Do not rely on any field here yet."
+      x-markos-phase: 204-08-PLAN
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [placeholder]
+          description: "Always 'placeholder' until Plan 204-08 ships."
+
+threat_model:
+  trust_boundaries:
+    - "CLI Bearer → /api/tenant/whoami: token → sha256 → resolveKeyByHash → tenant/user/role resolution."
+    - "Dual auth paths: Bearer (new CLI) OR x-markos-user-id + x-markos-tenant-id (Phase 201 web sessions)."
+  stride:
+    T-204-04-01:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "CLI whoami.cjs NEVER prints the Bearer token to stdout/stderr; only key_fingerprint. Tests wh-07 + keys-meta grep-assert absence of mks_ak_."
+    T-204-04-02:
+      category: Spoofing
+      disposition: mitigate
+      mitigation: "resolveKeyByHash checks revoked_at; revoked keys throw revoked_token → 401 with hint to re-login. Test ep-04 covers."
+    T-204-04-03:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "resolveWhoami scopes (tenant_id, user_id) both derived from the Bearer's own markos_cli_api_keys row. Cross-tenant never resolvable. Test ep-03 + ep-05 cover tenant isolation."
+    T-204-04-04:
+      category: Repudiation
+      disposition: accept
+      rationale: "whoami is read-only; last_used_at bump via resolveKeyByHash (and this endpoint's async re-touch) is sufficient observability."
+    T-204-04-05:
+      category: Info Disclosure
+      disposition: accept
+      rationale: "Differentiating invalid_token vs revoked_token is helpful UX; both return 401 so no auth-bypass occurs."
+
+libraries:
+  whoami_lib:     lib/markos/cli/whoami.cjs
+  api_keys_lib:   lib/markos/cli/api-keys.cjs
+  keychain_lib:   bin/lib/cli/keychain.cjs
+  http_lib:       bin/lib/cli/http.cjs
+
+migrations:
+  api_keys: supabase/migrations/74_markos_cli_api_keys.sql
+
+cli_commands:
+  - command: "markos whoami"
+    file:    bin/commands/whoami.cjs
+    description: "TTY: boxed unicode table; non-TTY/--json: JSON envelope. NEVER echoes the Bearer token."
+  - command: "markos status"
+    file:    bin/commands/status.cjs
+    description: "PLACEHOLDER — wired by Plan 204-08. Currently stubbed."
+    x-markos-phase: 204-08-PLAN
