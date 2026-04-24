@@ -1,0 +1,475 @@
+id: F-104-cli-env-v1
+flow_id: F-104
+phase: 204
+name: CLI Tenant Env Sync
+title: CLI Tenant Env Sync — list, pull, push, delete
+version: v1
+status: active
+domain: cli
+summary: >-
+  The `markos env` flow family. F-104 unifies four paths for per-tenant
+  environment-variable sync:
+    - GET  /api/tenant/env          (list redacted entries, any authed member)
+    - GET  /api/tenant/env/pull     (bulk decrypt; owner/admin only)
+    - POST /api/tenant/env/push     (upsert encrypted values; owner/admin only)
+    - POST /api/tenant/env/delete   (bulk delete; owner/admin only)
+  Values are encrypted at rest via pgcrypto pgp_sym_encrypt keyed on the
+  server-side MARKOS_ENV_ENCRYPTION_KEY. The list endpoint returns only
+  `value_preview` (first 4 chars + '…') — the full decrypted value only
+  leaves the server through /pull after the owner/admin role gate. Audit
+  emits env.pushed / env.deleted / env.pulled with keys (never values).
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+
+references:
+  - D-02
+  - D-06
+  - D-08
+  - D-10
+  - CLI-01
+  - QA-01
+  - QA-02
+  - QA-04
+  - QA-11
+  - QA-13
+
+crypto:
+  at_rest_algorithm: "pgp_sym_encrypt (pgcrypto)"
+  key_source: "server-side env var MARKOS_ENV_ENCRYPTION_KEY (not a tenant secret; rotation deferred to Phase 206)"
+  preview_format: "first 4 chars of plaintext + '…'"
+  decryption_gate: "owner|admin role on /api/tenant/env/pull only"
+
+auth_modes:
+  bearer:
+    header: "Authorization: Bearer mks_ak_<64 hex>"
+    resolution: "sha256(bearer) → markos_cli_api_keys.key_hash → lib/markos/cli/whoami.cjs::resolveWhoami"
+    tenant_context: "derived from the minted key (tenant_id field)"
+  legacy_session:
+    headers:
+      - "x-markos-user-id"
+      - "x-markos-tenant-id"
+    resolution: "lib/markos/cli/whoami.cjs::resolveSessionWhoami"
+    tenant_context: "asserted by the caller via header; enforced by RLS at query layer"
+
+paths:
+  /api/tenant/env:
+    get:
+      summary: List redacted env entries for the caller's tenant. Any authed member. Values are never returned — only value_preview (4 chars + ellipsis).
+      operationId: cliEnvList
+      tags:
+        - cli
+        - env
+        - list
+      parameters:
+        - { name: Authorization, in: header, required: false, schema: { type: string, pattern: "^Bearer mks_ak_[a-f0-9]{64}$" } }
+        - { name: x-markos-user-id, in: header, required: false, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Redacted env list. value_preview only; NEVER decrypted value.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [entries]
+                properties:
+                  entries:
+                    type: array
+                    items: { $ref: '#/components/schemas/EnvListEntry' }
+        '401':
+          description: "No credentials OR invalid_token OR revoked_token."
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/UnauthorizedError' }
+                  - { $ref: '#/components/schemas/InvalidTokenError' }
+                  - { $ref: '#/components/schemas/RevokedTokenError' }
+        '405': { description: method_not_allowed (non-GET) }
+        '500': { description: list_failed (unexpected) }
+
+  /api/tenant/env/pull:
+    get:
+      summary: Bulk decrypt + return all env entries. Owner/admin only (high-privilege secret read). Emits env.pulled audit event.
+      operationId: cliEnvPull
+      tags:
+        - cli
+        - env
+        - pull
+      parameters:
+        - { name: Authorization, in: header, required: false, schema: { type: string, pattern: "^Bearer mks_ak_[a-f0-9]{64}$" } }
+        - { name: x-markos-user-id, in: header, required: false, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: Full decrypted env entries. Consumed by `markos env pull` to write .markos-local/.env.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [entries]
+                properties:
+                  entries:
+                    type: array
+                    items: { $ref: '#/components/schemas/EnvEntryWithValue' }
+        '401':
+          description: "No credentials OR invalid_token OR revoked_token."
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/UnauthorizedError' }
+                  - { $ref: '#/components/schemas/InvalidTokenError' }
+                  - { $ref: '#/components/schemas/RevokedTokenError' }
+        '403':
+          description: insufficient_role — only owner/admin can pull decrypted values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientRoleError'
+        '405': { description: method_not_allowed (non-GET) }
+        '500':
+          description: encryption_key_missing (MARKOS_ENV_ENCRYPTION_KEY unset) OR pull_failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/EncryptionKeyMissingError' }
+                  - { $ref: '#/components/schemas/PullFailedError' }
+
+  /api/tenant/env/push:
+    post:
+      summary: Upsert env entries (pgcrypto-encrypted at rest). Owner/admin only. Validates key regex + max 100 entries + value ≤ 8192 chars.
+      operationId: cliEnvPush
+      tags:
+        - cli
+        - env
+        - push
+      parameters:
+        - { name: Authorization, in: header, required: false, schema: { type: string, pattern: "^Bearer mks_ak_[a-f0-9]{64}$" } }
+        - { name: x-markos-user-id, in: header, required: false, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: false, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [entries]
+              properties:
+                entries:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: object
+                    required: [key, value]
+                    properties:
+                      key:
+                        type: string
+                        pattern: "^[A-Z][A-Z0-9_]*$"
+                      value:
+                        type: string
+                        maxLength: 8192
+      responses:
+        '200':
+          description: Entries upserted.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [updated]
+                properties:
+                  updated:
+                    type: integer
+                    minimum: 0
+        '400':
+          description: invalid_key, too_many_entries, value_too_large, invalid_entries, or invalid_json.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/InvalidKeyError' }
+                  - { $ref: '#/components/schemas/TooManyEntriesError' }
+                  - { $ref: '#/components/schemas/ValueTooLargeError' }
+                  - { $ref: '#/components/schemas/InvalidEntriesError' }
+        '401':
+          description: "No credentials OR invalid_token OR revoked_token."
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/UnauthorizedError' }
+                  - { $ref: '#/components/schemas/InvalidTokenError' }
+                  - { $ref: '#/components/schemas/RevokedTokenError' }
+        '403':
+          description: insufficient_role — only owner/admin can push.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientRoleError'
+        '405': { description: method_not_allowed (non-POST) }
+        '500':
+          description: encryption_key_missing OR push_failed.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/EncryptionKeyMissingError' }
+                  - { $ref: '#/components/schemas/PushFailedError' }
+
+  /api/tenant/env/delete:
+    post:
+      summary: Bulk delete env entries by key. Owner/admin only. Max 100 keys per request.
+      operationId: cliEnvDelete
+      tags:
+        - cli
+        - env
+        - delete
+      parameters:
+        - { name: Authorization, in: header, required: false, schema: { type: string, pattern: "^Bearer mks_ak_[a-f0-9]{64}$" } }
+        - { name: x-markos-user-id, in: header, required: false, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: false, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [keys]
+              properties:
+                keys:
+                  type: array
+                  minItems: 1
+                  maxItems: 100
+                  items:
+                    type: string
+                    pattern: "^[A-Z][A-Z0-9_]*$"
+      responses:
+        '200':
+          description: Keys deleted (idempotent — missing keys return deleted=N).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [deleted]
+                properties:
+                  deleted:
+                    type: integer
+                    minimum: 0
+        '400':
+          description: invalid_key, too_many_keys, invalid_keys, or invalid_json.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/InvalidKeyError' }
+                  - { $ref: '#/components/schemas/TooManyKeysError' }
+                  - { $ref: '#/components/schemas/InvalidEntriesError' }
+        '401':
+          description: "No credentials OR invalid_token OR revoked_token."
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/UnauthorizedError' }
+                  - { $ref: '#/components/schemas/InvalidTokenError' }
+                  - { $ref: '#/components/schemas/RevokedTokenError' }
+        '403':
+          description: insufficient_role — only owner/admin can delete.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InsufficientRoleError'
+        '405': { description: method_not_allowed (non-POST) }
+        '500': { description: delete_failed (unexpected) }
+
+components:
+  schemas:
+    EnvListEntry:
+      type: object
+      description: "Redacted env entry shape. value_preview is first 4 chars + '…' — NEVER full plaintext."
+      required: [key, value_preview, updated_at, updated_by]
+      properties:
+        key:
+          type: string
+          pattern: "^[A-Z][A-Z0-9_]*$"
+        value_preview:
+          type: string
+          description: "First 4 chars of plaintext + '…'. Safe to display in any UI."
+        updated_at:
+          type: string
+          format: date-time
+        updated_by:
+          type: string
+          description: "user_id of the operator that last wrote this entry."
+
+    EnvEntryWithValue:
+      type: object
+      description: "Full env entry with decrypted value. Returned ONLY from /pull after owner/admin gate."
+      required: [key, value]
+      properties:
+        key:
+          type: string
+          pattern: "^[A-Z][A-Z0-9_]*$"
+        value:
+          type: string
+          description: "Decrypted plaintext value. Client must persist to 0o600 local file only; never log."
+
+    UnauthorizedError:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [unauthorized] }
+
+    InvalidTokenError:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [invalid_token] }
+
+    RevokedTokenError:
+      type: object
+      required: [error, hint]
+      properties:
+        error: { type: string, enum: [revoked_token] }
+        hint:  { type: string }
+
+    InsufficientRoleError:
+      type: object
+      description: "Caller's role in the tenant is not owner or admin. Required for pull/push/delete."
+      required: [error, required]
+      properties:
+        error: { type: string, enum: [insufficient_role] }
+        required:
+          type: array
+          items: { type: string }
+        actual: { type: string }
+
+    InvalidKeyError:
+      type: object
+      description: "Key does not match /^[A-Z][A-Z0-9_]*$/."
+      required: [error, key]
+      properties:
+        error: { type: string, enum: [invalid_key] }
+        key:   { type: string }
+        index: { type: integer }
+
+    TooManyEntriesError:
+      type: object
+      description: "Push body contained more than 100 entries."
+      required: [error, limit, actual]
+      properties:
+        error:  { type: string, enum: [too_many_entries] }
+        limit:  { type: integer }
+        actual: { type: integer }
+
+    TooManyKeysError:
+      type: object
+      description: "Delete body contained more than 100 keys."
+      required: [error, limit, actual]
+      properties:
+        error:  { type: string, enum: [too_many_keys] }
+        limit:  { type: integer }
+        actual: { type: integer }
+
+    ValueTooLargeError:
+      type: object
+      description: "Value exceeded 8192 chars (push DoS guard)."
+      required: [error, limit, actual]
+      properties:
+        error:  { type: string, enum: [value_too_large] }
+        limit:  { type: integer }
+        actual: { type: integer }
+        key:    { type: string }
+
+    InvalidEntriesError:
+      type: object
+      description: "Generic body validation failure (missing keys, wrong types, etc.)."
+      required: [error, message]
+      properties:
+        error:   { type: string, enum: [invalid_entries, invalid_keys, invalid_json] }
+        message: { type: string }
+
+    EncryptionKeyMissingError:
+      type: object
+      description: "Server misconfiguration — MARKOS_ENV_ENCRYPTION_KEY is unset."
+      required: [error, message]
+      properties:
+        error:   { type: string, enum: [encryption_key_missing] }
+        message: { type: string }
+
+    PullFailedError:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [pull_failed] }
+        error_description: { type: string }
+
+    PushFailedError:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string, enum: [push_failed] }
+        error_description: { type: string }
+
+threat_model:
+  trust_boundaries:
+    - "CLI → /pull → decrypted values: owner/admin role required; audit emit captures every pull."
+    - "CLI → /push → value plaintext (one-way): owner/admin; values never returned; encrypted at rest via pgcrypto."
+    - ".markos-local/.env local file: 0o600 perms; gitignored; never committed."
+    - "MARKOS_ENV_ENCRYPTION_KEY: server-side secret; rotation deferred to Phase 206 SOC 2 controls."
+  stride:
+    T-204-07-01:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "listEnv explicit column allow-list excludes value_encrypted; /list returns value_preview only. Test ep-02 + lib-10 grep-assert absence."
+    T-204-07-02:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "pull.js + push.js + delete.js role gate — role IN (owner, admin) else 403 insufficient_role. Tests ep-03 + ep-04 cover."
+    T-204-07-03:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "pushEnv audit payload = { keys, count } — NEVER values. Test lib-05 grep-asserts absence of plaintext value bytes."
+    T-204-07-05:
+      category: Tampering
+      disposition: mitigate
+      mitigation: "markos env pull refuses to overwrite .markos-local/.env without --force; --diff + --merge supported. Tests env-03 + env-05 + env-06 cover."
+    T-204-07-06:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "bin/install.cjs::applyGitignoreProtections auto-adds .markos-local/ (Plan 01 wired)."
+    T-204-07-08:
+      category: DoS
+      disposition: mitigate
+      mitigation: "push.js 100 entries + 8192 char value caps; delete.js 100 key cap."
+    T-204-07-09:
+      category: Tampering
+      disposition: mitigate
+      mitigation: "pull.js + push.js explicit guard — 500 encryption_key_missing when MARKOS_ENV_ENCRYPTION_KEY unset; no silent null-key fallback."
+
+libraries:
+  env_lib:      lib/markos/cli/env.cjs
+  whoami_lib:   lib/markos/cli/whoami.cjs
+  audit_writer: lib/markos/audit/writer.cjs
+  http_lib:     bin/lib/cli/http.cjs
+
+migrations:
+  tenant_env: supabase/migrations/76_markos_cli_tenant_env.sql
+
+cli_commands:
+  - command: "markos env list"
+    file:    bin/commands/env.cjs
+    description: "TTY: 3-col table (key | value_preview | updated_at); non-TTY/--json: JSON array"
+  - command: "markos env pull [--force|--diff|--merge]"
+    file:    bin/commands/env.cjs
+    description: "Writes .markos-local/.env at 0o600. Refuses overwrite without --force; --diff previews; --merge keeps local-only keys"
+  - command: "markos env push [--dry-run]"
+    file:    bin/commands/env.cjs
+    description: "Reads .markos-local/.env, parses dotenv, POSTs to /push. --dry-run prints without calling server"
+  - command: "markos env delete <key> [--yes]"
+    file:    bin/commands/env.cjs
+    description: "--yes required in non-interactive mode; interactive confirm prompt otherwise"

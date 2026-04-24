@@ -3,7 +3,7 @@
   "info": {
     "title": "MarkOS API",
     "version": "1.0.0",
-    "description": "Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 68 flow contracts.",
+    "description": "Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 69 flow contracts.",
     "contact": {
       "name": "MarkOS Engineering",
       "url": "https://markos.esteban.marketing"
@@ -68,6 +68,10 @@
     "F-103": {
       "source": "contracts/F-103-cli-runs-v1.yaml",
       "description": "MarkOS flow F-103"
+    },
+    "F-104": {
+      "source": "contracts/F-104-cli-env-v1.yaml",
+      "description": "MarkOS flow F-104"
     },
     "F-105": {
       "source": "contracts/F-105-cli-whoami-status-v1.yaml",
@@ -2343,6 +2347,433 @@
         "x-flow-id": "F-88-tenant-audit-query-v1",
         "x-flow-name": "tenant_audit_query",
         "x-domain": "tenancy",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/tenant/env": {
+      "get": {
+        "summary": "List redacted env entries for the caller's tenant. Any authed member. Values are never returned — only value_preview (4 chars + ellipsis).",
+        "operationId": "cliEnvList",
+        "tags": [
+          "cli",
+          "env",
+          "list"
+        ],
+        "parameters": [
+          {
+            "{ name": "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+          },
+          {
+            "{ name": "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+          }
+        ],
+        "responses": {
+          "'200'": {
+            "description": "Redacted env list. value_preview only; NEVER decrypted value.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": "[entries]",
+                  "properties": {
+                    "entries": {
+                      "type": "array",
+                      "items": "{ $ref: '#/components/schemas/EnvListEntry' }"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "'401'": {
+            "description": "No credentials OR invalid_token OR revoked_token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/UnauthorizedError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidTokenError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/RevokedTokenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'405'": "{ description: method_not_allowed (non-GET) }",
+          "'500'": "{ description: list_failed (unexpected) }"
+        },
+        "x-flow-id": "F-104",
+        "x-flow-name": "CLI Tenant Env Sync",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/tenant/env/delete": {
+      "post": {
+        "summary": "Bulk delete env entries by key. Owner/admin only. Max 100 keys per request.",
+        "operationId": "cliEnvDelete",
+        "tags": [
+          "cli",
+          "env",
+          "delete"
+        ],
+        "parameters": [
+          {
+            "{ name": "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+          },
+          {
+            "{ name": "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": "[keys]",
+                "properties": {
+                  "keys": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[A-Z][A-Z0-9_]*$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "'200'": {
+            "description": "Keys deleted (idempotent — missing keys return deleted=N).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": "[deleted]",
+                  "properties": {
+                    "deleted": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "'400'": {
+            "description": "invalid_key, too_many_keys, invalid_keys, or invalid_json.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidKeyError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/TooManyKeysError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidEntriesError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'401'": {
+            "description": "No credentials OR invalid_token OR revoked_token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/UnauthorizedError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidTokenError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/RevokedTokenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'403'": {
+            "description": "insufficient_role — only owner/admin can delete.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsufficientRoleError"
+                }
+              }
+            }
+          },
+          "'405'": "{ description: method_not_allowed (non-POST) }",
+          "'500'": "{ description: delete_failed (unexpected) }"
+        },
+        "x-flow-id": "F-104",
+        "x-flow-name": "CLI Tenant Env Sync",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/tenant/env/pull": {
+      "get": {
+        "summary": "Bulk decrypt + return all env entries. Owner/admin only (high-privilege secret read). Emits env.pulled audit event.",
+        "operationId": "cliEnvPull",
+        "tags": [
+          "cli",
+          "env",
+          "pull"
+        ],
+        "parameters": [
+          {
+            "{ name": "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+          },
+          {
+            "{ name": "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+          }
+        ],
+        "responses": {
+          "'200'": {
+            "description": "Full decrypted env entries. Consumed by `markos env pull` to write .markos-local/.env.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": "[entries]",
+                  "properties": {
+                    "entries": {
+                      "type": "array",
+                      "items": "{ $ref: '#/components/schemas/EnvEntryWithValue' }"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "'401'": {
+            "description": "No credentials OR invalid_token OR revoked_token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/UnauthorizedError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidTokenError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/RevokedTokenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'403'": {
+            "description": "insufficient_role — only owner/admin can pull decrypted values.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsufficientRoleError"
+                }
+              }
+            }
+          },
+          "'405'": "{ description: method_not_allowed (non-GET) }",
+          "'500'": {
+            "description": "encryption_key_missing (MARKOS_ENV_ENCRYPTION_KEY unset) OR pull_failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/EncryptionKeyMissingError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/PullFailedError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "x-flow-id": "F-104",
+        "x-flow-name": "CLI Tenant Env Sync",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/tenant/env/push": {
+      "post": {
+        "summary": "Upsert env entries (pgcrypto-encrypted at rest). Owner/admin only. Validates key regex + max 100 entries + value ≤ 8192 chars.",
+        "operationId": "cliEnvPush",
+        "tags": [
+          "cli",
+          "env",
+          "push"
+        ],
+        "parameters": [
+          {
+            "{ name": "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+          },
+          {
+            "{ name": "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": "[entries]",
+                "properties": {
+                  "entries": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "required": "[key, value]",
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "pattern": "^[A-Z][A-Z0-9_]*$"
+                        },
+                        "value": {
+                          "type": "string",
+                          "maxLength": 8192
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "'200'": {
+            "description": "Entries upserted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": "[updated]",
+                  "properties": {
+                    "updated": {
+                      "type": "integer",
+                      "minimum": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "'400'": {
+            "description": "invalid_key, too_many_entries, value_too_large, invalid_entries, or invalid_json.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidKeyError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/TooManyEntriesError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/ValueTooLargeError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidEntriesError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'401'": {
+            "description": "No credentials OR invalid_token OR revoked_token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/UnauthorizedError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidTokenError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/RevokedTokenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'403'": {
+            "description": "insufficient_role — only owner/admin can push.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsufficientRoleError"
+                }
+              }
+            }
+          },
+          "'405'": "{ description: method_not_allowed (non-POST) }",
+          "'500'": {
+            "description": "encryption_key_missing OR push_failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/EncryptionKeyMissingError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/PushFailedError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "x-flow-id": "F-104",
+        "x-flow-name": "CLI Tenant Env Sync",
+        "x-domain": "cli",
         "x-flow-version": "v1"
       }
     },
@@ -5162,6 +5593,154 @@
         "required": "[error]",
         "properties": {
           "error": "{ type: string, enum: [run_not_found] }"
+        }
+      },
+      "F_104_EnvListEntry": {
+        "type": "object",
+        "description": "Redacted env entry shape. value_preview is first 4 chars + '…' — NEVER full plaintext.",
+        "required": "[key, value_preview, updated_at, updated_by]",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
+          },
+          "value_preview": {
+            "type": "string",
+            "description": "First 4 chars of plaintext + '…'. Safe to display in any UI."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_by": {
+            "type": "string",
+            "description": "user_id of the operator that last wrote this entry."
+          }
+        }
+      },
+      "F_104_EnvEntryWithValue": {
+        "type": "object",
+        "description": "Full env entry with decrypted value. Returned ONLY from /pull after owner/admin gate.",
+        "required": "[key, value]",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]*$"
+          },
+          "value": {
+            "type": "string",
+            "description": "Decrypted plaintext value. Client must persist to 0o600 local file only; never log."
+          }
+        }
+      },
+      "F_104_UnauthorizedError": {
+        "type": "object",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [unauthorized] }"
+        }
+      },
+      "F_104_InvalidTokenError": {
+        "type": "object",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [invalid_token] }"
+        }
+      },
+      "F_104_RevokedTokenError": {
+        "type": "object",
+        "required": "[error, hint]",
+        "properties": {
+          "error": "{ type: string, enum: [revoked_token] }",
+          "hint": "{ type: string }"
+        }
+      },
+      "F_104_InsufficientRoleError": {
+        "type": "object",
+        "description": "Caller's role in the tenant is not owner or admin. Required for pull/push/delete.",
+        "required": "[error, required]",
+        "properties": {
+          "error": "{ type: string, enum: [insufficient_role] }",
+          "required": {
+            "type": "array",
+            "items": "{ type: string }"
+          },
+          "actual": "{ type: string }"
+        }
+      },
+      "F_104_InvalidKeyError": {
+        "type": "object",
+        "description": "Key does not match /^[A-Z][A-Z0-9_]*$/.",
+        "required": "[error, key]",
+        "properties": {
+          "error": "{ type: string, enum: [invalid_key] }",
+          "key": "{ type: string }",
+          "index": "{ type: integer }"
+        }
+      },
+      "F_104_TooManyEntriesError": {
+        "type": "object",
+        "description": "Push body contained more than 100 entries.",
+        "required": "[error, limit, actual]",
+        "properties": {
+          "error": "{ type: string, enum: [too_many_entries] }",
+          "limit": "{ type: integer }",
+          "actual": "{ type: integer }"
+        }
+      },
+      "F_104_TooManyKeysError": {
+        "type": "object",
+        "description": "Delete body contained more than 100 keys.",
+        "required": "[error, limit, actual]",
+        "properties": {
+          "error": "{ type: string, enum: [too_many_keys] }",
+          "limit": "{ type: integer }",
+          "actual": "{ type: integer }"
+        }
+      },
+      "F_104_ValueTooLargeError": {
+        "type": "object",
+        "description": "Value exceeded 8192 chars (push DoS guard).",
+        "required": "[error, limit, actual]",
+        "properties": {
+          "error": "{ type: string, enum: [value_too_large] }",
+          "limit": "{ type: integer }",
+          "actual": "{ type: integer }",
+          "key": "{ type: string }"
+        }
+      },
+      "F_104_InvalidEntriesError": {
+        "type": "object",
+        "description": "Generic body validation failure (missing keys, wrong types, etc.).",
+        "required": "[error, message]",
+        "properties": {
+          "error": "{ type: string, enum: [invalid_entries, invalid_keys, invalid_json] }",
+          "message": "{ type: string }"
+        }
+      },
+      "F_104_EncryptionKeyMissingError": {
+        "type": "object",
+        "description": "Server misconfiguration — MARKOS_ENV_ENCRYPTION_KEY is unset.",
+        "required": "[error, message]",
+        "properties": {
+          "error": "{ type: string, enum: [encryption_key_missing] }",
+          "message": "{ type: string }"
+        }
+      },
+      "F_104_PullFailedError": {
+        "type": "object",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [pull_failed] }",
+          "error_description": "{ type: string }"
+        }
+      },
+      "F_104_PushFailedError": {
+        "type": "object",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [push_failed] }",
+          "error_description": "{ type: string }"
         }
       },
       "F_105_WhoamiEnvelope": {
