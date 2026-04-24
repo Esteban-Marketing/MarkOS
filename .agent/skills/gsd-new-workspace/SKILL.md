@@ -1,0 +1,52 @@
+<!-- TODO: workflow file .agent/get-shit-done/workflows/new-workspace.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
+---
+name: gsd-new-workspace
+description: Create an isolated workspace with repo copies and independent .planning/
+---
+
+<context>
+**Flags:**
+- `--name` (required) — Workspace name
+- `--repos` — Comma-separated repo paths or names. If omitted, interactive selection from child git repos in cwd
+- `--path` — Target directory. Defaults to `~/gsd-workspaces/<name>`
+- `--strategy` — `worktree` (default, lightweight) or `clone` (fully independent)
+- `--branch` — Branch to checkout. Defaults to `workspace/<name>`
+- `--auto` — Skip interactive questions, use defaults
+</context>
+
+<objective>
+Create a physical workspace directory containing copies of specified git repos (as worktrees or clones) with an independent `.planning/` directory for isolated GSD sessions.
+
+**Use cases:**
+- Multi-repo orchestration: work on a subset of repos in parallel with isolated GSD state
+- Feature branch isolation: create a worktree of the current repo with its own `.planning/`
+
+**Creates:**
+- `<path>/WORKSPACE.md` — workspace manifest
+- `<path>/.planning/` — independent planning directory
+- `<path>/<repo>/` — git worktree or clone for each specified repo
+
+**After this command:** `cd` into the workspace and run `/gsd-new-project` to initialize GSD.
+</objective>
+
+<execution_context>
+@.agent/get-shit-done/workflows/new-workspace.md
+@.agent/get-shit-done/references/ui-brand.md
+</execution_context>
+
+<process>
+Execute the new-workspace workflow from @.agent/get-shit-done/workflows/new-workspace.md end-to-end.
+Preserve all workflow gates (validation, approvals, commits, routing).
+</process>
+
+<success_criteria>
+- [ ] The core objective stated in the context or workflow was perfectly achieved.
+- [ ] Required output files or state updates are correctly written to disk.
+- [ ] Operations are atomic and accurately logged.
+</success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>

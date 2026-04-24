@@ -29,7 +29,6 @@
 | `test/` | folder, file | Verification ownership |
 | `tools/` | folder, file | Maintained auxiliary tooling |
 | `.agent/` | entrypoint, folder, file | Protocol/GSD engine surfaces |
-| `.agents/` | folder, file | Local skill/agent support |
 | `.planning/` | artifact, folder, file | Canonical planning layer |
 | `obsidian/` | artifact, folder, file | Vault doctrine and intake surfaces |
 | `RESEARCH/` | artifact, folder, file | Research output surfaces |

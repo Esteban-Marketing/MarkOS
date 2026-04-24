@@ -77,11 +77,6 @@ Refresh trigger: new repo-maintained toolchain or auxiliary runtime dependency.
 Purpose: MarkOS protocol and GSD engines, templates, and agent/skill logic.
 Refresh trigger: new protocol surface, template family, or command engine change.
 
-### `.agents/`
-
-Purpose: local skill catalog and helper agent definitions used by Codex/GSD workflows.
-Refresh trigger: new local skill or agent package.
-
 ### `.planning/`
 
 Purpose: canonical roadmap/state/phases plus codebase and audit artifacts.

@@ -93,7 +93,7 @@ New audit artifact:
 
 ## Planning overlay (2026-04-23 codebase vs vault deep run)
 
-The repository was scanned across `app/`, `api/`, `bin/`, `components/`, `contracts/`, `docs/`, `lib/`, `onboarding/`, `sdk/`, `scripts/`, `supabase/`, `test/`, `tools/`, `.agent/`, `.agents/`, `.planning/`, `obsidian/`, and `RESEARCH/` to compare live implementation surfaces against the current Obsidian vault doctrine.
+The repository was scanned across `app/`, `api/`, `bin/`, `components/`, `contracts/`, `docs/`, `lib/`, `onboarding/`, `sdk/`, `scripts/`, `supabase/`, `test/`, `tools/`, `.agent/`, `.planning/`, `obsidian/`, and `RESEARCH/` to compare live implementation surfaces against the current Obsidian vault doctrine.
 
 New artifact:
 

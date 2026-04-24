@@ -1,0 +1,45 @@
+<!-- TODO: workflow file .agent/get-shit-done/workflows/manager.md not yet ported from upstream GSD; skill will fail to resolve execution_context until ported. -->
+---
+name: gsd-manager
+description: Interactive command center for managing multiple phases from one terminal
+---
+
+<objective>
+Single-terminal command center for managing a milestone. Shows a dashboard of all phases with visual status indicators, recommends optimal next actions, and dispatches work — discuss runs inline, plan/execute run as background agents.
+
+Designed for power users who want to parallelize work across phases from one terminal: discuss a phase while another plans or executes in the background.
+
+**Creates/Updates:**
+- No files created directly — dispatches to existing GSD commands via Skill() and background Task agents.
+- Reads `.planning/STATE.md`, `.planning/ROADMAP.md`, phase directories for status.
+
+**After:** User exits when done managing, or all phases complete and milestone lifecycle is suggested.
+</objective>
+
+<execution_context>
+@.agent/get-shit-done/workflows/manager.md
+@.agent/get-shit-done/references/ui-brand.md
+</execution_context>
+
+<context>
+No arguments required. Requires an active milestone with ROADMAP.md and STATE.md.
+
+Project context, phase list, dependencies, and recommendations are resolved inside the workflow using `gsd-tools.cjs init manager`. No upfront context loading needed.
+</context>
+
+<process>
+Execute the manager workflow from @.agent/get-shit-done/workflows/manager.md end-to-end.
+Maintain the dashboard refresh loop until the user exits or all phases complete.
+</process>
+
+<success_criteria>
+- [ ] The core objective stated in the context or workflow was perfectly achieved.
+- [ ] Required output files or state updates are correctly written to disk.
+- [ ] Operations are atomic and accurately logged.
+</success_criteria>
+
+<failure_modes>
+- Required input files (context, state, plans) may be missing or empty.
+- Tools may fail due to incorrect parameters or unexpected system states.
+- Agent may hallucinate completion without verifying final file contents.
+</failure_modes>
