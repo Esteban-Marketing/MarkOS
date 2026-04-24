@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 204
-last_updated: "2026-04-24T12:00:00.000Z"
+last_updated: "2026-04-24T14:00:00.000Z"
 progress:
   total_phases: 14
   completed_phases: 4
   total_plans: 105
-  completed_plans: 44
+  completed_plans: 45
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -16,8 +16,8 @@ progress:
 ## Current Position
 
 Phase: 204 (cli-markos-v1-ga) — EXECUTING
-Plan: 7 of 13 COMPLETE — **WAVE 2 CLOSED.** `markos env list|pull|push|delete` shipped with pgcrypto-encrypted tenant env store. Migration 76 (`markos_cli_tenant_env` with pgp_sym_encrypt + 2 SECURITY DEFINER RPCs + RLS + composite PK) + `lib/markos/cli/env.cjs` (6 exports: 4 data primitives + parseDotenv/serializeDotenv) + 4 endpoints (list member-accessible with value_preview redaction; pull/push/delete owner-admin-gated with audit emits) + `bin/commands/env.cjs` with --force/--diff/--merge/--dry-run/--yes + .markos-local/.env 0o600 safety + F-104 contract (4 paths + 10 error envelopes) + 35 new tests. openapi: 68 → 69 flows / 108 → 112 paths.
-Next: Wave 3 — 204-08 (status — consumes `listRuns`/`getRun`/`listEnv`), 204-09 (distribution), 204-10..13 remain.
+Plan: 8 of 13 COMPLETE — **WAVE 3 lead shipped.** `markos status` ships the 4-panel operator-self-serve dashboard (subscription + quota + active rotations + recent runs) with TTY unicode boxes + progress bars + green/yellow/red thresholds + --watch 5s refresh + `status run <id>` single-run detail via SSE one-frame read. `lib/markos/cli/status.cjs` + TS twin expose `aggregateStatus` with safe-require cross-phase imports (rotation.cjs, metrics.cjs, runs.cjs) so panels degrade independently. `GET /api/tenant/status` (no role gate; any member; ?runs=N clamp 1..50). F-105 contract COMPLETED — x-markos-phase: 204-08-PLAN placeholder removed; StatusEnvelope + 4 sub-panel schemas (StatusSubscriptionPanel / StatusQuotaPanel / StatusRotationRow / StatusRecentRunRow) fully specified. 19 new tests green + zero regression (222 total CLI tests green). openapi: 69 flows / 112 paths.
+Next: Wave 3 continues — 204-09 (distribution), 204-10 (markos doctor), 204-11..13 remain.
 
 ## Phase 204 Plan Progress
 
@@ -28,7 +28,7 @@ Next: Wave 3 — 204-08 (status — consumes `listRuns`/`getRun`/`listEnv`), 204
 - [x] 204-05: markos init + plan + eval — delegator CLI + dry-run endpoint + local rubric + F-103 + 29 tests (2026-04-23)
 - [x] 204-06: markos run + SSE watch — migration 75 + runs lib (5 primitives) + 3 endpoints + CLI + F-103 merged (4 paths) + 40 tests (2026-04-24)
 - [x] 204-07: markos env (list/pull/push/delete) — migration 76 (pgcrypto) + env lib (6 exports) + 4 endpoints + CLI + F-104 (4 paths) + 35 tests — **Wave 2 CLOSED** (2026-04-24)
-- [ ] 204-08: markos status
+- [x] 204-08: markos status — aggregateStatus library + TS twin + /api/tenant/status + status.cjs CLI with --watch + status run <id> + F-105 completion (5 schemas) + 19 tests — **Wave 3 LEAD** (2026-04-24)
 - [ ] 204-09: distribution (npm/Homebrew/Scoop)
 - [ ] 204-10: markos doctor
 - [ ] 204-11: security hardening + E2E
