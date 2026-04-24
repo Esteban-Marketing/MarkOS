@@ -1,0 +1,282 @@
+id: F-102-cli-api-keys-v1
+flow_id: F-102
+phase: 204
+name: CLI API-Key CRUD
+title: CLI API-Key CRUD (list, create, revoke)
+version: v1
+status: active
+domain: cli
+summary: >-
+  Tenant-scoped CRUD for long-lived CLI API keys minted by the OAuth device
+  flow (F-101) or directly via `markos keys create`. Three endpoints:
+  GET /api/tenant/api-keys (any authed member), POST /api/tenant/api-keys
+  (role IN owner/admin), POST /api/tenant/api-keys/{key_id}/revoke (role IN
+  owner/admin). The plaintext `access_token` is returned ONLY from POST create
+  and never queryable afterwards (D-06 echo-once). Server persists only
+  sha256(plaintext) as key_hash with the first 8 hex chars stored as
+  key_fingerprint for UI display. Audit emit on every create + revoke with
+  source_domain='cli', action='api_key.created|revoked', payload carrying
+  { key_id, key_fingerprint, name } — NEVER key_hash / plaintext.
+
+boundary:
+  tenant_scoped: true
+  manager_scope_cross_tenant: false
+
+references:
+  - D-06
+  - D-10
+  - A3
+  - A8
+  - CLI-01
+  - QA-01
+  - QA-02
+  - QA-04
+  - QA-11
+  - QA-15
+
+crypto:
+  plaintext_format: "^mks_ak_[a-f0-9]{64}$"
+  plaintext_entropy_bits: 256
+  hash_algorithm: sha256
+  fingerprint_length_chars: 8
+  hash_storage: "DB column markos_cli_api_keys.key_hash (sha256 hex, one-way); plaintext is never persisted"
+
+paths:
+  /api/tenant/api-keys:
+    get:
+      summary: List active (non-revoked) API keys for the caller's tenant
+      operationId: cliApiKeysList
+      tags:
+        - cli
+        - api-keys
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of active keys. Never includes key_hash or plaintext.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [keys]
+                properties:
+                  keys:
+                    type: array
+                    items:
+                      type: object
+                      required: [id, key_fingerprint, scope, created_at]
+                      properties:
+                        id:
+                          type: string
+                          pattern: "^cak_[a-f0-9]+$"
+                          description: "Primary key. Also the path param for revoke."
+                        name:
+                          type: [string, 'null']
+                          description: "Operator-supplied label (1-64 chars) or null."
+                        key_fingerprint:
+                          type: string
+                          pattern: "^[a-f0-9]{8}$"
+                          description: "First 8 hex chars of sha256(plaintext) — safe to log."
+                        scope:
+                          type: string
+                          enum: [cli]
+                        created_at:
+                          type: string
+                          format: date-time
+                        last_used_at:
+                          type: [string, 'null']
+                          format: date-time
+        '401': { description: "unauthorized — missing x-markos-user-id or x-markos-tenant-id" }
+        '405': { description: method_not_allowed (non-GET) }
+        '500': { description: list_failed (unexpected) }
+
+    post:
+      summary: Mint a new API key (role IN owner/admin)
+      operationId: cliApiKeysCreate
+      tags:
+        - cli
+        - api-keys
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 64
+                  description: "Operator label displayed in the keys list. Optional."
+      responses:
+        '201':
+          description: Key minted. access_token is plaintext and is returned ONCE ONLY.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [key_id, access_token, key_fingerprint, created_at]
+                properties:
+                  key_id:
+                    type: string
+                    pattern: "^cak_[a-f0-9]+$"
+                  access_token:
+                    type: string
+                    pattern: "^mks_ak_[a-f0-9]{64}$"
+                    description: "Plaintext API key. 256-bit entropy. sha256 is persisted server-side; this value is ONLY returned here (D-06)."
+                  key_fingerprint:
+                    type: string
+                    pattern: "^[a-f0-9]{8}$"
+                  name:
+                    type: [string, 'null']
+                  created_at:
+                    type: string
+                    format: date-time
+        '400': { description: "invalid_name — name is not a string or outside 1-64 chars" }
+        '401': { description: "unauthorized — missing headers" }
+        '403': { description: "insufficient_role (role not in owner/admin) OR not_a_member" }
+        '405': { description: method_not_allowed (non-POST) }
+        '500': { description: create_failed (unexpected) }
+
+  /api/tenant/api-keys/{key_id}/revoke:
+    post:
+      summary: Revoke an API key by setting revoked_at=now() (role IN owner/admin)
+      operationId: cliApiKeysRevoke
+      tags:
+        - cli
+        - api-keys
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+        - { name: key_id, in: path, required: true, schema: { type: string, pattern: "^cak_[a-f0-9]+$" } }
+      responses:
+        '200':
+          description: Key revoked (or already revoked — idempotent).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [revoked_at]
+                properties:
+                  revoked_at:
+                    type: string
+                    format: date-time
+        '401': { description: "unauthorized — missing headers" }
+        '403':
+          description: "insufficient_role (role not in owner/admin) OR not_a_member OR cross_tenant_forbidden (key belongs to a different tenant)"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/InsufficientRoleError' }
+                  - { $ref: '#/components/schemas/CrossTenantForbiddenError' }
+        '404': { description: key_not_found }
+        '405': { description: method_not_allowed (non-POST) }
+        '500': { description: revoke_failed (unexpected) }
+
+components:
+  schemas:
+    UnauthorizedError:
+      type: object
+      description: "Missing or invalid x-markos-user-id / x-markos-tenant-id header."
+      required: [error]
+      properties:
+        error: { type: string, enum: [unauthorized] }
+
+    InsufficientRoleError:
+      type: object
+      description: "Caller's role in the tenant is not owner or admin. Required for create + revoke."
+      required: [error, required]
+      properties:
+        error: { type: string, enum: [insufficient_role] }
+        required:
+          type: array
+          items: { type: string }
+        actual: { type: string }
+
+    CrossTenantForbiddenError:
+      type: object
+      description: "Caller attempted to revoke a key belonging to a different tenant. T-204-03-04 mitigation."
+      required: [error]
+      properties:
+        error: { type: string, enum: [cross_tenant_forbidden] }
+
+    KeyNotFoundError:
+      type: object
+      description: "No row with the given key_id exists."
+      required: [error]
+      properties:
+        error: { type: string, enum: [key_not_found] }
+
+    InvalidNameError:
+      type: object
+      description: "Body.name is not a string or outside 1-64 chars."
+      required: [error]
+      properties:
+        error: { type: string, enum: [invalid_name] }
+
+    MethodNotAllowedError:
+      type: object
+      description: "HTTP method not GET (list) or POST (create/revoke)."
+      required: [error]
+      properties:
+        error: { type: string, enum: [method_not_allowed] }
+
+threat_model:
+  trust_boundaries:
+    - "CLI Bearer token → /api/tenant/api-keys/*: access resolved by key_hash in Phase 205 middleware."
+    - "Tenant member → api key CRUD: role IN (owner, admin) for create + revoke; any member for list."
+    - "access_token plaintext → user: returned ONCE from POST create; never queryable later."
+  stride:
+    T-204-03-01:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "list.js + listKeys explicit column allow-list excludes key_hash. Tests ep-02 + ak-04 assert absence."
+    T-204-03-02:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "mintKey returns plaintext access_token; no other library or endpoint surface touches it. DB column key_hash is one-way sha256 (D-06)."
+    T-204-03-03:
+      category: Elevation of Privilege
+      disposition: mitigate
+      mitigation: "create.js + revoke.js enforce role IN (owner, admin) before delegating to library. Tests ep-04 + ep-07 cover."
+    T-204-03-04:
+      category: Tampering
+      disposition: mitigate
+      mitigation: "revokeKey SELECTs tenant_id and compares to caller's — throws cross_tenant_forbidden → 403. Tests ak-05 + ep-07 cover."
+    T-204-03-05:
+      category: Repudiation
+      disposition: mitigate
+      mitigation: "create.js + revoke.js emit audit rows source_domain='cli' with actor_role resolved to real tenant role. Payload carries key_fingerprint but NEVER key_hash or plaintext. Tests ep-05 + ep-07 cover."
+    T-204-03-06:
+      category: DoS
+      disposition: accept
+      rationale: "Mint cost is trivial (sha256 + single INSERT). Phase 201 tenant-baseline rate limits cover abuse."
+    T-204-03-07:
+      category: Tampering
+      disposition: mitigate
+      mitigation: "markos keys revoke CLI requires --yes flag OR interactive TTY confirm; non-TTY without --yes exits 1 with 'refusing'. Test keys-08 covers."
+
+libraries:
+  api_keys_lib:   lib/markos/cli/api-keys.cjs
+  keychain_lib:   bin/lib/cli/keychain.cjs
+  http_lib:       bin/lib/cli/http.cjs
+  audit_writer:   lib/markos/audit/writer.cjs
+
+migrations:
+  api_keys: supabase/migrations/74_markos_cli_api_keys.sql
+
+cli_commands:
+  - command: "markos keys list"
+    file:    bin/commands/keys.cjs
+    description: "TTY: ANSI table; non-TTY/--json: JSON array"
+  - command: "markos keys create [--name=X]"
+    file:    bin/commands/keys.cjs
+    description: "Prints access_token ONCE with warning; JSON in non-TTY"
+  - command: "markos keys revoke <key_id> [--yes]"
+    file:    bin/commands/keys.cjs
+    description: "--yes required in non-interactive mode; interactive confirm prompt otherwise"

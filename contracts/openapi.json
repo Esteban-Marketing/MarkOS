@@ -3,7 +3,7 @@
   "info": {
     "title": "MarkOS API",
     "version": "1.0.0",
-    "description": "Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 65 flow contracts.",
+    "description": "Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 66 flow contracts.",
     "contact": {
       "name": "MarkOS Engineering",
       "url": "https://markos.esteban.marketing"
@@ -60,6 +60,10 @@
     "F-101": {
       "source": "contracts/F-101-cli-oauth-device-v1.yaml",
       "description": "MarkOS flow F-101"
+    },
+    "F-102": {
+      "source": "contracts/F-102-cli-api-keys-v1.yaml",
+      "description": "MarkOS flow F-102"
     },
     "F-11": {
       "source": "contracts/F-11-literacy-admin-query-v1.yaml",
@@ -2010,6 +2014,224 @@
         "x-flow-id": "F-16",
         "x-flow-name": "spark-suggestion",
         "x-domain": "enrichment",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/tenant/api-keys": {
+      "get": {
+        "summary": "List active (non-revoked) API keys for the caller's tenant",
+        "operationId": "cliApiKeysList",
+        "tags": [
+          "cli",
+          "api-keys"
+        ],
+        "parameters": [
+          {
+            "{ name": "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+          }
+        ],
+        "responses": {
+          "'200'": {
+            "description": "List of active keys. Never includes key_hash or plaintext.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": "[keys]",
+                  "properties": {
+                    "keys": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": "[id, key_fingerprint, scope, created_at]",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^cak_[a-f0-9]+$",
+                            "description": "Primary key. Also the path param for revoke."
+                          },
+                          "name": {
+                            "type": "[string, 'null']",
+                            "description": "Operator-supplied label (1-64 chars) or null."
+                          },
+                          "key_fingerprint": {
+                            "type": "string",
+                            "pattern": "^[a-f0-9]{8}$",
+                            "description": "First 8 hex chars of sha256(plaintext) — safe to log."
+                          },
+                          "scope": {
+                            "type": "string",
+                            "enum": "[cli]"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "last_used_at": {
+                            "type": "[string, 'null']",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "'401'": "{ description: \"unauthorized — missing x-markos-user-id or x-markos-tenant-id\" }",
+          "'405'": "{ description: method_not_allowed (non-GET) }",
+          "'500'": "{ description: list_failed (unexpected) }"
+        },
+        "x-flow-id": "F-102",
+        "x-flow-name": "CLI API-Key CRUD",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      },
+      "post": {
+        "summary": "Mint a new API key (role IN owner/admin)",
+        "operationId": "cliApiKeysCreate",
+        "tags": [
+          "cli",
+          "api-keys"
+        ],
+        "parameters": [
+          {
+            "{ name": "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "description": "Operator label displayed in the keys list. Optional."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "'201'": {
+            "description": "Key minted. access_token is plaintext and is returned ONCE ONLY.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": "[key_id, access_token, key_fingerprint, created_at]",
+                  "properties": {
+                    "key_id": {
+                      "type": "string",
+                      "pattern": "^cak_[a-f0-9]+$"
+                    },
+                    "access_token": {
+                      "type": "string",
+                      "pattern": "^mks_ak_[a-f0-9]{64}$",
+                      "description": "Plaintext API key. 256-bit entropy. sha256 is persisted server-side; this value is ONLY returned here (D-06)."
+                    },
+                    "key_fingerprint": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{8}$"
+                    },
+                    "name": {
+                      "type": "[string, 'null']"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "'400'": "{ description: \"invalid_name — name is not a string or outside 1-64 chars\" }",
+          "'401'": "{ description: \"unauthorized — missing headers\" }",
+          "'403'": "{ description: \"insufficient_role (role not in owner/admin) OR not_a_member\" }",
+          "'405'": "{ description: method_not_allowed (non-POST) }",
+          "'500'": "{ description: create_failed (unexpected) }"
+        },
+        "x-flow-id": "F-102",
+        "x-flow-name": "CLI API-Key CRUD",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/tenant/api-keys/{key_id}/revoke": {
+      "post": {
+        "summary": "Revoke an API key by setting revoked_at=now() (role IN owner/admin)",
+        "operationId": "cliApiKeysRevoke",
+        "tags": [
+          "cli",
+          "api-keys"
+        ],
+        "parameters": [
+          {
+            "{ name": "x-markos-user-id, in: header, required: true, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: true, schema: { type: string } }"
+          },
+          {
+            "{ name": "key_id, in: path, required: true, schema: { type: string, pattern: \"^cak_[a-f0-9]+$\" } }"
+          }
+        ],
+        "responses": {
+          "'200'": {
+            "description": "Key revoked (or already revoked — idempotent).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": "[revoked_at]",
+                  "properties": {
+                    "revoked_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "'401'": "{ description: \"unauthorized — missing headers\" }",
+          "'403'": {
+            "description": "insufficient_role (role not in owner/admin) OR not_a_member OR cross_tenant_forbidden (key belongs to a different tenant)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/InsufficientRoleError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/CrossTenantForbiddenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'404'": "{ description: key_not_found }",
+          "'405'": "{ description: method_not_allowed (non-POST) }",
+          "'500'": "{ description: revoke_failed (unexpected) }"
+        },
+        "x-flow-id": "F-102",
+        "x-flow-name": "CLI API-Key CRUD",
+        "x-domain": "cli",
         "x-flow-version": "v1"
       }
     },
@@ -4256,6 +4478,59 @@
         "required": "[error]",
         "properties": {
           "error": "{ type: string, enum: [user_code_not_found] }"
+        }
+      },
+      "F_102_UnauthorizedError": {
+        "type": "object",
+        "description": "Missing or invalid x-markos-user-id / x-markos-tenant-id header.",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [unauthorized] }"
+        }
+      },
+      "F_102_InsufficientRoleError": {
+        "type": "object",
+        "description": "Caller's role in the tenant is not owner or admin. Required for create + revoke.",
+        "required": "[error, required]",
+        "properties": {
+          "error": "{ type: string, enum: [insufficient_role] }",
+          "required": {
+            "type": "array",
+            "items": "{ type: string }"
+          },
+          "actual": "{ type: string }"
+        }
+      },
+      "F_102_CrossTenantForbiddenError": {
+        "type": "object",
+        "description": "Caller attempted to revoke a key belonging to a different tenant. T-204-03-04 mitigation.",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [cross_tenant_forbidden] }"
+        }
+      },
+      "F_102_KeyNotFoundError": {
+        "type": "object",
+        "description": "No row with the given key_id exists.",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [key_not_found] }"
+        }
+      },
+      "F_102_InvalidNameError": {
+        "type": "object",
+        "description": "Body.name is not a string or outside 1-64 chars.",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [invalid_name] }"
+        }
+      },
+      "F_102_MethodNotAllowedError": {
+        "type": "object",
+        "description": "HTTP method not GET (list) or POST (create/revoke).",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [method_not_allowed] }"
         }
       },
       "F_63A_MutationFamily": {
