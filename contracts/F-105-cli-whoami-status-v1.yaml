@@ -2,21 +2,26 @@ id: F-105-cli-whoami-status-v1
 flow_id: F-105
 phase: 204
 name: CLI Whoami + Status
-title: CLI Whoami + Status (observability envelope + system status placeholder)
+title: CLI Whoami + Status (observability envelope + cross-domain status)
 version: v1
 status: active
 domain: cli
 summary: >-
   Observability envelope for the `markos` CLI. Two paths belong to this flow:
   (1) /api/tenant/whoami — SHIPPED in Plan 204-04. Accepts either an
-  Authorization: Bearer mks_ak_* token (NEW — CLI flow) OR the legacy
+  Authorization: Bearer mks_ak_* token (CLI flow) OR the legacy
   x-markos-user-id + x-markos-tenant-id session headers (Phase 201
   compatibility). Returns { tenant_id, tenant_name, role, email, user_id,
   key_fingerprint, scope, last_used_at }. NEVER returns the Bearer plaintext
   or key_hash — only key_fingerprint (first 8 hex of sha256). (2)
-  /api/tenant/status — PLACEHOLDER. Populated by Plan 204-08 with the
-  server-side status probe envelope. Scaffolded here so the contract + openapi
-  path count stabilise and Plan 08 inherits the whoami auth pattern verbatim.
+  /api/tenant/status — SHIPPED in Plan 204-08. Returns the operator-self-serve
+  cross-domain status envelope: subscription (plan_tier + billing_status),
+  quota (runs/tokens/deliveries this month over a 30d sliding window),
+  active_rotations (webhook signing-secret rotations from Phase 203), and
+  recent_runs (last 5 by default, bounded 1..50 via ?runs=N). All four panels
+  are tenant-scoped; cross-phase dependencies (webhooks/rotation,
+  webhooks/metrics) are imported via safe-require with neutral defaults so the
+  status path never crashes on absent sibling modules.
 
 boundary:
   tenant_scoped: true
@@ -32,6 +37,7 @@ references:
   - QA-01
   - QA-02
   - QA-04
+  - QA-10
   - QA-11
   - QA-15
 
@@ -79,27 +85,64 @@ paths:
         '500': { description: "whoami_failed — unexpected server error" }
 
   /api/tenant/status:
-    # x-markos-phase: 204-08-PLAN (placeholder marker — Plan 204-08 replaces this block)
-    # TODO(204-08): replace with full status probe envelope (connector health,
-    # migration state, agent_run DAG, billing cap). Do NOT remove the
-    # x-markos-phase marker until Plan 08 lands — downstream executors grep for
-    # it to locate scaffolding.
     get:
-      summary: "Populated by Plan 204-08 (placeholder — do not rely on this shape yet)"
+      summary: Cross-domain status envelope — subscription + quota + active rotations + recent runs.
       operationId: cliStatus
-      x-markos-phase: 204-08-PLAN
       tags:
         - cli
         - status
+      parameters:
+        - { name: Authorization, in: header, required: false, schema: { type: string, pattern: "^Bearer mks_ak_[a-f0-9]{64}$" } }
+        - { name: x-markos-user-id, in: header, required: false, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: false, schema: { type: string } }
+        - { name: runs, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 50 }, description: "Override recent_runs panel size. Default 5; clamped 1..50." }
       responses:
         '200':
-          description: "PLACEHOLDER — Plan 204-08 will define the concrete probe envelope."
+          description: Operator-self-serve status envelope. All four panels are tenant-scoped + safe-required (panels degrade to neutral defaults rather than failing the whole envelope).
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/StatusEnvelope'
-        '501':
-          description: "not_implemented — Plan 204-08 has not landed yet."
+              example:
+                subscription:
+                  plan_tier: pro
+                  billing_status: active
+                quota:
+                  runs_this_month: 42
+                  tokens_this_month: 62000
+                  deliveries_this_month: 1200
+                  window_days: 30
+                active_rotations:
+                  - id: whrot_5d8c
+                    subscription_id: sub_01
+                    url: https://example.com/hook
+                    grace_ends_at: '2026-05-23T12:00:00Z'
+                    initiated_at: '2026-04-23T12:00:00Z'
+                    stage: t-7
+                recent_runs:
+                  - run_id: run_abc123
+                    status: success
+                    created_at: '2026-04-23T12:00:00Z'
+                    completed_at: '2026-04-23T12:01:00Z'
+                    steps_completed: 3
+                    steps_total: 3
+                generated_at: '2026-04-23T12:05:00Z'
+        '401':
+          description: "No credentials OR invalid_token OR revoked_token. See components.schemas.*"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/UnauthorizedError' }
+                  - { $ref: '#/components/schemas/InvalidTokenError' }
+                  - { $ref: '#/components/schemas/RevokedTokenError' }
+        '405': { description: "method_not_allowed — status is GET-only" }
+        '500':
+          description: "status_failed — aggregation failure (should never occur; panels safe-require)."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatusFailedError'
 
 components:
   schemas:
@@ -160,24 +203,150 @@ components:
         error: { type: string, enum: [revoked_token] }
         hint:  { type: string }
 
+    StatusFailedError:
+      type: object
+      description: "Aggregation failure. Should be vanishingly rare since each panel safe-requires its sibling library."
+      required: [error]
+      properties:
+        error: { type: string, enum: [status_failed] }
+        error_description: { type: string }
+
     StatusEnvelope:
       type: object
-      # PLACEHOLDER — Plan 204-08 will populate this schema with the real probe
-      # response shape (connector health map, migration status, agent_run DAG,
-      # billing cap, degraded subsystems). Until then, this stub keeps openapi
-      # validation + path-count stable.
-      description: "PLACEHOLDER — Plan 204-08 replaces this with the concrete status probe envelope. Do not rely on any field here yet."
-      x-markos-phase: 204-08-PLAN
-      required: [status]
+      description: "Cross-domain status envelope returned by GET /api/tenant/status. Aggregates subscription billing posture, monthly quota usage, active webhook secret rotations, and recent CLI runs. All panels are tenant-scoped; sibling modules (webhooks/rotation, webhooks/metrics) are imported via safe-require + neutral defaults so the envelope never fails on absent dependencies."
+      required: [subscription, quota, active_rotations, recent_runs, generated_at]
       properties:
+        subscription:
+          $ref: '#/components/schemas/StatusSubscriptionPanel'
+        quota:
+          $ref: '#/components/schemas/StatusQuotaPanel'
+        active_rotations:
+          type: array
+          description: "Webhook signing-secret rotations currently in the 30-day grace window. Empty array when no rotations are pending OR the rotation module is not yet installed."
+          items:
+            $ref: '#/components/schemas/StatusRotationRow'
+        recent_runs:
+          type: array
+          description: "Last N CLI runs (default 5; bounded 1..50 via ?runs=N). Project-only fields — brief_json + result_json are intentionally omitted (T-204-06-04)."
+          items:
+            $ref: '#/components/schemas/StatusRecentRunRow'
+        generated_at:
+          type: string
+          format: date-time
+          description: "Server-side ISO timestamp at which the envelope was assembled. Useful for cache-staleness checks in --watch mode."
+
+    StatusSubscriptionPanel:
+      type: object
+      description: "Tenant subscription posture. Resolved via markos_tenants.org_id → markos_orgs(plan_tier, billing_status). Defaults to free/active when the org row is absent OR Phase 205 billing columns have not landed."
+      required: [plan_tier, billing_status]
+      properties:
+        plan_tier:
+          type: string
+          enum: [free, pro, enterprise]
+          description: "Active plan tier. Defaults to 'free' when billing schema is unavailable."
+          example: pro
+        billing_status:
+          type: string
+          enum: [active, grace, past_due, canceled]
+          description: "Billing posture. Defaults to 'active' when billing schema is unavailable."
+          example: active
+
+    StatusQuotaPanel:
+      type: object
+      description: "Tenant usage over a 30-day sliding window. runs/tokens are sourced from markos_cli_runs (Plan 06); deliveries is derived from the webhook fleet metrics view (Phase 203 Plan 09) projected from a 24h rollup × 30 days. Real 30d aggregate deferred to Phase 205 / gap-closure. Errors degrade to zero rather than failing the envelope."
+      required: [runs_this_month, tokens_this_month, deliveries_this_month, window_days]
+      properties:
+        runs_this_month:
+          type: integer
+          minimum: 0
+          description: "COUNT(*) on markos_cli_runs filtered to the last 30 days, tenant-scoped."
+          example: 42
+        tokens_this_month:
+          type: integer
+          minimum: 0
+          description: "SUM(result_json->>'tokens_used') over the same window. Null-safe (rows without tokens_used contribute 0)."
+          example: 62000
+        deliveries_this_month:
+          type: integer
+          minimum: 0
+          description: "Webhook deliveries projected from the 24h fleet-metrics rollup × 30. Real 30d aggregate is a Phase 205 follow-up."
+          example: 1200
+        window_days:
+          type: integer
+          enum: [30]
+          description: "Length of the sliding window in days. Pinned to 30 for v1 GA."
+          example: 30
+
+    StatusRotationRow:
+      type: object
+      description: "One active webhook signing-secret rotation. Sourced from lib/markos/webhooks/rotation.cjs::listActiveRotations. Stage is computed from grace_ends_at: t-0 (in or past expiry), t-1 (≤1 day), t-7 (≤7 days), normal (>7 days)."
+      required: [id, subscription_id, grace_ends_at, stage]
+      properties:
+        id:
+          type: string
+          description: "Rotation row id (whrot_<uuid>)."
+          example: whrot_5d8c1f
+        subscription_id:
+          type: string
+          description: "FK into markos_webhook_subscriptions."
+          example: sub_01
+        url:
+          type: [string, 'null']
+          description: "Subscription's delivery URL (joined for operator convenience)."
+          example: https://example.com/hook
+        grace_ends_at:
+          type: string
+          format: date-time
+          description: "When the grace window for the prior secret expires."
+          example: '2026-05-23T12:00:00Z'
+        initiated_at:
+          type: string
+          format: date-time
+          description: "When the rotation was started."
+          example: '2026-04-23T12:00:00Z'
+        stage:
+          type: string
+          enum: [t-7, t-1, t-0, normal]
+          description: "Bucketed grace-remaining stage. Drives operator-side colored notifications (T-7 yellow, T-1 + T-0 red)."
+          example: t-7
+
+    StatusRecentRunRow:
+      type: object
+      description: "Compact view of one CLI run. Heavy fields (brief_json, result_json) are intentionally stripped — Plan 06's listRuns omits them per T-204-06-04 and we inherit that mitigation here."
+      required: [run_id, status, created_at, steps_completed, steps_total]
+      properties:
+        run_id:
+          type: string
+          description: "markos_cli_runs.id"
+          example: run_abc123
         status:
           type: string
-          enum: [placeholder]
-          description: "Always 'placeholder' until Plan 204-08 ships."
+          enum: [pending, running, success, failed, cancelled]
+          description: "Latest state of the run."
+          example: success
+        created_at:
+          type: string
+          format: date-time
+          description: "Submission timestamp."
+          example: '2026-04-23T12:00:00Z'
+        completed_at:
+          type: [string, 'null']
+          format: date-time
+          description: "Terminal-state timestamp; null while still running/pending."
+          example: '2026-04-23T12:01:00Z'
+        steps_completed:
+          type: integer
+          minimum: 0
+          example: 3
+        steps_total:
+          type: integer
+          minimum: 0
+          example: 3
 
 threat_model:
   trust_boundaries:
     - "CLI Bearer → /api/tenant/whoami: token → sha256 → resolveKeyByHash → tenant/user/role resolution."
+    - "CLI Bearer → /api/tenant/status: same Bearer pipeline; aggregation library imports sibling modules via safe-require so a partial codebase never crashes the envelope."
     - "Dual auth paths: Bearer (new CLI) OR x-markos-user-id + x-markos-tenant-id (Phase 201 web sessions)."
   stride:
     T-204-04-01:
@@ -200,15 +369,40 @@ threat_model:
       category: Info Disclosure
       disposition: accept
       rationale: "Differentiating invalid_token vs revoked_token is helpful UX; both return 401 so no auth-bypass occurs."
+    T-204-08-01:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "Every status-aggregation query is tenant-scoped at the .eq('tenant_id', tenant_id) call site; aggregateStatus accepts tenant_id from resolveWhoami; no cross-tenant join paths exist."
+    T-204-08-02:
+      category: DoS
+      disposition: mitigate
+      mitigation: "markos status --watch loops on a 5s interval with a 60-min cap; per-tenant rate-limit (Phase 201 middleware) bounds load; SIGINT exits cleanly."
+    T-204-08-03:
+      category: Info Disclosure
+      disposition: accept
+      rationale: "recent_runs inherits Plan 06's listRuns column allow-list — brief_json/result_json never travel in the envelope."
+    T-204-08-04:
+      category: Tampering
+      disposition: accept
+      rationale: "Stale rotation status is acceptable on a 5s --watch refresh; active_rotations re-pulled per tick."
+    T-204-08-05:
+      category: Repudiation
+      disposition: accept
+      rationale: "Status reads are non-mutating; resolveWhoami's last_used_at touch provides minimal observability."
 
 libraries:
   whoami_lib:     lib/markos/cli/whoami.cjs
+  status_lib:     lib/markos/cli/status.cjs
   api_keys_lib:   lib/markos/cli/api-keys.cjs
   keychain_lib:   bin/lib/cli/keychain.cjs
   http_lib:       bin/lib/cli/http.cjs
+  rotation_lib:   lib/markos/webhooks/rotation.cjs
+  metrics_lib:    lib/markos/webhooks/metrics.cjs
+  runs_lib:       lib/markos/cli/runs.cjs
 
 migrations:
   api_keys: supabase/migrations/74_markos_cli_api_keys.sql
+  cli_runs: supabase/migrations/75_markos_cli_runs.sql
 
 cli_commands:
   - command: "markos whoami"
@@ -216,5 +410,4 @@ cli_commands:
     description: "TTY: boxed unicode table; non-TTY/--json: JSON envelope. NEVER echoes the Bearer token."
   - command: "markos status"
     file:    bin/commands/status.cjs
-    description: "PLACEHOLDER — wired by Plan 204-08. Currently stubbed."
-    x-markos-phase: 204-08-PLAN
+    description: "TTY: 4-section dashboard (subscription/quota/rotations/recent runs) with quota progress bars + colored thresholds. --watch refreshes every 5s. --json one-line envelope. status run <run_id> shows per-run detail."

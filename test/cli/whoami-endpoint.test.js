@@ -302,8 +302,9 @@ test('ep-07: F-105 YAML shape + openapi regen landed', () => {
   assert.ok(text.includes('/api/tenant/whoami:'), 'whoami path present');
   assert.ok(text.includes('/api/tenant/status:'), 'status placeholder path present');
 
-  // Status placeholder marker — Plan 204-08 will grep for this.
-  assert.ok(/204-08-PLAN/.test(text), 'status path carries x-markos-phase: 204-08-PLAN marker');
+  // Status placeholder marker — REMOVED after Plan 204-08 completed F-105.
+  // (Was: /204-08-PLAN/. Plan 08 fills the path with the real StatusEnvelope.)
+  assert.ok(/StatusEnvelope/.test(text), 'status path now references the real StatusEnvelope schema (placeholder removed by Plan 204-08)');
 
   // Block-form tags (prevents 203 tags-missing regression).
   assert.ok(/\n\s+tags:\n\s+- cli\n\s+- whoami/.test(text), 'whoami tags must be block-form');

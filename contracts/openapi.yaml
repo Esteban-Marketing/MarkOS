@@ -2494,21 +2494,63 @@ paths:
       x-flow-version: v1
   /api/tenant/status:
     get:
-      summary: Populated by Plan 204-08 (placeholder — do not rely on this shape yet)
+      summary: Cross-domain status envelope — subscription + quota + active rotations + recent runs.
       operationId: cliStatus
-      x-markos-phase: 204-08-PLAN
       tags:
         - cli
         - status
+      parameters:
+        -           { name: "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+        -           { name: "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+        -           { name: "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+        -           { name: "runs, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 50 }, description: \"Override recent_runs panel size. Default 5; clamped 1..50.\" }"
       responses:
         '200':
-          description: PLACEHOLDER — Plan 204-08 will define the concrete probe envelope.
+          description: Operator-self-serve status envelope. All four panels are tenant-scoped + safe-required (panels degrade to neutral defaults rather than failing the whole envelope).
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/StatusEnvelope"
-        '501':
-          description: not_implemented — Plan 204-08 has not landed yet.
+              example:
+                subscription:
+                  plan_tier: pro
+                  billing_status: active
+                quota:
+                  runs_this_month: 42
+                  tokens_this_month: 62000
+                  deliveries_this_month: 1200
+                  window_days: 30
+                active_rotations:
+                  -                     id: whrot_5d8c
+                    subscription_id: sub_01
+                    url: "https://example.com/hook"
+                    grace_ends_at: "2026-05-23T12:00:00Z"
+                    initiated_at: "2026-04-23T12:00:00Z"
+                    stage: t-7
+                recent_runs:
+                  -                     run_id: run_abc123
+                    status: success
+                    created_at: "2026-04-23T12:00:00Z"
+                    completed_at: "2026-04-23T12:01:00Z"
+                    steps_completed: 3
+                    steps_total: 3
+                generated_at: "2026-04-23T12:05:00Z"
+        '401':
+          description: "No credentials OR invalid_token OR revoked_token. See components.schemas.*"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  -                     { $ref: "'#/components/schemas/UnauthorizedError' }"
+                  -                     { $ref: "'#/components/schemas/InvalidTokenError' }"
+                  -                     { $ref: "'#/components/schemas/RevokedTokenError' }"
+        '405': "{ description: \"method_not_allowed — status is GET-only\" }"
+        '500':
+          description: status_failed — aggregation failure (should never occur; panels safe-require).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusFailedError"
       x-flow-id: F-105
       x-flow-name: CLI Whoami + Status
       x-domain: cli
@@ -3974,16 +4016,140 @@ components:
       properties:
         error: "{ type: string, enum: [revoked_token] }"
         hint: "{ type: string }"
+    F_105_StatusFailedError:
+      type: object
+      description: Aggregation failure. Should be vanishingly rare since each panel safe-requires its sibling library.
+      required: "[error]"
+      properties:
+        error: "{ type: string, enum: [status_failed] }"
+        error_description: "{ type: string }"
     F_105_StatusEnvelope:
       type: object
-      description: PLACEHOLDER — Plan 204-08 replaces this with the concrete status probe envelope. Do not rely on any field here yet.
-      x-markos-phase: 204-08-PLAN
-      required: "[status]"
+      description: "Cross-domain status envelope returned by GET /api/tenant/status. Aggregates subscription billing posture, monthly quota usage, active webhook secret rotations, and recent CLI runs. All panels are tenant-scoped; sibling modules (webhooks/rotation, webhooks/metrics) are imported via safe-require + neutral defaults so the envelope never fails on absent dependencies."
+      required: "[subscription, quota, active_rotations, recent_runs, generated_at]"
       properties:
+        subscription:
+          $ref: "#/components/schemas/StatusSubscriptionPanel"
+        quota:
+          $ref: "#/components/schemas/StatusQuotaPanel"
+        active_rotations:
+          type: array
+          description: Webhook signing-secret rotations currently in the 30-day grace window. Empty array when no rotations are pending OR the rotation module is not yet installed.
+          items:
+            $ref: "#/components/schemas/StatusRotationRow"
+        recent_runs:
+          type: array
+          description: "Last N CLI runs (default 5; bounded 1..50 via ?runs=N). Project-only fields — brief_json + result_json are intentionally omitted (T-204-06-04)."
+          items:
+            $ref: "#/components/schemas/StatusRecentRunRow"
+        generated_at:
+          type: string
+          format: date-time
+          description: Server-side ISO timestamp at which the envelope was assembled. Useful for cache-staleness checks in --watch mode.
+    F_105_StatusSubscriptionPanel:
+      type: object
+      description: "Tenant subscription posture. Resolved via markos_tenants.org_id → markos_orgs(plan_tier, billing_status). Defaults to free/active when the org row is absent OR Phase 205 billing columns have not landed."
+      required: "[plan_tier, billing_status]"
+      properties:
+        plan_tier:
+          type: string
+          enum: "[free, pro, enterprise]"
+          description: "Active plan tier. Defaults to 'free' when billing schema is unavailable."
+          example: pro
+        billing_status:
+          type: string
+          enum: "[active, grace, past_due, canceled]"
+          description: "Billing posture. Defaults to 'active' when billing schema is unavailable."
+          example: active
+    F_105_StatusQuotaPanel:
+      type: object
+      description: Tenant usage over a 30-day sliding window. runs/tokens are sourced from markos_cli_runs (Plan 06); deliveries is derived from the webhook fleet metrics view (Phase 203 Plan 09) projected from a 24h rollup × 30 days. Real 30d aggregate deferred to Phase 205 / gap-closure. Errors degrade to zero rather than failing the envelope.
+      required: "[runs_this_month, tokens_this_month, deliveries_this_month, window_days]"
+      properties:
+        runs_this_month:
+          type: integer
+          minimum: 0
+          description: "COUNT(*) on markos_cli_runs filtered to the last 30 days, tenant-scoped."
+          example: 42
+        tokens_this_month:
+          type: integer
+          minimum: 0
+          description: "SUM(result_json->>'tokens_used') over the same window. Null-safe (rows without tokens_used contribute 0)."
+          example: 62000
+        deliveries_this_month:
+          type: integer
+          minimum: 0
+          description: Webhook deliveries projected from the 24h fleet-metrics rollup × 30. Real 30d aggregate is a Phase 205 follow-up.
+          example: 1200
+        window_days:
+          type: integer
+          enum: "[30]"
+          description: Length of the sliding window in days. Pinned to 30 for v1 GA.
+          example: 30
+    F_105_StatusRotationRow:
+      type: object
+      description: "One active webhook signing-secret rotation. Sourced from lib/markos/webhooks/rotation.cjs::listActiveRotations. Stage is computed from grace_ends_at: t-0 (in or past expiry), t-1 (≤1 day), t-7 (≤7 days), normal (>7 days)."
+      required: "[id, subscription_id, grace_ends_at, stage]"
+      properties:
+        id:
+          type: string
+          description: "Rotation row id (whrot_<uuid>)."
+          example: whrot_5d8c1f
+        subscription_id:
+          type: string
+          description: FK into markos_webhook_subscriptions.
+          example: sub_01
+        url:
+          type: "[string, 'null']"
+          description: "Subscription's delivery URL (joined for operator convenience)."
+          example: "https://example.com/hook"
+        grace_ends_at:
+          type: string
+          format: date-time
+          description: When the grace window for the prior secret expires.
+          example: "2026-05-23T12:00:00Z"
+        initiated_at:
+          type: string
+          format: date-time
+          description: When the rotation was started.
+          example: "2026-04-23T12:00:00Z"
+        stage:
+          type: string
+          enum: "[t-7, t-1, t-0, normal]"
+          description: "Bucketed grace-remaining stage. Drives operator-side colored notifications (T-7 yellow, T-1 + T-0 red)."
+          example: t-7
+    F_105_StatusRecentRunRow:
+      type: object
+      description: "Compact view of one CLI run. Heavy fields (brief_json, result_json) are intentionally stripped — Plan 06's listRuns omits them per T-204-06-04 and we inherit that mitigation here."
+      required: "[run_id, status, created_at, steps_completed, steps_total]"
+      properties:
+        run_id:
+          type: string
+          description: markos_cli_runs.id
+          example: run_abc123
         status:
           type: string
-          enum: "[placeholder]"
-          description: "Always 'placeholder' until Plan 204-08 ships."
+          enum: "[pending, running, success, failed, cancelled]"
+          description: Latest state of the run.
+          example: success
+        created_at:
+          type: string
+          format: date-time
+          description: Submission timestamp.
+          example: "2026-04-23T12:00:00Z"
+        completed_at:
+          type: "[string, 'null']"
+          format: date-time
+          description: Terminal-state timestamp; null while still running/pending.
+          example: "2026-04-23T12:01:00Z"
+        steps_completed:
+          type: integer
+          minimum: 0
+          example: 3
+        steps_total:
+          type: integer
+          minimum: 0
+          example: 3
     F_63A_MutationFamily:
       type: string
       enum:
