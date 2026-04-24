@@ -47,6 +47,14 @@
 - [Public status page](https://markos.dev/docs/webhooks/status): /status/webhooks (F-99, 60s cache, no auth); 4 platform-wide hero numbers; Stripe/Vercel lineage.
 - [Phase 203 LLM Summary](https://markos.dev/docs/llms/phase-203-webhooks): Contracts (F-72/F-73 extended + F-96..F-100) + decisions + durability substrate.
 
+## Phase 204 — MarkOS CLI
+
+- [Homebrew install (macOS/Linux)](https://markos.dev/docs/cli/installation-homebrew.md): `brew install markos/markos/markos` — tap registry, formula-path Formula/markos.rb, auto-bump on tagged release via mislav/bump-homebrew-formula-action.
+- [Scoop install (Windows)](https://markos.dev/docs/cli/installation-scoop.md): `scoop bucket add markos && scoop install markos` — bucket registry, manifest at bucket/markos.json, bump-scoop-manifest.cjs on tagged release.
+- [11-command index](https://markos.dev/docs/cli/commands.md): init · generate · plan · run · eval · login · keys · whoami · env · status · doctor — global flags, subcommands, D-10 exit-code usage per command.
+- [Stable error-code reference](https://markos.dev/docs/cli/errors.md): 13 public-API error codes (INVALID_BRIEF..INTERNAL) + RFC 8628 device-flow codes + D-10 exit bands + TTY/JSON envelope shape; grep-asserted against bin/lib/cli/errors.cjs ERROR_TO_EXIT.
+- [Environment variables reference](https://markos.dev/docs/cli/environment.md): MARKOS_API_KEY/PROFILE/API_BASE_URL/NO_BROWSER + XDG_CONFIG_HOME + NO_COLOR + CI/GITHUB_ACTIONS; credential resolution order (env > keychain > XDG).
+
 ## Optional
 
 - [Full Docs (concatenated markdown)](https://markos.dev/docs/llms-full.txt): Single-file concatenation of all documentation pages for LLM ingestion.
