@@ -66,7 +66,7 @@
       "description": "MarkOS flow F-102"
     },
     "F-103": {
-      "source": "contracts/F-103-cli-runs-plan-v1.yaml",
+      "source": "contracts/F-103-cli-runs-v1.yaml",
       "description": "MarkOS flow F-103"
     },
     "F-105": {
@@ -2849,6 +2849,101 @@
         "x-flow-version": "v1"
       }
     },
+    "/api/tenant/runs": {
+      "post": {
+        "summary": "Create durable run — validates brief + persists markos_cli_runs row + schedules executor.",
+        "operationId": "cliRunsCreate",
+        "tags": [
+          "cli",
+          "runs",
+          "create"
+        ],
+        "parameters": [
+          {
+            "{ name": "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+          },
+          {
+            "{ name": "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": "[brief]",
+                "properties": {
+                  "brief": {
+                    "$ref": "#/components/schemas/BriefInput"
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": "[P0, P1, P2, P3, P4]",
+                    "description": "AgentRun v2 priority; default P2."
+                  },
+                  "chain_id": {
+                    "type": "[string, 'null']",
+                    "description": "Optional AgentRun v2 chain anchor for related runs."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "'201'": {
+            "description": "Durable run created. Use events_url to subscribe to live progress.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCreateResult"
+                }
+              }
+            }
+          },
+          "'400'": {
+            "description": "invalid_brief — missing required fields or malformed body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidBriefError"
+                }
+              }
+            }
+          },
+          "'401'": {
+            "description": "No credentials OR invalid_token OR revoked_token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/UnauthorizedError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidTokenError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/RevokedTokenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'405'": "{ description: \"method_not_allowed — create is POST-only\" }",
+          "'500'": "{ description: \"run_create_failed — insert failed\" }"
+        },
+        "x-flow-id": "F-103",
+        "x-flow-name": "CLI Runs — Plan + Create + Events + Cancel",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      }
+    },
     "/api/tenant/runs/plan": {
       "post": {
         "summary": "Dry-run planner — validates brief + returns plan DAG with token/cost estimates. No DB write.",
@@ -2930,7 +3025,165 @@
           "'500'": "{ description: \"plan_failed — unexpected server error\" }"
         },
         "x-flow-id": "F-103",
-        "x-flow-name": "CLI Runs — Plan (Dry-Run)",
+        "x-flow-name": "CLI Runs — Plan + Create + Events + Cancel",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/tenant/runs/{run_id}/cancel": {
+      "post": {
+        "summary": "Cancel a non-terminal run. Idempotent on terminal runs (returns current state).",
+        "operationId": "cliRunsCancel",
+        "tags": [
+          "cli",
+          "runs",
+          "cancel"
+        ],
+        "parameters": [
+          {
+            "{ name": "run_id, in: path, required: true, schema: { type: string, pattern: \"^run_[a-f0-9]{24}$\" } }"
+          },
+          {
+            "{ name": "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+          },
+          {
+            "{ name": "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+          }
+        ],
+        "responses": {
+          "'200'": {
+            "description": "Run transitioned to cancelled, or already terminal (idempotent).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCancelResult"
+                }
+              }
+            }
+          },
+          "'401'": {
+            "description": "No credentials OR invalid_token OR revoked_token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/UnauthorizedError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidTokenError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/RevokedTokenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'404'": {
+            "description": "run_not_found — no run with this id in the caller's tenant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunNotFoundError"
+                }
+              }
+            }
+          },
+          "'405'": "{ description: \"method_not_allowed — cancel is POST-only\" }"
+        },
+        "x-flow-id": "F-103",
+        "x-flow-name": "CLI Runs — Plan + Create + Events + Cancel",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      }
+    },
+    "/api/tenant/runs/{run_id}/events": {
+      "get": {
+        "summary": "SSE stream of run progress events. Heartbeat every 15s; terminal close on success/failed/cancelled.",
+        "operationId": "cliRunsEvents",
+        "tags": [
+          "cli",
+          "runs",
+          "events",
+          "sse"
+        ],
+        "parameters": [
+          {
+            "{ name": "run_id, in: path, required: true, schema: { type: string, pattern: \"^run_[a-f0-9]{24}$\" } }"
+          },
+          {
+            "{ name": "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+          },
+          {
+            "{ name": "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "Last-Event-ID, in: header, required: false, schema: { type: string }, description: \"Resume stream from this event id + 1.\" }"
+          }
+        ],
+        "responses": {
+          "'200'": {
+            "description": "text/event-stream. Frames: run.snapshot, run.step.started, run.step.completed, heartbeat, run.completed, run.aborted, run.error.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunEventStream"
+                }
+              }
+            }
+          },
+          "'401'": {
+            "description": "No credentials OR invalid_token OR revoked_token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/UnauthorizedError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidTokenError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/RevokedTokenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'403'": {
+            "description": "cross_tenant_forbidden — run exists but belongs to a different tenant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrossTenantForbiddenError"
+                }
+              }
+            }
+          },
+          "'404'": {
+            "description": "run_not_found — no run with this id in the caller's tenant.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunNotFoundError"
+                }
+              }
+            }
+          },
+          "'405'": "{ description: \"method_not_allowed — events is GET-only\" }"
+        },
+        "x-flow-id": "F-103",
+        "x-flow-name": "CLI Runs — Plan + Create + Events + Cancel",
         "x-domain": "cli",
         "x-flow-version": "v1"
       }
@@ -4739,86 +4992,133 @@
           },
           "inputs": {
             "type": "array",
-            "items": "{ type: string }",
-            "description": "Upstream step names this stage consumes (e.g. ['brief','audit'])"
+            "items": "{ type: string }"
           },
           "estimated_tokens": {
             "type": "integer",
-            "minimum": 0,
-            "description": "Token budget for this stage. Conservative upper bound."
+            "minimum": 0
           }
         }
       },
       "F_103_PlanEnvelope": {
         "type": "object",
-        "description": "Dry-run plan envelope. Shape-compatible with Phase 207 AgentRun v2 (estimated_cost_usd_micro BIGINT, priority default P2). run_id is always null in dry-run.",
+        "description": "Dry-run plan envelope. Shape-compatible with Phase 207 AgentRun v2. run_id is always null.",
         "required": "[run_id, plan_id, steps, estimated_tokens, estimated_cost_usd, estimated_cost_usd_micro, estimated_duration_ms, tenant_id, priority]",
         "properties": {
           "run_id": {
-            "type": "[string, 'null']",
-            "description": "Always null in dry-run. Plan 204-06's POST /api/tenant/runs returns a populated run_id."
+            "type": "[string, 'null']"
           },
           "plan_id": {
             "type": "string",
-            "pattern": "^plan_[a-f0-9]{16}$",
-            "description": "Synthetic id scoped to this dry-run response. Not persisted."
+            "pattern": "^plan_[a-f0-9]{16}$"
           },
           "steps": {
             "type": "array",
             "items": "{ $ref: '#/components/schemas/PlanStep' }",
             "minItems": 3,
-            "maxItems": 3,
-            "description": "v1 DAG: [audit, draft, score]. Order is significant — inputs reference upstream step names."
+            "maxItems": 3
           },
           "estimated_tokens": {
             "type": "integer",
-            "minimum": 0,
-            "description": "Sum of step estimated_tokens."
+            "minimum": 0
           },
           "estimated_cost_usd": {
             "type": "number",
-            "minimum": 0,
-            "description": "Placeholder Claude-tier blended rate. Display convenience; canonical billing unit is estimated_cost_usd_micro."
+            "minimum": 0
           },
           "estimated_cost_usd_micro": {
             "type": "integer",
             "minimum": 0,
-            "description": "AgentRun v2 compatible — BIGINT-safe integer micro-USD. 1 USD = 1_000_000 micro."
+            "description": "AgentRun v2 BIGINT-safe integer micro-USD. 1 USD = 1_000_000 micro."
           },
           "estimated_duration_ms": {
             "type": "integer",
-            "minimum": 0,
-            "description": "Conservative upper-bound wall-clock estimate."
+            "minimum": 0
           },
           "tenant_id": {
-            "type": "string",
-            "description": "Caller's tenant (derived from Bearer or legacy session headers)."
+            "type": "string"
           },
           "priority": {
             "type": "string",
-            "enum": "[P0, P1, P2, P3]",
-            "description": "AgentRun v2 priority. Dry-run defaults P2 (standard)."
+            "enum": "[P0, P1, P2, P3]"
           },
           "chain_id": {
-            "type": "[string, 'null']",
-            "description": "AgentRun v2 chain anchor. Null for standalone dry-run plans."
+            "type": "[string, 'null']"
           },
           "model": {
-            "type": "[string, 'null']",
-            "description": "Provider-qualified model name when known. Plan 204-06 populates; dry-run leaves null."
+            "type": "[string, 'null']"
           },
           "agent_id": {
-            "type": "string",
-            "description": "Registry id for the agent that would execute the plan (e.g. 'markos.plan.v1')."
+            "type": "string"
           },
           "brief": {
             "$ref": "#/components/schemas/BriefInput"
           }
         }
       },
+      "F_103_RunCreateResult": {
+        "type": "object",
+        "description": "Response from POST /api/tenant/runs. run_id is non-null; events_url is ready to subscribe.",
+        "required": "[run_id, status, tenant_id, priority, correlation_id, events_url]",
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "pattern": "^run_[a-f0-9]+$"
+          },
+          "status": {
+            "type": "string",
+            "enum": "[pending]",
+            "description": "Always 'pending' immediately after create. Subsequent polling via /events reveals progression."
+          },
+          "tenant_id": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": "[P0, P1, P2, P3, P4]"
+          },
+          "correlation_id": {
+            "type": "string",
+            "description": "Opaque client-supplied or server-generated trace anchor. Propagated to audit rows."
+          },
+          "events_url": {
+            "type": "string",
+            "description": "Path (not fully qualified) of the SSE event stream for this run."
+          }
+        }
+      },
+      "F_103_RunStatus": {
+        "type": "string",
+        "enum": "[pending, running, success, failed, cancelled]"
+      },
+      "F_103_RunEventStream": {
+        "type": "string",
+        "description": "|-",
+        "Sequence of SSE frames. Each frame": {
+          "event": "<name>",
+          "data": "<JSON payload>",
+          "id": "<monotonic integer>"
+        },
+        "Event names": {}
+      },
+      "F_103_RunCancelResult": {
+        "type": "object",
+        "required": "[run_id, status, was_terminal]",
+        "properties": {
+          "run_id": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RunStatus"
+          },
+          "was_terminal": {
+            "type": "boolean",
+            "description": "True when the run was already terminal — the cancel was a no-op."
+          }
+        }
+      },
       "F_103_InvalidBriefError": {
         "type": "object",
-        "description": "Brief failed validateBrief — returns human-readable error list (one per missing / malformed field).",
         "required": "[error, errors]",
         "properties": {
           "error": "{ type: string, enum: [invalid_brief] }",
@@ -4830,7 +5130,6 @@
       },
       "F_103_UnauthorizedError": {
         "type": "object",
-        "description": "No Bearer token AND no legacy session headers.",
         "required": "[error]",
         "properties": {
           "error": "{ type: string, enum: [unauthorized] }"
@@ -4838,7 +5137,6 @@
       },
       "F_103_InvalidTokenError": {
         "type": "object",
-        "description": "Bearer token did not match any row in markos_cli_api_keys.",
         "required": "[error]",
         "properties": {
           "error": "{ type: string, enum: [invalid_token] }"
@@ -4846,11 +5144,24 @@
       },
       "F_103_RevokedTokenError": {
         "type": "object",
-        "description": "Bearer token matched a revoked row. CLI must run `markos login` to mint a fresh key.",
         "required": "[error, hint]",
         "properties": {
           "error": "{ type: string, enum: [revoked_token] }",
           "hint": "{ type: string }"
+        }
+      },
+      "F_103_CrossTenantForbiddenError": {
+        "type": "object",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [cross_tenant_forbidden] }"
+        }
+      },
+      "F_103_RunNotFoundError": {
+        "type": "object",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [run_not_found] }"
         }
       },
       "F_105_WhoamiEnvelope": {
