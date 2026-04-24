@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Phase 204 GA ready for verification (all 13 plans complete)
-last_updated: "2026-04-23T22:00:00.000Z"
+status: Ready to plan
+last_updated: "2026-04-24T07:49:21.346Z"
 progress:
   total_phases: 14
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 105
-  completed_plans: 47
+  completed_plans: 50
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -16,7 +16,7 @@ progress:
 ## Current Position
 
 Phase: 204 (cli-markos-v1-ga) — PHASE 204 GA READY FOR VERIFICATION (all 13 plans complete)
-Plan: 13 of 13 COMPLETE — **Plan 204-13 (v2 compliance guardrails) landed 2026-04-23.** CLI surface is now aligned with Phase 207 CONTRACT-LOCK §4 (AgentRun v2). Migration 77 (additive) adds 15 v2 columns to `markos_cli_runs` (idempotency_key, parent_run_id, task_id, approval_policy, provider_policy, tool_policy, pricing_engine_context, cost_currency, tokens_input/output, retry_count, retry_after, last_error_code, closed_at, v2_state) + CHECK constraint on v2_state + v1→v2 back-fill + 3 indexes. `lib/markos/cli/runs.cjs::submitRun` emits the canonical v2 payload (priority P2, trigger_kind 'cli', source_surface 'cli:markos run', agent_id, agent_registry_version '2026-04-23-r1', deterministic idempotency_key, approval_policy default, pricing_engine_context with `{{MARKOS_PRICING_ENGINE_PENDING}}` sentinel, v2_state 'requested') with graceful pre-migration-77 fallback. `runStubExecutor`/`cancelRun` drive v2_state transitions + closed_at. `markos status` recent_runs surfaces v2_state/priority/cost/closed_at. `markos doctor` gains 3 v2 compliance checks (agentrun_v2_alignment, pricing_placeholder_policy, vault_freshness), total 12 checks. Contract F-103 + openapi.json/yaml regenerated (additive only). 14-test v2-compliance suite (`test/cli/v2-compliance.test.js`) green; all 204-01..12 tests remain green.
+Plan: Not started
 Next: Phase 204 verification pass (gsd-verify-work) → advance to Phase 205 (Pricing Engine foundation).
 
 ## Phase 204 Plan Progress
@@ -1149,7 +1149,7 @@ After verification clears, proceed to Phase 202 per ROADMAP.
 Phase: 201 (saas-tenancy-hardening)
 Plan: 1 of 8
 **Milestone:** v4.0.0 — SaaS Readiness 1.0 — active
-**Phase:** 204
+**Phase:** 205
 **Quality Baseline:** 15 gates defined in `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`; inherited by every subsequent phase.
 
 ## What just happened (2026-04-16)

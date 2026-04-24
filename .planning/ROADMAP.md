@@ -98,7 +98,7 @@ Plans:
 **Requirements Mapped:** CLI-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
 **Status:** 📋 Planned - discuss/research refreshed 2026-04-23; 13 plans across 4 waves + 1 v2 compliance gap-closure
-**Plans:** 11/13 plans executed
+**Plans:** 13/13 plans complete
 **DISCUSS:** `.planning/phases/204-cli-markos-v1-ga/DISCUSS.md`
 
 Plans:
