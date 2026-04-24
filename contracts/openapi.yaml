@@ -2265,10 +2265,16 @@ paths:
                 priority:
                   type: string
                   enum: "[P0, P1, P2, P3, P4]"
-                  description: AgentRun v2 priority; default P2.
+                  description: AgentRun v2 priority; default P2. Matches Phase 207 CONTRACT-LOCK §4 priority enum.
                 chain_id:
                   type: "[string, 'null']"
                   description: Optional AgentRun v2 chain anchor for related runs.
+                idempotency_key:
+                  type: "[string, 'null']"
+                  description: "AgentRun v2 idempotency_key (Phase 204-13). Optional; when unsupplied the server derives idem_<sha256(tenant+brief)[:32]>."
+                parent_run_id:
+                  type: "[string, 'null']"
+                  description: AgentRun v2 parent_run_id self-reference. Used by chain fan-out; caller supplies when extending an existing run. (Phase 204-13)
       responses:
         '201':
           description: Durable run created. Use events_url to subscribe to live progress.
@@ -3762,7 +3768,8 @@ components:
           type: string
         priority:
           type: string
-          enum: "[P0, P1, P2, P3]"
+          enum: "[P0, P1, P2, P3, P4]"
+          description: AgentRun v2 priority (Phase 207 CONTRACT-LOCK §4). Aligned with RunCreateResult.priority in Plan 204-13.
         chain_id:
           type: "[string, 'null']"
         model:
