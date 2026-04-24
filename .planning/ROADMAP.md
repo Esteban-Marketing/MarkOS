@@ -107,7 +107,7 @@ Plans:
 - [x] 204-03-PLAN.md — API keys CRUD library + 3 endpoints + `markos keys list|create|revoke` + F-102 contract + 31 tests (Wave 1)
 - [x] 204-04-PLAN.md — `markos whoami` + resolveWhoami primitive + /api/tenant/whoami + F-105 scaffold (Wave 1)
 - [x] 204-05-PLAN.md — `markos init` (delegator) + `markos plan` dry-run + `markos eval` local rubric + /api/tenant/runs/plan endpoint + F-103 + 29 tests (Wave 2 lead)
-- [ ] 204-06-PLAN.md — `markos run` with SSE watch + migration 75 + POST /runs + GET /runs/{id}/events + F-103 contract (Wave 2)
+- [x] 204-06-PLAN.md — `markos run` with SSE watch + migration 75 (markos_cli_runs) + POST /runs + GET /runs/{id}/events + POST /runs/{id}/cancel + F-103 merged (4 paths) + 40 tests (Wave 2 centerpiece; 2026-04-24)
 - [ ] 204-07-PLAN.md — `markos env list|pull|push|delete` + migration 76 (pgcrypto-encrypted tenant env) + 4 endpoints + F-104 contract (Wave 2)
 - [ ] 204-08-PLAN.md — `markos status` (subscription + quota + rotations + recent runs) + /api/tenant/status + F-105 completion (Wave 3)
 - [ ] 204-09-PLAN.md — `markos doctor` with 9 checks + --check-only CI gate + --fix auto-remediation (Wave 3)
