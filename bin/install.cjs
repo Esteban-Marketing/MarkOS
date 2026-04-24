@@ -672,6 +672,78 @@ async function run() {
     return;
   }
 
+  // ── Phase 204 Plan 01: operator subcommand dispatch (stubs in this plan;
+  //     business logic lands in 204-02 through 204-11). Alphabetical order.
+  if (cli.command === 'doctor') {
+    rl.close();
+    const { main } = require('./commands/doctor.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'env') {
+    rl.close();
+    const { main } = require('./commands/env.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'eval') {
+    rl.close();
+    const { main } = require('./commands/eval.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'init') {
+    rl.close();
+    const { main } = require('./commands/init.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'keys') {
+    rl.close();
+    const { main } = require('./commands/keys.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'login') {
+    rl.close();
+    const { main } = require('./commands/login.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'plan') {
+    rl.close();
+    const { main } = require('./commands/plan.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'run') {
+    rl.close();
+    const { main } = require('./commands/run.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'status') {
+    rl.close();
+    const { main } = require('./commands/status.cjs');
+    await main({ cli });
+    return;
+  }
+
+  if (cli.command === 'whoami') {
+    rl.close();
+    const { main } = require('./commands/whoami.cjs');
+    await main({ cli });
+    return;
+  }
+
   loadProjectEnv(CWD);
 
   // ── Preset fast-path: --preset=<bucket> skips guided interview ─────────────
