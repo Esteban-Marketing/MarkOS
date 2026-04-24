@@ -108,6 +108,8 @@ const VALUE_FLAGS = Object.freeze({
   '--tenant': 'tenant',
   '--timeout': 'timeout',
   '--draft': 'draft',
+  // Phase 204 Plan 03: `markos keys create --name=<label>` API-key label flag.
+  '--name': 'name',
 });
 
 const BOOLEAN_FLAGS = Object.freeze({
@@ -198,6 +200,8 @@ function applyInlineFlag(parsed, token) {
     ['--tenant=', 'tenant'],
     ['--timeout=', 'timeout'],
     ['--draft=', 'draft'],
+    // Phase 204 Plan 03: `keys create --name=<label>` API-key label flag.
+    ['--name=', 'name'],
   ];
 
   if (token.startsWith('--profile=')) {
@@ -297,6 +301,13 @@ function parseCliArgs(argv = process.argv.slice(2)) {
     debug: false,
     noBrowser: false,
     quiet: false,
+    // Phase 204 Plan 03: positional args for CLI subcommands (e.g. `keys create`,
+    // `keys revoke <key_id>`). Non-flag tokens that do not consume a value flag
+    // are collected in order into `positional[]` and kept in-parser-local so
+    // existing install.cjs dispatch logic remains untouched.
+    positional: [],
+    // Phase 204 Plan 03: value flag for --name used by `keys create --name=X`.
+    name: null,
   };
 
   const tokens = [...argv];
@@ -315,6 +326,13 @@ function parseCliArgs(argv = process.argv.slice(2)) {
 
     if (applyValueFlag(parsed, token, tokens, index)) {
       index += 1;
+      continue;
+    }
+
+    // Phase 204 Plan 03: anything that didn't match a flag above AND is not a
+    // flag-shaped token (doesn't start with `-`) is a positional arg.
+    if (typeof token === 'string' && token.length > 0 && !token.startsWith('-')) {
+      parsed.positional.push(token);
     }
   }
 
