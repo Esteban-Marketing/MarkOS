@@ -1,0 +1,313 @@
+id: F-101-cli-oauth-device-v1
+flow_id: F-101
+phase: 204
+name: CLI OAuth Device Authorization Grant
+title: CLI OAuth Device Authorization Grant (RFC 8628)
+version: v1
+status: active
+domain: cli
+summary: >-
+  OAuth 2.0 Device Authorization Grant for the `markos` CLI per RFC 8628.
+  The CLI runs headless (no browser on host) so the user approves the session
+  on another device by visiting the verification URI and typing the short
+  user_code. Three endpoints: `/start` (public — mints device_code + user_code),
+  `/token` (public — polled by CLI until approved), `/authorize` (authenticated
+  — the approval UI posts the user_code after the operator consents).
+  State machine + one-shot consume enforced by lib/markos/cli/device-flow.cjs;
+  device_code >=128-bit entropy; user_code uses 32-alphabet (I/O/0/1 removed).
+  Security envelope: /start rate-limited 10/min/IP (T-204-02-02); /token
+  enforces slow_down + one-shot approved→consumed (T-204-02-03);
+  /authorize requires role IN (owner, admin) (T-204-02-07); audit emit on
+  approval (source_domain='cli', action='device.approved', T-204-02-08).
+
+boundary:
+  tenant_scoped: false
+  manager_scope_cross_tenant: false
+
+references:
+  - D-02
+  - D-06
+  - D-10
+  - A1
+  - A2
+  - A14
+  - CLI-01
+  - QA-01
+  - QA-02
+  - QA-09
+
+rfc_compliance:
+  rfc_8628: "full — verification_uri + user_code + device_code + polling interval + expiry + slow_down + authorization_pending + access_denied + expired_token"
+  grant_type: "urn:ietf:params:oauth:grant-type:device_code"
+  user_code_entropy_bits: 40
+  device_code_entropy_bits: 128
+  user_code_alphabet: "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+  user_code_format: "^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}$"
+  device_code_ttl_seconds: 900
+  polling_interval_seconds: 5
+
+paths:
+  /api/cli/oauth/device/start:
+    post:
+      summary: RFC 8628 §3.1 Device Authorization Request — CLI requests a device_code
+      operationId: cliOauthDeviceStart
+      tags:
+        - cli
+        - oauth
+      parameters:
+        - { name: content-type, in: header, required: true, schema: { type: string, enum: [application/json] } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [client_id, scope]
+              properties:
+                client_id: { type: string, enum: [markos-cli] }
+                scope:     { type: string, enum: [cli] }
+      responses:
+        '200':
+          description: Device code issued — CLI may now poll /token at the returned interval until expiry.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [device_code, user_code, verification_uri, verification_uri_complete, expires_in, interval]
+                properties:
+                  device_code:
+                    type: string
+                    pattern: "^djNhcl8"
+                    description: "Opaque device_code (≥128-bit entropy). CLI stores and polls with this."
+                  user_code:
+                    type: string
+                    pattern: "^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}$"
+                    description: "Short human-readable code the operator types on the approval UI (32-alphabet, ambiguous glyphs removed)."
+                  verification_uri:
+                    type: string
+                    format: uri
+                    description: "https://app.markos.com/cli/authorize (A1 locked production origin)."
+                  verification_uri_complete:
+                    type: string
+                    format: uri
+                    description: "verification_uri + ?user_code= query param — for one-click approval in the CLI-launched browser."
+                  expires_in: { type: integer, minimum: 1, maximum: 900 }
+                  interval:   { type: integer, minimum: 1, maximum: 60 }
+        '400': { description: "invalid_client OR invalid_scope — client_id must be 'markos-cli' and scope must be 'cli'" }
+        '405': { description: method_not_allowed (non-POST) }
+        '429': { description: "rate_limited — 10 /start calls per minute per source IP exceeded (T-204-02-02); Retry-After header set" }
+        '500': { description: start_failed (unexpected) }
+
+  /api/cli/oauth/device/token:
+    post:
+      summary: RFC 8628 §3.4 Device Access Token Request — CLI polls until user approves
+      operationId: cliOauthDeviceToken
+      tags:
+        - cli
+        - oauth
+      parameters:
+        - { name: content-type, in: header, required: true, schema: { type: string, enum: [application/x-www-form-urlencoded, application/json] } }
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [grant_type, device_code, client_id]
+              properties:
+                grant_type:  { type: string, enum: ["urn:ietf:params:oauth:grant-type:device_code"] }
+                device_code: { type: string }
+                client_id:   { type: string, enum: [markos-cli] }
+      responses:
+        '200':
+          description: Session approved — plaintext API key returned once (never re-fetchable).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [access_token, token_type, tenant_id, key_fingerprint, scope]
+                properties:
+                  access_token:
+                    type: string
+                    pattern: "^mks_ak_[a-f0-9]{32,}$"
+                    description: "CLI API key plaintext — 256-bit hex. Only returned here; sha256 hash is persisted server-side (D-06)."
+                  token_type: { type: string, enum: [bearer] }
+                  tenant_id:  { type: string }
+                  key_fingerprint:
+                    type: string
+                    pattern: "^[a-f0-9]{8}$"
+                    description: "First 8 hex chars of sha256(access_token); safe to log and display."
+                  scope: { type: string, enum: [cli] }
+        '400':
+          description: "Typed polling error — { error: authorization_pending | slow_down | expired_token | access_denied | invalid_grant | invalid_client | unsupported_grant_type }"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: '#/components/schemas/AuthorizationPendingError' }
+                  - { $ref: '#/components/schemas/SlowDownError' }
+                  - { $ref: '#/components/schemas/ExpiredTokenError' }
+                  - { $ref: '#/components/schemas/AccessDeniedError' }
+                  - { $ref: '#/components/schemas/InvalidGrantError' }
+                  - { $ref: '#/components/schemas/InvalidClientError' }
+        '405': { description: method_not_allowed (non-POST) }
+        '500': { description: token_failed (unexpected) }
+
+  /api/cli/oauth/device/authorize:
+    post:
+      summary: Approval endpoint — authenticated operator approves a pending device session by user_code
+      operationId: cliOauthDeviceAuthorize
+      tags:
+        - cli
+        - oauth
+      parameters:
+        - { name: x-markos-user-id, in: header, required: true, schema: { type: string } }
+        - { name: x-markos-tenant-id, in: header, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_code, tenant_id]
+              properties:
+                user_code: { type: string, pattern: "^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}-[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{4}$" }
+                tenant_id: { type: string, description: "Must equal x-markos-tenant-id (T-204-02-06)." }
+      responses:
+        '200':
+          description: Session approved — the CLI's next /token poll will succeed.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [approved]
+                properties:
+                  approved:    { type: boolean, enum: [true] }
+                  device_code: { type: string }
+        '400': { description: "missing_params — user_code or tenant_id absent from body" }
+        '401': { description: "unauthorized — missing x-markos-user-id or x-markos-tenant-id" }
+        '403': { description: "cross_tenant_forbidden (body.tenant_id != header.tenant_id) OR not_a_member OR insufficient_role (role not in owner/admin)" }
+        '404': { description: user_code_not_found }
+        '405': { description: method_not_allowed (non-POST) }
+        '409': { description: already_approved (session already in non-pending state) }
+        '410': { description: expired (device_code TTL elapsed before approval) }
+        '500': { description: authorize_failed (unexpected) }
+
+components:
+  schemas:
+    AuthorizationPendingError:
+      type: object
+      description: "RFC 8628 §3.5 — user has not yet authorized the device. CLI keeps polling at the announced interval."
+      required: [error]
+      properties:
+        error: { type: string, enum: [authorization_pending] }
+
+    SlowDownError:
+      type: object
+      description: "RFC 8628 §3.5 — client polled faster than announced interval. CLI must increase its poll interval by 5 seconds."
+      required: [error]
+      properties:
+        error: { type: string, enum: [slow_down] }
+
+    ExpiredTokenError:
+      type: object
+      description: "RFC 8628 §3.5 — device_code TTL elapsed. CLI must run `markos login` again."
+      required: [error]
+      properties:
+        error: { type: string, enum: [expired_token] }
+
+    AccessDeniedError:
+      type: object
+      description: "RFC 8628 §3.5 — operator rejected the authorization request. Terminal."
+      required: [error]
+      properties:
+        error: { type: string, enum: [access_denied] }
+
+    InvalidGrantError:
+      type: object
+      description: "RFC 8628 §3.5 — device_code unknown, malformed, or one-shot consumed (T-204-02-03)."
+      required: [error]
+      properties:
+        error: { type: string, enum: [invalid_grant] }
+
+    InvalidClientError:
+      type: object
+      description: "client_id is not 'markos-cli'. Only the first-party CLI is accepted on this grant."
+      required: [error]
+      properties:
+        error: { type: string, enum: [invalid_client] }
+
+    AlreadyApprovedError:
+      type: object
+      description: "approve called on a session whose status is not 'pending' — idempotency guard (409)."
+      required: [error]
+      properties:
+        error: { type: string, enum: [already_approved] }
+
+    UserCodeNotFoundError:
+      type: object
+      description: "approve called with a user_code that does not match any session (404)."
+      required: [error]
+      properties:
+        error: { type: string, enum: [user_code_not_found] }
+
+threat_model:
+  trust_boundaries:
+    - "CLI → /start + /token: public endpoints; per-IP rate-limit + client_id whitelist."
+    - "Browser → /authorize: authenticated session; enforces tenant match + membership role."
+    - "Server → markos_cli_api_keys: mint-only; sha256-hashed at rest."
+  stride:
+    T-204-02-01:
+      category: Spoofing
+      disposition: mitigate
+      mitigation: "Approval UI shows device code details; full IP/geo display deferred to 206."
+    T-204-02-02:
+      category: DoS
+      disposition: mitigate
+      mitigation: "Upstash slidingWindow(10, '1 m') per source IP on /start; poll_count on /token; session revoked after MAX_SLOW_DOWN_VIOLATIONS."
+    T-204-02-03:
+      category: Tampering
+      disposition: mitigate
+      mitigation: "pollToken flips approved→consumed atomically; second call returns invalid_grant."
+    T-204-02-04:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "CLI output masks access_token (first 4 + last 4); structured mode never echoes plaintext."
+    T-204-02-05:
+      category: Info Disclosure
+      disposition: mitigate
+      mitigation: "Response body returns key_fingerprint (8 chars of sha256); full hash stays in DB."
+    T-204-02-06:
+      category: Tampering
+      disposition: mitigate
+      mitigation: "/authorize requires body.tenant_id == header.tenant_id; Phase 201 session layer enforces same-origin."
+    T-204-02-07:
+      category: Elevation of Privilege
+      disposition: mitigate
+      mitigation: "markos_tenant_memberships.role IN ('owner', 'admin') gates approval."
+    T-204-02-08:
+      category: Repudiation
+      disposition: mitigate
+      mitigation: "approveDeviceSession emits audit row (source_domain='cli', action='device.approved', actor_id=user_id)."
+    T-204-02-09:
+      category: Info Disclosure
+      disposition: accept
+      rationale: "Typed RFC 8628 errors are spec-mandated; not a timing-side-channel vulnerability."
+
+libraries:
+  device_flow_lib: lib/markos/cli/device-flow.cjs
+  keychain_lib:    bin/lib/cli/keychain.cjs
+  http_lib:        bin/lib/cli/http.cjs
+  open_browser:    bin/lib/cli/open-browser.cjs
+  audit_writer:    lib/markos/audit/writer.cjs
+
+migrations:
+  device_sessions: supabase/migrations/73_markos_cli_device_sessions.sql
+  api_keys:        supabase/migrations/74_markos_cli_api_keys.sql
+
+cli_commands:
+  - command: "markos login"
+    file:    bin/commands/login.cjs
+    modes:
+      - device_flow: "Default — POSTs /start, opens browser, polls /token"
+      - token_paste: "--token=<mks_ak_...> writes key directly to keychain (non-interactive CI fallback)"
