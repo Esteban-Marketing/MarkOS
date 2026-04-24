@@ -1,0 +1,115 @@
+name: Release markos CLI
+
+# Phase 204 Plan 12 — Release orchestration for markos CLI GA.
+# Triggers on push of tags matching 'v*'. 5-job DAG:
+#   verify → npm → (brew, scoop) → smoke
+#
+# Secrets required (Plan 204-12 locked_assumption):
+#   - NPM_TOKEN             (npm publish; automation token, scoped to markos)
+#   - HOMEBREW_TAP_TOKEN    (PAT with repo scope on markos/homebrew-tap)
+#   - SCOOP_BUCKET_TOKEN    (PAT with repo scope on markos/scoop-bucket)
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+jobs:
+  # --------------------------------------------------------------------------
+  # verify: gate all subsequent publish steps on tests + pack smoke
+  # --------------------------------------------------------------------------
+  verify:
+    name: Verify release candidate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
+      - run: npm run release:smoke
+
+  # --------------------------------------------------------------------------
+  # npm: publish the tarball to the npm registry
+  # --------------------------------------------------------------------------
+  npm:
+    name: Publish to npm
+    needs: [verify]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # --------------------------------------------------------------------------
+  # brew: bump Formula/markos.rb in markos/homebrew-tap
+  # --------------------------------------------------------------------------
+  brew:
+    name: Bump Homebrew formula
+    needs: [npm]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: mislav/bump-homebrew-formula-action@v3
+        with:
+          formula-name: markos
+          formula-path: Formula/markos.rb
+          homebrew-tap: markos/homebrew-tap
+          download-url: 'https://registry.npmjs.org/markos/-/markos-${{ github.ref_name }}.tgz'
+        env:
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+
+  # --------------------------------------------------------------------------
+  # scoop: bump bucket/markos.json in markos/scoop-bucket
+  # --------------------------------------------------------------------------
+  scoop:
+    name: Bump Scoop manifest
+    needs: [npm]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: markos/scoop-bucket
+          token: ${{ secrets.SCOOP_BUCKET_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bump manifest
+        run: node scripts/distribution/bump-scoop-manifest.cjs '${{ github.ref_name }}'
+      - name: Push
+        run: |
+          git config user.email "bot@markos.com"
+          git config user.name  "markos-bot"
+          git add bucket/markos.json
+          git commit -m "markos: bump to ${{ github.ref_name }}"
+          git push
+
+  # --------------------------------------------------------------------------
+  # smoke: cross-platform install smoke test of the published version
+  # --------------------------------------------------------------------------
+  smoke:
+    name: Smoke install (${{ matrix.os }})
+    needs: [npm, brew, scoop]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install markos globally
+        run: npm install -g markos@${{ github.ref_name }}
+      - name: Run markos --version
+        run: markos --version
