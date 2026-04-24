@@ -2,22 +2,22 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Executing Phase 204
-last_updated: "2026-04-24T15:30:00.000Z"
+status: Phase 204 GA ready for verification (all 13 plans complete)
+last_updated: "2026-04-23T22:00:00.000Z"
 progress:
   total_phases: 14
   completed_phases: 4
   total_plans: 105
-  completed_plans: 46
+  completed_plans: 47
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 204 (cli-markos-v1-ga) — WAVE 4 CLOSED; PHASE 204 SHIPS (Plan 13 reserved/optional)
-Plan: 12 of 13 COMPLETE — **WAVE 4 CLOSED; Phase 204 SHIPS.** Distribution trio (Homebrew tap + Scoop bucket + npm) wired end-to-end with a 5-job release DAG on `push` of `v*` tags: `verify` (Node 22 + `npm ci` + `npm test` + `npm run release:smoke`) → `npm publish --access public` → parallel `brew` (mislav/bump-homebrew-formula-action@v3 against markos/homebrew-tap) + `scoop` (checkout markos/scoop-bucket + bump-scoop-manifest.cjs + push) → `smoke` matrix (ubuntu + macos + windows; installs tagged version and runs `markos --version`). Public docs trio shipped: `docs/cli/errors.md` (13 stable codes + D-10 bands + RFC 8628 device-flow codes), `docs/cli/environment.md` (10 env vars + credential resolution order), `docs/cli/commands.md` (11-command index + global flags + exit-code footer). `public/llms.txt` extended with Phase 204 section (5 entries — installation-homebrew, installation-scoop, commands, errors, environment) without overwriting prior sections. Parity contract: `test/cli/errors-map.test.js` set-equivalence-asserts `ERROR_TO_EXIT` keys ↔ `docs/cli/errors.md` public-code table; CI blocks doc drift. 15 new tests green (10 release-workflow + 5 errors-map). **Prerequisite for first tagged release:** user must provision 3 GitHub Actions repo secrets (NPM_TOKEN, HOMEBREW_TAP_TOKEN, SCOOP_BUCKET_TOKEN).
-Next: Plan 204-13 (reserved, optional v2 doctrine compliance gap-closure) OR advance to Phase 205 (Pricing Engine foundation).
+Phase: 204 (cli-markos-v1-ga) — PHASE 204 GA READY FOR VERIFICATION (all 13 plans complete)
+Plan: 13 of 13 COMPLETE — **Plan 204-13 (v2 compliance guardrails) landed 2026-04-23.** CLI surface is now aligned with Phase 207 CONTRACT-LOCK §4 (AgentRun v2). Migration 77 (additive) adds 15 v2 columns to `markos_cli_runs` (idempotency_key, parent_run_id, task_id, approval_policy, provider_policy, tool_policy, pricing_engine_context, cost_currency, tokens_input/output, retry_count, retry_after, last_error_code, closed_at, v2_state) + CHECK constraint on v2_state + v1→v2 back-fill + 3 indexes. `lib/markos/cli/runs.cjs::submitRun` emits the canonical v2 payload (priority P2, trigger_kind 'cli', source_surface 'cli:markos run', agent_id, agent_registry_version '2026-04-23-r1', deterministic idempotency_key, approval_policy default, pricing_engine_context with `{{MARKOS_PRICING_ENGINE_PENDING}}` sentinel, v2_state 'requested') with graceful pre-migration-77 fallback. `runStubExecutor`/`cancelRun` drive v2_state transitions + closed_at. `markos status` recent_runs surfaces v2_state/priority/cost/closed_at. `markos doctor` gains 3 v2 compliance checks (agentrun_v2_alignment, pricing_placeholder_policy, vault_freshness), total 12 checks. Contract F-103 + openapi.json/yaml regenerated (additive only). 14-test v2-compliance suite (`test/cli/v2-compliance.test.js`) green; all 204-01..12 tests remain green.
+Next: Phase 204 verification pass (gsd-verify-work) → advance to Phase 205 (Pricing Engine foundation).
 
 ## Phase 204 Plan Progress
 
@@ -33,7 +33,7 @@ Next: Plan 204-13 (reserved, optional v2 doctrine compliance gap-closure) OR adv
 - [x] 204-10: distribution (Homebrew) — Formula/markos.rb + scripts/distribution/bump-homebrew-formula.cjs + shape test + installation-homebrew.md (2026-04-24)
 - [x] 204-11: distribution (Scoop) — bucket/markos.json + scripts/distribution/bump-scoop-manifest.cjs + shape test + installation-scoop.md (2026-04-24)
 - [x] 204-12: release CI + docs trio + llms.txt Phase 204 — .github/workflows/release-cli.yml (5-job DAG verify→npm→brew+scoop→smoke) + docs/cli/{errors,environment,commands}.md + public/llms.txt Phase 204 section + errors-map parity test + 15 tests — **Wave 4 CLOSED; Phase 204 SHIPS** (2026-04-24)
-- [ ] 204-13: (reserved)
+- [x] 204-13: v2 compliance guardrails — migration 77 additive (15 v2 columns + back-fill + 3 indexes) + lib/markos/cli/runs.cjs v2-shaped payload writer (buildV2Payload, V2_REQUIRED_FIELDS, deriveIdempotencyKey, STATE_V1_TO_V2_MAP, PRICING_PLACEHOLDER_SENTINEL) + markos status recent_runs v2 projection + markos doctor +3 checks (agentrun_v2_alignment, pricing_placeholder_policy, vault_freshness → 12 total) + F-103 + openapi regen + v2-compliance.test.js (14 tests) — **Phase 204 GA ready for verification** (2026-04-23)
 
 ## Planning overlay (2026-04-23 incoming 18-26 commercial-engine routing)
 

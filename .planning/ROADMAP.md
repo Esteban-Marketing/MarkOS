@@ -114,7 +114,7 @@ Plans:
 - [x] 204-10-PLAN.md — Homebrew formula `Formula/markos.rb` + bump script + install docs (Wave 4)
 - [x] 204-11-PLAN.md — Scoop bucket manifest `bucket/markos.json` + bump script + install docs (Wave 4)
 - [x] 204-12-PLAN.md — Release CI matrix (verify → npm → brew + scoop → smoke) + docs trio (errors/environment/commands) + llms.txt Phase 204 section + errors-map parity test + 15 tests — **Wave 4 CLOSED; Phase 204 SHIPS** (2026-04-24)
-- [ ] 204-13-PLAN.md — v2 compliance guardrails for `run`, `status`, `doctor`, vault freshness, and Pricing Engine placeholder policy (gap closure)
+- [x] 204-13-PLAN.md — v2 compliance guardrails for `run`, `status`, `doctor`, vault freshness, and Pricing Engine placeholder policy (gap closure) — **Phase 204 GA ready for verification** (2026-04-23)
 
 ### Phase 205: Pricing Engine Foundation + Billing Readiness
 **Goal:** Replace static public pricing assumptions with Pricing Engine-backed intelligence: cost models, competitor matrix, PricingRecommendation records, approval-gated price tests, PRC agents, MCP/API/UI surfaces, and billing-readiness handoff. Stripe billing remains in scope only after pricing objects, cost floors, and packaging recommendations are modeled.
