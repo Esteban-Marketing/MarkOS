@@ -41,11 +41,27 @@ created: 2026-04-24
 
 ## Per-Task Verification Map
 
-> Planner populates per task. Template row below.
+> Per-task rows derived from each plan's task `<verify><automated></automated></verify>` block. Status column owned by execute-phase. `nyquist_compliant` flip is owned by execute-phase, not by the planner.
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 223-NN-MM | NN | W | REQ-XX | unit/integration/contract/regression/negative/e2e | `vitest run test/channels/<file>.test.ts` | ⬜ TBD | ⬜ pending |
+| 223-01-1 | 01 | 1 | EML-01, EML-02, MSG-01, QA-01, QA-02 | unit + baseline | `vitest run test/channels/schema/baseline.test.ts` | ⬜ TBD | ⬜ pending |
+| 223-01-2 | 01 | 1 | EML-01, EML-02, MSG-03, QA-02 | schema + RLS + idempotency | `vitest run test/channels/schema/sender-identity.test.ts test/channels/schema/channel-template.test.ts test/channels/schema/email-campaign.test.ts test/channels/schema/messaging-thread.test.ts test/channels/schema/lifecycle-journey.test.ts test/channels/schema/channel-suppressions.test.ts` | ⬜ TBD | ⬜ pending |
+| 223-01-3 | 01 | 1 | MSG-01, QA-01, QA-11 | adapter contract + legacy regression | `vitest run test/channels/providers/base-adapter.test.ts test/channels/adapters/legacy-outbound.test.ts && npm test` | ⬜ TBD | ⬜ pending |
+| 223-02-1 | 02 | 2 | EML-05, CDP-05, QA-02, QA-03 | schema + view-swap | `vitest run test/channels/schema/dispatch-tracking.test.ts test/channels/schema/in-app-messages.test.ts test/channels/schema/consent-view-swap.test.ts` | ⬜ TBD | ⬜ pending |
+| 223-02-2 | 02 | 2 | EML-05, MSG-02, CDP-05, QA-05, QA-11 | consent cutover + 5-layer gate + legacy | `vitest run test/channels/consent/ test/channels/gate/ && npm test` | ⬜ TBD | ⬜ pending |
+| 223-02-3 | 02 | 2 | MSG-02, CDP-05, QA-03, QA-08 | dispatch + idempotency + suppression | `vitest run test/channels/dispatch/ test/channels/suppression/ && node bin/validate-flow-contracts.cjs` | ⬜ TBD | ⬜ pending |
+| 223-03-1 | 03 | 3 | EML-01, EML-03, QA-01 | renderer + variable resolver + locale + preview | `vitest run test/channels/templates/renderer.test.ts test/channels/templates/variable-resolver.test.ts test/channels/templates/locale-variant.test.ts test/channels/templates/preview.test.ts` | ⬜ TBD | ⬜ pending |
+| 223-03-2 | 03 | 3 | EML-01, EML-03, QA-12, QA-13 | content classifier (4 checks) | `vitest run test/channels/templates/content-classifier.test.ts` | ⬜ TBD | ⬜ pending |
+| 223-03-3 | 03 | 3 | CRM-05, QA-01, QA-06 | approval matrix + revocation + F-131 | `vitest run test/channels/templates/approval-matrix.test.ts test/channels/templates/approval-revocation.test.ts && node bin/validate-flow-contracts.cjs` | ⬜ TBD | ⬜ pending |
+| 223-04-1 | 04 | 3 | EML-04, MSG-01, MSG-05, QA-04 | adapters (resend/twilio/knock/in_app) | `vitest run test/channels/providers/` | ⬜ TBD | ⬜ pending |
+| 223-04-2 | 04 | 3 | EML-04, MSG-04, CRM-01..04, QA-07 | emit + reply continuity + auto-reply | `vitest run test/channels/events/` | ⬜ TBD | ⬜ pending |
+| 223-04-3 | 04 | 3 | EML-04, MSG-04, MSG-05, QA-04, QA-08, QA-11 | webhook handlers + signature + Pitfall 8 | `vitest run test/channels/webhooks/ && npm test` | ⬜ TBD | ⬜ pending |
+| 223-05-1 | 05 | 4 | EML-01..03, MSG-01..04, CRM-01..05, QA-01, QA-02 | API routes + MCP tools + tenant iso + OpenAPI | `vitest run test/channels/api/ test/channels/mcp/ && node bin/validate-flow-contracts.cjs` | ⬜ TBD | ⬜ pending |
+| 223-05-2 | 05 | 4 | CRM-05, QA-01 | UI components + Storybook + Chromatic | `npm run storybook:build && npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN:-dummy} --exit-zero-on-changes --only-changed && npm test` | ⬜ TBD | ⬜ pending |
+| 223-06-1 | 06 | 5 | QA-08, QA-14 | crons (deliverability/lifecycle/spike/tombstone/soft-bounce) | `vitest run test/channels/closeout/deliverability-rollup.test.ts test/channels/closeout/spike-alert.test.ts test/channels/closeout/lifecycle-journey-poll.test.ts test/channels/closeout/tombstone-cascade.test.ts test/channels/closeout/soft-bounce-promotion.test.ts` | ⬜ TBD | ⬜ pending |
+| 223-06-2 | 06 | 5 | QA-09, QA-10, QA-11, QA-15 | RLS suite + legacy regression + Playwright + QA gates coverage | `vitest run test/channels/closeout/rls-suite.test.ts test/channels/closeout/legacy-regression.test.ts test/channels/closeout/qa-gates-coverage.test.ts && playwright test e2e/channels/ && npx chromatic --project-token=${CHROMATIC_PROJECT_TOKEN:-dummy} --exit-zero-on-changes` | ⬜ TBD | ⬜ pending |
+| 223-06-3 | 06 | 5 | QA-15 | doc closeout (no nyquist flip; execute-phase owns it) | `node -e "<see plan 06 task 3 verify command>"` | ⬜ TBD | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
