@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 204
-last_updated: "2026-04-24T00:00:00.000Z"
+last_updated: "2026-04-24T12:00:00.000Z"
 progress:
   total_phases: 14
   completed_phases: 4
   total_plans: 105
-  completed_plans: 43
+  completed_plans: 44
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -16,8 +16,8 @@ progress:
 ## Current Position
 
 Phase: 204 (cli-markos-v1-ga) — EXECUTING
-Plan: 6 of 13 COMPLETE — `markos run <brief>` with live SSE watch shipped (Wave 2 centerpiece). Migration 75 (`markos_cli_runs` with AgentRun v2 forward-compat columns + RLS) + `lib/markos/cli/runs.cjs` (5 primitives: submitRun/streamRunEvents/listRuns/getRun/cancelRun) + 3 new endpoints (POST /runs, GET /runs/{id}/events SSE, POST /runs/{id}/cancel) + `bin/commands/run.cjs` with --watch/--no-watch/--json/--timeout/SIGINT-graceful-cancel + F-103 merged (4 paths) + 40 new tests. openapi: 68 flows / 105 → 108 paths.
-Next: Wave 2 closes with 204-07 (env pull/push/diff/merge — mirrors the dual-auth endpoint pattern) and 204-08 (status — consumes `listRuns`/`getRun`). 204-09..13 remain.
+Plan: 7 of 13 COMPLETE — **WAVE 2 CLOSED.** `markos env list|pull|push|delete` shipped with pgcrypto-encrypted tenant env store. Migration 76 (`markos_cli_tenant_env` with pgp_sym_encrypt + 2 SECURITY DEFINER RPCs + RLS + composite PK) + `lib/markos/cli/env.cjs` (6 exports: 4 data primitives + parseDotenv/serializeDotenv) + 4 endpoints (list member-accessible with value_preview redaction; pull/push/delete owner-admin-gated with audit emits) + `bin/commands/env.cjs` with --force/--diff/--merge/--dry-run/--yes + .markos-local/.env 0o600 safety + F-104 contract (4 paths + 10 error envelopes) + 35 new tests. openapi: 68 → 69 flows / 108 → 112 paths.
+Next: Wave 3 — 204-08 (status — consumes `listRuns`/`getRun`/`listEnv`), 204-09 (distribution), 204-10..13 remain.
 
 ## Phase 204 Plan Progress
 
@@ -27,13 +27,13 @@ Next: Wave 2 closes with 204-07 (env pull/push/diff/merge — mirrors the dual-a
 - [x] 204-04: markos whoami — resolveWhoami library + /api/tenant/whoami endpoint + F-105 scaffold + CLI + 17 tests (2026-04-23)
 - [x] 204-05: markos init + plan + eval — delegator CLI + dry-run endpoint + local rubric + F-103 + 29 tests (2026-04-23)
 - [x] 204-06: markos run + SSE watch — migration 75 + runs lib (5 primitives) + 3 endpoints + CLI + F-103 merged (4 paths) + 40 tests (2026-04-24)
-- [ ] 204-07: markos env (pull/push/diff/merge)
-- [ ] 204-08: markos env (pull/push/diff/merge)
-- [ ] 204-09: markos status
-- [ ] 204-10: distribution (npm/Homebrew/Scoop)
-- [ ] 204-11: markos doctor
-- [ ] 204-12: security hardening + E2E
-- [ ] 204-13: v2 doctrine compliance gap-closure
+- [x] 204-07: markos env (list/pull/push/delete) — migration 76 (pgcrypto) + env lib (6 exports) + 4 endpoints + CLI + F-104 (4 paths) + 35 tests — **Wave 2 CLOSED** (2026-04-24)
+- [ ] 204-08: markos status
+- [ ] 204-09: distribution (npm/Homebrew/Scoop)
+- [ ] 204-10: markos doctor
+- [ ] 204-11: security hardening + E2E
+- [ ] 204-12: v2 doctrine compliance gap-closure
+- [ ] 204-13: (reserved)
 
 ## Planning overlay (2026-04-23 incoming 18-26 commercial-engine routing)
 
