@@ -98,7 +98,7 @@ Plans:
 **Requirements Mapped:** CLI-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
 **Status:** 📋 Planned - discuss/research refreshed 2026-04-23; 13 plans across 4 waves + 1 v2 compliance gap-closure
-**Plans:** 10/13 plans executed
+**Plans:** 11/13 plans executed
 **DISCUSS:** `.planning/phases/204-cli-markos-v1-ga/DISCUSS.md`
 
 Plans:
@@ -111,7 +111,7 @@ Plans:
 - [x] 204-07-PLAN.md — `markos env list|pull|push|delete` + migration 76 (pgcrypto-encrypted tenant env) + 4 endpoints + F-104 contract + 35 tests (Wave 2 close; 2026-04-24)
 - [x] 204-08-PLAN.md — `markos status` (subscription + quota + rotations + recent runs) + /api/tenant/status + F-105 completion + --watch + status run + 19 tests (Wave 3 lead; 2026-04-24)
 - [x] 204-09-PLAN.md — `markos doctor` with 9 checks + --check-only CI gate + --fix auto-remediation + 22 tests — **Wave 3 CLOSED; 11/11 CLI commands functional** (2026-04-24)
-- [ ] 204-10-PLAN.md — Homebrew formula `Formula/markos.rb` + bump script + install docs (Wave 4)
+- [x] 204-10-PLAN.md — Homebrew formula `Formula/markos.rb` + bump script + install docs (Wave 4)
 - [x] 204-11-PLAN.md — Scoop bucket manifest `bucket/markos.json` + bump script + install docs (Wave 4)
 - [ ] 204-12-PLAN.md — Release CI matrix (verify → npm → brew + scoop → smoke) + docs trio (errors/environment/commands) + llms.txt Phase 204 section (Wave 4)
 - [ ] 204-13-PLAN.md — v2 compliance guardrails for `run`, `status`, `doctor`, vault freshness, and Pricing Engine placeholder policy (gap closure)
