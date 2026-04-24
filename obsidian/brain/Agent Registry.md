@@ -10,7 +10,41 @@ tags:
 
 # Agent Registry
 
-> Every MarkOS agent is addressable by `TOKEN_ID` in the form `MARKOS-AGT-<DOMAIN>-<NN>`. This registry is the operator-facing map. Canonical source: `.agent/markos/MARKOS-INDEX.md`.
+> Every MarkOS agent is addressable by `TOKEN_ID` in the form `MARKOS-AGT-<DOMAIN>-<NN>`. This registry is the operator-facing map. Canonical implementation source: `.agent/markos/MARKOS-INDEX.md`. The v2 target architecture is defined by [[Marketing Operating System Foundation]] and [[MarkOS v2 Operating Loop Spec]].
+
+## v2 Registry Direction
+
+The current codebase registry is not the final v2 network. The incoming blueprint describes an 80+ agent vision, but the launch rule is to ship one reliable operating loop before expanding breadth.
+
+Planning stance:
+
+- Keep the current `.agent/markos/MARKOS-INDEX.md` as implementation truth until a migration phase explicitly changes it.
+- Treat v2 domains as the target taxonomy: STR, RES, AUD, CONT, SOC, PAID, LG, ANA, OPS, and LIT.
+- Add PRC as the Pricing Engine tier; see [[Pricing Engine Canon]].
+- Add SAS as the SaaS Suite tier; see [[SaaS Suite Canon]].
+- Add PLG, EXP, ABM, VRL, IAM, CMT, EVT, XP, PR, PRT, DEV, and REV as future SaaS Marketing OS growth tiers; see [[SaaS Marketing OS Strategy Canon]].
+- Resolve `CNT` vs `CONT` before renaming content agents.
+- Do not create anonymous agents. Every new capability gets a stable token, input contract, output contract, approval posture, literacy refs, and cost visibility.
+- Add agent types only when they close the foundation loop in [[MarkOS v2 Operating Loop Spec]].
+
+## Phase 1 v2 Agent Responsibilities
+
+Phase 1 needs a compact loop, not the full 80-agent system:
+
+| Domain | Needed responsibilities |
+|---|---|
+| Strategy | intent intake, campaign/content thesis, plan decomposition |
+| Research | source quality scoring, evidence map, citation/context package |
+| Audit | SEO audit, analytics audit, voice/claim/compliance gate |
+| Content | content strategy, brief, draft, edit, repurpose |
+| Social | listener, classifier, response drafter, escalation router |
+| Revenue | lead scoring, pipeline narrative, attribution explanation |
+| Analytics | anomaly detection, performance monitor, weekly narrative |
+| Ops | task synthesis, approval coordination, budget monitor, connector recovery |
+| Literacy | tenant overlay candidate, freshness check, central update candidate |
+| Pricing | cost model, competitive price watch, pricing recommendations, price tests, pricing page optimization |
+| SaaS Suite | subscription lifecycle, billing compliance, churn risk, support intelligence, product usage, revenue intelligence |
+| SaaS Growth | PLG activation, PQL scoring, upgrade triggers, ABM, expansion, viral/referral, in-app, community, events, PR, experiments, partnerships, developer marketing, revenue alignment |
 
 ## Tiered view
 
@@ -83,6 +117,51 @@ tags:
 | `MARKOS-AGT-NEU-01` **Neuro Auditor** | `.agent/markos/agents/markos-neuro-auditor.md` | validates B01–B10 triggers; enforces `<neuro_spec>` block |
 | **Auditor** | `.agent/markos/agents/markos-auditor.md` | general audit of campaigns + claims |
 
+### Pricing tier (v2 target)
+
+The PRC tier is target architecture from [[Pricing Engine Canon]]. Protocol discovery now starts at `.agent/markos/references/pricing-engine.md`, while runnable PRC agent files remain planned for Phase 205.
+
+| Agent | Role |
+|---|---|
+| `MARKOS-AGT-PRC-01` **SaaS Pricing Strategist** | SaaS tier structure, value metric analysis, annual/monthly optimization, freemium/trial evaluation |
+| `MARKOS-AGT-PRC-02` **eCommerce Pricing Monitor** | SKU-level competitor pricing, bundles, promos, margin-aware recommendations |
+| `MARKOS-AGT-PRC-03` **Services Pricing Strategist** | market rate benchmarking, value-based pricing, productized services |
+| `MARKOS-AGT-PRC-04` **Pricing Recommendation Agent** | synthesizes all pricing data layers into PricingRecommendation options |
+| `MARKOS-AGT-PRC-05` **Pricing Page Optimizer** | pricing page copy, structure, social proof, and A/B test briefs |
+| `MARKOS-AGT-PRC-06` **Competitive Price Watcher** | pricing crawler orchestration, change detection, alerts, weekly digest |
+
+### SaaS Suite tier (v2 target)
+
+The SAS tier is target architecture from [[SaaS Suite Canon]]. Protocol discovery starts at `.agent/markos/references/saas-suite.md`; planned agent definition files live under `.agent/markos/agents/markos-saas-*.md`, while runnable implementation remains planned for Phases 214-217.
+
+| Agent | Role |
+|---|---|
+| `MARKOS-AGT-SAS-01` **Subscription Lifecycle Manager** | subscription lifecycle actions, renewal state, cancellation/reactivation workflows |
+| `MARKOS-AGT-SAS-02` **Revenue Intelligence Analyst** | MRR, ARR, NRR, GRR, churn, expansion, forecast, waterfall |
+| `MARKOS-AGT-SAS-03` **Billing Compliance Agent** | invoice compliance, DIAN/US checks, accounting sync issues |
+| `MARKOS-AGT-SAS-04` **Churn Risk Assessor** | health score, churn risk, and intervention recommendations |
+| `MARKOS-AGT-SAS-05` **Support Intelligence Agent** | ticket triage, suggested responses, KB grounding, support pattern mining |
+| `MARKOS-AGT-SAS-06` **Expansion Revenue Scout** | upgrade, add-seat, expansion, and cross-sell opportunities |
+
+### SaaS Marketing OS growth tiers (future v2 target)
+
+The growth tiers are target architecture from [[SaaS Marketing OS Strategy Canon]]. They should remain planning doctrine until GSD assigns contracts, data objects, tests, UI/API/MCP surfaces, cost posture, and approval posture.
+
+| Tier | Agents |
+|---|---|
+| PLG | `MARKOS-AGT-PLG-01` PLG Strategist, `PLG-02` Activation Analyst, `PLG-03` PQL Scorer, `PLG-04` In-App Campaign Manager, `PLG-05` Upgrade Trigger Engine, `PLG-06` Viral Loop Designer |
+| Expansion | `MARKOS-AGT-EXP-01` Expansion Intelligence Agent, `EXP-02` Customer Marketing Manager, `EXP-03` Advocacy Engine |
+| ABM | `MARKOS-AGT-ABM-01` ABM Account Intelligence Agent, `ABM-02` ABM Content Personalization Agent, `ABM-03` ABM Orchestration Agent |
+| Viral | `MARKOS-AGT-VRL-01` Viral Loop Analyst, `VRL-02` Referral Program Manager |
+| In-App | `MARKOS-AGT-IAM-01` In-App Campaign Orchestrator |
+| Community | `MARKOS-AGT-CMT-01` Community Strategy Agent, `CMT-02` Community Content Manager, `CMT-03` Community Health Monitor |
+| Events | `MARKOS-AGT-EVT-01` Event Strategy Agent, `EVT-02` Event Production Manager, `EVT-03` Event Revenue Attributor |
+| Experimentation | `MARKOS-AGT-XP-01` Growth Experiment Strategist, `XP-02` Experiment Analyst |
+| PR and Reviews | `MARKOS-AGT-PR-01` PR Intelligence Agent, `PR-02` Press Outreach Manager, `PR-03` Analyst Relations Agent, `PR-04` Review Generation Manager |
+| Partnerships | `MARKOS-AGT-PRT-01` Partnership Intelligence Agent, `PRT-02` Affiliate Program Manager, `PRT-03` Integration Marketing Agent |
+| Developer Marketing | `MARKOS-AGT-DEV-01` Developer Content Strategist, `DEV-02` Developer Community Manager |
+| Revenue Alignment | `MARKOS-AGT-REV-01` Revenue Intelligence Agent, `REV-02` Marketing-Sales Alignment Agent |
+
 ## Shared rules
 
 1. Every agent run has an immutable envelope in `markos_agent_runs` + events in `markos_agent_run_events` + side effects in `markos_agent_side_effects`.
@@ -118,5 +197,10 @@ See `.agent/skills/markos-*` for the full list.
 | Automation Architect · Tracking Spec · UTM Architect | [[MarTech Stack]] · [[Privacy, Consent & Compliance]] |
 
 ## Related
+
+- [[Marketing Operating System Foundation]] - v2 launch loop and agent expansion rule
+- [[MarkOS v2 Operating Loop Spec]] - first-loop agent responsibilities and verification gates
+- [[SaaS Suite Canon]] - SAS target tier and SaaS tenant-suite doctrine
+- [[SaaS Marketing OS Strategy Canon]] - future SaaS growth tiers and mode-specific growth doctrine
 
 - [[MarkOS Canon]] · [[MarkOS Protocol]] · [[MarkOS Codebase Atlas]] · [[Message Crafting Pipeline]] · [[Skills]]

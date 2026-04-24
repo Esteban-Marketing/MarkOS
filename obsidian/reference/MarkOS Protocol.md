@@ -13,6 +13,23 @@ tags:
 
 > Token-indexed, multi-agent marketing operations stack layered over the GSD methodology. Child of [[MarkOS Codebase Atlas]].
 
+## v2 Target Protocol Layer
+
+The current protocol is the implementation baseline. The v2 blueprint adds a product-level operating loop that future protocol work must satisfy:
+
+- AgentRun records for every agent invocation, including trigger, priority, state, input, output, model, tokens, costs, retry count, and failure state.
+- DAG-based agent chains with tenant concurrency limits and visible pause/cancel behavior.
+- Task Board as the unified surface for agent outputs, escalations, connector failures, approvals, and follow-ups.
+- Approval Inbox as the default gate for external-world actions.
+- Cost accounting and AI budget checks before normal execution.
+- Connector recovery tasks when dependent data sources fail.
+- Artifact performance logs for every published or dispatched output.
+- Tenant overlays and literacy update candidates with admin review before central promotion.
+- Pricing Engine protocol: PRC agent tier, pricing MCP tools, cost-model-aware recommendations, price tests, watch-list alerts, and approval gates for price changes.
+- SaaS Marketing OS strategy protocol: future growth tiers for PLG, expansion, ABM, viral/referral, in-app, community, events, PR, experimentation, partnerships, developer marketing, and revenue alignment.
+
+See [[Marketing Operating System Foundation]] and [[MarkOS v2 Operating Loop Spec]] for the canonical v2 contract.
+
 ## .agent/markos — Marketing protocol
 
 Master registry: `.agent/markos/MARKOS-INDEX.md` (MARKOS-IDX-000). Everything is addressable by TOKEN_ID.
@@ -159,5 +176,11 @@ Telemetry Synthesizer · CRO Landing Page Builder · Paid Media Creator · Email
 | `markos-company-knowledge.cjs` | RAG indexing for company context |
 
 ## Related
+
+- [[Marketing Operating System Foundation]] - v2 product doctrine
+- [[MarkOS v2 Operating Loop Spec]] - functional operating loop
+- [[Pricing Engine Canon]] - PRC agent tier and pricing MCP/API doctrine
+- [[SaaS Suite Canon]] - SAS agent tier and SaaS Suite API/MCP/UI doctrine
+- [[SaaS Marketing OS Strategy Canon]] - future SaaS growth tier and mode-routing doctrine
 
 - [[MarkOS Codebase Atlas]] · [[Infrastructure]] · [[Skills]] · [[Patterns]] · [[MarkOS Repo]]

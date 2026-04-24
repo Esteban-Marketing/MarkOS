@@ -12,6 +12,17 @@ tags:
 
 > Every MarkOS message is attached to a pain-point tag. The tag routes to a discipline, a playbook, and a tailoring template. Canonical source: `.agent/markos/literacy/taxonomy.json`.
 
+## v2 Operating Role
+
+In v2, pain tags are not only copywriting labels. They become the routing key for strategy, task creation, artifact performance, social triage, and learning.
+
+- Every artifact in [[Message Crafting Pipeline]] carries one dominant pain tag.
+- Every AgentRun that produces marketing work should preserve the pain tag in task and approval metadata.
+- Performance logs aggregate by pain tag, channel, format, funnel stage, audience, and trigger combination.
+- Social signals can create or update pain tags when they reveal pipeline, support, objection, or buying-intent patterns.
+- Tenant overlays may refine pain language, but central taxonomy changes require reviewed literacy promotion.
+- See [[Marketing Operating System Foundation]] and [[MarkOS v2 Operating Loop Spec]].
+
 ## The 8 parent tags
 
 | Tag | Label | Signal | Routes to |

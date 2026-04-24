@@ -26,7 +26,7 @@ Ship in 2 weeks: public OpenAPI, MCP server with Claude Marketplace listing, web
 ## Out of scope
 
 - Public signup flow (phase 200 mainline → full tenancy hardening).
-- Stripe self-serve billing (phase 205).
+- Pricing Engine-backed billing readiness (phase 205).
 - Agent marketplace (phase 213 alpha, phase 224 GA).
 - 13-connector framework (phase 210/211).
 - Zapier/Make/n8n apps (phase 212).

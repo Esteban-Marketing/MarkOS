@@ -2,72 +2,40 @@
 
 ## Assessment Rubric
 
-- `Impact (I)`: 1 (minor doc inconvenience) to 5 (high probability of operational mistakes).
-- `Likelihood (L)`: 1 (unlikely between milestones) to 5 (likely every week).
-- `Detectability (D)`: 1 (detected automatically) to 5 (hard to detect without manual audit).
-- `Priority Score`: `I x L x D`.
+- `Impact (I)`: 1 to 5
+- `Likelihood (L)`: 1 to 5
+- `Detectability (D)`: 1 to 5
+- `Priority Score`: `I x L x D`
 
-## Current Scored Assessment (2026-03-31)
+## Current Scored Assessment (2026-04-23)
 
 | Concern | I | L | D | Priority | Evidence Reviewed | Status |
 |---|---|---|---|---|---|---|
-| Route drift | 4 | 4 | 3 | 48 | `onboarding/backend/server.cjs`, `onboarding/backend/handlers.cjs`, `ROUTES.md` | Closed |
-| Wrapper drift | 4 | 3 | 4 | 48 | `api/*.js`, `onboarding/backend/handlers.cjs`, `ROUTES.md` | Closed |
-| Entry point drift | 3 | 3 | 3 | 27 | `bin/*.cjs`, `.agent/get-shit-done/bin/gsd-tools.cjs`, `.agent/markos/bin/markos-tools.cjs`, `ENTRYPOINTS.md` | Closed |
-| Topology drift | 3 | 4 | 4 | 48 | `onboarding/backend/**`, `FOLDERS.md`, `FILES.md` | Deferred/Accepted |
+| Vault doctrine outruns implementation | 5 | 5 | 3 | 75 | `obsidian/brain/*`, `.planning/REQUIREMENTS.md`, `app/`, `api/`, `lib/` | Open |
+| Static pricing residue in active code | 5 | 5 | 2 | 50 | `lib/markos/billing/entitlements.ts`, `api/billing/tenant-summary.js`, `app/(markos)/settings/billing/page-shell.tsx` | Open |
+| Task/approval UI is not yet canonical system-of-record | 5 | 4 | 3 | 60 | `app/(markos)/operations/tasks/*` | Open |
+| AgentRun substrate is fragmented across surfaces | 5 | 4 | 3 | 60 | `onboarding/backend/agents/run-engine.cjs`, CRM copilot/playbook routes, MCP runtime, migrations | Open |
+| Codebase map drift | 3 | 4 | 4 | 48 | stale `.planning/codebase/*` before this refresh | Mitigated |
+| API/contract/docs drift as new surfaces land | 4 | 4 | 3 | 48 | `api/`, `contracts/`, `docs/`, `sdk/` | Open |
+| Integrated v2 acceptance coverage gaps | 5 | 4 | 4 | 80 | broad test coverage exists, but no end-to-end acceptance for phases 204-220 | Open |
 
-## Known Documentation Risks
+## Active Risk Notes
 
-1. Route drift: onboarding routes can change without summary docs being updated.
-2. Wrapper drift: hosted `api/` wrappers can diverge from local route documentation.
-3. Entry point drift: CLI additions in `bin/` and `.agent/*/bin/` can be undocumented.
-4. Topology drift: folder growth in `onboarding/backend/*` can outpace inventories.
-
-## Operational Risk Notes
-
-- Local and hosted auth boundaries are intentionally different for some operations.
-- Some wrappers rely on handler-level secret checks rather than wrapper-level auth.
-- Wrapper-level auth variance is expected, but every variance must be called out in `ROUTES.md` and `INTEGRATIONS.md`.
+1. Pricing Engine, SaaS Suite, and Growth Strategy are now planning truth, but those objects and APIs do not exist in runtime code yet.
+2. The current task UI demonstrates the interaction pattern, not the final operating substrate.
+3. Existing AgentRun logic is useful foundation but not yet the unified DAG/priority/retry/cost/event system described in the vault.
+4. Contracts and tests are strong for implemented domains, which raises the cost of drift when new doctrine is not routed through the same discipline.
 
 ## Mitigations
 
-- Keep `ROUTES.md`, `ENTRYPOINTS.md`, `FOLDERS.md`, and `FILES.md` current.
-- Run protocol tests after documentation hierarchy edits.
-- Use `33-VERIFICATION.md` checks during phase execution and future changes.
+- Keep `.planning/V4.0.0-CODEBASE-VAULT-DEEP-AUDIT.md` as a canonical planning input.
+- Route static pricing cleanup through Pricing Engine work rather than ad hoc UI edits.
+- Treat Phase 208 as a migration from fixture UI to run/task/evidence-backed operations.
+- Keep contract/doc/sdk updates paired with every new API or MCP surface.
+- Add phase-level acceptance suites as phases 204-220 begin implementation.
 
 ## Open Actions
 
-1. Add route inventory parity check to protocol tests.
-Owner: Protocol Maintainer.
-Due: 2026-04-05.
-Status: Completed (implemented in `test/protocol.test.js` test 4.10).
-
-2. Add wrapper-to-handler mapping and auth-variance assertion checks.
-Owner: Protocol Maintainer.
-Due: 2026-04-05.
-Status: Completed (implemented in `test/protocol.test.js` test 4.10).
-
-3. Add entrypoint coverage checks for documented command surfaces.
-Owner: Protocol Maintainer.
-Due: 2026-04-05.
-Status: Completed (implemented in `test/protocol.test.js` test 4.11).
-
-4. Run weekly light audit and monthly full reconciliation; store dated results in phase 33 folder.
-Owner: Protocol Maintainer.
-Due: Recurring.
-Status: Process action activated (cadence documented in concern assessment).
-
-## Cadence
-
-- Weekly: lightweight drift scan for routes, wrappers, and entrypoints.
-- Monthly: full folder/file topology reconciliation.
-- Milestone close: required full concern reassessment before transition.
-
-## Refresh Triggers
-
-- New file added under `api/`.
-- New route path or method added in `onboarding/backend/server.cjs`.
-- New user command added under `bin/`.
-- New protocol command entrypoint added under `.agent/*/bin/`.
-- New top-level folder or onboarding backend subfolder introduced.
-- Any concern status changes from Open to Mitigated/Closed.
+1. Use the deep audit artifact during the next discuss/research pass for Phases 204-220.
+2. Preserve codebase-map freshness as new pricing, SaaS, and growth routes are added.
+3. Add integrated acceptance verification for the first end-to-end v2 loop before claiming compliance.

@@ -17,18 +17,29 @@ tags:
 
 Make MarkOS the bulletproof agentic **Marketing Operating System** for humans, agents, and hybrid teams. SaaS cloud with API-first posture. Operator-grade UI. Every company, every audience, every language, every culture. Install-time tailoring sets the literacy depth + brand pack + locale. Connect via REST/SDK/MCP/Zapier/Make/n8n/CLI. Generate on-demand, proven-safe, brand-tailored marketing.
 
+## 2026-04-22 v2 harmonization note
+
+This note remains useful as the v4.0.0 SaaS readiness roadmap history. The live vault doctrine now lives in [[Marketing Operating System Foundation]] and [[MarkOS v2 Operating Loop Spec]].
+
+Superseded planning assumptions:
+
+- Q-A ICP is now growth-stage B2B marketing leaders first, agencies second. Solopreneurs/vibe-coders remain distribution and product-ergonomics signals.
+- Pricing baseline is now superseded by [[Pricing Engine Canon]]; use `{{MARKOS_PRICING_ENGINE_PENDING}}` until the engine produces approved recommendations.
+- The immediate product priority is one complete operating loop before broad marketplace or 80-agent expansion.
+- Incoming learning/agent contracts need fresh IDs because F-90 through F-100 are already occupied later in the codebase.
+
 ## Decisions locked (reference)
 
 | # | Decision | Value |
 |---|---|---|
 | 1 | Hosting | SaaS cloud first → OSS community edition → BYOC Y2 |
 | 2 | Onboarding | 30-min guided AI interview standard · 5-min `--preset` dev mode · white-glove enterprise |
-| 3 | Monetization | Platform fee + metered AI + BYOK discount (Vercel/Sentry model) |
+| 3 | Monetization | Superseded by [[Pricing Engine Canon]]; legacy platform-fee, metered-AI, and BYOK-discount ideas are cost-model inputs, not active pricing policy |
 | 4 | Integration order | OpenAPI → SDKs (TS+Py) → MCP → Webhooks → Zapier → Make → n8n |
 | 5 | Tier-1 connectors (13) | Shopify · HubSpot · Stripe · Slack · Google Ads · Meta Ads · GA4 · Segment · Resend · Twilio · **PostHog · Linear · Supabase** |
 | 6 | Language v1 | EN · ES · PT · FR · DE · IT · NL → global by end Y1 |
 | 7 | Compliance | SOC 2 Type I 6mo → Type II + ISO27001 Y2 · HIPAA BAA opt-in |
-| 8 | White-label | Agency tier upsell · Enterprise OEM on contract |
+| 8 | White-label | Agency and OEM packaging pending Pricing Engine-approved recommendations |
 | 9 | Autonomy | Tiered — earn autonomy per mutation family after run history |
 | 10 | Data residency | US-East v1 → US + EU Y1.5 → + APAC Y2 |
 | 11 | Plugin marketplace | Yes from v1, moderated · **Claude Marketplace + vibe-coder/solopreneur ecosystem priority** |
@@ -37,11 +48,11 @@ Make MarkOS the bulletproof agentic **Marketing Operating System** for humans, a
 | 14 | Agent marketplace | **Y1** (accelerated from Y2) |
 | 15 | Fine-tunes | Opt-in **public beta** · alpha via manual CLI |
 
-## Open questions — your turn
+## Historical open questions - resolved by 2026-04-22 v2 doctrine
 
-Still need from you:
+These were open on 2026-04-16 and are kept for roadmap history. Current answers live in [[Key Decisions]].
 
-- **Q-A first target ICP** — default **seed-to-A B2B SaaS + modern DTC + solopreneurs** (matches vibe-coder / agent-marketplace bet). Override if agency-first or mid-market-first is the real wedge.
+- **Q-A first target ICP** - historical default was seed-to-A B2B SaaS + modern DTC + solopreneurs; superseded by [[Target ICP]].
 - **Q-B brand stance** — default **developer-native, AI-first, quietly confident** (tight prose, dark+neutral UI, clear proof, minimal hype). Override to playful / enterprise-serious / founder-personality if different.
 - **Q-C connector build posture** — default **Nango embedded** (OSS parity, self-host path later) rather than Paragon/Merge.dev. Override if hosted speed > control.
 
@@ -125,7 +136,7 @@ Four quarterly waves, each a GSD milestone. Phases map to existing MarkOS number
 
 ### Q2 2026 — "SaaS Readiness 1.0" (milestone v4.0.0)
 
-> **Goal:** public SaaS early-access launch. API · SDKs · MCP · webhooks · CLI all GA. Billing self-serve. SOC 2 Type I foundations laid.
+> **Goal:** public SaaS early-access launch. API · SDKs · MCP · webhooks · CLI all GA. Pricing Engine-backed billing readiness. SOC 2 Type I foundations laid.
 
 | Phase | Scope |
 |---|---|
@@ -134,22 +145,22 @@ Four quarterly waves, each a GSD milestone. Phases map to existing MarkOS number
 | **202** MCP server GA + Claude Marketplace | A2 graduated · +20 more skills · session persistence |
 | **203** Webhook subscription engine | A3 graduated · delivery dashboard · retry UX |
 | **204** CLI `markos` v1 GA | `init` · `generate` · `plan` · `run` · `eval` · `login` · `keys` · `whoami` · `env` |
-| **205** Billing self-serve + BYOK | Stripe portal · metered events · BYOK discount calc · invoice UI |
+| **205** Pricing Engine foundation + billing readiness | cost model · usage ledger · BYOK cost signal · invoice UI · Pricing Engine handoff |
 | **206** SOC 2 Type I foundation | auditor pick · policies authored · evidence automation · pen test #1 |
 
-### Q3 2026 — "Integration Tier + Connectors" (milestone v4.1.0)
+### Q3 2026 — "SaaS Suite 1.0 + Integrations Bridge" (milestone v4.1.0)
 
-> **Goal:** 13 tier-1 connectors GA · Zapier+Make+n8n apps live · Agent Marketplace alpha · locale packs.
+> **Goal:** activate the SaaS Suite for `business_type = saas` tenants, then continue the connector/app/marketplace track on top of the same governed substrate.
 
 | Phase | Scope |
 |---|---|
-| **210** Connector framework | Nango embedded · OAuth flows · event ingest normalizer · connector SDK |
-| **211** Tier-1 connectors GA | Shopify · HubSpot · Stripe · Slack · Google Ads · Meta Ads · GA4 · Segment · Resend · Twilio · PostHog · Linear · Supabase |
-| **212** Zapier + Make + n8n apps | auto-generated from OpenAPI · published on each registry · triggers + actions parity |
-| **213** Agent Marketplace alpha | community agents submit · manual moderation · install UX |
-| **214** Locale packs | 7 tier-1 languages + cultural adaptation rules (honorifics, reading direction, formality) |
-| **215** AI fine-tune opt-in beta | public beta · consented anonymized corpus · opt-out path · alpha CLI flag |
-| **216** Autonomy grants engine | per-tenant per-family autonomy grants · earned-trust ladder · telemetry-driven |
+| **214** SaaS Suite Activation and Subscription Core | `business_type=saas` activation · SaaS profile · plans · subscriptions · lifecycle tasks |
+| **215** SaaS Billing, Payments, and Multi-Country Compliance | Stripe/US · Mercado Pago/Colombia · QuickBooks · Siigo/Alegra · DIAN |
+| **216** SaaS Health, Churn, Support, and Product Usage Intelligence | health score · churn alerts · support triage · product usage signals |
+| **217** SaaS Revenue Intelligence, SAS Agents, API/MCP/UI Readiness | MRR/ARR/NRR/GRR · SAS-01..06 · `/v1/saas/*` · `markos-saas` |
+| **218** Connector framework and SaaS connector bridge | Nango embedded · OAuth flows · event ingest normalizer · connector SDK · support/product/accounting connector strategy |
+| **219** Zapier + Make + n8n apps | auto-generated from OpenAPI · published on each registry · triggers + actions parity |
+| **220** Agent Marketplace alpha + locale/fine-tune/autonomy backlog split | community agents submit · manual moderation · install UX · later split for locale packs, fine-tunes, autonomy grants |
 
 ### Q4 2026 — "Operator UX + White-label + Type II" (milestone v4.2.0)
 
@@ -157,13 +168,13 @@ Four quarterly waves, each a GSD milestone. Phases map to existing MarkOS number
 
 | Phase | Scope |
 |---|---|
-| **220** Operator UI polish | dashboards v2 · Brand Studio · Campaign Composer · Approval Queue · Evidence Rail |
-| **221** Agency white-label tier | custom subdomain · reseller billing · brand override · agency-level analytics |
-| **222** EU data residency | Frankfurt region · per-tenant residency choice · AI provider region-lock |
-| **223** SOC 2 Type II audit kickoff | observation window opens · runbook automation · DLP controls |
-| **224** Agent Marketplace GA | revenue share (70/30 creator split) · licence tiers · rating + reviews |
-| **225** Usage-based pricing v2 | Active-CPU parity · per-mutation-family pricing · transparent telemetry |
-| **226** Connectors wave 2 | LinkedIn Ads · TikTok Ads · WhatsApp Business · Mixpanel · Postmark · SendGrid · Twilio Messaging Services · Stripe Tax · Notion · Airtable |
+| **221** Operator UI polish | dashboards v2 · Brand Studio · Campaign Composer · Approval Queue · Evidence Rail |
+| **222** Agency white-label tier | custom subdomain · reseller billing · brand override · agency-level analytics |
+| **223** EU data residency | Frankfurt region · per-tenant residency choice · AI provider region-lock |
+| **224** SOC 2 Type II audit kickoff | observation window opens · runbook automation · DLP controls |
+| **225** Agent Marketplace GA | revenue share pending Pricing Engine recommendation · licence tiers · rating + reviews |
+| **226** Usage-based pricing v2 | Active-CPU parity · per-mutation-family pricing · transparent telemetry |
+| **227** Connectors wave 2 | LinkedIn Ads · TikTok Ads · WhatsApp Business · Mixpanel · Postmark · SendGrid · Twilio Messaging Services · Stripe Tax · Notion · Airtable |
 
 ### Q1 2027 — "Enterprise + Global" (milestone v4.3.0 / 5.0.0)
 
@@ -351,14 +362,16 @@ Each new skill gets a MarkOS skill manifest at `.agent/skills/markos-<skill>.md`
 - `markos-run-eval` — schedule eval suite
 - `markos-publish-plugin` — marketplace submission flow
 
-### Pricing model implementation
+### Historical billing implementation assumptions
 
-- **Platform fee** — seat-equivalent price × named-operators per month.
-- **Metered AI** — `lib/markos/billing/usage-ledger.ts` captures per-call tokens × model × region. Markup over Gateway cost.
-- **BYOK discount** — operator keys decrypt per call (`lib/markos/llm/encryption.ts`); billing ledger records BYOK flag → platform fee only.
-- **Marketplace revenue share** — 70 creator / 30 platform. Stripe Connect payouts.
-- **Connector credits** — per high-value connector event (e.g. ad mutations) → metered separately.
-- **Eval runs** — metered; first N free per plan.
+These 2026-04-16 billing assumptions are now inputs to [[Pricing Engine Canon]], not active pricing policy. Any public price, package boundary, included usage amount, discount, or revenue share requires an approved PricingRecommendation.
+
+- **Platform fee** — historical candidate model; the Pricing Engine decides whether seat-equivalent pricing is useful for a specific segment.
+- **Metered AI** — `lib/markos/billing/usage-ledger.ts` should still capture per-call tokens, model, region, and cost so the Pricing Engine can model margin.
+- **BYOK treatment** — operator keys decrypt per call (`lib/markos/llm/encryption.ts`); BYOK is a cost and supply-side signal, not an automatic discount policy unless the Pricing Engine recommends it.
+- **Marketplace revenue share** — candidate economics; validate through marketplace cost, creator incentive, and competitive benchmarks before publishing.
+- **Connector usage** — high-value connector events can become cost-model inputs or usage metrics; packaging is Pricing Engine-owned.
+- **Eval runs** — usage and compute cost should be recorded; included allowances remain `{{MARKOS_PRICING_ENGINE_PENDING}}`.
 
 ### Rate-limiting + abuse
 
@@ -381,9 +394,9 @@ Each new skill gets a MarkOS skill manifest at `.agent/skills/markos-<skill>.md`
 
 | Milestone | Quarter | Theme | Est. phases |
 |---|---|---|---|
-| **v4.0.0** | Q2 2026 | SaaS Readiness 1.0 | 200–206 |
-| **v4.1.0** | Q3 2026 | Integrations + Agent Marketplace Alpha | 210–216 |
-| **v4.2.0** | Q4 2026 | Operator UX · White-label · Type II | 220–226 |
+| **v4.0.0** | Q2 2026 | SaaS Readiness 1.0 + v2 foundation | 200-213 |
+| **v4.1.0** | Q3 2026 | SaaS Suite 1.0 + Integrations Bridge | 214-220 |
+| **v4.2.0** | Q4 2026 | Operator UX · White-label · Type II | 221-227 |
 | **v4.3.0 / 5.0.0** | Q1 2027 | Enterprise · Global · BYOC | 230–236 |
 
 ~26 phases over 12 months. Cadence matches existing MarkOS GSD rhythm (4–6 phases per milestone).
@@ -395,7 +408,7 @@ Each new skill gets a MarkOS skill manifest at `.agent/skills/markos-<skill>.md`
 | 2026-05 | v4.0.0-alpha (200–204) | private alpha · waitlist · 20 design partners |
 | 2026-06 | v4.0.0-beta (205–206) | public beta · Claude Marketplace soft launch |
 | 2026-07 | v4.0.0 GA | SaaS launch · PH · Hacker News · dev Twitter |
-| 2026-09 | v4.1.0 | integration tier GA · Zapier/Make/n8n apps · agent marketplace alpha |
+| 2026-09 | v4.1.0 | SaaS Suite alpha · subscription/billing/churn/support/revenue intelligence · integration bridge |
 | 2026-12 | v4.2.0 | operator UX polish · agency tier · EU launch |
 | 2027-03 | v4.3.0 | enterprise tier · APAC launch · BYOC GA |
 
@@ -423,6 +436,8 @@ Standard commands:
 - `/gsd-autonomous` — once phases are decomposed, run hands-off
 
 ## Next action (what to green-light)
+
+Historical note: this green-light request has been superseded by the v2 foundation pass. Use [[Work Notes]] and [[North Star]] for the current next GSD decision.
 
 **Request from you:** answer Q-A, Q-B, Q-C (above) + green-light the 0-day shortlist (A1–A8). On green-light, I will:
 

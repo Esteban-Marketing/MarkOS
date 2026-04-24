@@ -127,6 +127,28 @@ Plus: `records.js`, `object-definitions.js`, `pipelines.js`, `calendar.js`, `fun
 
 - `api/tenant-plugin-settings.js` — owner or tenant-admin; `assertEntitledAction`; writes `plugin_tenant_config` + `plugin_tenant_capability_grants`.
 
+## v2 HTTP Gap Overlay
+
+Future SaaS Marketing OS strategy routes should be added only after the core operating loop, Pricing Engine, and SaaS Suite contracts exist.
+
+Candidate read-first route families:
+
+| Route family | Purpose |
+|---|---|
+| `/api/saas/growth-profile` | SaaS mode, active modules, sales/CS/developer posture |
+| `/api/saas/activation` | activation definition, milestone funnel, activation gaps |
+| `/api/saas/pql` | PQL score queue, recommended action/channel/timing |
+| `/api/saas/abm` | account packages, tiering, buying committee, engagement |
+| `/api/saas/referrals` | referral program, reward economics, fraud flags |
+| `/api/saas/in-app-campaigns` | in-app campaign drafts, triggers, suppression, approval |
+| `/api/saas/community` | community profile, health, product/support/content signals |
+| `/api/saas/events` | event plan, promotion, reminders, replay, attribution |
+| `/api/saas/experiments` | ICE backlog, experiment registry, results, learning |
+| `/api/saas/partnerships` | partners, affiliates, co-marketing, integration marketing |
+| `/api/saas/revenue-alignment` | MQL/SQL/PQL definitions, SLA, feedback, pipeline target |
+
+Mutation routes require approval contracts, audit events, RLS, deletion/export coverage, and Pricing Engine checks when pricing, discounts, rewards, or packaging are involved.
+
 ## Tenant posture summary
 
 | Zone | Auth | Tenant | Roles |
@@ -141,3 +163,4 @@ Plus: `records.js`, `object-definitions.js`, `pipelines.js`, `calendar.js`, `fun
 ## Related
 
 - [[MarkOS Codebase Atlas]] · [[Core Lib]] · [[Contracts Registry]] · [[CRM Domain]] · [[Database Schema]] · [[UI Components]]
+- [[SaaS Marketing OS Strategy Canon]]

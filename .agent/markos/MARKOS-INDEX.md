@@ -25,7 +25,7 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 
 **TOKEN_ID structure:** `MARKOS-[CLASS]-[DOMAIN]-[SEQ]`
 - CLASS: `AGT` agent · `PRM` prompt · `REF` reference · `SKL` skill · `MIR` MIR template · `MSP` MSP matrix · `WFL` workflow · `TPL` generic template · `IDX` index
-- DOMAIN: `NEU` neuromarketing · `STR` strategy · `EXE` execution · `ANA` analytics · `OPS` operations · `TRK` tracking · `CNT` content · `AUD` audience · `CAM` campaign
+- DOMAIN: `NEU` neuromarketing · `STR` strategy · `EXE` execution · `ANA` analytics · `OPS` operations · `TRK` tracking · `CNT` content · `AUD` audience · `CAM` campaign · `PRC` pricing · `SAS` SaaS suite
 - SEQ: zero-padded 2-digit integer, unique within CLASS+DOMAIN
 
 ---
@@ -60,6 +60,8 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 | MARKOS-REF-OPS-13 | `references/git-integration.md` | REF | OPS | Git commit patterns, branch strategy for MarkOS |
 | MARKOS-REF-OPS-14 | `references/git-planning-commit.md` | REF | OPS | .planning/ directory commit conventions |
 | MARKOS-REF-CNT-01 | `references/ui-brand.md` | REF | CNT | UI brand guidelines for MarkOS output formatting |
+| MARKOS-REF-PRC-01 | `references/pricing-engine.md` | REF | PRC | Pricing Engine protocol doctrine, PRC target agents, placeholder policy, and approval rules |
+| MARKOS-REF-SAS-01 | `references/saas-suite.md` | REF | SAS | SaaS Suite tenant-type doctrine, SAS target agents, subscription/billing/compliance/support/revenue requirements |
 
 ---
 
@@ -101,6 +103,12 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 | MARKOS-AGT-OPS-07 | `agents/markos-linear-manager.md` | AGT | OPS | Linear.app ticket creation and bidirectional sync |
 | MARKOS-AGT-RES-01 | `agents/markos-researcher.md` | AGT | RES | Market Intelligence Agent — populates RESEARCH/ files from onboarding seed |
 | MARKOS-AGT-ONB-01 | `agents/markos-onboarder.md` | AGT | ONB | Onboarding Orchestrator — reads seed, drives researcher, scaffolds MIR/MSP |
+| MARKOS-AGT-SAS-01 | `agents/markos-saas-subscription-lifecycle-manager.md` | AGT | SAS | Planned SaaS Suite agent for subscription lifecycle state, renewals, cancellations, and approval-gated mutations |
+| MARKOS-AGT-SAS-02 | `agents/markos-saas-revenue-intelligence-analyst.md` | AGT | SAS | Planned SaaS Suite agent for MRR, ARR, NRR, GRR, churn, expansion, forecast, and revenue waterfall intelligence |
+| MARKOS-AGT-SAS-03 | `agents/markos-saas-billing-compliance-agent.md` | AGT | SAS | Planned SaaS Suite agent for invoice compliance, DIAN/US billing checks, accounting sync, and billing exception tasks |
+| MARKOS-AGT-SAS-04 | `agents/markos-saas-churn-risk-assessor.md` | AGT | SAS | Planned SaaS Suite agent for health scoring, churn-risk alerts, and intervention playbooks |
+| MARKOS-AGT-SAS-05 | `agents/markos-saas-support-intelligence-agent.md` | AGT | SAS | Planned SaaS Suite agent for support ticket triage, grounded suggested responses, and CS approval routing |
+| MARKOS-AGT-SAS-06 | `agents/markos-saas-expansion-revenue-scout.md` | AGT | SAS | Planned SaaS Suite agent for upgrade, add-seat, expansion, and cross-sell opportunity discovery |
 | MARKOS-PRM-OPS-01 | `../prompts/telemetry_synthesizer.md` | PRM | OPS | Layer 0 Data Analyst; converts raw analytics into MIR insights |
 | MARKOS-PRM-STR-01 | `../prompts/cro_landing_page_builder.md` | PRM | STR | High-conversion wireframer and copywriter for owned properties |
 | MARKOS-PRM-EXE-01 | `../prompts/paid_media_creator.md` | PRM | EXE | Performance media creator (Meta/Google Ad copy) |
@@ -210,9 +218,9 @@ This file is `MARKOS-IDX-000`. It is the mandatory entry point for technical dom
 ```mermaid
 graph TD
   IDX["IDX — MARKOS-IDX-000\n(this file — read first)"]
-  REF["REF — References\n16 files\nNo upstream dependencies"]
+  REF["REF — References\n18+ files\nNo upstream dependencies"]
   MIR["MIR — Repository Templates\n30+ files across 5 domains"]
-  AGT["AGT — Agent Definitions\n32 files"]
+  AGT["AGT — Agent Definitions\ncurrent + planned files"]
   SKL["SKL — Skill Manifests\n24 files\n(thin routing wrappers)"]
   WFL["WFL — Workflows\n2+ files"]
   TPL["TPL — Generic Templates\n17 files"]

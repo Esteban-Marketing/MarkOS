@@ -31,6 +31,10 @@ tags:
 
 See atomic notes above. For the AI-native frontier see [[AI & Agentic Marketing — 2026 Frontier]].
 
+## MarkOS Productization
+
+[[SaaS Marketing OS Strategy Canon]] turns this discipline into activation definitions, milestone funnels, PQL scoring, upgrade triggers, in-app campaigns, and product-usage-driven growth tasks for SaaS tenants.
+
 ## Related
 
 - [[Marketing Literacy]] · [[Home]] · [[Patterns]] · [[Key Decisions]] · [[MarkOS Codebase Atlas]]

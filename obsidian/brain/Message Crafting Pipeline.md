@@ -1,6 +1,6 @@
 ---
 date: 2026-04-16
-description: "The canonical 7-stage MarkOS message-crafting pipeline — from seed intent to approved, audience-centric, brand-tailored, pain-rooted, neuro-calibrated, channel-native artifact."
+description: "The canonical 10-stage MarkOS artifact loop from intent to audience, pain, proof, brand, draft, audit, approval, dispatch, measure, and learn."
 tags:
   - brain
   - canon
@@ -10,16 +10,16 @@ tags:
 
 # Message Crafting Pipeline
 
-> Every outbound marketing artifact in MarkOS — email, ad, landing page, social post, SMS, push, creator brief — passes through seven stages. Skipping any stage is a [[MarkOS Canon|Canon]] violation.
+> Every outbound marketing artifact in MarkOS - email, ad, landing page, social post, SMS, push, creator brief - passes through a ten-stage loop. Stages 1-7 craft and audit the artifact. Stages 8-10 create the approval, dispatch, and measurement evidence required by [[Marketing Operating System Foundation]].
 
-## The 7 stages
+## The 10-stage artifact loop
 
 ```
 (1) Intent → (2) Audience → (3) Pain → (4) Promise → (5) Brand →
 (6) Draft → (7) Audit → (8) Approval → (9) Dispatch → (10) Measure
 ```
 
-(Stages 8–10 are post-craft gates; the craft itself is 1–7.)
+Stages 8-10 are no longer optional post-craft cleanup. In v2 they are part of the operating-system contract because MarkOS must prove human approval, dispatch lineage, and performance learning.
 
 ### 1. Intent — what outcome does this message drive?
 
@@ -88,6 +88,21 @@ Executor (`MARKOS-AGT-EXE-01`) is the only agent authorized here. Uses channel a
 
 Performance Monitor + Analyst + Data Scientist feed outcomes back to strategy.
 
+## v2 Loop Additions
+
+Every artifact now needs enough metadata to become a measurable operating-system event:
+
+- AgentRun ID, source agent, input brief, output artifact, model, token/cost estimate, actual cost, and retry/failure state.
+- Audience archetype, dominant pain tag, funnel stage, channel, format, campaign, and target outcome.
+- Evidence map for factual claims, including citations, source quality, confidence, and claim decay.
+- Pricing context from [[Pricing Engine Canon]] for any artifact that mentions price, packaging, discounts, competitors, or value metrics.
+- Brand score dimensions, not just a pass/fail result.
+- Approval package with preview, decision, owner, timestamp, and rejection reason when applicable.
+- Dispatch metadata: platform, schedule, UTM, compliance state, rollback option, and related CRM/pipeline entity.
+- Performance envelope before publish, then actual outcomes after publish.
+
+This is why the pipeline links to [[MarkOS v2 Operating Loop Spec]] instead of remaining only a copywriting workflow.
+
 ## Channel-specific tailoring
 
 Stage 6 (Draft) must respect channel native form. See per-channel playbooks under the Literacy tree `28 Message Crafting/`:
@@ -115,12 +130,13 @@ For each archetype × pain × brand combination, the draft varies on:
 - **Voice audit after human approval** — catches drift too late. Automate stage 7 before stage 8.
 - **Single-round audit** — treat rejections as iteration, not failure. Most drafts require 2–3 passes.
 - **Ignoring channel-native form** — 600-word email copy in a push notification is not "tailoring," it is laziness.
+- **Hard-coding pricing** - use live Pricing Engine context or `{{MARKOS_PRICING_ENGINE_PENDING}}`; stale pricing claims are Canon violations.
 
 ## Example walk-through
 
 **Intent**: re-engage trial users who stopped using the product at day 3.
 
-1. **Audience** → "Solo B2B SaaS founder, small team, overwhelmed by tooling"
+1. **Audience** → "Growth-stage B2B marketing leader with a small team and fragmented reporting"
 2. **Pain** → `pipeline_velocity` (sub: `lifecycle_email:weak_nurture`)
 3. **Promise** → "MarkOS runs your marketing stack on autopilot so your pipeline re-fills while you build"
 4. **Brand** → direct, confident, zero jargon, slight dry humour

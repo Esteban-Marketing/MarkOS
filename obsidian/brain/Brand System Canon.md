@@ -25,6 +25,17 @@ tags:
 
 Each layer produces machine-readable tokens. Those tokens live in `lib/markos/theme/brand-pack.ts` in code, `.markos-local/MIR/brand-pack.md` in the vault.
 
+## v2 Brand Pack Requirement
+
+The v2 foundation makes the brand pack a launch-critical activation step, not a later polish layer.
+
+- Brand Pack Wizard must complete in roughly 8-12 minutes inside the under-30-minute onboarding target.
+- Brand pack completion target is 85%+ for activated accounts.
+- Voice classifier score is persisted on every artifact and should average at least 82% for shipped agent types.
+- Claim library rows need evidence, scope, decay date, and review status before claims appear in customer-facing output.
+- The brand pack feeds the approval inbox, content brief, social response drafting, weekly narrative, and Tenant 0 case studies.
+- See [[Marketing Operating System Foundation]] and [[MarkOS v2 Operating Loop Spec]].
+
 ## Layer 1 — Identity
 
 | Field | Shape |

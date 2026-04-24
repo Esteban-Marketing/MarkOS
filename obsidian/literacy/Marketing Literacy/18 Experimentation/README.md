@@ -31,6 +31,10 @@ tags:
 
 See atomic notes above. For the AI-native frontier see [[AI & Agentic Marketing — 2026 Frontier]].
 
+## MarkOS Productization
+
+[[SaaS Marketing OS Strategy Canon]] turns experimentation into an ICE-ranked backlog, experiment registry, guardrails, rollout/reject/extend/redesign decisions, and documented learnings that feed tenant overlays before central literacy.
+
 ## Related
 
 - [[Marketing Literacy]] · [[Home]] · [[Patterns]] · [[Key Decisions]] · [[MarkOS Codebase Atlas]]

@@ -2,21 +2,209 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Ready to plan
-last_updated: "2026-04-18T15:50:42.126Z"
+status: Ready to execute Phase 204
+last_updated: "2026-04-23T11:35:27-05:00"
 progress:
-  total_phases: 7
+  total_phases: 14
   completed_phases: 4
-  total_plans: 37
+  total_plans: 105
   completed_plans: 37
+  reserved_next_phases: 15
+  reserved_next_plans: 42
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 203 (webhook-subscription-engine-ga) — ALL WAVES COMPLETE + GAP CLOSURE SHIPPED
-Plan: Not started
+Phase: 204 (cli-markos-v1-ga) queued next, with v2 compliance guardrails added.
+Plan: 204-01 through 204-13 planned; Phases 205-213 now route the vault/codebase compliance gaps and have executable atomic plan files. Reserved Phases 214-220 also have future plan files for SaaS Suite and SaaS Growth Strategy preparation, and newly seeded Phases 221-228 now reserve the commercial-engine expansion from incoming docs 18-26.
+
+## Planning overlay (2026-04-23 incoming 18-26 commercial-engine routing)
+
+Incoming documents `18` through `26` introduce a larger commercial-system expansion than the existing SaaS Growth Strategy bundle:
+
+- native CRM engine
+- native email engine
+- CDP identity and audience substrate
+- messaging engine for WhatsApp, SMS, and push
+- native analytics and attribution layer
+- native conversion and launch engines
+- sales enablement and deal-execution layer
+- ecosystem, partner, affiliate, community, and developer-growth layer
+
+Decision: do not overload Phases 214-220 with these engines. Reserve a new milestone candidate, `v4.2.0 Commercial Engines 1.0`, and seed Phases 221-228 for later GSD discuss and research.
+
+New routing artifact:
+
+- `.planning/V4.2.0-INCOMING-18-26-GSD-DISCUSS-RESEARCH-ROUTING.md`
+
+Seeded future phases:
+
+- Phase 221 - CDP identity, audience, and consent substrate
+- Phase 222 - CRM timeline and commercial memory workspace
+- Phase 223 - Native email and messaging orchestration
+- Phase 224 - Conversion and launch workspace
+- Phase 225 - Analytics, attribution, and narrative intelligence
+- Phase 226 - Sales enablement and deal execution
+- Phase 227 - Ecosystem, partner, community, and developer growth
+- Phase 228 - Commercial OS integration and future-readiness closure
+
+Preparation status:
+
+- `DISCUSS.md`, `CONTEXT.md`, and `RESEARCH.md` now exist for Phases 221-228.
+- `.planning/REQUIREMENTS.md` now carries future requirement families for docs 18-26.
+- `.planning/ROADMAP.md` and `.planning/V4.0.0-GSD-PHASE-RESEARCH-READINESS-MATRIX.md` now expose the new lane as a discuss/context/research-ready future bundle.
+- `.planning/V4.2.0-DISCUSS-RESEARCH-REFRESH-221-228.md` summarizes the code-grounded discuss/research pass.
+
+Guardrail: the execution order does not change. The recommended path remains 204 -> 205 -> 206 -> 207 -> 213 -> 214 -> 220 first. The new commercial-engine lane is prepared now so later GSD discuss/research can move faster and with less ambiguity.
+
+## Planning overlay (2026-04-23 testing environment and phase test matrix)
+
+A cross-phase testing doctrine has now been added for the active and reserved phase set so execution agents inherit explicit business-logic testing duties instead of informal QA expectations.
+
+New artifacts:
+
+- `.planning/V4.0.0-TESTING-ENVIRONMENT-PLAN.md`
+- `.planning/V4.0.0-PHASE-TEST-REQUIREMENTS-MATRIX.md`
+
+Result:
+
+- `Vitest` is now the planned default for new deterministic business-logic and contract coverage.
+- `Playwright` is now the planned default for route and workflow proof.
+- `Chromatic` remains the visual regression gate through Storybook.
+- Phases 204-228 now have a documented testing contract at planning level.
+
+## Planning overlay (2026-04-23 incoming/vault/GSD coverage verification)
+
+The incoming documents `00` through `17`, vault canon pages, `.planning/REQUIREMENTS.md`, roadmap entries, and phase directories were re-checked at GSD planning level.
+
+Coverage result:
+
+- Active v4.0.0 Phases 204-213 now have discussion/context/research as applicable and atomic plan files.
+- Phases 207-213 were the main weakness; they now have 40 new plan files.
+- Reserved SaaS Suite Phases 214-217 now have 24 new plan files.
+- SaaS Marketing OS Strategy is routed into reserved Phases 218-220 with 18 new plan files, preserving doc 17 as governed future work rather than vague ambition.
+- The planning route still points execution to Phase 204 first, then 205, 206, and the operating-loop phases 207-213.
+
+New audit artifact:
+
+- `.planning/V4.0.0-INCOMING-VAULT-GSD-COVERAGE-AUDIT.md`
+
+## Planning overlay (2026-04-23 codebase vs vault deep run)
+
+The repository was scanned across `app/`, `api/`, `bin/`, `components/`, `contracts/`, `docs/`, `lib/`, `onboarding/`, `sdk/`, `scripts/`, `supabase/`, `test/`, `tools/`, `.agent/`, `.agents/`, `.planning/`, `obsidian/`, and `RESEARCH/` to compare live implementation surfaces against the current Obsidian vault doctrine.
+
+New artifact:
+
+- `.planning/V4.0.0-CODEBASE-VAULT-DEEP-AUDIT.md`
+
+Decision: no new top-level phase was added. The current `204 -> 220` phase family remains correct, but the deep audit now defines codebase-specific strengthening instructions for CLI, Pricing Engine residue cleanup, AgentRun unification, task/approval migration, evidence normalization, connector operating loops, end-to-end v2 loop proof, and future SaaS/growth boundaries.
+
+## Planning overlay (2026-04-23 discuss/research refresh for 204, 205, 207, 208)
+
+Discuss/context/research artifacts for Phases 204, 205, 207, and 208 were refreshed again using the deep codebase-vault audit as mandatory input.
+
+New artifact:
+
+- `.planning/V4.0.0-DISCUSS-RESEARCH-REFRESH-204-208.md`
+
+Result:
+
+- No new top-level phase was needed.
+- Phase 204 is now framed as a compatibility-safe CLI migration, not a greenfield CLI build.
+- Phase 205 now explicitly absorbs runtime pricing-residue cleanup in lib/API/UI surfaces.
+- Phase 207 now explicitly frames orchestration as unification across existing run-producing domains.
+- Phase 208 now explicitly frames the work as migration of the current `(markos)` shell and operations surfaces into the operator cockpit.
+
+## Planning overlay (2026-04-23 GSD research readiness pass)
+
+GSD phase discussion/research has been reviewed again against the incoming documents `00` through `17`, the Obsidian vault canon, and the current app codebase.
+
+New readiness artifact:
+
+- `.planning/V4.0.0-GSD-PHASE-RESEARCH-READINESS-MATRIX.md`
+
+Research updates:
+
+- Added missing `.planning/phases/206-soc2-type1-foundation/206-RESEARCH.md`.
+- Enriched Phase 205 and Phases 207-217 research files with codebase findings, current support, gaps, recommended contracts, implementation path, and tests implied.
+
+Decision: do not execute Phases 207-213 from discussion notes alone. Use the enriched research files and the new atomic plan files as the foundation for execution. The recommended execution sequence remains 204 -> 205 -> 206 -> 207 -> 208 -> 209 -> 210 -> 211 -> 212 -> 213 -> 214-217 -> 218-220.
+
+## Planning overlay (2026-04-22 SaaS Marketing OS Strategy discussion review)
+
+Incoming document `17-SAAS-MARKETING-OS-STRATEGY.md` has been ingested into the vault and reviewed against phases 200 forward.
+
+Canonical planning inputs:
+
+- `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md`
+- `obsidian/brain/SaaS Marketing OS Strategy Canon.md`
+- `obsidian/work/active/2026-04-22-markos-v2-saas-marketing-os-strategy-intake.md`
+- `.planning/V4.0.0-PHASE-200-FORWARD-INCOMING-DISCUSSION-REVIEW.md`
+
+Outcome: the current build order does not change. Document 17 is a post-SaaS-Suite growth-system destination map, not permission to expand phases 214-217 into the full SaaS Marketing OS. It introduces future requirements for SaaS growth-mode routing, PLG/PQL, account expansion, ABM, viral/referral, in-app marketing, community, events, PR/reviews, partnerships, developer marketing, experimentation, and revenue alignment.
+
+Required routing updates:
+
+- Phase 204 `doctor --check-only` freshness rules must include document 17 and its vault canon/intake.
+- Phase 205 Pricing Engine research must cover future PLG upgrade prompts, referral rewards, affiliate commissions, save offers, pricing-page experiments, G2/Capterra pricing sync, and pricing-sensitive sales/CS copy.
+- Phase 206 SOC2 controls must cover future in-app, referral, affiliate, PR, event, partner, review, experiment, ABM, customer-marketing, and developer/community external mutations.
+- Phases 207-213 now have seeded CONTEXT/RESEARCH artifacts and need code-level research fill before execution planning.
+- Phases 214-217 should preserve extension points for doc 17 but remain SaaS Suite foundation work.
+
+## Planning overlay (2026-04-22 v2 vault/codebase compliance audit)
+
+The codebase was reviewed against the active Obsidian vault doctrine from:
+
+- `obsidian/brain/Marketing Operating System Foundation.md`
+- `obsidian/reference/MarkOS v2 Operating Loop Spec.md`
+- `obsidian/reference/MarkOS v2 Requirements Traceability Matrix.md`
+- `obsidian/brain/Pricing Engine Canon.md`
+- `obsidian/work/incoming/15-PRICING-ENGINE.md`
+
+Outcome: the app has strong SaaS, tenancy, MCP, webhook, CRM, billing-ledger, and partial AgentRun foundations, but it is not yet 100% compliant with the v2 Marketing Operating System requirements. The gap matrix lives at `.planning/V4.0.0-VAULT-CODEBASE-COMPLIANCE-AUDIT.md`.
+
+New/updated routing:
+
+- Phase 204 adds `204-13-PLAN.md` for CLI v2 guardrails.
+- Phase 205 now has plans `205-01` through `205-08` for Pricing Engine Foundation + Billing Readiness.
+- Phase 206 now has plans `206-01` through `206-07` for SOC2 controls that cover AI, pricing, connectors, evidence, learning, and Tenant 0.
+- New Phases 207-213 cover AgentRun v2, Human Operating Interface, Evidence/Research, Connector Wow Loop, Content/Social/Revenue Loop, Learning/Literacy, and Tenant 0 compliance validation.
+
+## Planning overlay (2026-04-22 SaaS Suite intake)
+
+Incoming document `16-SAAS-SUITE.md` has been ingested and distilled into `obsidian/brain/SaaS Suite Canon.md` plus `obsidian/work/active/2026-04-22-markos-v2-saas-suite-intake.md`.
+
+Outcome: SaaS Suite is a major planned tenant-type feature for `business_type = saas`, but it should not disrupt the current v4.0.0 foundation track. It is reserved as v4.1.0 candidate work through Phases 214-217 after Pricing Engine, AgentRun v2, human approvals, evidence, connector recovery, and SOC2 controls are ready.
+
+Reserved routing:
+
+- Phase 214: SaaS Suite Activation and Subscription Core.
+- Phase 215: SaaS Billing, Payments, and Multi-Country Compliance.
+- Phase 216: SaaS Health, Churn, Support, and Product Usage Intelligence.
+- Phase 217: SaaS Revenue Intelligence, SAS Agents, API/MCP/UI Readiness.
+
+Seeded artifacts:
+
+- `.planning/phases/214-saas-suite-activation-subscription-core/DISCUSS.md`, `214-CONTEXT.md`, `214-RESEARCH.md`.
+- `.planning/phases/215-saas-suite-billing-payments-compliance/DISCUSS.md`, `215-CONTEXT.md`, `215-RESEARCH.md`.
+- `.planning/phases/216-saas-suite-health-churn-support-usage/DISCUSS.md`, `216-CONTEXT.md`, `216-RESEARCH.md`.
+- `.planning/phases/217-saas-suite-revenue-agents-api-ui/DISCUSS.md`, `217-CONTEXT.md`, `217-RESEARCH.md`.
+- `.agent/markos/agents/markos-saas-*.md` planned SAS agent definitions.
+
+## Planning overlay (2026-04-22 Pricing Engine intake)
+
+Phase 205 has been re-scoped from static "Billing Self-Serve + BYOK" into **Pricing Engine Foundation + Billing Readiness**. The old monetization model (platform fee + metered AI + BYOK discount) is historical context only. Active pricing policy now lives in `obsidian/brain/Pricing Engine Canon.md`; unresolved public prices, packages, usage inclusion, discounts, and billing copy must use `{{MARKOS_PRICING_ENGINE_PENDING}}` until PricingRecommendation records are generated and approved.
+
+Updated planning entrypoints:
+
+- `.planning/ROADMAP.md` Phase 205
+- `.planning/v4.0.0-ROADMAP.md` Phase 205
+- `.planning/phases/205-pricing-engine-foundation-billing-readiness/DISCUSS.md`
+- `.planning/phases/205-pricing-engine-foundation-billing-readiness/205-CONTEXT.md`
+- `.planning/phases/205-pricing-engine-foundation-billing-readiness/205-RESEARCH.md`
+- `obsidian/work/active/2026-04-22-markos-v2-pricing-engine-intake.md`
 
 ## What just happened (2026-04-18, Plan 203-11 close — gap-closure solo Wave)
 
@@ -983,7 +1171,7 @@ None — Q-A / Q-B / Q-C answered on 2026-04-16. See `obsidian/brain/Target ICP.
 - Target ICP: seed-to-A B2B SaaS + modern DTC + solopreneurs (incl. vibe-coders).
 - Brand stance: developer-native · AI-first · quietly confident.
 - Connector framework: Nango embedded (from phase 210).
-- Monetization: platform fee + metered AI + BYOK discount.
+- Monetization: superseded by Pricing Engine Canon. Treat platform fee, metered AI, and BYOK discount as historical candidate inputs only; use `{{MARKOS_PRICING_ENGINE_PENDING}}` until approved PricingRecommendation records exist.
 - Compliance: SOC 2 Type I 6mo · Type II + ISO 27001 Y2 · HIPAA opt-in.
 - Residency: US-East → US + EU → APAC.
 - Autonomy: tiered, earn-trust per mutation family.

@@ -23,7 +23,7 @@ Public signups with verification, org → tenant model, custom subdomains via ro
 
 ## Scope (out)
 
-- Stripe self-serve billing (phase 205)
+- Pricing Engine-backed billing readiness (phase 205)
 - Agency white-label (phase 221)
 - Multi-region residency (phase 222 + 232)
 

@@ -141,10 +141,43 @@ x-markos-meta:
 
 `contracts/flow-registry.json` is generated from `onboarding/backend/server.cjs` + `handlers.cjs`. Updated via the tooling in `bin/extract-flows.cjs` and validated by `bin/validate-flow-contracts.cjs`.
 
+## v2 Contract Gap Overlay
+
+The v2 blueprint proposes new AgentRun, learning, artifact performance, and literacy-promotion contracts, but the incoming F-90 through F-96 range is already occupied by current MCP/webhook work. Future v2 implementation must allocate fresh F-NN IDs before code changes.
+
+Candidate v2 contract families to reserve:
+
+| Candidate family | Purpose | Source |
+|---|---|---|
+| AgentRun v2 | run state, priority, DAG edges, cost, retry, DLQ | [[MarkOS v2 Operating Loop Spec]] |
+| Task Board | unified task surface for agent outputs, failures, approvals, recovery | [[MarkOS v2 GSD Master Work Plan]] |
+| Approval Inbox | preview, evidence, voice/compliance, cost, approve/edit/reject | [[MarkOS v2 Operating Loop Spec]] |
+| Connector Recovery | failure, dependent-agent pause, recovery instructions, backfill | [[Marketing Operating System Foundation]] |
+| Evidence Map | claim-to-source linkage, SQS, confidence, TTL, gaps | [[MarkOS v2 Requirements Traceability Matrix]] |
+| Artifact Performance Log | expected envelope, actual outcome, attribution evidence | [[MarkOS v2 Operating Loop Spec]] |
+| Tenant Overlay | tenant-specific learning and override confidence | [[Marketing Operating System Foundation]] |
+| Literacy Update Candidate | admin-reviewed central literacy promotion | [[Marketing Literacy]] |
+| Social Signal | normalized social listen/classify/route/approve event | [[MarkOS v2 Operating Loop Spec]] |
+| Pricing Intelligence | pricing knowledge, cost model, recommendations, price tests, watch list, alerts | [[Pricing Engine Canon]] |
+| SaaS Suite | activation, plans, subscriptions, invoices, billing compliance, health, support, revenue, SAS agents | [[SaaS Suite Canon]] |
+| SaaS Marketing OS Strategy | growth profile, activation, PQL, ABM packages, referrals, in-app campaigns, communities, events, experiments, affiliates, revenue alignment, growth agents | [[SaaS Marketing OS Strategy Canon]] |
+
+Rule: do not implement a v2 schema/API using the incoming F-90 through F-96 IDs. Allocate a fresh range in the next GSD discuss/plan phase and update this registry first.
+
+Pricing Engine contract candidates should cover `/v1/pricing/intelligence`, `/v1/pricing/matrix`, `/v1/pricing/cost-model`, `/v1/pricing/recommendations`, `/v1/pricing/tests`, `/v1/pricing/watch-list`, and pricing alert acknowledgement.
+
+SaaS Suite contract candidates should cover `/v1/saas/subscriptions`, `/v1/saas/plans`, `/v1/saas/invoices`, `/v1/saas/billing`, `/v1/saas/revenue`, `/v1/saas/churn`, `/v1/saas/support`, `/v1/saas/compliance`, and processor/accounting webhook routing through the existing webhook engine.
+
+SaaS Marketing OS strategy contract candidates should be read-first and post-suite: `/v1/saas/growth-profile`, `/v1/saas/activation`, `/v1/saas/pql`, `/v1/saas/abm`, `/v1/saas/referrals`, `/v1/saas/in-app-campaigns`, `/v1/saas/community`, `/v1/saas/events`, `/v1/saas/experiments`, `/v1/saas/partnerships`, `/v1/saas/revenue-alignment`. Mutation endpoints require approval contracts first.
+
 ## Schema
 
 `contracts/schema.json` — JSON Schema for the `x-markos-meta` block, used by contract validators.
 
 ## Related
+
+- [[Pricing Engine Canon]]
+- [[SaaS Suite Canon]]
+- [[SaaS Marketing OS Strategy Canon]]
 
 - [[MarkOS Codebase Atlas]] · [[HTTP Layer]] · [[CRM Domain]] · [[Core Lib]] · [[Database Schema]]

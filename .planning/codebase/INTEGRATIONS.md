@@ -2,37 +2,51 @@
 
 ## External Systems
 
-- Supabase: relational persistence and operational metadata.
-- Upstash Vector: semantic retrieval and standards memory.
-- Tavily: website and competitor context retrieval.
-- Linear: issue/task sync from protocol templates.
-- PostHog: backend telemetry and endpoint event tracking.
-- LLM providers: Anthropic, OpenAI, Gemini.
+- Supabase: tenancy, auth, RLS, billing, governance, CRM, webhook, MCP, and agent-run schema
+- Upstash Redis: MCP sessions, cost/rate control, webhook breaker/state, subscription plumbing
+- Upstash Vector: literacy and retrieval memory for onboarding-era flows
+- Vercel Queue: async delivery and cron-adjacent hosted runtime support
+- Vercel Edge Config: slug-cache and edge-ready control data
+- Anthropic, OpenAI, Gemini: model providers
+- Stripe: billing/provider sync foundation
+- SimpleWebAuthn: passkey auth flows
+- PostHog: telemetry/tracking surfaces
+- Linear: issue sync from onboarding/protocol flows
+- Tavily: scraping/research enrichment in onboarding flows
+- Resend and Twilio: outbound provider adapters
+- Obsidian, QMD/Quarto, and PageIndex: local vault/document operations
 
-## Integration Owners
+## Main Ownership Surfaces
 
-- Supabase and Upstash usage: `onboarding/backend/vector-store-client.cjs`
-- Hosted auth contract: `onboarding/backend/runtime-context.cjs`
-- Linear GraphQL client: `onboarding/backend/linear-client.cjs`
-- Tavily scraper: `onboarding/backend/scrapers/tavily-scraper.cjs`
-- Telemetry emission: `onboarding/backend/agents/telemetry.cjs`
+| Integration | Primary files |
+|---|---|
+| Supabase | `onboarding/backend/runtime-context.cjs`, `lib/markos/*`, `supabase/migrations/*` |
+| Upstash Redis | `lib/markos/mcp/*.cjs`, `lib/markos/webhooks/*.cjs` |
+| Upstash Vector | `onboarding/backend/vector-store-client.cjs`, `bin/ingest-literacy.cjs`, `bin/literacy-admin.cjs` |
+| Vercel Queue / Edge Config | `vercel.ts`, `lib/markos/webhooks/store-vercel-queue.*`, `lib/markos/tenant/slug-cache.*` |
+| LLM providers | `lib/markos/llm/*`, `onboarding/backend/agents/llm-adapter.cjs` |
+| Stripe / billing providers | `lib/markos/billing/provider-sync.cjs`, `stripe-sync.ts`, billing APIs |
+| Linear | `onboarding/backend/linear-client.cjs`, `api/linear/sync.js` |
+| Tavily | `onboarding/backend/scrapers/tavily-scraper.cjs` |
+| Resend / Twilio | `lib/markos/outbound/providers/*`, `api/webhooks/twilio-events.js` |
+| PageIndex | `scripts/pageindex/*`, `tools/pageindex/*` |
 
-## Secret and Config Surfaces
+## Secrets and Config Surfaces
 
-- Core provider keys: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`
-- Storage keys: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `UPSTASH_VECTOR_REST_URL`, `UPSTASH_VECTOR_REST_TOKEN`
-- Optional admin and telemetry keys: `MARKOS_ADMIN_SECRET`, telemetry config env vars
+- LLM providers: `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY`
+- Supabase: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`
+- Upstash: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `UPSTASH_VECTOR_REST_URL`, `UPSTASH_VECTOR_REST_TOKEN`
+- Sentry: `SENTRY_DSN`
+- Vercel cron and queue secrets: runtime env managed in hosted deployment
+- Optional local app detection: Obsidian/QMD path env overrides
 
-## Auth and Trust Boundaries
+## Trust Boundaries
 
-- Local onboarding routes run without Supabase JWT enforcement by default.
-- Hosted wrapper routes in `api/` selectively enforce Supabase auth by operation.
-- Some operations rely on operation-level secret checks in handlers.
+- Local onboarding and hosted serverless paths do not share the exact same auth posture
+- Many hosted `api/` surfaces enforce tenant/auth context up front
+- MCP surfaces carry their own OAuth/session/token model
+- Billing, webhook, and governance evidence are append-oriented and audit-sensitive
 
-## Update Triggers
+## Refresh Trigger
 
-Update this file when:
-
-1. A new external service is added.
-2. A service contract, secret, or auth boundary changes.
-3. Integration ownership moves to different files.
+Update this file when a new external service is added, when a secret boundary changes, or when ownership of an integration moves to a different subsystem.

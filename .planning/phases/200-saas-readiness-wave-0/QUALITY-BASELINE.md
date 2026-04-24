@@ -41,6 +41,15 @@
 
 At `/gsd-verify-work <phase>` every phase verifier confirms all 15 gates for the phase. Failure to meet → VERIFICATION.md captures with justification or rework plan.
 
+## Operationalization for phases 204-220
+
+For the active and reserved v4.0.0/v4.1.0 phase family, execution should now read this baseline together with:
+
+- `.planning/V4.0.0-TESTING-ENVIRONMENT-PLAN.md`
+- `.planning/V4.0.0-PHASE-TEST-REQUIREMENTS-MATRIX.md`
+
+Those artifacts translate the baseline into concrete `Vitest`, `Playwright`, and `Chromatic` duties for each planned phase.
+
 ## Investment budget allocation
 
 User directive: quality-first, not feature-first.

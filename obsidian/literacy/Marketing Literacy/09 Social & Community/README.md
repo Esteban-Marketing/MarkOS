@@ -31,6 +31,10 @@ tags:
 
 See atomic notes above. For the AI-native frontier see [[AI & Agentic Marketing — 2026 Frontier]].
 
+## MarkOS Productization
+
+[[SaaS Marketing OS Strategy Canon]] turns community into a SaaS growth engine with community profiles, health scoring, launch stages, peer support, product feedback, UGC, advocacy, churn-risk, and content-gap signals.
+
 ## Related
 
 - [[Marketing Literacy]] · [[Home]] · [[Patterns]] · [[Key Decisions]] · [[MarkOS Codebase Atlas]]

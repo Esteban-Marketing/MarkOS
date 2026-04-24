@@ -15,7 +15,7 @@ with tamper detection · seat management + invite flow.
 vanity login and tenant-branded chrome (1 per org).
 
 **Out of scope (belongs elsewhere):**
-- Stripe self-serve billing → phase 205
+- Pricing Engine-backed billing readiness -> phase 205
 - Agency white-label (N domains per org, per-client vanity) → phase 221
 - Multi-region residency → phases 222 + 232
 - SCIM / SAML auto-provision → a later enterprise phase
@@ -34,7 +34,7 @@ vanity login and tenant-branded chrome (1 per org).
 ### Org ↔ tenant model
 - **D-05:** Introduce a new `markos_orgs` table. `markos_tenants` gets a non-nullable `org_id` FK. Org owns billing + members; tenants are workspaces nested under an org.
 - **D-06:** Default cardinality on signup is **1 org → 1 tenant**. B2B + agency accounts can create additional tenants under the same org via a settings UI.
-- **D-07:** **Billing + seat quota at the org level**, pooled across all tenants under that org. (Aligns with phase 205 Stripe work.)
+- **D-07:** **Billing + seat quota at the org level**, pooled across all tenants under that org. (Aligns with Phase 205 Pricing Engine-backed billing readiness.)
 - **D-08:** Invites target a specific tenant + role. If the invitee isn't already in the org, they're auto-added at `readonly` org level on acceptance. Existing `markos_tenant_memberships` shape is reused; new `markos_org_memberships` holds org-level roles + billing admins.
 
 ### Subdomain routing

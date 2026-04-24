@@ -24,6 +24,14 @@ tags:
 
 ## Quick Links
 
+- **MarkOS Foundation**: [[Marketing Operating System Foundation]] - canonical v2 operating-system doctrine
+- **v2 Blueprint Intake**: [[MarkOS v2 Blueprint Intake]] - incoming architecture requirements, conflicts, and refactor baseline
+- **Operating Loop Spec**: [[MarkOS v2 Operating Loop Spec]] - functional contract for the first complete loop
+- **GSD Work Plan**: [[MarkOS v2 GSD Master Work Plan]] - discuss/research/phase strategy for v2 refactor
+- **Traceability Matrix**: [[MarkOS v2 Requirements Traceability Matrix]] - source requirements mapped to workstreams
+- **Pricing Engine**: [[Pricing Engine Canon]] - pricing intelligence doctrine and pending-price placeholder policy
+- **SaaS Suite**: [[SaaS Suite Canon]] - tenant-type suite for subscriptions, billing, churn, support, product usage, and SaaS revenue intelligence
+- **SaaS Marketing OS Strategy**: [[SaaS Marketing OS Strategy Canon]] - post-suite SaaS growth-mode destination for PLG, ABM, expansion, viral/referral, in-app, community, events, PR, experiments, partnerships, developer marketing, and RevOps
 - **SaaS Roadmap**: [[2026-04-16-markos-saas-roadmap|v4.0.0 → v4.3.0 Roadmap]] · `.planning/v4.0.0-ROADMAP.md` · `.planning/phases/200-saas-readiness-wave-0/`
 - **MarkOS Canon**: [[MarkOS Canon]] — operator doctrine (10 commandments)
 - **Codebase Atlas**: [[MarkOS Codebase Atlas]] — root MOC of the repo
@@ -39,8 +47,14 @@ tags:
 The bulletproof Marketing OS for agentic teams. Start at [[MarkOS Canon]].
 
 - **Doctrine**: [[MarkOS Canon]] — 10 commandments + ship-safe checklist
+- **Foundation**: [[Marketing Operating System Foundation]] - v2 product doctrine + launch order
+- **Loop spec**: [[MarkOS v2 Operating Loop Spec]] - onboarding -> connect -> audit -> approve -> measure -> learn
+- **GSD plan**: [[MarkOS v2 GSD Master Work Plan]] - phase decisions, research agenda, acceptance gates
+- **Pricing**: [[Pricing Engine Canon]] - cost-aware competitive pricing intelligence and PRC agents
+- **SaaS Suite**: [[SaaS Suite Canon]] - subscription-company operating suite and SAS target agents
+- **SaaS Growth**: [[SaaS Marketing OS Strategy Canon]] - complete SaaS Marketing OS destination and growth engine map
 - **Agents**: [[Agent Registry]] — all MarkOS codebase agents + token IDs
-- **Pipeline**: [[Message Crafting Pipeline]] — 7-stage canonical message flow
+- **Pipeline**: [[Message Crafting Pipeline]] - 10-stage artifact loop
 - **Audience**: [[Audience Archetype Canon]] — archetype schema + resolution gate
 - **Pain**: [[Pain-Point Engine]] — 8-parent taxonomy + routing
 - **Brand**: [[Brand System Canon]] — identity · voice · style · claims

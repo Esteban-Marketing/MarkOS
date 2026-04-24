@@ -39,6 +39,17 @@ tags:
 - Landing-page screenshots rather than stock illustration.
 - Data-dense over decoration-dense.
 
+## v2 Positioning Update
+
+The brand stance stays developer-native, AI-first, and quietly confident, but v2 changes who the paid launch story speaks to.
+
+- Primary buyer: growth-stage B2B marketing leaders who need pipeline, brand safety, and operating leverage.
+- Secondary buyer: B2B agencies after the single-tenant loop is stable.
+- Dev-native remains an ergonomic promise: API clarity, CLI quality, transparent contracts, and operator-grade docs.
+- Do not frame MarkOS as a solo-founder content toy, generic AI writer, or agency dashboard.
+- Canonical positioning: "MarkOS is the AI-native marketing operating system that replaces fragmented agency/tool workflows and runs your marketing continuously with human approval."
+- See [[Target ICP]] and [[Marketing Operating System Foundation]].
+
 ## Visual system direction
 
 | Axis | Choice |
@@ -84,16 +95,17 @@ Mirrors [[Visual Style Token Template]] with MarkOS-specific defaults.
 > Our intelligent AI system seamlessly empowers marketers to effortlessly generate amazing content that resonates with their audience.
 
 **Pricing page (good)**:
-> $49/mo for solo. $499/mo for teams. BYOK your own API keys for a discount on AI usage.
+> Pricing is engine-owned: `{{MARKOS_PRICING_ENGINE_PENDING}}`. MarkOS publishes tier prices only after the Pricing Engine models cost, market position, buyer psychology, and an approved recommendation.
 
 **Pricing page (bad)**:
 > Get started with flexible pricing that scales with your business needs.
 
 ## Partnership + co-marketing stance
 
+- Lead with Tenant 0 proof: MarkOS marketing itself through MarkOS, including sourced case studies and visible performance narratives.
 - Partner with tools the ICP already uses: Anthropic · OpenAI · Vercel · Supabase · Stripe · Resend · Shopify · HubSpot · Linear · PostHog · Segment · Cursor · v0 · Lovable · Bolt.
 - Avoid co-marketing with adjacent AI-marketing tools (Jasper, Copy.ai, Typeface, Adobe GenStudio). Positioned as different category ("agentic Marketing OS," not "AI content tool").
-- Creator partnerships: vibe-coder / solopreneur / indie-hacker channels on YouTube + X + Bluesky.
+- Creator partnerships: operator-led case studies, B2B marketing leaders, technical GTM builders, and design partners with real MarkOS usage.
 - No influencer shills. Real-use case studies only.
 
 ## Event stance
@@ -132,6 +144,9 @@ Mirrors [[Visual Style Token Template]] with MarkOS-specific defaults.
 This stance is reviewed quarterly. Shifts require new [[Key Decisions]] entry. Voice drift is a regression and caught by classifier.
 
 ## Related
+
+- [[Marketing Operating System Foundation]] - v2 product doctrine
+- [[Pricing Engine Canon]] - pricing placeholder policy and PRC engine doctrine
 
 - [[MarkOS Canon]] · [[Target ICP]] · [[Brand System Canon]] · [[Communication Guides]] · [[Voice Classifier Rubric]] · [[Brand Pack Template]]
 - [[Key Decisions]]

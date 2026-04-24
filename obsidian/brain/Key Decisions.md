@@ -18,12 +18,12 @@ Full synthesis: [[2026-04-16-markos-saas-roadmap]]. Summary of locked answers:
 |---|---|---|
 | 1 | Hosting | SaaS cloud first → OSS community edition later → BYOC Y2 |
 | 2 | Onboarding | 30-min guided AI interview standard · 5-min `--preset` dev mode · white-glove enterprise |
-| 3 | Monetization | Platform fee + metered AI + BYOK discount |
+| 3 | Monetization | Superseded by [[Pricing Engine Canon]]; pricing, packaging, usage inclusion, and BYOK treatment are engine-owned |
 | 4 | Integration order | OpenAPI → SDKs → MCP → Webhooks → Zapier → Make → n8n |
 | 5 | Connectors v1 (13) | Shopify · HubSpot · Stripe · Slack · Google Ads · Meta Ads · GA4 · Segment · Resend · Twilio · PostHog · Linear · Supabase |
 | 6 | Languages v1 | EN · ES · PT · FR · DE · IT · NL → global by end Y1 |
 | 7 | Compliance | SOC 2 Type I 6mo → Type II + ISO 27001 Y2 · HIPAA opt-in |
-| 8 | White-label | Agency tier upsell · Enterprise OEM on contract |
+| 8 | White-label | Agency and OEM packaging are pending Pricing Engine-backed packaging recommendations |
 | 9 | Autonomy | Tiered — earn autonomy per mutation family |
 | 10 | Data residency | US-East → US + EU → APAC |
 | 11 | Marketplace | Yes v1 · Claude Marketplace + vibe-coder/solopreneur ecosystem priority |
@@ -43,6 +43,74 @@ Full synthesis: [[2026-04-16-markos-saas-roadmap]]. Summary of locked answers:
 - **Decision**: invest heaviest in foundations (contracts, tests, observability, security, docs) during v4.0.0 before feature velocity compounds.
 - **Why**: operator directive "quality since day 0." Technical debt compounds faster than revenue in early SaaS; fix the multiplier first.
 - **Where**: `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md` — 15 non-negotiable gates inherited by every phase.
+
+## 2026-04-22 - Incoming v2 blueprint accepted as planning input
+
+Full synthesis: [[MarkOS v2 Blueprint Intake]]. Summary of the planning stance:
+
+| # | Decision | Value |
+|---|---|---|
+| 1 | Product thesis | MarkOS v2 is an AI-native marketing operating system, not a content generator, scheduler, CRM, or reporting dashboard |
+| 2 | North star | Marketing-attributed pipeline created per dollar of MarkOS platform spend |
+| 3 | Build order | Ship one complete operating loop before expanding toward the 80-agent vision |
+| 4 | Human safety | External-world actions remain approval-gated by default |
+| 5 | Research safety | Factual claims require evidence, citations, source quality, and gap acknowledgement |
+| 6 | Learning loop | Artifact performance logging and literacy freshness should become first-class product substrate |
+| 7 | Conflict handling | Incoming docs create unresolved conflicts for ICP, pricing, contract IDs, token namespace, and connector strategy |
+
+- **Why**: The incoming architecture pack contains detailed requirements that should guide future refactor planning, but it also conflicts with several locked v4.0.0 assumptions. Capturing it as planning input prevents accidental implementation drift.
+- **Where**: `obsidian/work/incoming/` source pack; [[MarkOS v2 Blueprint Intake]] for the requirement matrix and conflict register.
+
+## 2026-04-22 - v2 foundation harmonization locked
+
+Full doctrine: [[Marketing Operating System Foundation]]. Functional spec: [[MarkOS v2 Operating Loop Spec]].
+
+| # | Decision | Value |
+|---|---|---|
+| 1 | ICP | v2 supersedes Q-A for product/GTM: growth-stage B2B marketing leaders first, agencies second |
+| 2 | Solopreneur/dev-native posture | Keep as distribution, ergonomics, and product craft; not the paid launch ICP |
+| 3 | B2C/DTC posture | Deferred until the B2B foundation loop and attribution substrate work |
+| 4 | Pricing posture | Fixed tier prices are superseded by [[Pricing Engine Canon]]; use `{{MARKOS_PRICING_ENGINE_PENDING}}` until the engine produces approved recommendations |
+| 5 | Agent registry | Current registry remains implementation truth; v2 network is target taxonomy until a migration phase lands |
+| 6 | Token namespace | Resolve `CNT` vs `CONT` in a dedicated migration plan before renaming agents |
+| 7 | Contract IDs | Incoming learning contracts must be renumbered because current F-90 through F-100 are occupied |
+| 8 | Connector posture | Prefer the existing Nango-embedded direction where it fits; direct adapters require explicit API-depth justification |
+| 9 | Build order | First complete loop beats broad agent catalog expansion |
+| 10 | Vault doctrine | Obsidian vault anchors now point to the v2 foundation and operating-loop spec |
+
+- **Why**: The vault needs one coherent foundation before code refactors start; otherwise planning will keep splitting between the April 16 SaaS assumptions and the April 22 v2 blueprint.
+- **Where**: [[Target ICP]], [[Brand Stance]], [[MarkOS Canon]], [[Agent Registry]], [[Message Crafting Pipeline]], [[MarkOS Protocol]], [[Marketing Operating System Foundation]].
+
+## 2026-04-22 - v2 GSD readiness pack created
+
+- **Decision**: before implementation, GSD should discuss and research from [[MarkOS v2 GSD Master Work Plan]] plus [[MarkOS v2 Requirements Traceability Matrix]].
+- **Why**: the v2 blueprint is broad enough that implementation without traceability would likely overbuild agents, collide contract IDs, or skip the task/approval/cost substrate.
+- **Where**: [[MarkOS v2 GSD Readiness Audit]], [[MarkOS v2 GSD Master Work Plan]], [[MarkOS v2 Requirements Traceability Matrix]].
+
+## 2026-04-22 - Pricing Engine becomes pricing source of truth
+
+- **Decision**: `15-PRICING-ENGINE.md` is added to the incoming v2 pack and distilled into [[Pricing Engine Canon]] and [[MarkOS v2 Pricing Engine Intake]].
+- **Policy**: active vault doctrine must not hard-code MarkOS tier prices. Use `{{MARKOS_PRICING_ENGINE_PENDING}}` until the Pricing Engine creates margin-aware, market-aware, approved recommendations.
+- **Why**: pricing is a continuous intelligence loop, not a static SaaS packaging assumption. MarkOS must model costs, competitors, buyer psychology, and price-test evidence before locking public pricing.
+- **Where**: [[Pricing Engine Canon]], [[MarkOS v2 Pricing Engine Intake]], [[MarkOS v2 Requirements Traceability Matrix]], [[MarkOS v2 GSD Master Work Plan]].
+
+## 2026-04-22 - SaaS Suite routed as the first tenant-type suite
+
+- **Decision**: `16-SAAS-SUITE.md` is added to the incoming v2 pack and distilled into [[SaaS Suite Canon]] and [[MarkOS v2 SaaS Suite Intake]].
+- **Policy**: SaaS Suite activates only for tenants where `business_type = saas` and remains downstream of Pricing Engine, AgentRun v2, approvals, evidence, connector recovery, and SOC2 controls.
+- **GSD route**: Phases 214-217 are reserved for SaaS Suite Activation, Billing/Compliance, Health/Churn/Support/Product Usage, and Revenue/SAS/API/MCP/UI readiness.
+- **Agent route**: `MARKOS-AGT-SAS-01` through `MARKOS-AGT-SAS-06` are planned target agents registered in `.agent/markos/MARKOS-INDEX.md`.
+- **Why**: subscription companies need MarkOS to manage subscription, billing, churn, support, product usage, and revenue signals as governed work, not passive dashboards or unsafe automation.
+- **Where**: [[SaaS Suite Canon]], [[MarkOS v2 SaaS Suite Intake]], [[MarkOS v2 Requirements Traceability Matrix]], `.planning/phases/214-saas-suite-activation-subscription-core/` through `.planning/phases/217-saas-suite-revenue-agents-api-ui/`.
+
+## 2026-04-22 - SaaS Marketing OS strategy accepted as post-suite destination
+
+- **Decision**: `17-SAAS-MARKETING-OS-STRATEGY.md` is added to the incoming v2 pack and distilled into [[SaaS Marketing OS Strategy Canon]] and [[MarkOS v2 SaaS Marketing OS Strategy Intake]].
+- **Policy**: the build order does not change. The strategy is indexed as future GSD translation material after the core v2 operating loop, Pricing Engine, and SaaS Suite foundations.
+- **Scope**: future SaaS growth work must cover B2B/B2C/PLG mode routing, PLG activation and PQL, ABM, expansion, viral/referral, in-app marketing, community, events, PR/analyst/G2, experiments, partnerships, developer marketing, and revenue-team alignment.
+- **Agent route**: PLG, EXP, ABM, VRL, IAM, CMT, EVT, XP, PR, PRT, DEV, and REV tiers are target architecture only until GSD assigns contracts, costs, approval posture, tests, and UI/API/MCP surfaces.
+- **Why**: the previous 00-16 pack made MarkOS strong on operating substrate, pricing, and SaaS billing/runtime; document 17 specifies the compounding SaaS growth mechanics needed to become the definitive SaaS Marketing OS.
+- **Where**: [[SaaS Marketing OS Strategy Canon]], [[MarkOS v2 SaaS Marketing OS Strategy Intake]], [[MarkOS v2 Requirements Traceability Matrix]], [[Agent Registry]].
 
 ## Next.js App Router with `(markos)` route group
 

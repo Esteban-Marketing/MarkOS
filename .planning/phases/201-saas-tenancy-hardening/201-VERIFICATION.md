@@ -21,7 +21,7 @@ non_applicable_requirements:
     reason: "Tenancy primitives have no agent surface and emit no LLM calls."
     source: ".planning/phases/201-saas-tenancy-hardening/201-07-PLAN.md <phase_level_notes>"
   - id: QA-10
-    reason: "Per-tenant billing telemetry lives in Phase 205 (billing). Phase 201 creates the org surface billing will later hang off."
+    reason: "Per-tenant billing telemetry lives in Phase 205 (Pricing Engine Foundation + Billing Readiness). Phase 201 creates the org surface billing will later hang off."
     source: ".planning/phases/201-saas-tenancy-hardening/201-07-PLAN.md <phase_level_notes>"
 ---
 
@@ -222,7 +222,7 @@ Phase context noted "~122 tests" for tenancy — actual count is 122, matching t
 | **QA-06** | E2E smoke (Playwright critical path) | Deferred to post-201 testing-infra phase; no Playwright runner installed yet. Existing `test/ui-a11y/*` grep-shape pattern covers UI surfaces. | `201-07-PLAN.md <phase_level_notes>` |
 | **QA-07** | Load tests before GA (k6/Artillery + SLO) | Pre-GA gate. Phase 201 is hardening, not GA. Attached to MCP GA (Phase 202), webhook GA (Phase 203), CLI GA (Phase 204). | `201-07-PLAN.md <phase_level_notes>` |
 | **QA-08** | Eval-as-test for agents | Tenancy primitives (orgs, tenants, invites, lifecycle, GDPR export, switcher) have no agent surface and emit no LLM calls. | `201-07-PLAN.md <phase_level_notes>` |
-| **QA-10** | Per-tenant cost telemetry + kill-switch | Lives in Phase 205 (Billing Self-Serve + BYOK). Phase 201 creates the org surface billing hangs off, not the meter/circuit-breaker. | `201-07-PLAN.md <phase_level_notes>` |
+| **QA-10** | Per-tenant cost telemetry + kill-switch | Lives in Phase 205 (now Pricing Engine Foundation + Billing Readiness). Phase 201 creates the org surface billing hangs off, not the meter/circuit-breaker. | `201-07-PLAN.md <phase_level_notes>` |
 
 ### Orphaned Requirements — NONE
 
@@ -263,7 +263,7 @@ Phase 201 explicitly declares the following 4 Quality Baseline gates as non-appl
 1. **QA-06 (Playwright E2E)** — deferred to post-201 Playwright harness phase
 2. **QA-07 (load tests)** — GA gate, not a hardening gate
 3. **QA-08 (eval-as-test)** — tenancy has no agent surface
-4. **QA-10 (cost telemetry + kill-switch)** — lives in Phase 205 (billing)
+4. **QA-10 (cost telemetry + kill-switch)** — lives in Phase 205 (Pricing Engine Foundation + Billing Readiness)
 
 Source of truth: `.planning/phases/201-saas-tenancy-hardening/201-07-PLAN.md` lines `<phase_level_notes>` block.
 

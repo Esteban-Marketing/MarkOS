@@ -27,6 +27,21 @@ Ship the most **valuable** and **bulletproof** agentic Marketing OS. Every agent
 9. **Human-approved** — mutations and sends pass an approval gate.
 10. **Measured + reversible** — telemetry records every decision; lineage intact.
 
+## v2 Operating-System Contract
+
+The v2 blueprint adds a product-level contract above individual campaign quality: MarkOS must prove one complete marketing operating loop before expanding breadth.
+
+- Canonical foundation: [[Marketing Operating System Foundation]].
+- Functional spec: [[MarkOS v2 Operating Loop Spec]].
+- Intake source: [[MarkOS v2 Blueprint Intake]].
+- SaaS growth destination: [[SaaS Marketing OS Strategy Canon]].
+- North star: marketing-attributed pipeline created per dollar of MarkOS platform spend.
+- Launch rule: ship the complete loop before the full 80-agent vision.
+
+Every future roadmap change should preserve this order:
+
+`brand pack -> connector wow moment -> strategy -> brief -> draft -> audit -> approval -> dispatch -> measure -> learn`
+
 ## The Ten Commandments
 
 ### I. Know the human before the message
@@ -73,8 +88,11 @@ MIR + MSP + literacy live in the vault first. Cloud (Supabase) reflects. Operato
 
 | Canon | Owns | Links to |
 |---|---|---|
-| [[Agent Registry]] | 39 MarkOS agents + token IDs + literacy refs | [[MarkOS Protocol]] |
-| [[Message Crafting Pipeline]] | 7-stage canonical message flow | all canons |
+| [[Marketing Operating System Foundation]] | v2 product doctrine, launch order, non-negotiables | [[MarkOS v2 Blueprint Intake]] |
+| [[MarkOS v2 Operating Loop Spec]] | functional loop contract and verification gates | [[MarkOS Protocol]] |
+| [[SaaS Marketing OS Strategy Canon]] | post-suite SaaS growth-mode doctrine and target growth agent tiers | [[SaaS Suite Canon]] |
+| [[Agent Registry]] | current MarkOS agents + v2 target network map | [[MarkOS Protocol]] |
+| [[Message Crafting Pipeline]] | 10-stage artifact flow from intent to measurement | all canons |
 | [[Brand System Canon]] | identity · personality · voice · style · claim library | brand-pack · [[Brand & Creative]] |
 | [[Audience Archetype Canon]] | ICP · persona · JTBD · buying committee · VOC | [[Audience & Segmentation]] |
 | [[Pain-Point Engine]] | taxonomy routing + tailoring templates | `.agent/markos/literacy/taxonomy.json` |
@@ -95,6 +113,12 @@ Before any campaign ships, all of the following must be ✅:
 - [ ] **Neuro spec** block included ([[Neuro Audit Canon]]).
 - [ ] **Approval package** created + signed.
 - [ ] **Telemetry** hooked (UTM, conversion event, lift test if applicable).
+- [ ] **AgentRun evidence** visible (run ID, source agent, cost, model, input/output, retry/failure state).
+- [ ] **Research evidence map** attached for factual or market claims.
+- [ ] **Pricing context** checked through [[Pricing Engine Canon]] or marked `{{MARKOS_PRICING_ENGINE_PENDING}}`.
+- [ ] **SaaS Suite context** checked when `business_type = saas`; subscription, billing, churn, support, product usage, and revenue claims follow [[SaaS Suite Canon]].
+- [ ] **SaaS growth context** checked when SaaS growth modules are active; PLG, ABM, expansion, referral, in-app, community, event, PR, partnership, developer, experiment, and revenue-alignment actions follow [[SaaS Marketing OS Strategy Canon]].
+- [ ] **Learning path** defined (artifact performance log, tenant overlay, or central literacy candidate).
 - [ ] **Reversibility** — rollback plan + immutable evidence row.
 
 ## The five rejections
@@ -106,9 +130,12 @@ Any of these auto-reject a draft:
 3. Claim exceeds product capability.
 4. Voice classifier fails brand threshold.
 5. Missing approval package.
+6. Hard-coded price point without Pricing Engine evidence or placeholder.
+7. SaaS Suite legal billing, support response, save offer, discount, lifecycle mutation, or revenue claim without the required approval/evidence gate.
+8. SaaS growth mutation without mode/module activation, Pricing Engine check when relevant, and human approval.
 
 Fix at the cause, don't negotiate the gate.
 
 ## Related
 
-- [[Home]] · [[MarkOS Codebase Atlas]] · [[MarkOS Protocol]] · [[Marketing Literacy]] · [[Patterns]] · [[Key Decisions]] · [[Gotchas]]
+- [[Home]] · [[Marketing Operating System Foundation]] · [[MarkOS v2 Operating Loop Spec]] · [[SaaS Suite Canon]] · [[MarkOS Codebase Atlas]] · [[MarkOS Protocol]] · [[Marketing Literacy]] · [[Patterns]] · [[Key Decisions]] · [[Gotchas]]

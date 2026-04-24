@@ -31,6 +31,10 @@ tags:
 
 See atomic notes above. For the AI-native frontier see [[AI & Agentic Marketing — 2026 Frontier]].
 
+## MarkOS Productization
+
+[[SaaS Marketing OS Strategy Canon]] turns ABM into tier 1/2/3 account strategy, ABM account packages, buying committee maps, account-personalized content, and CRM-linked engagement tasks.
+
 ## Related
 
 - [[Marketing Literacy]] · [[Home]] · [[Patterns]] · [[Key Decisions]] · [[MarkOS Codebase Atlas]]

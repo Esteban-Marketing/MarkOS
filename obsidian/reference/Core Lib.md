@@ -119,6 +119,26 @@ Retention workflow: `initiateDeletionWorkflow`, `recordExportCompletion` (migrat
 
 **DB backing** (migration 52): `markos_plugins` · `plugin_tenant_config` · `plugin_tenant_capability_grants` · `plugin_entitlements_by_plan`.
 
+## v2 Core Lib Gap Overlay
+
+The v2 foundation should reuse existing core primitives wherever possible.
+
+| v2 need | Current likely substrate | Gap to research |
+|---|---|---|
+| AgentRun cost accounting | `lib/markos/llm/adapter.ts`, billing usage ledger, `markos_llm_call_events` | map non-LLM agent costs and estimate-vs-actual deltas |
+| Budget enforcement | billing entitlements and holds | per-run preflight budget check and P0 exception behavior |
+| Evidence maps | literacy chunks, brand claim library, governance evidence | source quality score, citation payload, claim TTL, approval rendering |
+| Connector recovery | webhooks observability/DLQ patterns, future connector framework | generalized connector install state and dependent-agent pause |
+| Task creation | CRM execution recommendations/tasks | cross-domain task API independent of CRM object views |
+| Tenant overlays | packs/overlays and `.markos-local/` doctrine | tenant-scoped learning rules with confidence and review |
+| Central literacy promotion | literacy admin/query tools | admin-reviewed update candidate workflow |
+| Social signal routing | outbound conversations and CRM activity ledger | inbound social classification, escalation, CRM match, crisis pause |
+| Pricing Engine | billing, LLM adapter, research/evidence, MCP, task/approval substrate | pricing crawler, PKO store, cost model, recommendations, price tests, PRC agents, pricing MCP tools |
+| SaaS Suite | billing, webhooks, CRM, governance, telemetry, MCP, task/approval substrate | activation, subscriptions, invoices, processor/accounting configs, DIAN evidence, health/support/product/revenue intelligence, SAS agents |
+| SaaS Marketing OS Strategy | CRM, outbound, billing, Pricing Engine, SaaS Suite, product analytics, task/approval, artifact performance | growth profile, PLG activation/PQL/in-app, ABM/expansion, viral/referral/community, events/PR/partnerships/developer marketing, revenue alignment, experiments, growth agents |
+
+Core planning rule: do not create a parallel "v2 core" or parallel SaaS Suite runtime if an existing library can be extended with a clear contract and tests.
+
 ## Cross-lib call graph (simplified)
 
 ```
@@ -133,4 +153,6 @@ api/**
 
 ## Related
 
+- [[SaaS Suite Canon]]
+- [[SaaS Marketing OS Strategy Canon]]
 - [[MarkOS Codebase Atlas]] · [[HTTP Layer]] · [[CRM Domain]] · [[Database Schema]] · [[Contracts Registry]] · [[Patterns]]

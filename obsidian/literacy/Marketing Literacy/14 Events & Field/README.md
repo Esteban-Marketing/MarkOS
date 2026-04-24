@@ -30,6 +30,10 @@ tags:
 
 See atomic notes above. For the AI-native frontier see [[AI & Agentic Marketing — 2026 Frontier]].
 
+## MarkOS Productization
+
+[[SaaS Marketing OS Strategy Canon]] turns events into registration, promotion, reminders, replay delivery, no-show/attendee sequences, and pipeline attribution workflows with approval gates.
+
 ## Related
 
 - [[Marketing Literacy]] · [[Home]] · [[Patterns]] · [[Key Decisions]] · [[MarkOS Codebase Atlas]]

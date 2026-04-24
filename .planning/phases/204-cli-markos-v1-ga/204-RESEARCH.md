@@ -1267,4 +1267,41 @@ Dependency rationale:
 **Research date:** 2026-04-18
 **Valid until:** 2026-05-18 (30 days — stable foundation choices) · the Homebrew node@22 deprecation (2026-10-28) is a 6-month horizon clock; revisit if 204 slips past October 2026.
 
+## Codebase/Vault Refresh Addendum - 2026-04-23
+
+### Additional files inspected
+
+- `package.json`
+- `bin/install.cjs`
+- `bin/cli-runtime.cjs`
+- `api/openapi.js`
+- `.planning/V4.0.0-CODEBASE-VAULT-DEEP-AUDIT.md`
+
+### Current codebase truth
+
+- The published `markos` binary still points to `bin/install.cjs`, so CLI GA must preserve installer/bootstrap behavior.
+- `bin/cli-runtime.cjs` already routes a meaningful family of commands; Phase 204 is extending a living CLI, not creating one from zero.
+- The installer already owns vault bootstrap, Obsidian/QMD detection, install profiles, preset installs, and onboarding-helper handoff.
+- The repo already exposes OpenAPI artifacts and many hosted APIs, so Phase 204 should prefer consuming existing and planned tenant APIs rather than embedding business logic locally.
+
+### New research decisions from the deep audit
+
+- `markos run`, `status`, and `doctor` should be designed as doctrine-aware clients over server truth, not as local mini-platforms.
+- Regression protection for install/update/vault/generate is a first-class acceptance requirement for this phase.
+- winget and apt remain deferred; no new top-level distribution phase is required right now.
+- `doctor` should include codebase/vault bootstrap checks because vault readiness is now part of MarkOS operational truth.
+- Phase 204 must stay compatible with Phase 207; CLI run semantics should not preempt the shared run substrate.
+
+### Additional tests implied
+
+- Installer regression tests: `npx markos`, preset install, and vault bootstrap still work after command-surface expansion.
+- Routing regression tests for existing `update`, `db:setup`, `llm:*`, `import:legacy`, `vault:open`, and `generate` aliases.
+- `doctor` checks for vault/bootstrap/config drift in addition to runtime/env drift.
+
+### Phase-plan impact
+
+- `204-01` must explicitly include compatibility scaffolding for the current installer/runtime surface.
+- `204-05`, `204-06`, `204-08`, and `204-09` should stay thin-client oriented.
+- `204-13` must remain the doctrine-gap closer that binds CLI behavior to the deep audit and pricing-placeholder policy.
+
 ## RESEARCH COMPLETE

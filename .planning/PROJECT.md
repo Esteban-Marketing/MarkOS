@@ -1,94 +1,143 @@
 # MarkOS (MarkOS Protocol)
 
-## Current State: v3.9.0 Planning — Vertical Plugin Literacy Libraries
+## Current State: v4.0.0 SaaS Readiness + v2 Operating Loop Compliance
 
-**Goal:** MarkOS now aims to ship plug-and-play literacy library packs so every new workspace starts with business-model and industry-specific examples, starter templates, and initialization guidance instead of a blank slate.
+**Last updated:** 2026-04-22
 
-**Recently shipped foundation:**
-- governed CRM and customer-intelligence core from v3.8.0
-- literacy, deep research, governance, and tenant-safety baselines from earlier milestones
-- approval-aware AI and workspace hydration seams already present in the codebase
+MarkOS is now planning against two synchronized truths:
 
-**Status:** v3.8.0 shipped on 2026-04-15. v3.9.0 planning is now active.
+1. v4.0.0 SaaS Readiness remains the active engineering milestone.
+2. The Obsidian vault now defines the target product as an AI-native, evidence-backed, human-approved Marketing Operating System with Pricing Engine-owned pricing.
+3. The SaaS Suite is now the next major tenant-type suite for `business_type = saas`, routed after the core v2 foundation.
 
-## Current Milestone State
+The static monetization posture is superseded by `obsidian/brain/Pricing Engine Canon.md`. Use `{{MARKOS_PRICING_ENGINE_PENDING}}` for unresolved public prices, package boundaries, usage inclusion, BYOK treatment, and billing copy until approved PricingRecommendation records exist.
 
-**Current posture:** Active milestone planning is open for v3.9.0 Vertical Plugin Literacy Libraries.
+## Active Planning References
 
-## Next Milestone Goals
-
-- productize composable starter libraries keyed by business model and industry
-- hydrate ready-to-use literacy examples, skeletons, and discipline assets during project initialization
-- let operators inspect and override library selection while preserving safety and audit posture
+- `.planning/STATE.md`
+- `.planning/ROADMAP.md`
+- `.planning/REQUIREMENTS.md`
+- `.planning/V4.0.0-VAULT-CODEBASE-COMPLIANCE-AUDIT.md`
+- `obsidian/brain/Marketing Operating System Foundation.md`
+- `obsidian/reference/MarkOS v2 Operating Loop Spec.md`
+- `obsidian/reference/MarkOS v2 Requirements Traceability Matrix.md`
+- `obsidian/brain/Pricing Engine Canon.md`
+- `obsidian/brain/SaaS Suite Canon.md`
+- `obsidian/work/active/2026-04-22-markos-codebase-v2-compliance-audit.md`
+- `obsidian/work/active/2026-04-22-markos-v2-pricing-engine-intake.md`
+- `obsidian/work/active/2026-04-22-markos-v2-saas-suite-intake.md`
 
 ## What This Is
-MarkOS is a governed marketing and revenue operating system. It combines onboarding, research, CRM, outbound execution, and approval-aware AI so human operators and AI agents can manage growth work from one consistent workflow surface while starting from stronger domain-specific defaults.
+
+MarkOS is a governed marketing and revenue operating system. It combines onboarding, research, brand intelligence, connector intelligence, CRM, content/social execution, Pricing Engine intelligence, tenant-type suites, approvals, measurement, and learning so operators and AI agents can manage real company marketing work from one trustworthy loop.
+
+It is not merely a content generator, passive dashboard, CRM add-on, or agency workflow tool. Those can exist as surfaces; the product contract is the operating loop:
+
+`onboard -> connect -> audit -> plan -> brief -> draft -> audit -> approve -> dispatch -> measure -> learn`
 
 ## Core Value
-Give operators one trustworthy, auditable system for launching and running revenue work with AI support and domain-aware starter context.
 
-## Requirements
+Give a growth-stage marketing team one auditable, agentic system for creating pipeline with evidence-backed decisions, human approval, cost visibility, and compounding learning.
 
-### Validated
+## Current Implementation Reality
 
-- [x] Literacy, deep research, and governance baselines are shipped and verified through v3.7.0.
-- [x] Operator surfaces, onboarding automation, and installation readiness are already production-grade foundations.
-- [x] Tenant-aware and approval-aware architecture patterns already exist and should be extended, not replaced.
-- [x] v3.8.0 now ships tenant-safe CRM records, tracking, lifecycle timelines, pipeline execution, native outbound, and approval-aware AI assistance.
-- [x] CRM-native reporting and attribution are now operational inside the same governed source of truth.
-- [x] Webhook Subscription Engine GA shipped (Phase 203, v4.0.0 SaaS Readiness milestone): durable Supabase + Vercel Queues substrate, tenant-admin dashboard (Surfaces 1+2), public status page (Surface 3), rotation grace banner (Surface 4), DLQ + replay, signing-secret rotation with 30-day grace + T-7/T-1/T-0 Resend notifications, per-sub rate-limit, circuit breaker, SSRF guard, observability (Sentry + log-drain), full docs. 11/11 plans, 12/12 must-haves verified, 7/7 human UAT passed.
+Validated foundations:
 
-### Active
+- Tenant, org, RLS, auth, audit, passkey, session, and lifecycle foundations.
+- Webhook Subscription Engine GA with durable delivery, replay, DLQ, rotation, rate-limit, circuit breaker, and evidence surfaces.
+- MCP server/tools/session foundations.
+- CRM/campaign/outbound/reporting foundations.
+- Partial AgentRun lifecycle and approval package patterns.
+- Billing usage ledger and reconciliation foundations.
 
-- [ ] Business-model starter packs resolve automatically from onboarding seed data.
-- [ ] Industry overlays tailor the initial literacy bundle for priority verticals.
-- [ ] Starter examples, skeletons, and discipline docs hydrate into the workspace during initialization.
-- [ ] Operators can review or override selected packs before final approval when needed.
-- [ ] Fallback and diagnostics keep the library system safe when coverage is partial.
+Open compliance gaps:
 
-### Out of Scope
+- Pricing Engine is not yet implemented as a first-class schema/API/MCP/UI system.
+- AgentRun v2 lacks DAG chains, priority tiers, durable run APIs, full cost actuals, retry/DLQ, and task handoff.
+- Morning Brief, unified Task Board, Approval Inbox, Connector Recovery, and Weekly Narrative are not yet canonical surfaces.
+- EvidenceMap, source quality score, claim TTL, and research freshness are not centralized.
+- ConnectorInstall, GA4/GSC/social wow loop, and dependent-agent recovery are missing.
+- The full content/social/revenue loop is not yet one end-to-end product path.
+- Artifact performance, tenant overlays, literacy update candidates, and Tenant 0 dogfood need implementation.
+- SaaS Suite activation, subscription lifecycle, billing/legal compliance, churn/support/product usage intelligence, revenue intelligence, SAS agents, and SaaS API/MCP/UI surfaces are planned but not implemented.
 
-- Supporting every business model and industry in one milestone.
-- Replacing the existing MIR, MSP, onboarding, or approval architecture.
-- Autonomous template selection with no operator visibility or override.
-- A new parallel template engine that duplicates existing resolver and skeleton flows.
+## Active Requirements
 
-## Context
-The repository already contains business-model-aware example resolution, starter skeleton generation, and plugin capability seams. The next milestone should unify those into a first-class library system so MarkOS can initialize tailored literacy packs for common business families and verticals such as B2B, B2C, SaaS, Ecommerce, Travel, IT, Marketing Services, and Professional Services.
+See `.planning/REQUIREMENTS.md` for the current requirement families:
+
+- API, SDK, MCP, webhooks, CLI, billing, compliance, and QA.
+- AgentRun/orchestration.
+- Human task and approval system.
+- Evidence/research/claim safety.
+- Connector intelligence.
+- Content/social/revenue loop.
+- Pricing Engine.
+- Learning/literacy evolution.
+- Tenant 0.
+- SaaS Suite.
+
+## Active Phase Routing
+
+| Phase | Focus |
+|---|---|
+| 204 | CLI `markos` v1 GA plus v2 guardrails |
+| 205 | Pricing Engine Foundation + Billing Readiness |
+| 206 | SOC 2 Type I Foundation for the v2 risk profile |
+| 207 | AgentRun v2 Orchestration Substrate |
+| 208 | Human Operating Interface |
+| 209 | Evidence, Research, and Claim Safety |
+| 210 | Connector Wow Loop and Recovery |
+| 211 | Content, Social, and Revenue Loop |
+| 212 | Learning and Literacy Evolution |
+| 213 | Tenant 0 Dogfood and Compliance Validation |
+| 214 | SaaS Suite Activation and Subscription Core |
+| 215 | SaaS Billing, Payments, and Multi-Country Compliance |
+| 216 | SaaS Health, Churn, Support, and Product Usage Intelligence |
+| 217 | SaaS Revenue Intelligence, SAS Agents, API/MCP/UI Readiness |
+
+## Non-Negotiables
+
+- No external-world mutation without approval or an explicit low-risk auto-approval policy.
+- No customer-facing factual claim without evidence or inference labeling.
+- No passive dashboard that does not help an operator decide or act.
+- No central literacy promotion without admin review.
+- No cross-tenant learning with tenant identifiers or PII.
+- No pricing or AI usage workflow without budget estimate, cap handling, and usage visibility.
+- No fixed MarkOS public price point without Pricing Engine evidence and approval.
+- No SaaS Suite legal billing, support reply, save offer, discount, plan change, or processor mutation without the relevant approval/compliance gate.
+- No contract ID reuse when current codebase contracts already occupy an incoming ID range.
+- No `.markos-local/` protocol writes during product/protocol updates; it remains tenant override space.
 
 ## Constraints
 
-- **Architecture:** Extend the current Node.js, Next.js, Supabase, and onboarding stack — avoid a platform rewrite.
-- **Governance:** Preserve the current tenant-safety, approval, provenance, and review guarantees across all new library flows.
-- **Scope:** Focus on initialization quality, literacy coverage, and plugin-style packaging only; defer broad ecosystem sprawl.
-
-## Key Decisions
-
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Open v3.9.0 as a template-library milestone | The repo already has the right seams to compound its literacy system into faster initialization value | ✓ Selected |
-| Reuse the existing stack | Codebase inspection favors extension over replatforming for speed and continuity | ✓ Locked |
-| Compose base family + industry overlay | This matches the desired specialization without exploding one-off templates | ✓ Locked |
-| Keep operator visibility and fallback | Prevents governance, trust, and quality regressions | ✓ Locked |
+- **Architecture:** Extend the current Node.js, Next.js, Supabase, MCP, billing, CRM, and onboarding stack.
+- **Governance:** Preserve tenant-safety, approval, provenance, audit, and review guarantees.
+- **Scope:** Build one complete operating loop before expanding the full target agent network.
+- **Pricing:** Public prices, plan tables, BYOK discounts, and packaging remain engine-owned.
+- **SaaS Suite:** Subscription, billing, support, product usage, and revenue features must reuse MarkOS governance instead of creating parallel unapproved automation.
+- **Enterprise:** SOC2 planning must include AI, pricing, connectors, evidence, learning, and Tenant 0 proof.
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
-**After each phase transition** (via `/gsd-transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
+After each phase transition:
 
-**After each milestone** (via `/gsd-complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
+1. Requirements invalidated? Move to Out of Scope with reason.
+2. Requirements validated? Move to Validated with phase reference.
+3. New requirements emerged? Add to Active.
+4. Decisions to log? Add to Key Decisions or active phase discussion.
+5. "What This Is" still accurate? Update if drifted.
+
+After each milestone:
+
+1. Review all sections.
+2. Check Core Value.
+3. Audit Out of Scope.
+4. Update Current Implementation Reality.
 
 ---
+
 ## Metadata
 
-Last updated: 2026-04-18 after Phase 203 (Webhook Subscription Engine GA) completion under v4.0.0 SaaS Readiness milestone.
+Last updated: 2026-04-22 after MarkOS v2 vault/codebase compliance audit, Pricing Engine intake, SaaS Suite intake, and GSD phase routing for Phases 204-217.

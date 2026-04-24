@@ -57,6 +57,23 @@ MarkOS (root)
 | Agentic marketing protocol | `.agent/markos/`, `.agent/skills/markos-*` | [[MarkOS Protocol]] |
 | GSD methodology (planning + phases) | `.agent/get-shit-done/`, `.planning/` | [[Infrastructure]] · [[MarkOS Protocol]] |
 
+## v2 Operating-System Overlay
+
+The atlas describes the current implementation. v2 planning should read it through these additional target capabilities:
+
+| v2 capability | Current anchor | Gap note |
+|---|---|---|
+| AI-native Marketing OS foundation | [[Marketing Operating System Foundation]] | Product doctrine and launch order |
+| First complete operating loop | [[MarkOS v2 Operating Loop Spec]] | Functional contract from onboarding to learning |
+| Requirements traceability | [[MarkOS v2 Requirements Traceability Matrix]] | Source-to-workstream mapping |
+| GSD refactor plan | [[MarkOS v2 GSD Master Work Plan]] | Discuss/research/phase strategy |
+| AgentRun/task/approval substrate | [[MarkOS Protocol]], [[Database Schema]], [[UI Components]] | Current code has pieces; v2 needs unifying layer |
+| Evidence and learning substrate | [[Core Lib]], [[Marketing Literacy]] | Research context, artifact performance, overlays |
+| Contract allocation | [[Contracts Registry]] | Fresh F-NN range required before implementation |
+| Pricing Engine | [[Pricing Engine Canon]], [[MarkOS v2 Pricing Engine Intake]] | New pricing intelligence loop, PRC agents, cost model, API/MCP/UI |
+| SaaS Suite | [[SaaS Suite Canon]], [[MarkOS v2 SaaS Suite Intake]] | Tenant-type suite for subscriptions, billing/compliance, churn/support/product usage, revenue intelligence, SAS agents, API/MCP/UI |
+| SaaS Marketing OS Strategy | [[SaaS Marketing OS Strategy Canon]], [[MarkOS v2 SaaS Marketing OS Strategy Intake]] | Future post-suite SaaS growth profile, PLG/PQL/in-app, ABM/expansion, viral/referral/community, events/PR/partnerships/developer marketing/revenue alignment, experiments, growth agents |
+
 ## How the system fits together
 
 1. **Operator** calls `npx markos` → `bin/install.cjs` scaffolds `.agent/markos/` + `.agent/get-shit-done/`, writes `.markos-install-manifest.json`.
@@ -80,3 +97,5 @@ MarkOS (root)
 
 - [[Home]] · [[MarkOS Repo]] · [[Skills]] · [[North Star]]
 - [[VAULT-INDEX|PageIndex Vault Index]]
+- [[SaaS Suite Canon]]
+- [[SaaS Marketing OS Strategy Canon]]

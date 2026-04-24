@@ -2,64 +2,115 @@
 
 ## Top-Level Maintained Directories
 
+### `app/`
+
+Purpose: Next.js App Router UI, workspace shell, marketing pages, and route handlers.
+Refresh trigger: new page/route group, new operator surface, or route ownership change.
+
 ### `api/`
 
-Purpose: hosted wrappers for serverless deployment paths.
-Refresh trigger: add/remove wrapper files or auth behavior changes.
+Purpose: hosted serverless endpoints for app/runtime domains.
+Refresh trigger: new endpoint family, auth change, or contract coverage change.
 
 ### `bin/`
 
-Purpose: user-facing install/update/admin CLIs.
-Refresh trigger: new CLI command or changed invocation contract.
+Purpose: package binary, install/update flows, CLI utilities, and vault/literacy helpers.
+Refresh trigger: new CLI command, parser change, or distribution-path change.
+
+### `components/`
+
+Purpose: shared UI components, primarily CRM and MarkOS operator surfaces.
+Refresh trigger: new reusable component family or cross-route ownership move.
+
+### `contracts/`
+
+Purpose: flow contracts, OpenAPI artifacts, and generated schema surfaces.
+Refresh trigger: new `F-*` contract, OpenAPI merge change, or SDK-facing schema change.
+
+### `docs/`
+
+Purpose: human-facing technical docs, phase docs, and public integration docs.
+Refresh trigger: new public operator/API/runtime documentation.
+
+### `lib/`
+
+Purpose: shared business logic and domain runtime modules.
+Refresh trigger: new domain module, auth boundary change, or cross-surface service extraction.
 
 ### `onboarding/`
 
-Purpose: onboarding UI and backend runtime.
-Refresh trigger: route changes, handler ownership shifts, or new sublayers.
+Purpose: local onboarding app, backend, parsers, prompts, agents, and templates.
+Refresh trigger: route changes, ingestion capability changes, or onboarding/runtime repurposing.
 
-### `.agent/`
+### `public/`
 
-Purpose: protocol and GSD engines, tools, skills, and templates.
-Refresh trigger: new bin tools, workflow files, or protocol path changes.
+Purpose: static public assets and exported text surfaces.
+Refresh trigger: new static asset family or route-backed export removal.
 
-### `.planning/`
+### `sdk/`
 
-Purpose: canonical planning artifacts, roadmap/state, and this codebase map.
-Refresh trigger: milestone/phase hierarchy changes or planning conventions shift.
-
-### `RESEARCH/`
-
-Purpose: market and strategy research artifacts.
-Refresh trigger: new research domains or relocation of intelligence files.
+Purpose: SDK artifacts for external consumers.
+Refresh trigger: SDK generation or packaging change.
 
 ### `scripts/`
 
-Purpose: reserved utility area; currently empty.
-Refresh trigger: first maintained script addition.
+Purpose: repo automation for OpenAPI, vault/PageIndex, release smoke, and phase verification.
+Refresh trigger: new build/verification/indexing automation.
+
+### `supabase/`
+
+Purpose: schema, migrations, RLS, and SQL assets.
+Refresh trigger: any new migration or schema support file.
 
 ### `test/`
 
-Purpose: automated verification suites.
-Refresh trigger: new suite files or major test ownership changes.
+Purpose: automated verification, drift detection, contract checks, and regression protection.
+Refresh trigger: new suite family or major ownership change.
+
+### `tools/`
+
+Purpose: supporting tools outside the product runtime, including embedded PageIndex sources.
+Refresh trigger: new repo-maintained toolchain or auxiliary runtime dependency.
+
+### `.agent/`
+
+Purpose: MarkOS protocol and GSD engines, templates, and agent/skill logic.
+Refresh trigger: new protocol surface, template family, or command engine change.
+
+### `.agents/`
+
+Purpose: local skill catalog and helper agent definitions used by Codex/GSD workflows.
+Refresh trigger: new local skill or agent package.
+
+### `.planning/`
+
+Purpose: canonical roadmap/state/phases plus codebase and audit artifacts.
+Refresh trigger: milestone or planning-asset changes.
+
+### `obsidian/`
+
+Purpose: the living Obsidian mind vault, incoming docs, canon pages, and active synthesis notes.
+Refresh trigger: new doctrine intake, canon page move, or PageIndex workflow change.
+
+### `RESEARCH/`
+
+Purpose: project research outputs and operator-facing intelligence artifacts.
+Refresh trigger: new research family or relocation of research ownership.
 
 ## High-Churn Nested Directories
 
-### `onboarding/backend/agents/`
+### `app/(markos)/crm/`, `app/(markos)/settings/`, `app/(markos)/operations/`
 
-LLM orchestration, provider adapters, and telemetry operations.
+Main operator UI growth areas.
 
-### `onboarding/backend/parsers/`
+### `api/crm/`, `api/tenant/`, `api/mcp/`, `api/webhooks/`
 
-Source document parsers for ingest and extraction.
+Main hosted API growth areas.
 
-### `onboarding/backend/prompts/`
+### `lib/markos/billing/`, `crm/`, `mcp/`, `tenant/`, `webhooks/`
 
-Prompt modules for extraction, enrichment, questioning, and creative suggestions.
+Main shared-domain growth areas.
 
-### `onboarding/backend/extractors/`, `enrichers/`, `confidences/`, `scrapers/`
+### `onboarding/backend/agents/`, `extractors/`, `parsers/`, `prompts/`
 
-Specialized extraction and enrichment surfaces used by handler routes.
-
-### `.agent/get-shit-done/bin/lib/` and `.agent/markos/bin/lib/`
-
-Command internals for planning and protocol operations.
+Main onboarding runtime change areas.

@@ -118,6 +118,57 @@ See [[CRM Domain]] table-by-table. Summary:
 - `test/crm-schema/crm-core-entities.test.js` — CRM entity invariants.
 - `test/tenant-auth/crm-tenant-isolation.test.js` — tenant isolation.
 
+## v2 Schema Gap Overlay
+
+The current schema already has useful substrate: agent run lifecycle tables, approval decisions, billing usage ledgers, governance evidence, CRM tasks, activity ledger, and literacy chunks. v2 should extend these where possible instead of inventing parallel storage.
+
+Target v2 data objects that need schema research:
+
+| Object | Reuse candidate | Gap to research |
+|---|---|---|
+| AgentRun v2 | `markos_agent_runs`, `markos_agent_run_events`, `markos_agent_side_effects` | priority, DAG edges, scheduled trigger, retry class, DLQ, cost estimate vs actual |
+| Task | CRM tasks / execution recommendations | generic cross-domain task board for agent output, approval, connector recovery, social escalation |
+| ApprovalGate | `markos_agent_approval_decisions`, CRM copilot approval packages | rendered artifact preview, edit/reject reason, rollback metadata, evidence/cost summary |
+| ConnectorInstall | connector work from phases 210+ / webhook/MCP substrate | registry, scopes, status, sync cadence, retention, recovery and backfill |
+| EvidenceMap | claim library, literacy chunks, research context | source quality score, claim TTL, citation text, known gaps |
+| ArtifactPerformanceLog | telemetry/events, CRM attribution snapshots | performance envelope before publish, actual outcome, attribution evidence, channel/format/pain/funnel dimensions |
+| TenantOverlay | `.markos-local/` overrides, literacy metadata | confidence, scope, expiry, review status, central promotion candidate |
+| LiteracyUpdateCandidate | literacy/admin tools | admin review queue and central promotion workflow |
+| SocialSignal | CRM activity ledger, outbound conversations | normalized social inbound event, sentiment/intent/topic/CRM match, escalation state |
+| PricingKnowledgeObject | new Pricing Engine tables | own/competitor/market/strategic pricing records, source quality, diff/history, embeddings |
+| TenantCostModel | billing usage, revenue connectors | SaaS/eCommerce/Services cost structures, pricing floor, confidence level |
+| PricingRecommendation | approval/task substrate | options, impact, risk, evidence, assumptions, decision status |
+| PriceTest | experimentation + approval substrate | control/test config, sample size, metrics, stop conditions, rollout decision |
+| PricingWatchList | connector/research substrate | competitor domains, crawl frequency, pricing page URL, alerts |
+| SaaSSuiteActivation | new SaaS Suite tables + tenant profile | business_type=saas gating, module enablement, processors, countries, accounting, legal billing, autonomy posture |
+| SaaSPlan | Pricing Engine + billing substrate | operational plan catalog, value metric, features, cadence, country availability, approved pricing reference |
+| SaaSSubscription | billing subscriptions + CRM customer/account | lifecycle state, trial/past_due/pause/cancel/reactivate events, processor IDs, plan history |
+| SaaSInvoice | billing invoice projections + provider sync | legal invoice fields, processor status, tax, accounting sync, DIAN CUFE/QR/transmission fields |
+| SaaSHealthScore | product usage/support/billing/CRM engagement | explainable health score, confidence, trend, intervention task |
+| SaaSSupportTicket | CRM tasks/activity + support connector | ticket source, SLA, sentiment, topic, KB grounding, suggested response, approval state |
+| SaaSMRRSnapshot | billing/accounting/revenue snapshots | MRR, ARR, NRR, GRR, churn, expansion, contraction, cohort, forecast |
+| SaaSGrowthProfile | tenant profile + SaaS Suite activation | SaaS mode, active growth modules, sales/CS/developer posture, growth approval posture |
+| ActivationDefinition | product analytics + SaaS Suite usage events | aha moment, event name, milestones, activation baseline metrics |
+| PQLScore | product analytics, CRM, pricing, billing | usage, intent, fit, recommended action/channel/timing |
+| ABMAccountPackage | CRM account/company/contact/activity, research connectors | account tier, buying committee, strategic signals, messaging, engagement |
+| CustomerMarketingProgram | CRM tasks/campaigns, SaaS health/support/revenue | expansion, advocacy, retention, education, review, beta, advisory, co-marketing program state |
+| ReferralProgram | tracking/identity, billing/pricing, CRM attribution | rewards, referral links, cookie window, fraud prevention, performance |
+| InAppCampaign | product analytics, task/approval, email/outbound | trigger, format, suppression, frequency cap, goal, success event |
+| CommunityProfile | community connector, support, health, CRM | platform, goals, member activity, health score, signals into product/CS/content |
+| MarketingEvent | CRM/outbound/activity/attribution | event plan, promotion, reminders, attendees/no-shows, replay, pipeline attribution |
+| MarketingExperiment | artifact performance, pricing tests, analytics | hypothesis, variants, sample, guardrails, result, decision, learning |
+| AffiliateProgram | tracking, billing, pricing, partner CRM | commission, cookie window, payout method, approval, prohibited methods, performance |
+| RevenueTeamConfig | CRM pipeline/reporting, PLG/PQL, CS | MQL/SQL/PQL definitions, SLA, feedback cadence, attribution, shared targets |
+
+Schema planning gates:
+
+- Every tenant-scoped table must have RLS before phase close.
+- Raw connector/social data stays tenant-only.
+- Cross-tenant aggregates contain no tenant_id or PII.
+- Central literacy writes require admin-reviewed candidate records.
+- Deletion/export workflows must cover new tenant data.
+
 ## Related
 
+- [[SaaS Suite Canon]]
 - [[MarkOS Codebase Atlas]] · [[CRM Domain]] · [[Core Lib]] · [[Contracts Registry]] · [[Infrastructure]]

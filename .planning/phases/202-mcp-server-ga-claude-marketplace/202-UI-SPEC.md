@@ -185,7 +185,7 @@ Consent card (S2) page wrapper mirrors `invite/[token]/page.module.css` `.page`:
 | Click Refresh button | Immediate re-fetch usage + sessions; disable button for the duration; show "Refreshed." toast on success | "Refreshed." |
 | Click Revoke on row | Open `<dialog>` confirm modal; Confirm button triggers `POST /api/mcp/sessions/revoke`; on 200 re-fetch sessions + show toast | Confirm heading: "Revoke MCP session?" / Body: "The client will need to re-authorize on next use." / Confirm CTA: "Revoke session" (destructive filled) / Cancel CTA: "Cancel" |
 | Click top-tools entry | Smooth-scroll to breakdown card AND filter cost-breakdown table to that tool (set internal state); breakdown `<details>` opens if collapsed | Filter chip appears reading "Showing {tool_name} · Clear" — clear link resets |
-| Banner "Upgrade" link | Navigate to `/settings/billing` — Phase 202 stub route returns a "Billing self-serve lands in Phase 205 — join the waitlist" interstitial | Link text: "Upgrade to increase your cap" |
+| Banner "Upgrade" link | Navigate to `/settings/billing` - Phase 202 stub route returns a "Pricing Engine-backed billing controls land in Phase 205 - join the waitlist" interstitial | Link text: "Upgrade to increase your cap" |
 | 30s timer visibility | Display server-provided `reset_at` ISO timestamp rendered as relative duration ("Resets in 17h 32m"); updates once per minute client-side | — |
 
 ---

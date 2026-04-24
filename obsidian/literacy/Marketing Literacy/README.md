@@ -96,6 +96,9 @@ Deep, hand-curated for 2026 state of the art:
 
 This literacy applies operationally through the MarkOS product. See:
 
+- [[Marketing Operating System Foundation]] — v2 doctrine for using literacy as live product substrate
+- [[MarkOS v2 Operating Loop Spec]] — research, evidence, artifact performance, and overlay requirements
+- [[SaaS Marketing OS Strategy Canon]] - productization map for PLG, ABM, community, events, PR, experimentation, RevOps, pricing, partnerships, and developer marketing
 - [[MarkOS Codebase Atlas]] — root MOC of the repo
 - [[CRM Domain]] — where activity + attribution literacy lands in code
 - [[Core Lib]] — where LLM / billing / governance / outbound literacy implements
