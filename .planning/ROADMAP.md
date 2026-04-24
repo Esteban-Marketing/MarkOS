@@ -98,13 +98,13 @@ Plans:
 **Requirements Mapped:** CLI-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
 **Status:** 📋 Planned - discuss/research refreshed 2026-04-23; 13 plans across 4 waves + 1 v2 compliance gap-closure
-**Plans:** 2/13 plans executed
+**Plans:** 3/13 plans executed
 **DISCUSS:** `.planning/phases/204-cli-markos-v1-ga/DISCUSS.md`
 
 Plans:
 - [x] 204-01-PLAN.md — Dispatch extension + 7 shared CLI primitives + 2 migrations (73 device sessions, 74 API keys) + audit domain extension (Wave 1)
 - [x] 204-02-PLAN.md — OAuth device flow (3 endpoints) + `markos login` + F-101 contract + 31 tests (Wave 1)
-- [ ] 204-03-PLAN.md — API keys CRUD library + 3 endpoints + `markos keys list|create|revoke` + F-102 contract (Wave 1)
+- [x] 204-03-PLAN.md — API keys CRUD library + 3 endpoints + `markos keys list|create|revoke` + F-102 contract + 31 tests (Wave 1)
 - [ ] 204-04-PLAN.md — `markos whoami` + resolveWhoami primitive + /api/tenant/whoami + F-105 scaffold (Wave 1)
 - [ ] 204-05-PLAN.md — `markos init` (delegator) + `markos plan` dry-run + `markos eval` local rubric + /runs/plan endpoint (Wave 2)
 - [ ] 204-06-PLAN.md — `markos run` with SSE watch + migration 75 + POST /runs + GET /runs/{id}/events + F-103 contract (Wave 2)
