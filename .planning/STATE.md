@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 204
-last_updated: "2026-04-24T02:35:53.533Z"
+last_updated: "2026-04-23T00:00:00.000Z"
 progress:
   total_phases: 14
   completed_phases: 4
   total_plans: 105
-  completed_plans: 37
+  completed_plans: 38
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -16,7 +16,24 @@ progress:
 ## Current Position
 
 Phase: 204 (cli-markos-v1-ga) — EXECUTING
-Plan: 1 of 13
+Plan: 1 of 13 COMPLETE — Wave 1 foundation landed (primitives + migrations + 10 stubs).
+Next: Wave 1 siblings 204-02 (login), 204-03 (keys), 204-04 (whoami) unblocked; can run in parallel.
+
+## Phase 204 Plan Progress
+
+- [x] 204-01: CLI dispatch foundation + shared primitives + 2 migrations + test fixtures (2026-04-23)
+- [ ] 204-02: markos login (device flow) — consumes keychain.cjs + http.cjs + open-browser.cjs + migration 74
+- [ ] 204-03: markos keys (CRUD) — consumes keychain.cjs + http.cjs + output.cjs + migration 74
+- [ ] 204-04: markos whoami — consumes http.cjs + output.cjs
+- [ ] 204-05: markos init
+- [ ] 204-06: markos plan / run (SSE)
+- [ ] 204-07: markos eval
+- [ ] 204-08: markos env (pull/push/diff/merge)
+- [ ] 204-09: markos status
+- [ ] 204-10: distribution (npm/Homebrew/Scoop)
+- [ ] 204-11: markos doctor
+- [ ] 204-12: security hardening + E2E
+- [ ] 204-13: v2 doctrine compliance gap-closure
 
 ## Planning overlay (2026-04-23 incoming 18-26 commercial-engine routing)
 
