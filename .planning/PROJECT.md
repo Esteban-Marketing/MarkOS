@@ -12,6 +12,19 @@ MarkOS is now planning against two synchronized truths:
 
 The static monetization posture is superseded by `obsidian/brain/Pricing Engine Canon.md`. Use `{{MARKOS_PRICING_ENGINE_PENDING}}` for unresolved public prices, package boundaries, usage inclusion, BYOK treatment, and billing copy until approved PricingRecommendation records exist.
 
+### Source-of-truth precedence (on conflict)
+
+| Layer | Wins for | Canonical locations |
+|-------|----------|---------------------|
+| 1. Vault brain | Product doctrine (WHAT we build) | `obsidian/brain/{Pricing Engine Canon, SaaS Suite Canon, SaaS Marketing OS Strategy Canon, Marketing Operating System Foundation, MarkOS Canon, Brand Stance, Target ICP}.md` |
+| 2. Vault reference | Product spec (HOW objects/flows/contracts shape) | `obsidian/reference/{MarkOS v2 Operating Loop Spec, MarkOS v2 Requirements Traceability Matrix, Contracts Registry, Database Schema, Core Lib, HTTP Layer, UI Components}.md` |
+| 3. .planning/ | Engineering execution state (WHEN / which phase / F-IDs / migration numbers) | `.planning/{STATE, ROADMAP, REQUIREMENTS}.md`, `.planning/phases/<N>-*/` |
+| 4. .agent/markos/ | Marketing protocol TOKEN_ID registry | `.agent/markos/MARKOS-INDEX.md` |
+| 5. obsidian/work/incoming/ | Raw intake (NOT canonical until distilled into brain/reference) | Must be distilled before use |
+| 6. .markos-local/ | Client overrides (override layer 4 templates for that client) | Gitignored |
+
+**Drift rule:** If `.planning/` appears to contradict vault brain/reference, STOP and flag. Do not silently reconcile. Canon wins for product shape; plan wins for execution sequencing; both must agree before execution.
+
 ## Active Planning References
 
 - `.planning/STATE.md`
