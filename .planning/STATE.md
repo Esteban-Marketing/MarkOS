@@ -15,9 +15,9 @@ progress:
 
 ## Current Position
 
-Phase: 204 (cli-markos-v1-ga) — EXECUTING
-Plan: 9 of 13 COMPLETE — **WAVE 3 CLOSED; 11/11 CLI commands functional.** `markos doctor` ships 9-check diagnose-and-fix CLI with `--check-only` CI gate (zero FS mutation, exit 1 on any error) + `--fix` auto-remediation (filesystem-only; NEVER auto-runs login per T-204-09-01) + `--json` for scripting + brew-doctor-style unicode dashboard. 9 checks: node_version / config_dir / active_token / token_valid / markos_local_dir / gitignore_protected / keytar_available / server_reachable / supabase_connectivity (skip→Phase 206). `bin/lib/cli/doctor-checks.cjs` exposes `runChecks({ fix, checkOnly, cwd })`; orchestrator-side safety dominance coerces `effectiveFix = fix && !checkOnly` before dispatch (T-204-09-06 mitigation). `bin/install.cjs::applyGitignoreProtections` exported for doctor reuse (no duplication). 22 new tests green (13 doctor-checks + 9 CLI) + zero regression on 204-01..08. Wave 4 (distribution 204-10..12 + v2 compliance 204-13) is feature-complete-ready.
-Next: Wave 4 — 204-10 (Homebrew), 204-11 (Scoop), 204-12 (Release CI + docs), 204-13 (v2 compliance gap-closure).
+Phase: 204 (cli-markos-v1-ga) — WAVE 4 CLOSED; PHASE 204 SHIPS (Plan 13 reserved/optional)
+Plan: 12 of 13 COMPLETE — **WAVE 4 CLOSED; Phase 204 SHIPS.** Distribution trio (Homebrew tap + Scoop bucket + npm) wired end-to-end with a 5-job release DAG on `push` of `v*` tags: `verify` (Node 22 + `npm ci` + `npm test` + `npm run release:smoke`) → `npm publish --access public` → parallel `brew` (mislav/bump-homebrew-formula-action@v3 against markos/homebrew-tap) + `scoop` (checkout markos/scoop-bucket + bump-scoop-manifest.cjs + push) → `smoke` matrix (ubuntu + macos + windows; installs tagged version and runs `markos --version`). Public docs trio shipped: `docs/cli/errors.md` (13 stable codes + D-10 bands + RFC 8628 device-flow codes), `docs/cli/environment.md` (10 env vars + credential resolution order), `docs/cli/commands.md` (11-command index + global flags + exit-code footer). `public/llms.txt` extended with Phase 204 section (5 entries — installation-homebrew, installation-scoop, commands, errors, environment) without overwriting prior sections. Parity contract: `test/cli/errors-map.test.js` set-equivalence-asserts `ERROR_TO_EXIT` keys ↔ `docs/cli/errors.md` public-code table; CI blocks doc drift. 15 new tests green (10 release-workflow + 5 errors-map). **Prerequisite for first tagged release:** user must provision 3 GitHub Actions repo secrets (NPM_TOKEN, HOMEBREW_TAP_TOKEN, SCOOP_BUCKET_TOKEN).
+Next: Plan 204-13 (reserved, optional v2 doctrine compliance gap-closure) OR advance to Phase 205 (Pricing Engine foundation).
 
 ## Phase 204 Plan Progress
 
@@ -30,9 +30,9 @@ Next: Wave 4 — 204-10 (Homebrew), 204-11 (Scoop), 204-12 (Release CI + docs), 
 - [x] 204-07: markos env (list/pull/push/delete) — migration 76 (pgcrypto) + env lib (6 exports) + 4 endpoints + CLI + F-104 (4 paths) + 35 tests — **Wave 2 CLOSED** (2026-04-24)
 - [x] 204-08: markos status — aggregateStatus library + TS twin + /api/tenant/status + status.cjs CLI with --watch + status run <id> + F-105 completion (5 schemas) + 19 tests — **Wave 3 LEAD** (2026-04-24)
 - [x] 204-09: markos doctor — 9-check doctor-checks library + CLI with --check-only CI gate + --fix auto-remediation + applyGitignoreProtections export + 22 tests — **Wave 3 CLOSED; 11/11 CLI commands functional** (2026-04-24)
-- [ ] 204-10: distribution (Homebrew)
-- [ ] 204-11: security hardening + E2E
-- [ ] 204-12: v2 doctrine compliance gap-closure
+- [x] 204-10: distribution (Homebrew) — Formula/markos.rb + scripts/distribution/bump-homebrew-formula.cjs + shape test + installation-homebrew.md (2026-04-24)
+- [x] 204-11: distribution (Scoop) — bucket/markos.json + scripts/distribution/bump-scoop-manifest.cjs + shape test + installation-scoop.md (2026-04-24)
+- [x] 204-12: release CI + docs trio + llms.txt Phase 204 — .github/workflows/release-cli.yml (5-job DAG verify→npm→brew+scoop→smoke) + docs/cli/{errors,environment,commands}.md + public/llms.txt Phase 204 section + errors-map parity test + 15 tests — **Wave 4 CLOSED; Phase 204 SHIPS** (2026-04-24)
 - [ ] 204-13: (reserved)
 
 ## Planning overlay (2026-04-23 incoming 18-26 commercial-engine routing)

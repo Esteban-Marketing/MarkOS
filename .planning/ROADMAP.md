@@ -113,7 +113,7 @@ Plans:
 - [x] 204-09-PLAN.md — `markos doctor` with 9 checks + --check-only CI gate + --fix auto-remediation + 22 tests — **Wave 3 CLOSED; 11/11 CLI commands functional** (2026-04-24)
 - [x] 204-10-PLAN.md — Homebrew formula `Formula/markos.rb` + bump script + install docs (Wave 4)
 - [x] 204-11-PLAN.md — Scoop bucket manifest `bucket/markos.json` + bump script + install docs (Wave 4)
-- [ ] 204-12-PLAN.md — Release CI matrix (verify → npm → brew + scoop → smoke) + docs trio (errors/environment/commands) + llms.txt Phase 204 section (Wave 4)
+- [x] 204-12-PLAN.md — Release CI matrix (verify → npm → brew + scoop → smoke) + docs trio (errors/environment/commands) + llms.txt Phase 204 section + errors-map parity test + 15 tests — **Wave 4 CLOSED; Phase 204 SHIPS** (2026-04-24)
 - [ ] 204-13-PLAN.md — v2 compliance guardrails for `run`, `status`, `doctor`, vault freshness, and Pricing Engine placeholder policy (gap closure)
 
 ### Phase 205: Pricing Engine Foundation + Billing Readiness
