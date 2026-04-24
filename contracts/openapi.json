@@ -3,7 +3,7 @@
   "info": {
     "title": "MarkOS API",
     "version": "1.0.0",
-    "description": "Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 67 flow contracts.",
+    "description": "Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 68 flow contracts.",
     "contact": {
       "name": "MarkOS Engineering",
       "url": "https://markos.esteban.marketing"
@@ -64,6 +64,10 @@
     "F-102": {
       "source": "contracts/F-102-cli-api-keys-v1.yaml",
       "description": "MarkOS flow F-102"
+    },
+    "F-103": {
+      "source": "contracts/F-103-cli-runs-plan-v1.yaml",
+      "description": "MarkOS flow F-103"
     },
     "F-105": {
       "source": "contracts/F-105-cli-whoami-status-v1.yaml",
@@ -2845,6 +2849,92 @@
         "x-flow-version": "v1"
       }
     },
+    "/api/tenant/runs/plan": {
+      "post": {
+        "summary": "Dry-run planner — validates brief + returns plan DAG with token/cost estimates. No DB write.",
+        "operationId": "cliRunsPlan",
+        "tags": [
+          "cli",
+          "runs",
+          "plan"
+        ],
+        "parameters": [
+          {
+            "{ name": "Authorization, in: header, required: false, schema: { type: string, pattern: \"^Bearer mks_ak_[a-f0-9]{64}$\" } }"
+          },
+          {
+            "{ name": "x-markos-user-id, in: header, required: false, schema: { type: string } }"
+          },
+          {
+            "{ name": "x-markos-tenant-id, in: header, required: false, schema: { type: string } }"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": "[brief]",
+                "properties": {
+                  "brief": {
+                    "$ref": "#/components/schemas/BriefInput"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "'200'": {
+            "description": "Plan envelope (dry-run). No DB row created; run_id is always null.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanEnvelope"
+                }
+              }
+            }
+          },
+          "'400'": {
+            "description": "invalid_brief — missing required fields or malformed body.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvalidBriefError"
+                }
+              }
+            }
+          },
+          "'401'": {
+            "description": "No credentials OR invalid_token OR revoked_token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "{ $ref": "'#/components/schemas/UnauthorizedError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/InvalidTokenError' }"
+                    },
+                    {
+                      "{ $ref": "'#/components/schemas/RevokedTokenError' }"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "'405'": "{ description: \"method_not_allowed — plan is POST-only\" }",
+          "'500'": "{ description: \"plan_failed — unexpected server error\" }"
+        },
+        "x-flow-id": "F-103",
+        "x-flow-name": "CLI Runs — Plan (Dry-Run)",
+        "x-domain": "cli",
+        "x-flow-version": "v1"
+      }
+    },
     "/api/tenant/sessions/list": {
       "get": {
         "summary": "List active sessions for the current user + tenant",
@@ -4624,6 +4714,143 @@
         "required": "[error]",
         "properties": {
           "error": "{ type: string, enum: [method_not_allowed] }"
+        }
+      },
+      "F_103_BriefInput": {
+        "type": "object",
+        "description": "User-supplied brief. Required fields: channel, audience, pain, promise, brand. Extra keys are preserved but not required.",
+        "required": "[channel, audience, pain, promise, brand]",
+        "properties": {
+          "channel": "{ type: string, description: \"e.g. email, linkedin, twitter\" }",
+          "audience": "{ type: string, description: \"Target ICP or segment\" }",
+          "pain": "{ type: string, description: \"Concrete pain the copy should acknowledge\" }",
+          "promise": "{ type: string, description: \"The value promise to anchor the draft\" }",
+          "brand": "{ type: string, description: \"Brand name that should surface in the draft\" }"
+        }
+      },
+      "F_103_PlanStep": {
+        "type": "object",
+        "description": "Single stage of the plan DAG. v1 has exactly 3: audit → draft → score.",
+        "required": "[name, inputs, estimated_tokens]",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": "[audit, draft, score]"
+          },
+          "inputs": {
+            "type": "array",
+            "items": "{ type: string }",
+            "description": "Upstream step names this stage consumes (e.g. ['brief','audit'])"
+          },
+          "estimated_tokens": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Token budget for this stage. Conservative upper bound."
+          }
+        }
+      },
+      "F_103_PlanEnvelope": {
+        "type": "object",
+        "description": "Dry-run plan envelope. Shape-compatible with Phase 207 AgentRun v2 (estimated_cost_usd_micro BIGINT, priority default P2). run_id is always null in dry-run.",
+        "required": "[run_id, plan_id, steps, estimated_tokens, estimated_cost_usd, estimated_cost_usd_micro, estimated_duration_ms, tenant_id, priority]",
+        "properties": {
+          "run_id": {
+            "type": "[string, 'null']",
+            "description": "Always null in dry-run. Plan 204-06's POST /api/tenant/runs returns a populated run_id."
+          },
+          "plan_id": {
+            "type": "string",
+            "pattern": "^plan_[a-f0-9]{16}$",
+            "description": "Synthetic id scoped to this dry-run response. Not persisted."
+          },
+          "steps": {
+            "type": "array",
+            "items": "{ $ref: '#/components/schemas/PlanStep' }",
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "v1 DAG: [audit, draft, score]. Order is significant — inputs reference upstream step names."
+          },
+          "estimated_tokens": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sum of step estimated_tokens."
+          },
+          "estimated_cost_usd": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Placeholder Claude-tier blended rate. Display convenience; canonical billing unit is estimated_cost_usd_micro."
+          },
+          "estimated_cost_usd_micro": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "AgentRun v2 compatible — BIGINT-safe integer micro-USD. 1 USD = 1_000_000 micro."
+          },
+          "estimated_duration_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Conservative upper-bound wall-clock estimate."
+          },
+          "tenant_id": {
+            "type": "string",
+            "description": "Caller's tenant (derived from Bearer or legacy session headers)."
+          },
+          "priority": {
+            "type": "string",
+            "enum": "[P0, P1, P2, P3]",
+            "description": "AgentRun v2 priority. Dry-run defaults P2 (standard)."
+          },
+          "chain_id": {
+            "type": "[string, 'null']",
+            "description": "AgentRun v2 chain anchor. Null for standalone dry-run plans."
+          },
+          "model": {
+            "type": "[string, 'null']",
+            "description": "Provider-qualified model name when known. Plan 204-06 populates; dry-run leaves null."
+          },
+          "agent_id": {
+            "type": "string",
+            "description": "Registry id for the agent that would execute the plan (e.g. 'markos.plan.v1')."
+          },
+          "brief": {
+            "$ref": "#/components/schemas/BriefInput"
+          }
+        }
+      },
+      "F_103_InvalidBriefError": {
+        "type": "object",
+        "description": "Brief failed validateBrief — returns human-readable error list (one per missing / malformed field).",
+        "required": "[error, errors]",
+        "properties": {
+          "error": "{ type: string, enum: [invalid_brief] }",
+          "errors": {
+            "type": "array",
+            "items": "{ type: string }"
+          }
+        }
+      },
+      "F_103_UnauthorizedError": {
+        "type": "object",
+        "description": "No Bearer token AND no legacy session headers.",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [unauthorized] }"
+        }
+      },
+      "F_103_InvalidTokenError": {
+        "type": "object",
+        "description": "Bearer token did not match any row in markos_cli_api_keys.",
+        "required": "[error]",
+        "properties": {
+          "error": "{ type: string, enum: [invalid_token] }"
+        }
+      },
+      "F_103_RevokedTokenError": {
+        "type": "object",
+        "description": "Bearer token matched a revoked row. CLI must run `markos login` to mint a fresh key.",
+        "required": "[error, hint]",
+        "properties": {
+          "error": "{ type: string, enum: [revoked_token] }",
+          "hint": "{ type: string }"
         }
       },
       "F_105_WhoamiEnvelope": {
