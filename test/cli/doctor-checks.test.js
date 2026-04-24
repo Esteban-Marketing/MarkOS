@@ -321,7 +321,7 @@ test('dc-09: server_reachable timeout → warn', async () => {
 
 // ─── dc-10: runChecks returns 9 results in stable order ───────────────────
 
-test('dc-10: runChecks returns 9 ordered results with id/label/status', async () => {
+test('dc-10: runChecks returns 12 ordered results with id/label/status', async () => {
   resetDoctorChecks();
   const { runChecks } = require(DOCTOR_CHECKS_PATH);
   const cwd = tmpDir();
@@ -347,6 +347,10 @@ test('dc-10: runChecks returns 9 ordered results with id/label/status', async ()
       'keytar_available',
       'server_reachable',
       'supabase_connectivity',
+      // Plan 204-13 v2 compliance checks (appended).
+      'agentrun_v2_alignment',
+      'pricing_placeholder_policy',
+      'vault_freshness',
     ];
     assert.equal(results.length, expectedIds.length);
     for (let i = 0; i < expectedIds.length; i++) {

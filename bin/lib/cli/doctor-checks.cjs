@@ -411,6 +411,261 @@ async function checkSupabaseConnectivity() {
   };
 }
 
+// ─── Phase 204-13: v2 compliance checks ────────────────────────────────────
+//
+// Three net-new checks added by Plan 204-13 (gap_closure) to enforce the
+// v2 operating-loop contract on the CLI surface:
+//   10. agentrun_v2_alignment    — markos_cli_runs schema carries all v2 columns
+//                                  AND migration 77 is present on disk.
+//   11. pricing_placeholder_policy — no real public pricing leaks in CLI docs
+//                                    until an approved PricingRecommendation
+//                                    exists (Phase 205).
+//   12. vault_freshness           — obsidian/work/incoming/*.md >30d old
+//                                   without a matching obsidian/brain/*.md
+//                                   distillation warns.
+//
+// All three are read-only (no fixable auto-remediation). They can fail
+// `markos doctor --check-only` when policy violations are detected.
+
+const V2_REQUIRED_FIELD_NAMES = Object.freeze([
+  // Mirrors lib/markos/cli/runs.cjs::V2_REQUIRED_FIELDS — kept in sync via
+  // the v2-compliance test suite (test/cli/v2-compliance.test.js).
+  'tenant_id', 'user_id',
+  'trigger_kind', 'source_surface', 'priority', 'chain_id', 'parent_run_id',
+  'correlation_id', 'idempotency_key',
+  'agent_id', 'agent_registry_version',
+  'approval_policy', 'provider_policy', 'tool_policy',
+  'estimated_cost_usd_micro', 'actual_cost_usd_micro', 'cost_currency',
+  'tokens_input', 'tokens_output', 'pricing_engine_context',
+  'v2_state', 'retry_count', 'retry_after', 'last_error_code',
+  'task_id', 'closed_at',
+]);
+
+async function checkAgentrunV2Alignment({ cwd, runsModule }) {
+  // Strategy: we do NOT require a live DB connection (local doctor runs
+  // without supabase creds). Instead we verify two things statically:
+  //   1. Migration 77 file exists on disk (supabase/migrations/77_*.sql) —
+  //      this is the migration that adds the v2 columns.
+  //   2. The CLI runs library exports V2_REQUIRED_FIELDS AND buildV2Payload
+  //      produces a row carrying all of them (i.e., the writer is v2-aware).
+  //
+  // Both conditions together assert the CLI surface is v2-aligned. If either
+  // fails, we emit 'error' (CI-gate fails) because drift between CLI writer
+  // and DB schema is a deployment hazard.
+  const migrationsDir = path.resolve(cwd, 'supabase', 'migrations');
+  let migration77 = null;
+  try {
+    if (fs.existsSync(migrationsDir)) {
+      const files = fs.readdirSync(migrationsDir);
+      migration77 = files.find((f) => /^77[_-].*v2[_-]?align/i.test(f)) || null;
+    }
+  } catch {
+    migration77 = null;
+  }
+
+  if (!migration77) {
+    return {
+      id: 'agentrun_v2_alignment',
+      label: 'AgentRun v2 alignment',
+      status: 'error',
+      message: 'migration 77 (markos_cli_runs v2 alignment) not found',
+      hint: 'Ensure supabase/migrations/77_markos_cli_runs_v2_align.sql is deployed. Run the migration suite against the target DB.',
+      fixable: false,
+      fixed: null,
+    };
+  }
+
+  // Verify the runs library exports v2 helpers + all required fields.
+  let runs;
+  try {
+    runs = runsModule || require(path.resolve(cwd, 'lib', 'markos', 'cli', 'runs.cjs'));
+  } catch (err) {
+    return {
+      id: 'agentrun_v2_alignment',
+      label: 'AgentRun v2 alignment',
+      status: 'warn',
+      message: `runs.cjs not loadable: ${err.message}`,
+      hint: 'CLI runs library is missing or broken — cannot verify v2 writer alignment.',
+      fixable: false,
+      fixed: null,
+    };
+  }
+
+  const fields = Array.isArray(runs.V2_REQUIRED_FIELDS) ? runs.V2_REQUIRED_FIELDS : [];
+  const missing = V2_REQUIRED_FIELD_NAMES.filter((f) => !fields.includes(f));
+  if (missing.length > 0) {
+    return {
+      id: 'agentrun_v2_alignment',
+      label: 'AgentRun v2 alignment',
+      status: 'error',
+      message: `runs.cjs V2_REQUIRED_FIELDS missing: ${missing.join(', ')}`,
+      hint: 'Update lib/markos/cli/runs.cjs::V2_REQUIRED_FIELDS to include all Phase 207 CONTRACT-LOCK §4 fields.',
+      fixable: false,
+      fixed: null,
+    };
+  }
+
+  // Positive assertion: buildV2Payload yields a row that passes its own shape check.
+  try {
+    if (typeof runs.buildV2Payload === 'function' && typeof runs.assertV2PayloadShape === 'function') {
+      const sample = runs.buildV2Payload({
+        tenant_id: 'ten_doctor_probe',
+        user_id: 'usr_doctor_probe',
+        brief: { channel: 'email', audience: 'doctor', pain: 'probe', promise: 'probe', brand: 'probe' },
+      });
+      const assertion = runs.assertV2PayloadShape(sample);
+      if (!assertion.ok) {
+        return {
+          id: 'agentrun_v2_alignment',
+          label: 'AgentRun v2 alignment',
+          status: 'error',
+          message: `buildV2Payload missing: ${assertion.missing.join(', ')}`,
+          hint: 'lib/markos/cli/runs.cjs::buildV2Payload does not produce the v2 shape.',
+          fixable: false,
+          fixed: null,
+        };
+      }
+    }
+  } catch (err) {
+    return {
+      id: 'agentrun_v2_alignment',
+      label: 'AgentRun v2 alignment',
+      status: 'warn',
+      message: `buildV2Payload probe failed: ${err.message}`,
+      fixable: false,
+      fixed: null,
+    };
+  }
+
+  return {
+    id: 'agentrun_v2_alignment',
+    label: 'AgentRun v2 alignment',
+    status: 'ok',
+    message: `migration 77 + ${V2_REQUIRED_FIELD_NAMES.length} v2 fields present`,
+    fixable: false,
+    fixed: null,
+  };
+}
+
+// Public CLI docs that MUST NOT hardcode real MarkOS prices until the
+// Pricing Engine (Phase 205) lands. If any of these files contains a concrete
+// dollar amount (e.g., "$49/mo"), the check warns — unless the placeholder
+// sentinel `{{MARKOS_PRICING_ENGINE_PENDING}}` is also present in the file
+// (explicitly TODO-style unresolved). Per D-207-05 + approved decision #6 the
+// placeholder is tolerated through Phase 213.
+const PRICING_DOC_CANDIDATES = Object.freeze([
+  'docs/pricing.md',
+  'docs/commands.md',
+  'docs/environment.md',
+  'docs/errors.md',
+  'README.md',
+]);
+const PRICE_PATTERN = /\$\s?\d{1,3}(?:[,.]\d{2,3})?(?:\s?(?:\/|per)\s?(?:mo|month|yr|year|user|seat))/i;
+
+async function checkPricingPlaceholderPolicy({ cwd }) {
+  const violations = [];
+  for (const rel of PRICING_DOC_CANDIDATES) {
+    const p = path.resolve(cwd, rel);
+    if (!fs.existsSync(p)) continue;
+    let text = '';
+    try { text = fs.readFileSync(p, 'utf8'); } catch { continue; }
+    // If the file already uses the placeholder token, it's compliant by construction.
+    if (text.includes('{{MARKOS_PRICING_ENGINE_PENDING}}')) continue;
+    if (PRICE_PATTERN.test(text)) {
+      violations.push(rel);
+    }
+  }
+
+  if (violations.length === 0) {
+    return {
+      id: 'pricing_placeholder_policy',
+      label: 'Pricing placeholder',
+      status: 'ok',
+      message: 'no hard-coded public prices detected',
+      fixable: false,
+      fixed: null,
+    };
+  }
+  return {
+    id: 'pricing_placeholder_policy',
+    label: 'Pricing placeholder',
+    status: 'error',
+    message: `hard-coded prices in: ${violations.join(', ')}`,
+    hint: 'Replace real MarkOS prices with {{MARKOS_PRICING_ENGINE_PENDING}} until Phase 205 lands an approved PricingRecommendation.',
+    fixable: false,
+    fixed: null,
+  };
+}
+
+const VAULT_FRESHNESS_MAX_AGE_DAYS = 30;
+const VAULT_FRESHNESS_MAX_AGE_MS = VAULT_FRESHNESS_MAX_AGE_DAYS * 24 * 3600 * 1000;
+
+async function checkVaultFreshness({ cwd, nowFn }) {
+  const incomingDir = path.resolve(cwd, 'obsidian', 'work', 'incoming');
+  const brainDir = path.resolve(cwd, 'obsidian', 'brain');
+  if (!fs.existsSync(incomingDir)) {
+    return {
+      id: 'vault_freshness',
+      label: 'Vault freshness',
+      status: 'skip',
+      message: 'obsidian/work/incoming/ absent',
+      fixable: false,
+      fixed: null,
+    };
+  }
+
+  let incoming = [];
+  try {
+    incoming = fs.readdirSync(incomingDir).filter((f) => f.toLowerCase().endsWith('.md'));
+  } catch {
+    incoming = [];
+  }
+
+  let brain = new Set();
+  if (fs.existsSync(brainDir)) {
+    try {
+      brain = new Set(fs.readdirSync(brainDir).filter((f) => f.toLowerCase().endsWith('.md')));
+    } catch { /* empty brain set */ }
+  }
+
+  const now = (typeof nowFn === 'function' ? nowFn() : Date.now());
+  const stale = [];
+  for (const f of incoming) {
+    const p = path.join(incomingDir, f);
+    let mtimeMs = 0;
+    try { mtimeMs = fs.statSync(p).mtimeMs; } catch { continue; }
+    if (now - mtimeMs < VAULT_FRESHNESS_MAX_AGE_MS) continue;
+    // Heuristic match: incoming doc "16-SAAS-SUITE.md" has a distillation if
+    // brain/ contains ANY file whose kebab-free slug shares significant tokens.
+    const tokens = f.replace(/\.md$/i, '').replace(/^\d+-/, '').split(/[-_]+/).filter(Boolean).map((t) => t.toLowerCase());
+    const hasDistill = [...brain].some((b) => {
+      const slug = b.replace(/\.md$/i, '').toLowerCase();
+      return tokens.some((t) => t.length > 3 && slug.includes(t));
+    });
+    if (!hasDistill) stale.push(f);
+  }
+
+  if (stale.length === 0) {
+    return {
+      id: 'vault_freshness',
+      label: 'Vault freshness',
+      status: 'ok',
+      message: `${incoming.length} incoming docs scanned; all fresh or distilled`,
+      fixable: false,
+      fixed: null,
+    };
+  }
+  return {
+    id: 'vault_freshness',
+    label: 'Vault freshness',
+    status: 'warn',
+    message: `${stale.length} stale incoming docs >${VAULT_FRESHNESS_MAX_AGE_DAYS}d without brain distillation`,
+    hint: `Distill into obsidian/brain/*.md or obsidian/reference/*.md. First: ${stale.slice(0, 3).join(', ')}${stale.length > 3 ? ', …' : ''}`,
+    fixable: false,
+    fixed: null,
+  };
+}
+
 // ─── Orchestrator ──────────────────────────────────────────────────────────
 
 async function runChecks(opts = {}) {
@@ -443,6 +698,13 @@ async function runChecks(opts = {}) {
   results.push(await checkServerReachable({ httpModule, timeoutMs }));
   results.push(await checkSupabaseConnectivity());
 
+  // Plan 204-13: 3 v2 compliance checks.
+  const runsModule = opts.runsModule;
+  const nowFn = opts.nowFn;
+  results.push(await checkAgentrunV2Alignment({ cwd, runsModule }));
+  results.push(await checkPricingPlaceholderPolicy({ cwd }));
+  results.push(await checkVaultFreshness({ cwd, nowFn }));
+
   return results;
 }
 
@@ -460,6 +722,13 @@ module.exports = {
     checkKeytarAvailable,
     checkServerReachable,
     checkSupabaseConnectivity,
+    // Plan 204-13 v2 compliance checks.
+    checkAgentrunV2Alignment,
+    checkPricingPlaceholderPolicy,
+    checkVaultFreshness,
   },
   _compareSemver: compareSemver,
+  _V2_REQUIRED_FIELD_NAMES: V2_REQUIRED_FIELD_NAMES,
+  _VAULT_FRESHNESS_MAX_AGE_DAYS: VAULT_FRESHNESS_MAX_AGE_DAYS,
+  _PRICING_DOC_CANDIDATES: PRICING_DOC_CANDIDATES,
 };
