@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Executing Phase 204
-last_updated: "2026-04-24T14:00:00.000Z"
+last_updated: "2026-04-24T15:30:00.000Z"
 progress:
   total_phases: 14
   completed_phases: 4
   total_plans: 105
-  completed_plans: 45
+  completed_plans: 46
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -16,8 +16,8 @@ progress:
 ## Current Position
 
 Phase: 204 (cli-markos-v1-ga) — EXECUTING
-Plan: 8 of 13 COMPLETE — **WAVE 3 lead shipped.** `markos status` ships the 4-panel operator-self-serve dashboard (subscription + quota + active rotations + recent runs) with TTY unicode boxes + progress bars + green/yellow/red thresholds + --watch 5s refresh + `status run <id>` single-run detail via SSE one-frame read. `lib/markos/cli/status.cjs` + TS twin expose `aggregateStatus` with safe-require cross-phase imports (rotation.cjs, metrics.cjs, runs.cjs) so panels degrade independently. `GET /api/tenant/status` (no role gate; any member; ?runs=N clamp 1..50). F-105 contract COMPLETED — x-markos-phase: 204-08-PLAN placeholder removed; StatusEnvelope + 4 sub-panel schemas (StatusSubscriptionPanel / StatusQuotaPanel / StatusRotationRow / StatusRecentRunRow) fully specified. 19 new tests green + zero regression (222 total CLI tests green). openapi: 69 flows / 112 paths.
-Next: Wave 3 continues — 204-09 (distribution), 204-10 (markos doctor), 204-11..13 remain.
+Plan: 9 of 13 COMPLETE — **WAVE 3 CLOSED; 11/11 CLI commands functional.** `markos doctor` ships 9-check diagnose-and-fix CLI with `--check-only` CI gate (zero FS mutation, exit 1 on any error) + `--fix` auto-remediation (filesystem-only; NEVER auto-runs login per T-204-09-01) + `--json` for scripting + brew-doctor-style unicode dashboard. 9 checks: node_version / config_dir / active_token / token_valid / markos_local_dir / gitignore_protected / keytar_available / server_reachable / supabase_connectivity (skip→Phase 206). `bin/lib/cli/doctor-checks.cjs` exposes `runChecks({ fix, checkOnly, cwd })`; orchestrator-side safety dominance coerces `effectiveFix = fix && !checkOnly` before dispatch (T-204-09-06 mitigation). `bin/install.cjs::applyGitignoreProtections` exported for doctor reuse (no duplication). 22 new tests green (13 doctor-checks + 9 CLI) + zero regression on 204-01..08. Wave 4 (distribution 204-10..12 + v2 compliance 204-13) is feature-complete-ready.
+Next: Wave 4 — 204-10 (Homebrew), 204-11 (Scoop), 204-12 (Release CI + docs), 204-13 (v2 compliance gap-closure).
 
 ## Phase 204 Plan Progress
 
@@ -29,8 +29,8 @@ Next: Wave 3 continues — 204-09 (distribution), 204-10 (markos doctor), 204-11
 - [x] 204-06: markos run + SSE watch — migration 75 + runs lib (5 primitives) + 3 endpoints + CLI + F-103 merged (4 paths) + 40 tests (2026-04-24)
 - [x] 204-07: markos env (list/pull/push/delete) — migration 76 (pgcrypto) + env lib (6 exports) + 4 endpoints + CLI + F-104 (4 paths) + 35 tests — **Wave 2 CLOSED** (2026-04-24)
 - [x] 204-08: markos status — aggregateStatus library + TS twin + /api/tenant/status + status.cjs CLI with --watch + status run <id> + F-105 completion (5 schemas) + 19 tests — **Wave 3 LEAD** (2026-04-24)
-- [ ] 204-09: distribution (npm/Homebrew/Scoop)
-- [ ] 204-10: markos doctor
+- [x] 204-09: markos doctor — 9-check doctor-checks library + CLI with --check-only CI gate + --fix auto-remediation + applyGitignoreProtections export + 22 tests — **Wave 3 CLOSED; 11/11 CLI commands functional** (2026-04-24)
+- [ ] 204-10: distribution (Homebrew)
 - [ ] 204-11: security hardening + E2E
 - [ ] 204-12: v2 doctrine compliance gap-closure
 - [ ] 204-13: (reserved)
