@@ -6,7 +6,7 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 const { execFileSync } = require('node:child_process');
 
-const MIN_NODE_VERSION = '20.16.0';
+const MIN_NODE_VERSION = '22.0.0';
 
 function compareSemver(a, b) {
   const pa = String(a).split('.').map((part) => Number.parseInt(part, 10) || 0);
@@ -78,6 +78,18 @@ const COMMAND_ALIASES = Object.freeze({
   'vault:review': Object.freeze({ command: 'vault:open', vaultFamily: 'reviews' }),
   'vault:reviews': Object.freeze({ command: 'vault:open', vaultFamily: 'reviews' }),
   generate: Object.freeze({ command: 'generate' }),
+  // Phase 204 Plan 01: 10 new operator subcommands. Stubs ship in this plan;
+  // business logic lands in 204-02 through 204-11.
+  doctor:  Object.freeze({ command: 'doctor' }),
+  env:     Object.freeze({ command: 'env' }),
+  eval:    Object.freeze({ command: 'eval' }),
+  init:    Object.freeze({ command: 'init' }),
+  keys:    Object.freeze({ command: 'keys' }),
+  login:   Object.freeze({ command: 'login' }),
+  plan:    Object.freeze({ command: 'plan' }),
+  run:     Object.freeze({ command: 'run' }),
+  status:  Object.freeze({ command: 'status' }),
+  whoami:  Object.freeze({ command: 'whoami' }),
 });
 
 const VALID_PRESET_BUCKETS = Object.freeze(['b2b-saas', 'dtc', 'agency', 'local-services', 'solopreneur']);
@@ -90,6 +102,12 @@ const VALUE_FLAGS = Object.freeze({
   '--month': 'month',
   '--export': 'exportFormat',
   '--preset': 'preset',
+  // Phase 204 Plan 01: CLI-wide value flags.
+  '--token': 'token',
+  '--format': 'format',
+  '--tenant': 'tenant',
+  '--timeout': 'timeout',
+  '--draft': 'draft',
 });
 
 const BOOLEAN_FLAGS = Object.freeze({
@@ -108,6 +126,17 @@ const BOOLEAN_FLAGS = Object.freeze({
   '--home': Object.freeze({ key: 'vaultOpenTarget', value: 'home' }),
   '--cli-only': Object.freeze({ key: 'cliOnly', value: true }),
   '--minimal': Object.freeze({ key: 'minimalOnly', value: true }),
+  // Phase 204 Plan 01: CLI-wide boolean flags.
+  '--json': Object.freeze({ key: 'json', value: true }),
+  '--watch': Object.freeze({ key: 'watch', value: true }),
+  '--no-watch': Object.freeze({ key: 'watch', value: false }),
+  '--force': Object.freeze({ key: 'force', value: true }),
+  '--check-only': Object.freeze({ key: 'checkOnly', value: true }),
+  '--diff': Object.freeze({ key: 'diff', value: true }),
+  '--merge': Object.freeze({ key: 'merge', value: true }),
+  '--debug': Object.freeze({ key: 'debug', value: true }),
+  '--no-browser': Object.freeze({ key: 'noBrowser', value: true }),
+  '--quiet': Object.freeze({ key: 'quiet', value: true }),
 });
 
 const SUPPORTED_INSTALL_PROFILES = Object.freeze(['full', 'cli', 'minimal']);
@@ -138,6 +167,16 @@ function setInstallProfile(parsed, profile, source) {
   }
 }
 
+// Phase 204 Plan 01: commands that interpret --profile as CLI auth profile
+// (not legacy install profile). These dispatch to bin/commands/*.cjs.
+const CLI_OPERATOR_COMMANDS = Object.freeze(new Set([
+  'init', 'plan', 'run', 'eval', 'login', 'keys', 'whoami', 'env', 'status', 'doctor',
+]));
+
+function isCliOperatorCommand(parsed) {
+  return CLI_OPERATOR_COMMANDS.has(parsed.command);
+}
+
 function applyCommandAlias(parsed, token) {
   const alias = COMMAND_ALIASES[token];
   if (!alias) {
@@ -153,11 +192,24 @@ function applyInlineFlag(parsed, token) {
     ['--provider=', 'provider'],
     ['--month=', 'month'],
     ['--export=', 'exportFormat'],
+    // Phase 204 Plan 01: operator value flags accept inline = form.
+    ['--token=', 'token'],
+    ['--format=', 'format'],
+    ['--tenant=', 'tenant'],
+    ['--timeout=', 'timeout'],
+    ['--draft=', 'draft'],
   ];
 
   if (token.startsWith('--profile=')) {
     const requested = token.slice('--profile='.length);
-    setInstallProfile(parsed, normalizeInstallProfile(requested), '--profile');
+    // Phase 204 Plan 01: --profile is dual-purpose. For CLI operator commands
+    // (init/login/run/etc.) it names an auth profile; otherwise legacy install
+    // profile (full/cli/minimal).
+    if (isCliOperatorCommand(parsed)) {
+      parsed.profile = requested || null;
+    } else {
+      setInstallProfile(parsed, normalizeInstallProfile(requested), '--profile');
+    }
     return true;
   }
 
@@ -178,7 +230,12 @@ function applyInlineFlag(parsed, token) {
 
 function applyValueFlag(parsed, token, tokens, index) {
   if (token === '--profile') {
-    setInstallProfile(parsed, normalizeInstallProfile(tokens[index + 1]), '--profile');
+    // Phase 204 Plan 01: --profile is dual-purpose (see applyInlineFlag).
+    if (isCliOperatorCommand(parsed)) {
+      parsed.profile = tokens[index + 1] || null;
+    } else {
+      setInstallProfile(parsed, normalizeInstallProfile(tokens[index + 1]), '--profile');
+    }
     return true;
   }
 
@@ -224,6 +281,22 @@ function parseCliArgs(argv = process.argv.slice(2)) {
     cliOnly: false,
     minimalOnly: false,
     preset: null,
+    // Phase 204 Plan 01: CLI operator defaults.
+    profile: null,
+    token: null,
+    format: null,
+    tenant: null,
+    timeout: null,
+    draft: null,
+    json: false,
+    watch: undefined,
+    force: false,
+    checkOnly: false,
+    diff: false,
+    merge: false,
+    debug: false,
+    noBrowser: false,
+    quiet: false,
   };
 
   const tokens = [...argv];
