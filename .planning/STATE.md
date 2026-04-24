@@ -8,7 +8,7 @@ progress:
   total_phases: 14
   completed_phases: 4
   total_plans: 105
-  completed_plans: 40
+  completed_plans: 41
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -16,15 +16,15 @@ progress:
 ## Current Position
 
 Phase: 204 (cli-markos-v1-ga) — EXECUTING
-Plan: 3 of 13 COMPLETE — API-key CRUD end-to-end landed (4 library primitives + 3 endpoints + F-102 contract + `markos keys list|create|revoke`).
-Next: Wave 1 tail complete; 204-04 (whoami) unblocked and ready — now consumes `resolveKeyByHash` from api-keys.cjs for Bearer-token → tenant/user resolution.
+Plan: 4 of 13 COMPLETE — `markos whoami` end-to-end landed (resolveWhoami library primitive + /api/tenant/whoami dual-auth endpoint + F-105 scaffold + CLI + 17 tests). Wave 1 CLOSED.
+Next: Wave 2 unblocked — 204-05 (init), 204-06 (plan/run SSE), 204-07 (env) can now consume `resolveWhoami` as the canonical Bearer-to-context resolver.
 
 ## Phase 204 Plan Progress
 
 - [x] 204-01: CLI dispatch foundation + shared primitives + 2 migrations + test fixtures (2026-04-23)
 - [x] 204-02: OAuth device flow — 3 endpoints + F-101 contract + `markos login` command + 31 tests (2026-04-23)
 - [x] 204-03: markos keys CRUD — 4 library primitives + 3 endpoints + F-102 + CLI + 31 tests (2026-04-23)
-- [ ] 204-04: markos whoami — consumes http.cjs + output.cjs
+- [x] 204-04: markos whoami — resolveWhoami library + /api/tenant/whoami endpoint + F-105 scaffold + CLI + 17 tests (2026-04-23)
 - [ ] 204-05: markos init
 - [ ] 204-06: markos plan / run (SSE)
 - [ ] 204-07: markos eval
