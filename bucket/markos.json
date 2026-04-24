@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ScoopInstaller/Scoop/master/schema.json",
+  "version": "3.3.0",
+  "description": "Marketing Operating System — developer-native CLI",
+  "homepage": "https://markos.esteban.marketing",
+  "license": "MIT",
+  "depends": "nodejs-lts",
+  "url": "https://registry.npmjs.org/markos/-/markos-3.3.0.tgz",
+  "hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "extract_dir": "package",
+  "post_install": [
+    "npm install --production --prefix \"$dir\""
+  ],
+  "bin": "bin/install.cjs",
+  "checkver": {
+    "url": "https://registry.npmjs.org/markos/latest",
+    "jsonpath": "$.version"
+  },
+  "autoupdate": {
+    "url": "https://registry.npmjs.org/markos/-/markos-$version.tgz",
+    "hash": {
+      "url": "https://registry.npmjs.org/markos/$version"
+    }
+  }
+}
