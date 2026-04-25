@@ -18,23 +18,23 @@ created: 2026-04-24
 
 | Property | Value |
 |----------|-------|
-| **Framework (primary)** | Vitest (Phase 204+ doctrine) |
+| **Framework (primary)** | Node.js `--test` (`npm test`) — D-82 (vitest NOT in package.json) |
 | **Framework (legacy regression)** | Node.js `--test` (`npm test`) |
 | **E2E framework** | Playwright |
 | **Visual regression** | Chromatic via Storybook |
 | **LLM testing** | Vercel AI Gateway with mock provider for DealBrief tests |
 | **Vitest config** | inherited from P221-P225 Wave 0 |
 | **Playwright config** | inherited from P221-P225 Wave 0 |
-| **Quick run command** | `vitest run test/sales/` |
-| **Full suite command** | `vitest run && npm test && npx playwright test --grep sales` |
+| **Quick run command** | `node --test test/sales/` |
+| **Full suite command** | `npm test` (Node test runner — see D-82) |
 | **Estimated runtime** | ~150s quick, ~13 min full |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** `vitest run test/sales/<slice-domain>`
-- **After every plan wave:** `vitest run test/sales/ && npm test`
+- **After every task commit:** `node --test test/sales/<slice-domain>`
+- **After every plan wave:** `node --test test/sales/ && npm test`
 - **Before `/gsd:verify-work`:** Full suite (Vitest + node --test + Playwright + Chromatic) green
 - **Max feedback latency:** 150s (quick), 13 min (full)
 
@@ -46,7 +46,7 @@ created: 2026-04-24
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 226-NN-MM | NN | W | REQ-XX | unit/integration/contract/regression/negative/e2e | `vitest run test/sales/<file>.test.ts` | ⬜ TBD | ⬜ pending |
+| 226-NN-MM | NN | W | REQ-XX | unit/integration/contract/regression/negative/e2e | `node --test test/sales/<file>.test.ts` | ⬜ TBD | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 

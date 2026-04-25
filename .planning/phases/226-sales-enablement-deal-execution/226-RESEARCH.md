@@ -71,7 +71,7 @@
 - LLM provider for DealBrief gen (recommend Vercel AI Gateway + claude-sonnet-4-6, mirror P225 pattern).
 - deal_health_signals composite weights (start with equal-weighted; tune per P225 anomaly feedback).
 - ISR cache TTL per artifact_kind in DealRoom.
-- share_link_token format (recommend HMAC-signed UUID with tenant prefix).
+- share_link_token format -- LOCKED per D-86 (HMAC-signed opaque TEXT, scoped per-deal-room, key-rotation aware). NOT operator discretion.
 
 ### Deferred Ideas (OUT OF SCOPE)
 - Full forecast model (probability + commit/best-case/worst-case) — P225 owns forecast.
@@ -735,7 +735,7 @@ lib/markos/sales/
 **When to use:** Every mutation that produces a customer-visible artifact.
 
 ```typescript
-// Source: D-25..D-28 + lib/markos/crm/copilot.ts createApprovalPackage pattern [VERIFIED: codebase read]
+// Source: D-25..D-28 + lib/markos/crm/copilot.ts buildApprovalPackage pattern [VERIFIED: codebase read]
 export type ApprovalClass = 'internal_auto' | 'customer_facing_required';
 
 export function resolveApprovalClass(artifactKind: SalesArtifactKind): ApprovalClass {
@@ -752,8 +752,8 @@ export async function gateApproval(
   if (cls === 'internal_auto') {
     return { approved: true, approval_ref: null };
   }
-  // Delegate to P105 createApprovalPackage
-  const pkg = await createApprovalPackage({ kind: artifactKind, payload: mutationPayload, requested_by: actorId });
+  // Delegate to P105 buildApprovalPackage
+  const pkg = await buildApprovalPackage({ kind: artifactKind, payload: mutationPayload, requested_by: actorId });
   return { approved: false, approval_ref: pkg.approval_id };
 }
 ```
@@ -857,7 +857,7 @@ export function assertProofPackFresh(proofPack: { freshness_status: string }): v
 | Pricing/claim/competitor scan | Custom content scanner | `lib/markos/channels/templates/content-classifier.ts` (P223 D-16) | Classifier already handles pricing variables + claim refs + competitor name detection |
 | BotID verification | Custom bot detection | `lib/markos/auth/botid.ts` (P201) | Proven; Vercel-integrated; fail-closed already implemented |
 | Rate-limit for share endpoint | Custom IP limiter | `lib/markos/auth/rate-limit.ts` (P201) + Edge Config | hashIp + windowStart already in project; Edge Config windows |
-| Approval routing | Custom approval flows | `lib/markos/crm/copilot.ts::createApprovalPackage` (P105) + P208 Approval Inbox | P105 approval-package factory is the canonical approval entry point |
+| Approval routing | Custom approval flows | `lib/markos/crm/agent-actions.ts::buildApprovalPackage` (P105) + P208 Approval Inbox | P105 approval-package factory is the canonical approval entry point |
 | AgentRun wrapper for generation | Custom run management | `markos_agent_runs` (P207) + run-engine.cjs | AgentRun already handles state machine, DAG, retry, audit, cost |
 | share_link_token signing | Custom signing scheme | `node:crypto` HMAC-SHA256 + Edge Config key | No new dependency; constant-time compare already safe pattern |
 | cdp_events emit | Custom event bus | `cdp_events` (P221 D-08) fan-out pattern | All commercial engines use same event table; P225 forecast reads from there |
@@ -876,7 +876,7 @@ export function assertProofPackFresh(proofPack: { freshness_status: string }): v
 |----------|--------------------|-----|
 | P205 PricingRecommendation | `quotes.pricing_recommendation_id` FK; `quotes.pricing_recommendation_snapshot` JSONB frozen at send | `pricing_context_id` ref on deal_briefs + proposal_supports; never own pricing logic |
 | P207 AgentRun | Wraps DealBrief LLM generation; `deal_briefs.generated_by_run_id` FK | `createRunEnvelope` + `assertTransitionAllowed` from run-engine.cjs |
-| P208 Approval Inbox | Approval entries: proposal_publish, proofpack_approve, deal_room_enable_share, quote_send, customer_dealbrief_publish, handoff_acknowledge | `createApprovalPackage` from `lib/markos/crm/copilot.ts` |
+| P208 Approval Inbox | Approval entries: proposal_publish, proofpack_approve, deal_room_enable_share, quote_send, customer_dealbrief_publish, handoff_acknowledge | `buildApprovalPackage` from `lib/markos/crm/copilot.ts` |
 | P209 EvidenceMap | `evidence_refs[]` on battlecards, proof_packs, deal_briefs, objection_library_entries; claim TTL freshness; per-clause audit in DealBrief | P209 freshness audit cron → fires freshness_status updates |
 | P212 LearningCandidate | WinLossRecord close → emit LearningCandidate | `winloss/learning-emit.ts` → P212 candidate creation |
 | P221 cdp_events | deal_health_signals emit + WinLossRecord emit + DealRoom view tracking events | `event_domain='sales'`; `source_event_ref` thread |
@@ -1144,20 +1144,20 @@ export function assertProofPackFresh(proofPack: { freshness_status: string }): v
 |----------|-------|
 | Framework | Vitest ^2.x + Playwright ^1.x + Chromatic (all inherited from P221 Wave 0) |
 | Config file | `vitest.config.ts` (Wave 0 if absent) |
-| Quick run command | `vitest run --reporter=verbose test/vitest/sales/` |
-| Full suite command | `vitest run --coverage && playwright test && chromatic` |
+| Quick run command | `npm test -- test/sales/` (Node test runner) |
+| Full suite command | `npm test && chromatic` (D-82: no playwright/coverage/vitest scripts in package.json) |
 
 ### Phase Requirements → Test Map
 
 | Req ID | Behavior | Test Type | Automated Command | File Exists? |
 |--------|----------|-----------|-------------------|-------------|
-| SEN-01 | Battlecard + ProofPack + ObjectionLibrary CRUD | unit | `vitest run test/vitest/sales/battlecard.test.ts` | ❌ Wave 0 |
-| SEN-02 | DealBrief inherits Customer360 + pricing context | unit | `vitest run test/vitest/sales/deal-brief.test.ts` | ❌ Wave 0 |
-| SEN-03 | Freshness-aware proof assembly; approval gate | unit | `vitest run test/vitest/sales/proof-pack.test.ts` | ❌ Wave 0 |
-| SEN-04 | WinLossRecord emits cdp_events + LearningCandidate | unit | `vitest run test/vitest/sales/winloss.test.ts` | ❌ Wave 0 |
-| SEN-05 | DealBrief auto-draft on lifecycle hook; approval flow | integration | `vitest run test/vitest/sales/deal-brief-lifecycle.test.ts` | ❌ Wave 0 |
-| EVD-02 | Stale ProofPack blocks customer-facing render | unit | `vitest run test/vitest/sales/proof-pack-render.test.ts` | ❌ Wave 0 |
-| EVD-06 | Quote immutability; pricing_recommendation_snapshot frozen | unit | `vitest run test/vitest/sales/quote-immutability.test.ts` | ❌ Wave 0 |
+| SEN-01 | Battlecard + ProofPack + ObjectionLibrary CRUD | unit | `node --test test/vitest/sales/battlecard.test.ts` | ❌ Wave 0 |
+| SEN-02 | DealBrief inherits Customer360 + pricing context | unit | `node --test test/vitest/sales/deal-brief.test.ts` | ❌ Wave 0 |
+| SEN-03 | Freshness-aware proof assembly; approval gate | unit | `node --test test/vitest/sales/proof-pack.test.ts` | ❌ Wave 0 |
+| SEN-04 | WinLossRecord emits cdp_events + LearningCandidate | unit | `node --test test/vitest/sales/winloss.test.ts` | ❌ Wave 0 |
+| SEN-05 | DealBrief auto-draft on lifecycle hook; approval flow | integration | `node --test test/vitest/sales/deal-brief-lifecycle.test.ts` | ❌ Wave 0 |
+| EVD-02 | Stale ProofPack blocks customer-facing render | unit | `node --test test/vitest/sales/proof-pack-render.test.ts` | ❌ Wave 0 |
+| EVD-06 | Quote immutability; pricing_recommendation_snapshot frozen | unit | `node --test test/vitest/sales/quote-immutability.test.ts` | ❌ Wave 0 |
 | QA-01..15 | Full 15-gate quality baseline | all | Full suite command above | varies |
 
 ### Coverage Targets
@@ -1190,8 +1190,8 @@ export function assertProofPackFresh(proofPack: { freshness_status: string }): v
 
 ### Sampling Rate
 
-- **Per task commit:** `vitest run test/vitest/sales/ --reporter=dot`
-- **Per wave merge:** `vitest run --coverage && playwright test sales/`
+- **Per task commit:** `node --test test/vitest/sales/ --reporter=dot`
+- **Per wave merge:** `npm test` (D-82)
 - **Phase gate:** Full suite green before `/gsd-verify-work`
 
 ---
@@ -1291,30 +1291,30 @@ export function assertProofPackFresh(proofPack: { freshness_status: string }): v
 | A21 | P209 EvidenceMap is live for ProofPack + Battlecard claim audit | Environment Availability | Freshness check stubs to "warning + audit" per P225 A21 carry-forward |
 | A22 | P225 narrative gen module is live for DealBrief LLM clause-fill | Environment Availability | Template-only DealBrief (no LLM fill) ships as fallback |
 | A23 | P225 attribution_touches FK target exists for WinLossRecord attribution_touch_ids[] | Schema | Array stored as UUID[]; FK constraint added as post-P225 migration check in 226-01 |
-| A24 | HMAC signing key per tenant available in Edge Config | Security | share_link_token falls back to UUID-only (weaker); operator alert required |
+| A24 | HMAC signing key per tenant available in deal_room_share_signing_keys (D-86) | Security | NO UUID-only fallback (D-87/D-86). When no active key exists, system fails-closed with SHARE_KEY_UNAVAILABLE and route-back. |
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **P225 narrative gen module path**
    - What we know: P225 ships narrative generation under `lib/markos/analytics/narrative/` (planned but not yet in codebase from glob result)
    - What's unclear: Whether the module exists at 226-01 Wave 0 or must be stubbed
-   - Recommendation: 226-01 Wave 0 checks for module presence; if absent, stub `generateDealBriefClauses(context)` that returns template-only content
+   - RESOLVED: 226-01 Wave 0 checks for module presence; if absent, stub `generateDealBriefClauses(context)` that returns template-only content (A22 fallback). Plan 01 Task 0.5 preflight gate (D-87) hard-fails if P225 module roots absent.
 
 2. **P205 PricingRecommendation table availability**
    - What we know: P205 is planned but its execution order relative to P226 in the full roadmap is: 204 → 205 → ... → 221 → 226
    - What's unclear: Whether P205 will be complete when P226 executes in actual sprint order
-   - Recommendation: Quote ships with `pricing_recommendation_id = null` and `pricing_recommendation_snapshot = '{"pending":"{{MARKOS_PRICING_ENGINE_PENDING}}"}'` as valid placeholder state; no blocking dependency
+   - RESOLVED: Quote ships with `pricing_recommendation_id = null` and `pricing_recommendation_snapshot = '{"pending":"{{MARKOS_PRICING_ENGINE_PENDING}}"}'` as valid placeholder state per D-83 immutability + Pricing Engine Canon; no blocking dependency. A13 fallback in lib/markos/sales/pricing-recommendation-adapter.ts emits placeholder snapshot + warning audit. Plan 01 Task 0.5 preflight gate ensures P205 has landed before Wave 3.
 
 3. **Edge Config HMAC key rotation strategy**
    - What we know: Edge Config is available; D-54 requires per-tenant signing key
    - What's unclear: Whether Edge Config supports per-tenant key namespacing at volume
-   - Recommendation: Key stored as `sales.share_link_signing_key.{tenant_id}` in Edge Config; fallback to shared key with tenant_id embedded in token payload for isolation
+   - RESOLVED: Per D-86, key rotation lives in DB (deal_room_share_signing_keys table; migration 159) with 90-day cadence + 24h grace. Token format: `dr_v{key_version}_{base64url(deal_room_id)}_{base64url(hmac_sha256(deal_room_id, signing_key_v{key_version}))}`. Edge Config used for runtime read-through cache only; DB is canonical. NO UUID-only fallback (D-87/D-86). When no active key exists, system fails-closed with SHARE_KEY_UNAVAILABLE.
 
 4. **DealRoom ISR cache TTL per artifact_kind**
    - What we know: D-31 specifies cacheTag per tenant+deal_room; D-C discretion for TTL per artifact_kind
-   - Recommendation: proof_pack=1h, deal_brief=30min, battlecard=1h, quote=15min, proposal_support=30min, custom=5min. Higher-volatility objects (quote, deal_brief) get shorter TTL.
+   - RESOLVED: proof_pack=1h, deal_brief=30min, battlecard=1h, quote=15min, proposal_support=30min, custom=5min. Higher-volatility objects (quote, deal_brief) get shorter TTL. Implemented in lib/markos/sales/deal-rooms/isr-cache.ts ISR_TTL_PER_ARTIFACT_KIND constant.
 
 ---
 
