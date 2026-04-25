@@ -449,12 +449,22 @@ Plans:
 **Artifacts:** `225-CONTEXT.md`, `225-RESEARCH.md`
 
 ### Phase 226: Sales Enablement and Deal Execution
-**Goal:** Add battlecards, objection intelligence, proof packs, proposal support, win/loss capture, and approval-aware deal execution tied back to CRM, Pricing Engine, and evidence.
+**Goal:** Add battlecards, objection intelligence, proof packs, proposal support, win/loss capture, and approval-aware deal execution tied back to CRM, Pricing Engine, and evidence. Ships 15 SOR tables (battlecards, objection libraries/entries/records, proof_packs/versions, deal_briefs, deal_rooms/artifacts/views, proposal_supports, quotes, winloss_records, handoff_records, deal_health_signals), 18 F-ID contracts (F-163..F-180), 13 migrations (146..158), 8 MCP tools, 6 operator UI workspaces, 7 cron handlers, public /share/dr/{token} route with HMAC + BotID + rate-limit + honeypot + 410-on-expiry, class-based approval matrix (D-25..D-28), Quote-as-Snapshot immutability (D-21..D-24), DealBrief auto-draft via P222 lifecycle hook, WinLossRecord required-on-transition with cdp_events emit for P225 + LearningCandidate emit for P212, full tombstone cascade (P221 D-24 → P226 D-56). Zero new dependencies; pure governance layer over P201/P205/P207/P208/P209/P221-P225 infrastructure.
 **Requirements Mapped:** SEN-01..05, CRM-01..05, PRC-01..09, EVD-01..06, QA-01..15
 **Depends on:** Phases 205, 209, 221, 222, 225
-**Status:** Discuss/context/research drafted
+**Status:** 📋 Planned — 7 plans across 5 waves
+**Plans:** 7/7 plans complete
 **DISCUSS:** `.planning/phases/226-sales-enablement-deal-execution/DISCUSS.md`
-**Artifacts:** `226-CONTEXT.md`, `226-RESEARCH.md`
+**Artifacts:** `226-CONTEXT.md`, `226-RESEARCH.md`, `226-VALIDATION.md`
+
+Plans:
+- [ ] 226-01-PLAN.md — Wave 0 fixtures + 10 schema migrations (146-155) + 15 SOR tables + RLS + CHECK constraints + 10 contracts (F-163..F-172) + lib/markos/sales/contracts.ts (16 enum constants) + 226-VALIDATION.md per-task map (Wave 1)
+- [ ] 226-02-PLAN.md — Battlecard + ObjectionLibrary + ProofPack engine; EvidenceMap claim TTL freshness inheritance (D-17), ProofPack snapshot-at-first-approval + render-time fail-closed (D-11..D-13), stale-blocking helpers consumed by 226-04/226-05; 3 contracts pre-staged (F-173/F-177/F-178); A4/A21 fallbacks (Wave 2 parallel)
+- [ ] 226-03-PLAN.md — DealBrief auto-draft (D-14) + handoff_record + deal_health_signals composite (D-37..D-39) + lifecycle hook + AgentRun/narrative/cdp-events adapters + migration 156 (hot-path indexes); 2 contracts (F-176/F-179); A3/A4/A5/A22 fallbacks (Wave 2 parallel)
+- [ ] 226-04-PLAN.md — ProposalSupport + Quote-as-Snapshot (D-21..D-24) + class-based approval gate (D-25..D-28) + content classifier integration + pricing-recommendation-adapter (A13 fallback); zero new contracts (Wave 3 parallel)
+- [ ] 226-05-PLAN.md — DealRoom + HMAC share-token (D-54) + BotID + rate-limit + honeypot + ip_hash view tracker + ISR cacheTag + WinLossRecord (D-40..D-42) + tombstone cascade (D-56) + Next.js /share/dr/[token] public route; 2 contracts (F-174/F-180; full 18/18 P226 allocation); A14/A15/A16/A22/A23/A24 fallbacks (Wave 3 parallel)
+- [ ] 226-06-PLAN.md — 49 API routes under /v1/sales/* + 8 MCP tools (D-43, D-44, D-45) + cross-tenant denial + OpenAPI parity test + lib/markos/sales/api-helpers.ts; A2 fallback (Wave 4)
+- [ ] 226-07-PLAN.md — 6 UI workspaces (D-46) + Approval Inbox sales extensions (D-48) + Morning Brief sales section (D-49) + 7 cron handlers (D-50..D-53) + RLS hardening migration 157 + OpenAPI regen migration 158 + 6 Playwright specs + 6 Chromatic stories × 4 variants + RLS suite full + tombstone cascade end-to-end + legacy regression matrix + llms.txt update (Wave 5 closeout)
 
 ### Phase 227: Ecosystem, Partner, Community, and Developer Growth
 **Goal:** Build governed ecosystem distribution across marketplace listings, partners, affiliates, referrals, community, and developer growth.
