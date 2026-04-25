@@ -467,12 +467,22 @@ Plans:
 - [ ] 226-07-PLAN.md — 6 UI workspaces (D-46) + Approval Inbox sales extensions (D-48) + Morning Brief sales section (D-49) + 7 cron handlers (D-50..D-53) + RLS hardening migration 157 + OpenAPI regen migration 158 + 6 Playwright specs + 6 Chromatic stories × 4 variants + RLS suite full + tombstone cascade end-to-end + legacy regression matrix + llms.txt update (Wave 5 closeout)
 
 ### Phase 227: Ecosystem, Partner, Community, and Developer Growth
-**Goal:** Build governed ecosystem distribution across marketplace listings, partners, affiliates, referrals, community, and developer growth.
-**Requirements Mapped:** ECO-01..05, SG-04, SG-06, SG-09..12, QA-01..15
-**Depends on:** Phases 220, 221, 222, 225
-**Status:** Discuss/context/research drafted
+**Goal:** Ship the Ecosystem Engine: 12 SOR tables (integration_listings + listing_views + install_requests + affiliate_programs + fraud_signals + payout_credits + payout_export_batches + community_signals + developer_events + certification_records + co_sell_opportunities) + P220 ALTER TABLE additive (5 SaaS-mode tables gain business_mode discriminator + ecosystem columns) + P225 attribution_touches FK extension (single ledger ECO-05) + P221 ConsentState extend (community_signal_processing). 18 contracts F-181..F-198. 13 migrations 159..171. Plugin registry stays runtime-only with read-through adapter (D-09..D-11). Certification first-class state machine + criteria_checks + recertification cron. 6 webhook adapters (5 HMAC-SHA256 + 1 Discord Ed25519) + dedupe + ConsentState gate. CoSellOpportunity links P222 Opportunity + P224 LaunchSurface(partner_pack) + P226 DealRoom + handoff_record. Manual CSV payout export — NO Stripe Connect/KYC/1099 in v1. {{MARKOS_PRICING_ENGINE_PENDING}} on every payout/commission copy path. Read-write `/v1/ecosystem/*` API + 8 MCP tools + 7 UI workspaces + public marketplace + dev-portal + sitemap + JSON-LD + BotID + rate-limit + honeypot.
+**Requirements Mapped:** ECO-01..05, SG-04, SG-06, SG-09..12 (carry-forward via P220 extension), QA-01..15
+**Depends on:** Phases 220, 221, 222, 225 (+ 226 deal_rooms/handoff_records/winloss_records soft refs; 205 PricingRecommendation soft ref via A13)
+**Status:** 📋 Planned — 7 plans across 5 waves
+**Plans:** 7/7 plans complete
 **DISCUSS:** `.planning/phases/227-ecosystem-partner-community-developer-growth/DISCUSS.md`
-**Artifacts:** `227-CONTEXT.md`, `227-RESEARCH.md`
+**Artifacts:** `227-CONTEXT.md`, `227-RESEARCH.md`, `227-VALIDATION.md`
+
+Plans:
+- [ ] 227-01-PLAN.md — Schema foundation (migrations 159-165) + 12 SOR tables + P220 ALTER TABLE additive + 8 base contracts F-181..F-188 + plugin-registry read-through adapter + 12 fixture factories + 14 schema tests + RLS isolation suite (Wave 1)
+- [ ] 227-02-PLAN.md — IntegrationListing + listing_views + install_requests + plugin manifest render fail-closed + ISR cacheTag + double-gated public filter + install bypass blocked; F-189/F-190 (Wave 2 parallel)
+- [ ] 227-03-PLAN.md — PartnerProfile P220 extension + CertificationRecord state machine (12 transitions + revoked terminal) + criteria_templates (Pitfall 12) + recertification cron daily 03:00 UTC (11mo+12mo) + listing hide-on-expire + migration 168 hot-path indexes; F-191 (Wave 2 parallel)
+- [ ] 227-04-PLAN.md — Referral + Affiliate + Fraud (8 evaluators) + payout-credits ledger (5 statuses + dispute) + manual CSV export weekly Sun 04:00 UTC + per-currency batches + {{MARKOS_PRICING_ENGINE_PENDING}} placeholder enforcement + commission_share guard (D-65); F-192/F-193 (Wave 3 parallel)
+- [ ] 227-05-PLAN.md — Migration 166 P221 ConsentState extend + 6 webhook adapters (5 HMAC-SHA256 + 1 Discord Ed25519) + signature verify + dedupe + ConsentState gate + decision_rules routing (6 action_kinds + spike debounce) + DeveloperEvent cdp_events fan-out (single transaction fail-closed) + tombstone scrub + poll-fallback cron; F-194/F-195 (Wave 3 parallel)
+- [ ] 227-06-PLAN.md — Migration 167 P225 attribution_touches extend (6 FK columns + at-most-one CHECK + channel ENUM extend) + CoSellOpportunity state machine (7 transitions) + commission immutability (commission_locked_at) + P222 lifecycle hook in-transaction (Pitfall 8) + ecosystem-attribution single ledger; F-196/F-197 (Wave 4)
+- [ ] 227-07-PLAN.md — Full /v1/ecosystem/* API + 2 public endpoints + 8 MCP tools + 7 UI workspaces + 3 public pages (marketplace + developers + partners) + sitemap.xml + robots.txt + JSON-LD SoftwareApplication + Approval Inbox 8 entry kinds + Morning Brief 5 sections + 4 observability crons + RLS hardening (migration 170) + OpenAPI regen (171) + 7 Playwright + 8 Chromatic + tombstone cascade end-to-end + legacy regression + closeout; F-198 (Wave 5)
 
 ### Phase 228: Commercial OS Integration and Future-Readiness Closure
 **Goal:** Close the lane by enforcing shared contracts, API/MCP/UI parity, migration posture, provider replaceability, testing obligations, and no-obsolescence guarantees across the full commercial stack.

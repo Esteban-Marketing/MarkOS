@@ -42,11 +42,27 @@ created: 2026-04-25
 
 ## Per-Task Verification Map
 
-> Planner populates per task. Template below.
+> Populated post-revision. ⬜ pending until each task ships.
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 227-NN-MM | NN | W | REQ-XX | unit/integration/contract/regression/negative/e2e | `vitest run test/ecosystem/<file>.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-01-1 | 01 | 1 | ECO-01..05 | unit/integration | baseline-check + RLS + ALTER TABLE smoke (per Task 1 verify) | ⬜ TBD | ⬜ pending |
+| 227-01-2 | 01 | 1 | ECO-01..05 | unit/contract | `npx vitest run test/ecosystem/adapters/plugin-registry.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-01-3 | 01 | 1 | ECO-01..05 | unit/integration/RLS | `npx vitest run test/ecosystem/schema/` | ⬜ TBD | ⬜ pending |
+| 227-02-1 | 02 | 2 | ECO-01, ECO-04 | unit/integration | `npx vitest run test/ecosystem/listings/public-filter.test.ts test/ecosystem/listings/listing-views-aggregation.test.ts test/ecosystem/listings/isr-invalidation.test.ts test/ecosystem/listings/plugin-manifest-render.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-02-2 | 02 | 2 | ECO-01, ECO-04 | unit/state-machine | `npx vitest run test/ecosystem/listings/install-request.test.ts test/ecosystem/listings/install-bypass-blocked.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-03-1 | 03 | 2 | ECO-01, ECO-04 | unit/state-machine/contract | `npx vitest run test/ecosystem/certifications/state-machine.test.ts test/ecosystem/certifications/criteria-checks.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-03-2 | 03 | 2 | ECO-01, ECO-04 | unit/integration/cron | `npx vitest run test/ecosystem/partners/ test/ecosystem/certifications/recert-cron.test.ts test/ecosystem/certifications/listing-hide-on-expire.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-04-1 | 04 | 3 | ECO-02, SG-04, SG-09, SG-11 | unit/cron/contract | `npx vitest run test/ecosystem/referrals/qualification-rule.test.ts test/ecosystem/fraud/fraud-evaluator.test.ts test/ecosystem/fraud/fraud-cron.test.ts test/ecosystem/payouts/pricing-placeholder.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-04-2 | 04 | 3 | ECO-02, ECO-05, SG-04 | unit/integration/state-machine | `npx vitest run test/ecosystem/affiliates/commission-evaluator.test.ts test/ecosystem/payouts/payout-ledger.test.ts test/ecosystem/payouts/payout-dispute-flow.test.ts test/ecosystem/payouts/payout-export.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-05-1 | 05 | 3 | ECO-03, SG-06, SG-09 | unit/integration/security | `npx vitest run test/ecosystem/community/webhook-signature-hmac.test.ts test/ecosystem/community/webhook-signature-discord-ed25519.test.ts test/ecosystem/community/signal-dedupe.test.ts test/ecosystem/community/consent-gate.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-05-2 | 05 | 3 | ECO-03, SG-06 | unit/integration/cron | `npx vitest run test/ecosystem/community/signal-routing.test.ts test/ecosystem/community/learning-candidate-emit.test.ts test/ecosystem/community/poll-fallback.test.ts test/ecosystem/developer/developer-event-fanout.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-06-1 | 06 | 4 | ECO-05, SG-10 | unit/integration/contract | `npx vitest run test/ecosystem/attribution/ecosystem-attribution.test.ts test/ecosystem/attribution/channel-enum.test.ts test/ecosystem/attribution/at-most-one-ecosystem-ref.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-06-2 | 06 | 4 | ECO-03, SG-10 | unit/state-machine/integration | `npx vitest run test/ecosystem/co-sell/` | ⬜ TBD | ⬜ pending |
+| 227-07-1 | 07 | 5 | ECO-01..05, SG-04..12, QA-01..15 | unit/integration/contract/RLS/regression | `npx vitest run test/ecosystem/api/ test/ecosystem/mcp/ test/ecosystem/security/ test/regression/ecosystem-legacy.test.ts` | ⬜ TBD | ⬜ pending |
+| 227-07-2a | 07 | 5 | ECO-01, ECO-04, SG-12 | structure/UI | Task 2a inline node verify (UI workspace + public page + sitemap + robots + approval-inbox entry-kind structure) | ⬜ TBD | ⬜ pending |
+| 227-07-2b | 07 | 5 | ECO-01..05, SG-04..12 | e2e/visual/seo | `npx vitest run test/ecosystem/seo/ && npx playwright test tests/ecosystem/ --reporter=line` | ⬜ TBD | ⬜ pending |
+| 227-07-3 | 07 | 5 | ECO-01..05 | checkpoint:human-verify | manual Approval Inbox + cockpit + sitemap inspection | ⬜ TBD | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 

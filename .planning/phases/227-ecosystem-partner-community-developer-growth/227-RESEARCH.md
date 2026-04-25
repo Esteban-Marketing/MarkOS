@@ -1188,24 +1188,24 @@ Note: Vitest + Playwright config already installed from P221 Wave 0 — no new f
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Discord Ed25519 vs HMAC-SHA256**
+1. **Discord Ed25519 vs HMAC-SHA256** — RESOLVED: Discord uses Ed25519 (per Discord developer docs); Edge Config key webhook_discord_public_key_{tenant_id}; 5 other sources HMAC-SHA256.
    - What we know: Discord uses Ed25519 public-key signing (not HMAC) for webhook verification. All other sources use HMAC-SHA256.
    - What's unclear: Whether the per-tenant Edge Config namespace holds a `discord_public_key` (Ed25519 public key) vs a `discord_signing_secret` (HMAC secret).
    - Recommendation: Discord adapter uses `crypto.verify('ed25519', message, publicKey, signature)`. Edge Config key name is `webhook_discord_public_key_{tenant_id}`. Document separately from HMAC adapters.
 
-2. **P220 Table Existence Guarantee**
+2. **P220 Table Existence Guarantee** — RESOLVED: 227-01 Task 1 uses IF EXISTS guard on P220 ALTER TABLE; if P220 not yet executed, 227-01 creates baseline tables with business_mode column from start (saas + ecosystem support).
    - What we know: A25 assumes P220 executed; CONTEXT.md canonical_refs cites P220 as a dependency.
    - What's unclear: Whether P220 plans are complete and the schema is final enough for ALTER TABLE to be safe.
    - Recommendation: Planner should verify P220 plan files before allocating 227-01 wave. If P220 is not yet executed, add a conditional migration check (`IF EXISTS`) to migrations 160+161 to avoid blocking Wave 1.
 
-3. **P225 channel ENUM Type (enum vs CHECK)**
+3. **P225 channel ENUM Type (enum vs CHECK)** — RESOLVED: 227-06 migration 167 uses DO block with runtime detection (pg_type vs CHECK constraint); safer path; works regardless of P225 implementation choice.
    - What we know: D-34 says "channel ENUM already includes 'partner', 'community', 'referral'; add 'marketplace' + 'affiliate' values." P225 CONTEXT.md D-06 defines channel as a CHECK constraint (text column with CHECK).
    - What's unclear: Whether P225 implemented channel as a Postgres ENUM type or a CHECK constraint. ENUM ALTER requires `ALTER TYPE ... ADD VALUE`; CHECK constraint requires DROP+ADD.
    - Recommendation: Migration 167 should use the schema sketch above (DROP + ADD CHECK) as the safer path; add a migration guard that checks existing column type before executing.
 
-4. **Payout Export CSV Storage**
+4. **Payout Export CSV Storage** — RESOLVED: Supabase Storage bucket 'payout-exports' (per-tenant prefix); RLS-protected; rotates via cron monthly cleanup.
    - What we know: D-23 specifies manual CSV export; payout_export_batches.csv_url stores signed URL.
    - What's unclear: Which storage provider (Supabase Storage vs Vercel Blob) and who generates the signed URL.
    - Recommendation: Supabase Storage matches existing pattern from P226 DealRoom artifact storage; signed URL expires in 1 hour; NEVER logged.
