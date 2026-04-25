@@ -488,9 +488,18 @@ Plans:
 **Goal:** Close the lane by enforcing shared contracts, API/MCP/UI parity, migration posture, provider replaceability, testing obligations, and no-obsolescence guarantees across the full commercial stack.
 **Requirements Mapped:** COM-01..06, QA-01..15
 **Depends on:** Phases 221-227
-**Status:** Discuss/context/research drafted
+**Status:** 📋 Planned — 6 plans across 5 waves
+**Plans:** 6/6 plans complete
 **DISCUSS:** `.planning/phases/228-commercial-os-integration-future-readiness/DISCUSS.md`
 **Artifacts:** `228-CONTEXT.md`, `228-RESEARCH.md`
+
+Plans:
+- [ ] 228-01-PLAN.md — Cross-engine commercial contract registry (45 F-IDs across CDP/CRM/EML/MSG/CNV/LCH/ANL/SEN/ECO) + parity verifier CLI + Gate 1 (one identity truth) + Gate 2 (one commercial memory) + Gate 9 (UI/API/MCP parity); extends lib/markos/plugins/registry.js doctrine — no parallel store (Wave 1)
+- [ ] 228-02-PLAN.md — Adapter contract type + swap harness (extends base-adapter.ts) + adapter-registry.json (7 bindings: email, sms, whatsapp, analytics_sink, ecosystem_directory, ecosystem_dev_events, launch_distribution) + migration-manifest.json (9 representative entries) + 2 CLI gates (test-adapter-swap, test-migration-roundtrip) — Gate 7 (no provider lock) + Gate 8 partial (Wave 2 parallel with 04)
+- [ ] 228-03-PLAN.md — Migration manifest expanded to 36 durable-object entries (full coverage across 9 engines) + archival-policy.json (SOC2-I retention floors) + recovery-runbook.json (per-engine restore procedure) + tombstone cascade chains (sales D-56, ecosystem D-65, crm, cdp, consent) + test-archival-recovery CLI — Gate 8 closure (Wave 3)
+- [ ] 228-04-PLAN.md — vitest + playwright wired (research line 25-26: not yet present) + 6 npm scripts + single E2E commercial-evidence-chain Playwright suite (CRM→channel→conversion→analytics→sales→ecosystem) + 4 gate detectors (governed-mutation/passive-system/pricing-bypass/evidence-freshness) + V4.0.0-PHASE-TEST-REQUIREMENTS-MATRIX.md APPENDED Phase 228 detection matrix + verify-test-coverage CLI — Gate 10 + enforcement of Gates 3-6 (Wave 2 parallel with 02)
+- [ ] 228-05-PLAN.md — COM-01..06 + QA-01..15 land in commercial-registry.json (66 total) + build-readiness-matrix.cjs runs all prior gates + emits READINESS-MATRIX.md (9 engine rows × 11 gate columns + 21 cross-cutting requirements + sign-off block) + verify-readiness-matrix.cjs (--strict mode) + human sign-off checkpoint + ROADMAP.md update — final lane closeout per CONTEXT D-30 (Wave 4)
+- [ ] 228-06-PLAN.md — Vault canon sync (obsidian/reference Contracts Registry.md + MarkOS v2 Operating Loop Spec.md per CLAUDE.md source-of-truth precedence) + public docs (llms.txt + docs/cli/commands.md) + 6 commercial:* npm script aliases + STATE.md handoff + MARKOS-INDEX.md drift check + canon-sync test + handoff-closure test (11 assertions) — lane CLOSED (Wave 5)
 
 ### Locked SaaS Decisions (2026-04-16)
 
