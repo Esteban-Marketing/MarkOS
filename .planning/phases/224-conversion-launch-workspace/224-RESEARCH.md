@@ -1,5 +1,13 @@
 # Phase 224: Conversion and Launch Workspace — Research
 
+> **SUPERSEDED 2026-04-25 by 224-CONTEXT.md D-57..D-72:**
+> Sections referencing `app/(public)/`, `route.ts`, `createApprovalPackage`,
+> `vitest`/`playwright`, `xxhash-wasm`, AgentRun bridge stub, and A6 fallback
+> config flag are SUPERSEDED. The canonical architecture is locked in CONTEXT
+> per D-57..D-72. See 224-REVIEWS.md for review-driven decisions.
+> Use CONTEXT.md as authoritative; RESEARCH.md preserved for historical context.
+
+
 **Researched:** 2026-04-24 (refresh — augments 2026-04-23 seed)
 **Domain:** Conversion Engine (block-based ConversionPage + dynamic ConversionForm + CTA + ConversionEvent + native ExperimentSet) AND Launch Engine (LaunchBrief + LaunchSurface + LaunchGate + LaunchRunbook + LaunchOutcome). Public surfaces with BotID + rate-limit + honeypot + ConsentState double-gate. Next.js 16 ISR. Read-write `/v1/conversion/*` + `/v1/launches/*` API + 6 MCP tools.
 **Confidence:** HIGH (all architectural claims verified against: codebase reads, P221/P222/P223 CONTEXT.md, REQUIREMENTS.md, 224-CONTEXT.md 56 locked decisions, Contracts Registry, Database Schema, Testing Environment Plan)
