@@ -149,6 +149,49 @@ P225 is ADDITIVE: existing `lib/markos/crm/reporting.ts` + `lib/markos/crm/attri
 ### Folded Todos
 None — no pending todos matched Phase 225 scope.
 
+### Review-driven decisions (added 2026-04-25 per /gsd-plan-phase 225 --reviews Codex feedback — addresses 9 HIGH + 5 MEDIUM + 1 LOW concerns; see 225-REVIEWS.md)
+
+**Architecture lock (RH1, RH2, RH4, RH7, RM1) — addresses architecture-hallucination pattern:**
+
+- **D-49: Phase 225 architecture is locked to verified codebase shape.** All HTTP route handlers ship under `api/v1/analytics/*.js` legacy convention (mirrors `api/submit.js`, `api/approve.js`, `api/cron/webhooks-rotation-notify.js`). All MCP tools register in `lib/markos/mcp/tools/index.cjs` (extension `.cjs`, NOT `.ts`). All OpenAPI artifact paths target `contracts/openapi.json` (NOT `public/openapi.json`). All test invocations use `npm test` → `node --test test/**/*.test.js` (NOT `vitest run`, NOT `npx playwright`). All auth wrappers call `requireHostedSupabaseAuth({ req, runtimeContext, operation })` from `onboarding/backend/runtime-context.cjs:491`. Service-role Supabase client constructed inline using `createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })` (verified pattern from `api/submit.js:39-43`); NO `serviceRoleClient()` helper exists. Plugin lookups use `resolvePlugin(registry, pluginId)` from `lib/markos/plugins/registry.js:102` (NOT `lookupPlugin`).
+
+- **D-50: package.json scripts pinned by P225.** Only existing scripts referenced: `test`, `chromatic`, `openapi:build` (verified). P225 does NOT add `vitest`, `playwright`, `supabase:gen-types`, or `openapi-generate`. Existing `chromatic` script is acceptable for visual regression. If a future phase needs vitest/playwright, that phase MUST land them as a precondition.
+
+- **D-51: New npm dependencies added by P225 Plan 01 Task 0.5.** `json-logic-js`, `xxhash-wasm`, `@ai-sdk/gateway`. Each dependency has an `npm install` step + `node -e "require(<pkg>)"` smoke verification + `package.json` diff acceptance check.
+
+- **D-52: UI surface writes to existing `app/(markos)/` tree only.** Analytics workspaces ship under `app/(markos)/analytics/` (greenfield subtree owned by P225) alongside the verified existing tree (`crm`, `campaigns`, `icps`, `segments`, `operations`, `mir`, `msp`, `plugins`, `settings`, `status`, `admin`, `company`, `invite`, `oauth`, `login`, `404-workspace`, `_components`, `layout-shell.tsx`, `layout.tsx`, `page.tsx`). P225 does NOT create `app/(markos)/conversion/`, `app/(markos)/launches/`, or any other new top-level Markos route group.
+
+**Greenfield + upstream fail-closed (RH3, RH8, RH9) — addresses soft-degradation pattern:**
+
+- **D-53: lib/markos/{analytics,cdp,crm360,channels,conversion,launches,operating}/* are greenfield trees owned by their respective phases.** Verified `lib/markos/` contains: audit, auth, billing, cli, contracts, crm, governance, identity, llm, mcp, orgs, outbound, packs, plugins, rbac, telemetry, tenant, theme, webhooks. P225 owns and creates `lib/markos/analytics/*` (new). All other listed greenfield trees (`cdp` for P221, `crm360` for P222, `channels` for P223, `conversion` + `launches` for P224, `operating` for the P208 closure phase) MUST be created by their owning phase BEFORE P225 lands. P225 fails closed via `assertUpstreamReady()` preflight (D-54).
+
+- **D-54: Hard upstream-readiness gate (`assertUpstreamReady()`).** Plan 01 Task 0.5 ships `scripts/preconditions/225-check-upstream.cjs` that verifies P209 (`evidence_map`), P211 (`content_strategies`), P212 (`learning_candidates`), P221 (`cdp_events` + `cdp_identity_profiles`), P222 (`crm_opportunities` + `crm_activity` + `lifecycle_transitions`), P223 (`dispatch_events`), P224 (`conversion_events` + `email_campaigns` + `conversion_experiments` + `launch_outcomes`) are all present. Failing any → emits `{ error: UPSTREAM_PHASE_NOT_LANDED, missing: [...], required_phases: [...] }` and non-zero exit. P225 cron handlers, evaluators, generators, UI handlers MUST call `assertUpstreamReady()` at first invocation and throw `UpstreamPhaseNotLandedError(<phase_id>, <reason>)` if upstream missing — NEVER silent degradation.
+
+- **D-55: All P225 evaluators, generators, writeback paths fail-closed when upstream phases absent.** Plan 02 metric resolution: P221 cdp_events absent → throw. Plan 02 freshness-violation evaluator: P208 task primitive absent → throw (NO bridge stub fallback). Plan 03 attribution recompute: P221/P222/P223/P224 events absent → throw. Plan 04 anomaly cron: P221 + metric tables absent → throw. Plan 04 decision evaluators (experiment_winner + pricing_signal): NOT inactive — gated by assertUpstreamReady() and throw. Plan 05 narrative generator: P209 EvidenceMap absent → throw `UpstreamPhaseNotLandedError(P209, evidence_map table required)`. NO "draft with warnings" fallback. NO publish path without claim audit pass. Plan 05 journey materializer: P221 cdp_identity_profiles absent → throw. Plan 06 cross-tenant aggregator: P209 absent → all aggregated_metrics rows have evidence_ref IS NULL AND status='quarantined' (NOT published). Plan 07 API + MCP: every handler invokes requireHostedSupabaseAuth AND assertUpstreamReady before any state read/write.
+
+**Source precedence + attribution + decision + writeback — data-contract enforcement (RM3, RM4, RM5, RM6):**
+
+- **D-56: Source precedence enforced at the DATABASE LAYER (RM3).** Plan 01 ships migration `134a_analytics_metric_canonical_view.sql` creating `metric_canonical_view` that joins all metric source tables and applies precedence in SQL. `source_precedence_chain[]` JSONB array is consulted; first source with a row for (metric_id, tenant_id, period) wins. Tiebreaker: deterministic by `commit_sha` lexicographic, then `inserted_at` ASC. SQL test inserts 2 conflicting source rows for same metric_id+tenant_id+period; asserts view returns exactly 1 row. Application `resolveMetricForTenant` MUST query this view, NOT raw metric_definitions, when computing values.
+
+- **D-57: Attribution single-writer enforcement (RM4).** Plan 01 ships `lib/markos/analytics/attribution/touch-writer.ts` (greenfield) as the SOLE module permitted to write `attribution_touches`. Plan 01 migration adds Postgres trigger `attribution_touches_writer_check` asserting `current_setting('app.attribution_writer', true) = 'analytics-touch-writer'`. Phase 227 ECO-05 ONLY adds FK columns + read triggers; P227 NEVER writes rows. Plan 03 attribution engine + Plan 06 experiment-winner evaluator BOTH funnel through `touch-writer.ts` which sets the GUC before insert. Acceptance: SQL test from non-writer session → raises `attribution_writer_violation`; writer session → succeeds.
+
+- **D-58: Decision classes + audit table (RM5).** Plan 04 ships migration `143a_analytics_decisions_audit.sql` creating `analytics_decisions` table with columns `decision_id, tenant_id, decision_class CHECK IN (auto_decision, recommendation, alert), source_narrative_id, source_anomaly_id, source_winner_id, evidence_ref_array uuid[], confidence_score numeric(3,2), blocked_reason text, audit_at, approver_id, approved_at, routing_metadata jsonb`. CHECK constraints: `auto_decision` → blocked_reason IS NULL AND confidence_score >= 0.80 AND array_length(evidence_ref_array, 1) >= 1; `recommendation` → (approver_id IS NULL AND approved_at IS NULL) OR (approver_id IS NOT NULL AND approved_at IS NOT NULL); `alert` → notification-only. Plan 04 ships `lib/markos/analytics/decision/classifier.ts` mapping each fired decision_rule to one class based on (action_kind, evidence freshness, confidence). Every fire writes EXACTLY ONE row to analytics_decisions.
+
+- **D-59: Writeback delivery outcomes (RM6).** Plan 05 ships migration `139a_analytics_writeback_audit.sql` creating `analytics_writeback_audit` with columns `writeback_id, tenant_id, target_phase CHECK IN (P205_pricing, P211_content, P212_learning, P224_launches), payload, outcome CHECK IN (written, blocked_missing_dependency, blocked_policy, rejected), outcome_reason, attempted_at, dependency_check_at`. Plan 05 + Plan 06 writeback paths (pricing-signal emit, learning-candidate emit, launch-outcome consume) all write a row per attempt. NO silent skip — even no-op paths produce `outcome=blocked_missing_dependency` row with `outcome_reason=P209_evidence_map_unavailable` etc.
+
+**Plugin registry verification (RL1):**
+
+- **D-60: Plugin registry references audited.** `grep "lookupPlugin" .planning/phases/225-* lib/markos/analytics/* lib/markos/mcp/tools/analytics/* api/v1/analytics/* test/analytics/*` MUST return zero invocations. All plugin lookups use `resolvePlugin(registry, pluginId)`.
+
+**DISCUSS.md sync (RM2):**
+
+- **D-61: DISCUSS.md slice table updated to match actual 7-plan/5-wave file scope.** CONTEXT.md remains authoritative for slice boundaries.
+
+**Frontmatter drift remediation (Phase 226 iter-1 lesson):**
+
+- **D-62: `files_modified` frontmatter is canonical truth-source for plan file inventory.** Every file referenced in plan body (action, acceptance, key_links, artifacts) MUST appear in the plan's `files_modified`. Reverse holds: every file in `files_modified` MUST be touched. Plans failing this invariant blocked at checker time.
+
+
 </decisions>
 
 <canonical_refs>
@@ -207,7 +250,7 @@ None — no pending todos matched Phase 225 scope.
 - `lib/markos/channels/*` (P223) — dispatch_events.
 - `lib/markos/conversion/events/emit.ts` (P224) — conversion_events.
 - `lib/markos/launches/*` (P224) — LaunchOutcome consumer.
-- `lib/markos/crm/copilot.ts::createApprovalPackage` (P105).
+- `lib/markos/crm/agent-actions.ts::buildApprovalPackage` (P105).
 - `markos_audit_log` (P201 hash chain).
 - Vercel AI Gateway (per knowledge update) — narrative generation provider.
 
@@ -225,7 +268,7 @@ None — no pending todos matched Phase 225 scope.
 - `lib/markos/channels/*` (P223) — dispatch_events for channel attribution.
 - `lib/markos/conversion/events/emit.ts` (P224) — conversion_events for conversion attribution.
 - `lib/markos/launches/outcomes/*` (P224) — LaunchOutcome consumer for launch_outcome narrative_kind.
-- `lib/markos/crm/copilot.ts::createApprovalPackage` — approval-package pattern.
+- `lib/markos/crm/agent-actions.ts::buildApprovalPackage` — approval-package pattern.
 - AgentRun (P207) — wraps long-running recompute.
 - Vercel Cron — scheduled cadence per metric freshness_mode.
 - Vercel AI Gateway — narrative LLM with provider fallback (per knowledge update).
@@ -296,6 +339,15 @@ None — no pending todos matched Phase 225 scope.
 
 ### Reviewed Todos (not folded)
 None — no pending todos matched Phase 225 scope.
+
+### Review-driven deferrals (added 2026-04-25)
+
+- **App Router migration** — DEFERRED. P225 ships against legacy `api/*.js` (per D-49). When/if a future phase migrates the entire api surface to App Router (`api/v1/**/route.ts`), it owns the migration; P225 routes can be ported at that point.
+- **Top-level `app/(markos)/conversion/`, `app/(markos)/launches/`, `app/(markos)/operating/` route groups** — DEFERRED to their owning phases. P225 only ships `app/(markos)/analytics/`.
+- **`vitest`, `playwright`, `@playwright/test`, `supabase:gen-types`, `openapi-generate` toolchain additions** — DEFERRED. P225 uses existing `npm test` (Node `--test`) + `chromatic` + `openapi:build`. If a future phase needs these, that phase MUST land them as a precondition (per D-50).
+- **`lib/markos/{cdp,crm360,channels,conversion,launches,operating}/*` greenfield trees** — OWNED BY OTHER PHASES (P221, P222, P223, P224, P208 closure). P225 hard-fails if these are absent at runtime; does NOT create them (per D-53/D-54).
+- **Soft-skip / draft-only / inactive-rule degradation paths** — DEFERRED + REJECTED. All evaluators, generators, writeback paths must fail-closed when upstream phases absent. NO bridge stub fallback. NO "draft with warnings". NO "inactive seed if upstream absent" pattern (per D-55).
+
 
 </deferred>
 

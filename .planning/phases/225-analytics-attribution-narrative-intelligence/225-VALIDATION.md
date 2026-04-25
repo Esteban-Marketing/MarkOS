@@ -5,7 +5,7 @@ status: draft
 nyquist_compliant: false
 wave_0_complete: false
 created: 2026-04-24
-updated: 2026-04-24
+updated: 2026-04-25
 ---
 
 # Phase 225 — Validation Strategy
@@ -19,25 +19,26 @@ updated: 2026-04-24
 
 | Property | Value |
 |----------|-------|
-| **Framework (primary)** | Vitest (Phase 204+ doctrine) |
-| **Framework (legacy regression)** | Node.js `--test` (`npm test`) |
-| **E2E framework** | Playwright |
-| **Visual regression** | Chromatic via Storybook |
+| **Framework (primary)** | Node.js `--test` runner (`npm test`) per CONTEXT.md D-49/D-50 |
+| **Framework (legacy regression)** | Node.js `--test` (`npm test`) — same runner |
+| **E2E framework** | Deferred (D-50). Visual regression via Chromatic only. Future phase may land Playwright; P225 does not. |
+| **Visual regression** | Chromatic via Storybook (`npm run chromatic`) |
 | **LLM testing** | Vercel AI Gateway with mock provider for narrative tests |
-| **Vitest config** | inherited from P221-P224 Wave 0 |
-| **Playwright config** | inherited from P221-P224 Wave 0 |
-| **Quick run command** | `vitest run test/analytics/` |
-| **Full suite command** | `vitest run && npm test && npx playwright test --grep analytics` |
-| **Estimated runtime** | ~150s quick, ~13 min full |
+| **Test runner config** | `node --test test/**/*.test.js` (existing package.json `test` script) |
+| **Test file naming** | `*.test.js` (Node `--test` convention; mirrors existing test/*.test.js files in repo) |
+| **Quick run command** | `npm test -- --test-name-pattern "analytics"` |
+| **Full suite command** | `npm test && npm run chromatic` |
+| **Architecture-lock smoke** | `npm test -- --test-name-pattern "preflight\|schema/(source-precedence\|attribution-writer-trigger)"` |
+| **Estimated runtime** | ~90s quick, ~7 min full (no Playwright) |
 
 ---
 
 ## Sampling Rate
 
-- **After every task commit:** `vitest run test/analytics/<slice-domain>`
-- **After every plan wave:** `vitest run test/analytics/ && npm test`
-- **Before `/gsd:verify-work`:** Full suite (Vitest + node --test + Playwright + Chromatic) green
-- **Max feedback latency:** 150s (quick), 13 min (full)
+- **After every task commit:** `npm test -- --test-name-pattern "<slice-domain>"`
+- **After every plan wave:** `npm test`
+- **Before `/gsd:verify-work`:** Full suite (npm test + Chromatic) green
+- **Max feedback latency:** 90s (quick), 7 min (full)
 
 ---
 
@@ -48,26 +49,27 @@ updated: 2026-04-24
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 225-01-01 | 01 | 1 | QA-01,QA-02 | infra | `vitest run test/analytics/wave-0/` | ⬜ TBD | ⬜ pending |
-| 225-01-02 | 01 | 1 | ANL-01,ANL-05,QA-01 | schema | `vitest run test/analytics/schema/ test/analytics/rls/` | ⬜ TBD | ⬜ pending |
-| 225-01-03 | 01 | 1 | QA-01 | contract | `vitest run test/analytics/wave-0/ test/analytics/schema/ test/analytics/rls/ && node -e "const r=require('./contracts/flow-registry.json'); const ids=new Set(r.flows.map(f=>f.flow_id)); for(let i=147;i<=156;i++){const id='F-'+i; if(!ids.has(id)){process.exit(1)}}"` | ⬜ TBD | ⬜ pending |
-| 225-02-01 | 02 | 2 | ANL-01,ANL-05 | unit | `vitest run test/analytics/catalog/metric-definition-resolution.test.ts` | ⬜ TBD | ⬜ pending |
-| 225-02-02 | 02 | 2 | ANL-01,ANL-05 | unit-negative | `vitest run test/analytics/catalog/` | ⬜ TBD | ⬜ pending |
-| 225-02-03 | 02 | 2 | ANL-02,EVD-04 | integration | `vitest run test/analytics/freshness/ test/analytics/cron/ test/analytics/decision/freshness-violation-evaluator.test.ts test/analytics/catalog/` | ⬜ TBD | ⬜ pending |
-| 225-03-01 | 03 | 2 | ANL-04 | unit-regression | `vitest run test/analytics/attribution/ && npm test -- --test-name-pattern attribution` | ⬜ TBD | ⬜ pending |
-| 225-03-02 | 03 | 2 | ANL-04,EVD-01,EVD-05 | integration | `vitest run test/analytics/attribution/ && node -e "const r=require('./contracts/flow-registry.json'); if(!r.flows.find(f=>f.flow_id==='F-157')) process.exit(1)"` | ⬜ TBD | ⬜ pending |
-| 225-04-01 | 04 | 3 | ANL-03 | unit | `vitest run test/analytics/anomaly/` | ⬜ TBD | ⬜ pending |
-| 225-04-02 | 04 | 3 | ANL-03,LOOP-08 | unit | `vitest run test/analytics/decision/ test/analytics/anomaly/` | ⬜ TBD | ⬜ pending |
-| 225-04-03 | 04 | 3 | ANL-03 | integration | `vitest run test/analytics/anomaly/ test/analytics/decision/ test/analytics/cron/anomaly-cron-e2e.test.ts` | ⬜ TBD | ⬜ pending |
-| 225-05-01 | 05 | 3 | ANL-01,ANL-03,ANL-05,EVD-01,EVD-02,EVD-03,EVD-06,LOOP-07 | unit | `vitest run test/analytics/narrative/template-llm.test.ts test/analytics/narrative/claim-extractor.test.ts test/analytics/narrative/pricing-guard.test.ts test/analytics/narrative/llm-fallback.test.ts` | ⬜ TBD | ⬜ pending |
-| 225-05-02 | 05 | 3 | ANL-03,EVD-02,EVD-04 | unit | `vitest run test/analytics/narrative/claim-audit.test.ts test/analytics/narrative/evidence-bridge-stub.test.ts test/analytics/narrative/publisher-state.test.ts test/analytics/narrative/` | ⬜ TBD | ⬜ pending |
-| 225-05-03 | 05 | 3 | ANL-01,QA-02 | integration | `vitest run test/analytics/journey/ test/analytics/tombstone/ test/analytics/narrative/` | ⬜ TBD | ⬜ pending |
-| 225-06-01 | 06 | 4 | ANL-03,LOOP-08 | unit | `vitest run test/analytics/experiments/` | ⬜ TBD | ⬜ pending |
-| 225-06-02 | 06 | 4 | EVD-06,QA-02 | unit-rls | `vitest run test/analytics/pricing-signal/ test/analytics/benchmark/ test/analytics/rls/aggregated-metrics.test.ts` | ⬜ TBD | ⬜ pending |
-| 225-06-03 | 06 | 4 | ANL-03,LOOP-08,EVD-06 | integration | `vitest run test/analytics/experiments/ test/analytics/pricing-signal/ test/analytics/benchmark/ test/analytics/rls/aggregated-metrics.test.ts test/analytics/decision/experiment-winner-evaluator.test.ts test/analytics/decision/pricing-signal-evaluator.test.ts test/analytics/decision/seed-activation.test.ts` | ⬜ TBD | ⬜ pending |
-| 225-07-01 | 07 | 5 | ALL | api+rls | `vitest run test/analytics/api/ test/analytics/rls/rls-suite-full.test.ts && vitest run test/migrations/order.test.ts` | ⬜ TBD | ⬜ pending |
-| 225-07-02 | 07 | 5 | ANL-05,LOOP-07,LOOP-08,QA-02 | mcp+regression | `vitest run test/analytics/mcp/ test/analytics/operating/ test/analytics/tombstone/full-cascade-suite.test.ts test/regression/p221-p224.regression.test.ts` | ⬜ TBD | ⬜ pending |
-| 225-07-03 | 07 | 5 | ALL | playwright+chromatic | `npx playwright test --grep analytics --reporter=list \|\| echo "playwright-checked" && ls test/chromatic/analytics/ \| wc -l \| grep -E "^7$" && npm run chromatic -- --only-changed --exit-zero-on-changes` | ⬜ TBD | ⬜ pending |
+| 225-01-00 | 01 | 0 | QA-01,QA-02,ANL-04 | preflight | `npm test -- --test-name-pattern "preflight\|schema/(source-precedence\|attribution-writer-trigger)"` | ⬜ TBD | ⬜ pending |
+| 225-01-01 | 01 | 1 | QA-01,QA-02 | infra | `npm test -- --test-name-pattern "test/analytics/wave-0/"` | ⬜ TBD | ⬜ pending |
+| 225-01-02 | 01 | 1 | ANL-01,ANL-05,QA-01 | schema | `npm test -- --test-name-pattern "test/analytics/schema/ test/analytics/rls/"` | ⬜ TBD | ⬜ pending |
+| 225-01-03 | 01 | 1 | QA-01 | contract | `npm test -- --test-name-pattern "test/analytics/wave-0/ test/analytics/schema/ test/analytics/rls/ && node -e "const r=require('./contracts/flow-registry.json'); const ids=new Set(r.flows.map(f=>f.flow_id)); for(let i=147;i<=156;i++){const id='F-'+i; if(!ids.has(id)){process.exit(1)}}""` | ⬜ TBD | ⬜ pending |
+| 225-02-01 | 02 | 2 | ANL-01,ANL-05 | unit | `npm test -- --test-name-pattern "test/analytics/catalog/metric-definition-resolution.test.ts"` | ⬜ TBD | ⬜ pending |
+| 225-02-02 | 02 | 2 | ANL-01,ANL-05 | unit-negative | `npm test -- --test-name-pattern "test/analytics/catalog/"` | ⬜ TBD | ⬜ pending |
+| 225-02-03 | 02 | 2 | ANL-02,EVD-04 | integration | `npm test -- --test-name-pattern "test/analytics/freshness/ test/analytics/cron/ test/analytics/decision/freshness-violation-evaluator.test.ts test/analytics/catalog/"` | ⬜ TBD | ⬜ pending |
+| 225-03-01 | 03 | 2 | ANL-04 | unit-regression | `npm test -- --test-name-pattern "test/analytics/attribution/ && npm test -- --test-name-pattern attribution"` | ⬜ TBD | ⬜ pending |
+| 225-03-02 | 03 | 2 | ANL-04,EVD-01,EVD-05 | integration | `npm test -- --test-name-pattern "test/analytics/attribution/ && node -e "const r=require('./contracts/flow-registry.json'); if(!r.flows.find(f=>f.flow_id==='F-157')) process.exit(1)""` | ⬜ TBD | ⬜ pending |
+| 225-04-01 | 04 | 3 | ANL-03 | unit | `npm test -- --test-name-pattern "test/analytics/anomaly/"` | ⬜ TBD | ⬜ pending |
+| 225-04-02 | 04 | 3 | ANL-03,LOOP-08 | unit | `npm test -- --test-name-pattern "test/analytics/decision/ test/analytics/anomaly/"` | ⬜ TBD | ⬜ pending |
+| 225-04-03 | 04 | 3 | ANL-03 | integration | `npm test -- --test-name-pattern "test/analytics/anomaly/ test/analytics/decision/ test/analytics/cron/anomaly-cron-e2e.test.ts"` | ⬜ TBD | ⬜ pending |
+| 225-05-01 | 05 | 3 | ANL-01,ANL-03,ANL-05,EVD-01,EVD-02,EVD-03,EVD-06,LOOP-07 | unit | `npm test -- --test-name-pattern "test/analytics/narrative/template-llm.test.ts test/analytics/narrative/claim-extractor.test.ts test/analytics/narrative/pricing-guard.test.ts test/analytics/narrative/llm-fallback.test.ts"` | ⬜ TBD | ⬜ pending |
+| 225-05-02 | 05 | 3 | ANL-03,EVD-02,EVD-04 | unit | `npm test -- --test-name-pattern "test/analytics/narrative/claim-audit.test.ts test/analytics/narrative/evidence-bridge-stub.test.ts test/analytics/narrative/publisher-state.test.ts test/analytics/narrative/"` | ⬜ TBD | ⬜ pending |
+| 225-05-03 | 05 | 3 | ANL-01,QA-02 | integration | `npm test -- --test-name-pattern "test/analytics/journey/ test/analytics/tombstone/ test/analytics/narrative/"` | ⬜ TBD | ⬜ pending |
+| 225-06-01 | 06 | 4 | ANL-03,LOOP-08 | unit | `npm test -- --test-name-pattern "test/analytics/experiments/"` | ⬜ TBD | ⬜ pending |
+| 225-06-02 | 06 | 4 | EVD-06,QA-02 | unit-rls | `npm test -- --test-name-pattern "test/analytics/pricing-signal/ test/analytics/benchmark/ test/analytics/rls/aggregated-metrics.test.ts"` | ⬜ TBD | ⬜ pending |
+| 225-06-03 | 06 | 4 | ANL-03,LOOP-08,EVD-06 | integration | `npm test -- --test-name-pattern "test/analytics/experiments/ test/analytics/pricing-signal/ test/analytics/benchmark/ test/analytics/rls/aggregated-metrics.test.ts test/analytics/decision/experiment-winner-evaluator.test.ts test/analytics/decision/pricing-signal-evaluator.test.ts test/analytics/decision/seed-activation.test.ts"` | ⬜ TBD | ⬜ pending |
+| 225-07-01 | 07 | 5 | ALL | api+rls | `npm test -- --test-name-pattern "test/analytics/api/ test/analytics/rls/rls-suite-full.test.ts && npm test -- test/migrations/order.test.ts"` | ⬜ TBD | ⬜ pending |
+| 225-07-02 | 07 | 5 | ANL-05,LOOP-07,LOOP-08,QA-02 | mcp+regression | `npm test -- --test-name-pattern "test/analytics/mcp/ test/analytics/operating/ test/analytics/tombstone/full-cascade-suite.test.ts test/regression/p221-p224.regression.test.ts"` | ⬜ TBD | ⬜ pending |
+| 225-07-03 | 07 | 5 | ALL | playwright+chromatic | `echo "Playwright deferred per D-50"\| wc -l \| grep -E "^7$" && npm run chromatic -- --only-changed --exit-zero-on-changes` | ⬜ TBD | ⬜ pending |
 | 225-07-04 | 07 | 5 | ALL | checkpoint:human-verify | `(human-verify operator journey + visual regression + decision coverage map; resume on 'approved')` | n/a | ⬜ pending |
 | 225-07-05 | 07 | 5 | ALL | closeout | `node -e "const c = require('fs').readFileSync('.planning/phases/225-analytics-attribution-narrative-intelligence/225-SUMMARY.md','utf-8'); const fullCount = (c.match(/\\\| Full \\\|/g) \|\| []).length; if (fullCount < 48) { console.error('SUMMARY decision coverage incomplete: '+fullCount+'/48'); process.exit(1); }"` | ⬜ TBD | ⬜ pending |
 
