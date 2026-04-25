@@ -317,16 +317,16 @@ app/(markos)/ecosystem/
 └── co-sell/page.tsx             # CoSellCockpit workspace
 ```
 
-### Pattern 1: Plugin Registry Read-Through Adapter (D-09..D-11)
+### Pattern 1: Plugin Registry Read-Through Adapter (D-09..D-11 + D-68 RH1 fix)
 
 **What:** IntegrationListing.plugin_manifest_id is a soft reference to the runtime plugin registry. The adapter bridges the two without coupling them — no FK constraint at DB level.
 **When to use:** At IntegrationListing write (validate manifest exists) and at render time (fail-closed if manifest stale/missing).
 
 ```typescript
-// Source: D-09; mirror of lib/markos/cdp/adapters/crm-projection.ts pattern [VERIFIED: codebase read]
+// Source: D-09 + D-68; verified against lib/markos/plugins/registry.js:102 — actual export is resolvePlugin(registry, pluginId), NOT lookupPlugin
 // lib/markos/ecosystem/adapters/plugin-registry.ts
 
-import { lookupPlugin } from '../../../plugins/registry.js';
+import { resolvePlugin } from '../../../plugins/registry.js';
 
 export interface PluginManifestRef {
   id: string;
@@ -337,18 +337,26 @@ export interface PluginManifestRef {
   version: string;
 }
 
-export function getPluginManifest(plugin_manifest_id: string): PluginManifestRef | null {
-  // registry.js is Map-backed; lookupPlugin returns frozen manifest or null
-  const manifest = lookupPlugin(plugin_manifest_id);
+export interface PluginRegistry { plugins: Map<string, FrozenManifest>; }
+
+export function getPluginManifest(registry: PluginRegistry, plugin_manifest_id: string): PluginManifestRef | null {
+  // registry.js is Map-backed; resolvePlugin returns frozen manifest or null
+  // RH1 / D-68: lookupPlugin does NOT exist; resolvePlugin requires (registry, pluginId)
+  const manifest = resolvePlugin(registry as any, plugin_manifest_id);
   if (!manifest) return null;  // fail-closed: caller renders 'manifest_unavailable' badge
   return {
     id: manifest.id,
     name: manifest.name,
-    capabilities: manifest.capabilities ?? [],
-    iamRoles: manifest.iamRoles ?? [],
-    routeOwnership: manifest.routeOwnership ?? [],
+    capabilities: manifest.requiredCapabilities ?? [],
+    iamRoles: manifest.requiredIamRoles ?? [],
+    routeOwnership: (manifest.routes ?? []).map((r: any) => r.path ?? r),
     version: manifest.version,
   };
+}
+
+// Factory for DI — host app passes the boot-time registry once; service layer uses the closure
+export function createPluginManifestReader(registry: PluginRegistry) {
+  return (plugin_manifest_id: string) => getPluginManifest(registry, plugin_manifest_id);
 }
 ```
 
@@ -894,7 +902,7 @@ ALTER TABLE cdp_consent_states
 
 | Problem | Don't Build | Use Instead | Why |
 |---------|-------------|-------------|-----|
-| Plugin manifest lookup | Custom manifest store or DB table | `lib/markos/plugins/registry.js::lookupPlugin()` read-through adapter | Registry is Map-backed, frozen, fail-closed; DB FK would break cold-start sequence |
+| Plugin manifest lookup | Custom manifest store or DB table | `lib/markos/plugins/registry.js::resolvePlugin(registry, pluginId)` read-through adapter (D-68) | Registry is Map-backed, frozen, fail-closed; DB FK would break cold-start sequence; adapter accepts registry instance |
 | Webhook signature verification | Custom crypto per source | Node.js `crypto.createHmac('sha256', key).update(rawBody).digest('hex')` + P223 D-38 pattern | Consistent across all 6 sources; per-source SDK dependencies unnecessary |
 | Approval gating for listing publish / cert / install | Custom approval flow | `lib/markos/crm/copilot.ts::createApprovalPackage` (P105) | P208 Approval Inbox already consumes approval_packages; new entry_kinds are additive |
 | Content classifier for partner-facing materials | New pricing/claim scanner | `lib/markos/channels/templates/content-classifier.ts` (P223) | Classifier already handles pricing variable resolution + {{MARKOS_PRICING_ENGINE_PENDING}} |
@@ -1183,7 +1191,7 @@ Note: Vitest + Playwright config already installed from P221 Wave 0 — no new f
 | A23 | P225 attribution_touches table exists for P227 FK column additions (migration 167) | D-34 | If P225 not yet executed → migration 167 fails → gating dependency on P225 ship |
 | A24 | Per-tenant HMAC signing key is stored in Vercel Edge Config per webhook source; tenant without key → 401 (fail-closed, no shared fallback) | Webhook ingestion | If key absent → signals blocked (by design); operator task created on first failure |
 | A25 | P220 partner_profiles + referral_programs + community_profiles + marketing_events + partnerships tables exist (P220 executed) | D-12 ALTER TABLE | If P220 not yet executed → P227 must create both baseline saas-mode tables AND ecosystem extensions; add conditional migration logic |
-| A26 | Plugin registry runtime (`lib/markos/plugins/registry.js`) is stable + queryable via `lookupPlugin(id)` | D-09 read-through adapter | If registry API changes → adapter must be updated; low risk given P202 stability |
+| A26 | Plugin registry runtime (`lib/markos/plugins/registry.js`) is stable + queryable via `resolvePlugin(registry, pluginId)` (verified via D-68 — line 102 of registry.js) | D-09 + D-68 read-through adapter | Registry instance must be injected via createPluginManifestReader factory; lookupPlugin does not exist |
 | A27 | P226 deal_rooms + handoff_records + winloss_records tables exist for CoSellOpportunity FK columns | D-08/D-33 | If P226 not yet executed → co_sell_opportunities FK columns must be soft refs; gating dependency on P226 ship |
 
 ---
