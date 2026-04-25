@@ -1600,3 +1600,24 @@ const exampleContentBlocks: Block[] = [
 ---
 
 ## RESEARCH COMPLETE
+
+
+---
+
+## Migration Application Order (Wave-Driven)
+
+**CRITICAL:** Migration numbers 121-133 are allocated by plan ordering, NOT by execution wave. Because P224 plans run in parallel within waves, the migration runner MUST apply migrations in **wave-execution order**, not numeric order:
+
+| Wave | Plans | Migrations (apply in this order within wave) |
+|------|-------|----------------------------------------------|
+| 1    | plan 01           | 121, 122, 123, 124, 125, 126                |
+| 2    | plan 02           | 130 (intentional gap — dispatch infrastructure shipped early) |
+| 3    | plan 04, plan 05  | 127, 129 (plan 04), 131 (plan 05)           |
+| 4    | plan 06           | 128, 132                                     |
+| 5    | plan 07           | 133                                          |
+
+A naive `ls supabase/migrations | sort -V` would apply 127 (plan 04) BEFORE 130 (plan 02), which breaks the dependency: plan 02 ships `emit_conversion_event_tx` Postgres function + `compensate_conversion_event_tx` (D-34 fail-closed), and gate evaluators in plan 04 expect the audit infrastructure already in place.
+
+Plan 07 includes `test/migrations/order.test.ts` which asserts the runner enforces this order. Plan 01 Task 2 action body documents this rule for executors.
+
+This convention is intentional and is preserved for the lifetime of P224 to avoid a 2-3 hour renumber-and-cross-reference exercise that would touch ~50 references across 7 plans.

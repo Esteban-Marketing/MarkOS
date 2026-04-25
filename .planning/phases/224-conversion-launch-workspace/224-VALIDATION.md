@@ -45,7 +45,33 @@ created: 2026-04-24
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 224-NN-MM | NN | W | REQ-XX | unit/integration/contract/regression/negative/e2e | `vitest run test/<conversion|launches>/<file>.test.ts` | ⬜ TBD | ⬜ pending |
+| 224-01-01 | 01 | W1 | CNV-01 | integration | `npx vitest --version && npx vitest run test/fixtures/smoke.test.ts && node -e "require('./test/fixtures/conversion'); re` | ⬜ TBD | ⬜ pending |
+| 224-01-02 | 01 | W1 | CNV-01 | integration+negative | `npx vitest run test/conversion/schema/ test/launches/schema/ test/conversion/rls/ test/launches/rls/` | ⬜ TBD | ⬜ pending |
+| 224-01-03 | 01 | W1 | CNV-01 | contract | `npx vitest run test/conversion/contracts/ test/launches/contracts/ && grep -l "F-132" contracts/flow-registry.json && gr` | ⬜ TBD | ⬜ pending |
+| 224-01-04 | 01 | W1 | CNV-01 | integration | `npx vitest run test/conversion/blocks/schema-validators.test.ts` | ⬜ TBD | ⬜ pending |
+| 224-02-01 | 02 | W2 | CNV-01 | integration | `npx vitest run test/conversion/events/emit-fan-out-rollback.test.ts` | ⬜ TBD | ⬜ pending |
+| 224-02-02 | 02 | W2 | CNV-01 | unit | `npx vitest run test/conversion/events/` | ⬜ TBD | ⬜ pending |
+| 224-02-03 | 02 | W2 | CNV-01 | unit | `npx vitest run test/conversion/forms/bot-id-gate.test.ts test/conversion/forms/rate-limit-gate.test.ts test/conversion/f` | ⬜ TBD | ⬜ pending |
+| 224-02-04 | 02 | W2 | CNV-01 | integration+contract | `npx vitest run test/conversion/forms/submit-handler.test.ts test/conversion/ingest/ingest-retrofit.test.ts test/conversi` | ⬜ TBD | ⬜ pending |
+| 224-03-01 | 03 | W2 | CNV-01 | unit | `npx vitest run test/conversion/blocks/pricing-binding-resolution.test.ts test/conversion/blocks/evidence-binding-resolut` | ⬜ TBD | ⬜ pending |
+| 224-03-02 | 03 | W2 | CNV-01 | unit | `npx vitest run test/conversion/render/page-renderer-ssr.test.ts test/conversion/render/page-renderer-experiment.test.ts ` | ⬜ TBD | ⬜ pending |
+| 224-03-03 | 03 | W2 | CNV-01 | integration | `npx vitest run test/conversion/forms/form-renderer-ssr.test.ts test/conversion/forms/variables-schema-validation.test.ts` | ⬜ TBD | ⬜ pending |
+| 224-03-04 | 03 | W2 | CNV-01 | integration+contract | `npx vitest run test/conversion/render/ test/conversion/forms/ test/conversion/blocks/` | ⬜ TBD | ⬜ pending |
+| 224-04-01 | 04 | W3 | LCH-01 | integration+negative | `npx vitest run test/launches/schema/launch-gate.test.ts test/launches/schema/launch-outcome.test.ts test/launches/rls/la` | ⬜ TBD | ⬜ pending |
+| 224-04-02 | 04 | W3 | LCH-01 | unit | `npx vitest run test/launches/gates/` | ⬜ TBD | ⬜ pending |
+| 224-04-03 | 04 | W3 | LCH-01 | unit | `npx vitest run test/launches/surfaces/ test/launches/outcomes/` | ⬜ TBD | ⬜ pending |
+| 224-04-04 | 04 | W3 | LCH-01 | integration+contract | `npx vitest run test/launches/api/ test/launches/gates/ test/launches/surfaces/ test/launches/outcomes/` | ⬜ TBD | ⬜ pending |
+| 224-05-01 | 05 | W3 | CNV-01 | integration | `npx vitest run test/conversion/experiments/sticky-hash.test.ts test/conversion/experiments/traffic-split.test.ts test/co` | ⬜ TBD | ⬜ pending |
+| 224-05-02 | 05 | W3 | CNV-01 | integration+contract | `npx vitest run test/conversion/experiments/` | ⬜ TBD | ⬜ pending |
+| 224-06-01 | 06 | W4 | LCH-01 | integration+negative | `npx vitest run test/launches/schema/launch-runbook.test.ts test/launches/rls/launch-runbooks.rls.test.ts` | ⬜ TBD | ⬜ pending |
+| 224-06-02 | 06 | W4 | LCH-01 | unit+integration | `npx vitest run test/launches/runbook/` | ⬜ TBD | ⬜ pending |
+| 224-06-03 | 06 | W4 | LCH-01 | integration | `npx vitest run test/launches/cron/` | ⬜ TBD | ⬜ pending |
+| 224-06-04 | 06 | W4 | LCH-01 | integration+contract | `npx vitest run test/launches/api/runbooks-api.test.ts` | ⬜ TBD | ⬜ pending |
+| 224-07-01 | 07 | W5 | CNV-01 | integration+negative | `npx vitest run test/conversion/api/ test/conversion/rls-suite.test.ts` | ⬜ TBD | ⬜ pending |
+| 224-07-02 | 07 | W5 | CNV-01 | contract | `npx vitest run test/mcp/publish-page.tool.test.ts test/mcp/submit-form.tool.test.ts test/mcp/evaluate-launch-gates.tool.` | ⬜ TBD | ⬜ pending |
+| 224-07-03 | 07 | W5 | CNV-01 | e2e+visual | `npx playwright test test/playwright/conversion/conversion-workspace.spec.ts test/playwright/launches/launch-cockpit.spec` | ⬜ TBD | ⬜ pending |
+| 224-07-04 | 07 | W5 | CNV-01 | integration+contract | `npx vitest run test/api/openapi-parity.test.ts test/regression/` | ⬜ TBD | ⬜ pending |
+| 224-07-05 | 07 | W5 | CNV-01 | manual/checkpoint | `n/a (checkpoint:human-verify)` | ⬜ TBD | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
