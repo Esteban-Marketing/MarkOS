@@ -431,12 +431,19 @@ Plans:
 **Artifacts:** `221-CONTEXT.md`, `221-RESEARCH.md`
 
 ### Phase 222: CRM Timeline and Commercial Memory Workspace
-**Goal:** Evolve MarkOS into a timeline-first CRM with customer 360, account/person/opportunity memory, lifecycle orchestration, and next-best-action workspaces.
+**Goal:** Evolve MarkOS into a timeline-first CRM with customer 360, account/person/opportunity memory, lifecycle orchestration, and next-best-action workspaces. Ships 6 SOR tables (customer_360_records, opportunities, lifecycle_transitions, nba_records, buying_committees, buying_committee_members) + crm_activity_ledger extensions, 9 F-ID contracts (F-113..F-121), 7 migrations (106..112), 4 MCP tools, 3 new UI components (TimelineDetailView, BuyingCommitteePanel, NBAExplainPanel, LifecycleTransitionTimeline), 3 cron handlers (legacy api/cron/*.js per D-44), DB-trigger lifecycle state-machine (D-45) + score immutability (D-46) + tombstone outbox (D-47), buildApprovalPackage wiring in NBA execute + lifecycle high-risk + tombstone cascade (D-42), assertUpstreamReady hard preflight gate for P208/P209/P211/P221 (D-38). Architecture-lock test forbids createApprovalPackage / requireSupabaseAuth / vitest / route.ts / stub-if-missing patterns (D-35). Plans replanned 2026-04-26 per single-AI Claude-runtime override review (Codex usage limit reached; gemini/opencode not installed); 7 HIGH + 4 MED + 2 LOW concerns addressed.
 **Requirements Mapped:** CRM-01..05, CDP-01..05, TASK-01..05, QA-01..15
-**Depends on:** Phases 208, 209, 211, 221
-**Status:** Discuss/context/research drafted
+**Depends on:** Phases 208, 209, 211, 221 (HARD prerequisites — D-38 assertUpstreamReady)
+**Status:** Plans replanned (6/6); ready for execution after upstream P208/P209/P211/P221 land
+**Plans:** 6/6 plans drafted (Plan 06 autonomous=false per D-51; checkpoint:human-action for first drift batch + checkpoint:human-verify for operator journeys since playwright deferred per D-39)
+- [ ] 222-01-PLAN.md — Customer360 + Opportunity SOR + legacy adapter + cdp-overlay (P221 hard prereq) + Task 0.5 architecture-lock + upstream preflight + F-113/F-114
+- [ ] 222-02-PLAN.md — Lifecycle transitions + ownership handoff (cross-class buildApprovalPackage gate) + emit + F-115
+- [ ] 222-03-PLAN.md — Timeline taxonomy extensions + TimelineDetailView + LifecycleTransitionTimeline + F-119
+- [ ] 222-04-PLAN.md — NBA durable record + execution refactor + tombstone cascade outbox (D-47) + lifecycle DB-trigger (D-45) + score immutability trigger (D-46) + buildApprovalPackage wiring (D-42) + NBAExplainPanel + F-116
+- [ ] 222-05-PLAN.md — Buying committee + legacy api/v1/crm/*.js (D-43) + MCP tools + workspace-shell evolution + buildApprovalPackage REST wiring + F-117/F-118/F-120/F-121
+- [ ] 222-06-PLAN.md — Drift cron + tombstone outbox drain worker + legacy api/cron/*.js (D-44) + RLS suite + Chromatic gate + manual operator journeys (playwright deferred per D-39) + slot-collision regression tests + phase closeout
 **DISCUSS:** `.planning/phases/222-crm-timeline-commercial-memory-workspace/DISCUSS.md`
-**Artifacts:** `222-CONTEXT.md`, `222-RESEARCH.md`
+**Artifacts:** `222-CONTEXT.md`, `222-RESEARCH.md`, `222-VALIDATION.md`, `222-REVIEWS.md` (Claude-runtime override 2026-04-26)
 
 ### Phase 223: Native Email and Messaging Orchestration
 **Goal:** Add first-party owned-channel execution for email, WhatsApp, SMS, and push with shared consent, approvals, deliverability, templates, and commercial memory.
