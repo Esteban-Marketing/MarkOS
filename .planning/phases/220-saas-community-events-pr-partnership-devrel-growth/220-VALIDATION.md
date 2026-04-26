@@ -45,6 +45,7 @@ created: 2026-04-26
 | 220-04-01 | 04 | 3 | SG-06, EVD-01..06 | schema | `npm test -- test/growth-220/pr/` | ❌ W0 | ⬜ pending |
 | 220-05-01 | 05 | 3 | SG-06,11,12 | schema | `npm test -- test/growth-220/partners/` | ❌ W0 | ⬜ pending |
 | 220-06-01 | 06 | 4 | SG-10, API-01, MCP-01 | api+mcp | `npm test -- test/api-contracts/220-* test/growth-220/mcp/` | ❌ W0 | ⬜ pending |
+| 220-06-1b | 06 | 4 | SG-07 | schema+seed | `npm test -- test/growth-220/agents-readiness/sg-07-experimentation-classification.test.js` | ❌ W0 | ⬜ pending |
 | 220-06-02 | 06 | 4 | RUN-01..08, QA-03..15 | closeout | `npm test -- test/growth-220/closeout/` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky · ❌ W0 = file does not exist yet (created in Wave 0)*

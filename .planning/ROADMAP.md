@@ -396,21 +396,21 @@ Plans:
 - [ ] 219-06-PLAN.md - B2B growth agent readiness and non-runnable gates
 
 ### Phase 220: SaaS Community, Events, PR, Partnerships, Developer Marketing, and Growth Agent Surface
-**Goal:** Translate the remaining SaaS growth engines into governed workflows: viral/referral, community, events, PR/reviews/analysts, partnerships/affiliates, developer marketing, and final growth agent/API/MCP/UI surface.
-**Requirements Mapped:** SG-04, SG-06, SG-07, SG-09, SG-10, SG-11, SG-12, API-01, MCP-01, QA-01..15
-**Depends on:** Phases 214-219
-**Status:** 📋 Planned
+**Goal:** Ship 28 SOR tables across 6 SaaS growth domains (viral/referral, community, events, PR/analyst/review, partnerships/affiliate/devrel, growth API/MCP/UI agent closure) with DB-trigger compliance enforcement per domain (single-writer payout, moderation gate, evidence FK, commission immutability, agent activation gate), assertUpstreamReady preflight (P214/P215/P218 HARD; P205/P207-212/P216/P217/P219 SOFT), architecture-lock (legacy api/*.js + requireHostedSupabaseAuth + npm test + lib/markos/mcp/tools/index.cjs + buildApprovalPackage + resolvePlugin), buildApprovalPackage wired across every external mutation (referral payout, community moderation, event reminders/replays, PR pitch outreach + G2/Capterra request, affiliate payout + partner public claim, growth agent activation), 19 contracts F-209..F-227 (Q-3 path-A — sequential post-P227 F-198; cosmetic ordering), 11 migration slots 90-95+97 (skip 96 = neuro_literacy_metadata existing), coordination doc V4.1.0-MIGRATION-SLOT-COORDINATION.md (Q-1 + Q-2 + Q-3 resolutions; P218/P219 reservation pathway), 19 API handlers under api/v1/growth/* + 6 cron handlers under api/cron/growth-*.js + 12 MCP tools under lib/markos/mcp/tools/growth.cjs + growth_agent_readiness 28-agent registry (SG-10 invariant runnable=false until 8 readiness criteria + activation_approval_id + readiness_check_id). Plans replanned 2026-04-26 per cross-AI review override (Codex usage limit; gemini/opencode not installed); resolved 1 HIGH stub-state + 6 MED + 2 LOW from 220-REVIEWS.md. Plan 06 autonomous=false (checkpoint:human-action for first-run agent activation per P226 W1 model).
+**Requirements Mapped:** SG-04, SG-06, SG-07, SG-09, SG-10, SG-11, SG-12, API-01, MCP-01, QA-01..15, RUN-01..08
+**Depends on:** Phases 214-219 (P214/P215/P218 HARD via assertUpstreamReady; rest SOFT)
+**Status:** Plans replanned (6/6); ready for execution after upstream P214-P219 land
 **DISCUSS:** `.planning/phases/220-saas-community-events-pr-partnership-devrel-growth/DISCUSS.md`
-**Artifacts:** `220-CONTEXT.md`, `220-RESEARCH.md`
+**Artifacts:** `220-CONTEXT.md`, `220-RESEARCH.md`, `220-REVIEWS.md`, `220-VALIDATION.md`, `.planning/V4.1.0-MIGRATION-SLOT-COORDINATION.md`
 **Plans:** 6/6 plans drafted
 
 Plans:
-- [ ] 220-01-PLAN.md - ReferralProgram and ViralLoopMetrics
-- [ ] 220-02-PLAN.md - CommunityProfile and community health workflows
-- [ ] 220-03-PLAN.md - MarketingEvent workflow and attribution
-- [ ] 220-04-PLAN.md - PR, analyst, and review intelligence
-- [ ] 220-05-PLAN.md - Partnerships, affiliate, and developer marketing workflows
-- [ ] 220-06-PLAN.md - Growth API/MCP/UI and target agent readiness closure
+- [ ] 220-01-PLAN.md — ReferralProgram + ViralLoopMetrics + Wave 0.5 architecture-lock + assertUpstreamReady preflight + slot coordination doc + DB-triggers (90+91)
+- [ ] 220-02-PLAN.md — CommunityProfile + signals fan-out + moderation-gate DB-trigger + dedup UNIQUE INDEX (92)
+- [ ] 220-03-PLAN.md — MarketingEvent + 9-window reminders + attribution + event-promoting DB-trigger (93)
+- [ ] 220-04-PLAN.md — PR/Analyst/Review intelligence + 3 DB-triggers (pitch-approval, evidence cardinality, G2-pricing-context) (94)
+- [ ] 220-05-PLAN.md — Partnerships + affiliate + devrel + 4 DB-triggers + Q-1 P220-P227 affiliate_programs base ownership + p220-p227-altertable-readiness assertion (95)
+- [ ] 220-06-PLAN.md — autonomous=false closeout: growth_agent_readiness + activation gate trigger + 19 API handlers + 6 cron handlers + 12 MCP tools + checkpoint:human-action for first-run activation + slot-collision regression + all-domains architecture-lock RE-RUN + requirements-coverage assertion (97)
 
 ## Future Milestone Candidate: v4.2.0 - Commercial Engines 1.0
 
