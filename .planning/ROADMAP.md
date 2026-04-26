@@ -116,6 +116,20 @@ Plans:
 - [x] 204-12-PLAN.md — Release CI matrix (verify → npm → brew + scoop → smoke) + docs trio (errors/environment/commands) + llms.txt Phase 204 section + errors-map parity test + 15 tests — **Wave 4 CLOSED; Phase 204 SHIPS** (2026-04-24)
 - [x] 204-13-PLAN.md — v2 compliance guardrails for `run`, `status`, `doctor`, vault freshness, and Pricing Engine placeholder policy (gap closure) — **Phase 204 GA ready for verification** (2026-04-23)
 
+### Phase 204.1: close 5 fixes + Bonus Gap #3/#4 (decision needed) + winget/apt distribution (INSERTED)
+
+**Goal:** Close P204 audit findings (5 fixes + 2 decisions from UI-REVIEW d9ede52) and complete deferred Wave 1 distribution (winget + apt). Pure follow-up phase covering D-01 audit trail wiring, D-02 spinner primitive, D-03 stdout/stderr stream split, D-04 ASCII fallback, D-05 <60-col width breakpoint, D-06 env mask last-4 reconciliation, D-07 status pricing-placeholder enforcement, D-08 winget manifest, D-09 apt repo.
+**Requirements**: CLI-01, QA-01..15 (inherits from P204; no new requirement IDs)
+**Depends on:** Phase 204
+**Plans:** 5 plans
+
+Plans:
+- [ ] 204.1-01-PLAN.md — Audit trail wrapper at dispatch (D-01 + D-12 fallback) — Wave 1
+- [ ] 204.1-02-PLAN.md — Spinner primitive + stream-split (D-02 + D-03) — Wave 1
+- [ ] 204.1-03-PLAN.md — ASCII fallback + <60-col width breakpoint (D-04 + D-05) — Wave 2
+- [ ] 204.1-04-PLAN.md — Env mask last-4 + status pricing placeholder + status spinner (D-06 + D-07) — Wave 3
+- [ ] 204.1-05-PLAN.md — winget manifest + apt repo distribution (D-08 + D-09, includes user-setup checkpoint) — Wave 1
+
 ### Phase 205: Pricing Engine Foundation + Billing Readiness
 **Goal:** Replace static public pricing assumptions with Pricing Engine-backed intelligence: cost models, competitor matrix, PricingRecommendation records, approval-gated price tests, PRC agents, MCP/API/UI surfaces, and billing-readiness handoff. Stripe billing remains in scope only after pricing objects, cost floors, and packaging recommendations are modeled.
 **Requirements Mapped:** PRC-01..09, BILL-01, BILL-02, QA-01..15
