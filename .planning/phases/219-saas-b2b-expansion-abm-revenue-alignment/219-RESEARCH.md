@@ -303,10 +303,10 @@ Each of Plans 01-06 ships its own `scripts/preconditions/219-NN-check-upstream.c
 | Phase | Migration Slots | F-IDs | Rationale |
 |-------|----------------|-------|-----------|
 | P218 | **82-84** (3 slots) | F-200..F-208 (post-P220 cosmetic range) | P218 SaaSGrowthProfile + ActivationDefinition + PQL/UpgradeTrigger + InAppCampaign + Experiment: ~5 tables across 3 plan-migrations |
-| P219 | **85-89** (5 slots) | F-228..F-236 (continuing post-P220 F-227) | P219 6 domains across 5 plan-migrations (Plans 01-05 get 1 each; Plan 06 uses slot 85 additive seed) |
+| P219 | **85-89** (5 slots) | F-228..F-237 (continuing post-P220 F-227) | P219 6 domains across 5 plan-migrations (Plans 01-05 get 1 each; Plan 06 uses slot 85 additive seed) |
 | P220 | 90-97 (locked, per 220-01-PLAN.md) | F-209..F-227 (locked) | Already resolved in P220 plans |
 
-**F-ID range rationale:** P218 takes F-200..F-208; P219 takes F-228..F-236. Non-monotonic with phase order but matches P220 Q-3 path-A precedent (F-IDs are cosmetic, non-constraint-bearing).
+**F-ID range rationale:** P218 takes F-200..F-208; P219 takes F-228..F-237. Non-monotonic with phase order but matches P220 Q-3 path-A precedent (F-IDs are cosmetic, non-constraint-bearing).
 
 ### P219 F-ID + Migration Pre-Allocation Table
 
@@ -317,11 +317,11 @@ Each of Plans 01-06 ships its own `scripts/preconditions/219-NN-check-upstream.c
 | 219-03 | ABMAccountPackage + BuyingCommittee | 87 | `abm_account_packages`, `abm_buying_committee_members`, `abm_engagement_events` | F-232, F-233 | P218 + P219-01 |
 | 219-04 | Advocacy + ReviewRequest + Proof | 88 | `advocacy_candidates`, `advocacy_review_requests`, `proof_assets`, `proof_consent_records` | F-234, F-235 | P219-01 + P219-02 |
 | 219-05 | Expansion + Save + Discount | 89 | `expansion_offers`, `save_offers`, `discount_authorizations` | F-236 | P215 + P205(soft) |
-| 219-06 | B2B Agent Readiness | 89b (additive seed in Plan 01 migration or separate slot TBD) | `b2b_growth_agent_readiness` | (no new F-ID; re-uses agent-readiness GET endpoint) | P219-01..05 |
+| 219-06 | B2B Agent Readiness | 89b (additive seed via 85_b2b_revenue_team_part2.sql when migration 85 already applied) | `b2b_growth_agent_readiness` | F-237 | P219-01..05 |
 
 **Note on Plan 219-06 table strategy:** P219-06 creates `b2b_growth_agent_readiness` as its own holding table (NOT depending on P220's `growth_agent_readiness` which does not yet exist when P219 runs). P220-06 migration then consolidates the 9 P219 B2B agent rows into `growth_agent_readiness`. This avoids a circular dependency between P219 and P220.
 
-**Slot coordination action:** Plan 219-01 Task 0.1 creates or appends to `.planning/V4.1.0-MIGRATION-SLOT-COORDINATION.md` documenting P219's reservation of slots 85-89 and F-IDs F-228..F-236, coordinating with P218 (slots 82-84) and P220 (slots 90-97). [ASSUMED — mirrors P220-01-PLAN.md behavior]
+**Slot coordination action:** Plan 219-01 Task 0.1 creates or appends to `.planning/V4.1.0-MIGRATION-SLOT-COORDINATION.md` documenting P219's reservation of slots 85-89 and F-IDs F-228..F-237, coordinating with P218 (slots 82-84) and P220 (slots 90-97). [ASSUMED — mirrors P220-01-PLAN.md behavior]
 
 ---
 
@@ -982,7 +982,7 @@ P218 RESEARCH.md (26-line stub) lists gaps as: `SaaSGrowthProfile`, `ActivationD
 
 ### Q-3: P219 vs P220 Affiliate/Community Overlap — RESOLVED (no overlap)
 
-No overlap. P219 is existing-customer B2B expansion/ABM/advocacy. P220 is B2C viral/community/PR/partnerships. Both depend on P218 SaaSGrowthProfile mode routing. F-ID cosmetic ordering: P220 takes F-209..F-227; P219 takes F-228..F-236 (continuing sequentially, non-monotonic with phase order, acceptable per P220 Q-3 precedent).
+No overlap. P219 is existing-customer B2B expansion/ABM/advocacy. P220 is B2C viral/community/PR/partnerships. Both depend on P218 SaaSGrowthProfile mode routing. F-ID cosmetic ordering: P220 takes F-209..F-227; P219 takes F-228..F-237 (continuing sequentially, non-monotonic with phase order, acceptable per P220 Q-3 precedent).
 
 ### Q-4: P219 Plan 05 Pricing Engine vs P205 — RESOLVED (SOFT with sentinel)
 
@@ -1131,7 +1131,7 @@ All test files are new — no existing coverage for P219 domain.
 
 ```
 lib/markos/b2b/                       # umbrella for all P219 B2B motions
-  contracts.ts                        # zod schemas (parity vs contracts/F-228..F-236)
+  contracts.ts                        # zod schemas (parity vs contracts/F-228..F-237)
   contracts.cjs                       # CJS twin
   api-helpers.ts                      # shared response helpers
   preflight/                          # upstream-gate + architecture-lock + errors
@@ -1221,7 +1221,7 @@ lib/markos/b2b-agents/                # Domain 6
 | A3 | P220-01-PLAN.md seeds the migration-slot-coordination doc; P219 appends its rows | F-ID/Migration | If P220 hasn't run yet, P219-01 must create the document from scratch |
 | A4 | P215 billing engine has `billing_periods` + `tenant_billing_subscriptions` from migration 54 | Upstream Dependencies | Domain 2 expansion offers route through billing engine; fails if P215 schema differs |
 | A5 | P222 will ship `buying_committee_members` CRM table (per ROADMAP P222 description) | Cross-Phase Q-1 | If P222 uses different name, coordination comment is stale but no collision |
-| A6 | F-ID range F-228..F-236 is unallocated (no other phase claims this range) | F-ID Allocation | Collision if another phase grabs same range before P219 plans land |
+| A6 | F-ID range F-228..F-237 is unallocated (no other phase claims this range) | F-ID Allocation | Collision if another phase grabs same range before P219 plans land |
 | A7 | `openapi:build` script exists in package.json matching P220 pattern | Architecture Lock | Planner must verify before Plan 01 Task 0.5 |
 
 ---
