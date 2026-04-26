@@ -1193,6 +1193,10 @@ None — Q-A / Q-B / Q-C answered on 2026-04-16. See `obsidian/brain/Target ICP.
 - Marketplace: plugins + agents with revenue share (70/30); moderated.
 - Quality-first day-0 investment ratified — 80% foundations, 20% feature scope for wave-0.
 
+### Roadmap Evolution
+
+- Phase 204.1 inserted after Phase 204: close 5 fixes + Bonus Gap #3/#4 (decision needed) + winget/apt distribution (URGENT — UI-REVIEW d9ede52: 17/24, P0 audit trail wiring, P1 spinner primitive + stderr stream, P2 ASCII fallback + width breakpoint, mask-rule decision)
+
 ## Carry-over context from v3.9.0
 
 - Plugin runtime (`lib/markos/packs/pack-loader.cjs`) + pack diagnostics are stable and ready to extend.
