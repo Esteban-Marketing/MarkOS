@@ -1,7 +1,7 @@
 # Phase 201: SaaS Tenancy Hardening — Context
 
-**Gathered:** 2026-04-17
-**Status:** Ready for planning
+**Gathered:** 2026-04-27
+**Status:** Verified for the delivered hardening scope
 
 <domain>
 ## Phase Boundary
@@ -19,6 +19,11 @@ vanity login and tenant-branded chrome (1 per org).
 - Agency white-label (N domains per org, per-client vanity) → phase 221
 - Multi-region residency → phases 222 + 232
 - SCIM / SAML auto-provision → a later enterprise phase
+
+**Current closeout posture:**
+- Phase 201 is verified for the code and contract hardening scope captured in `201-VERIFICATION.md`.
+- The live DNS, email, BotID, passkey, export, cookie, and purge-cron checks remain useful operational smoke tests for staging or launch confidence, but they are not reopening the historical execution gate for this phase.
+- Later phases 202-204 already advanced on top of this tenancy substrate, so reconciliation should preserve closeout clarity rather than replan the implementation itself.
 
 </domain>
 

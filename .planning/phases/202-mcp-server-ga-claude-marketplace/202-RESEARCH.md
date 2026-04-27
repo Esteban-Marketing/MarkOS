@@ -4,6 +4,8 @@
 **Domain:** MCP 2025-06-18 specification (OAuth 2.1 + PKCE + Resources + streaming), Vercel Functions / Log Drains / Rolling Releases, Upstash Ratelimit, @sentry/nextjs, AJV strict validation, Claude Marketplace, VS Code MCP client.
 **Confidence:** HIGH for MCP spec + Vercel Log Drain schema + Upstash + AJV + MCP pattern; MEDIUM for Claude Marketplace listing criteria (no public policy doc surfaced, derived from community + mcp-handler pattern); MEDIUM-HIGH for Claude API pricing (verified against April 2026 pricing page).
 
+**2026-04-27 closeout addendum:** Phase 202 should be evaluated against the scope it actually shipped: Claude Marketplace launch package plus VS Code cert-ready support. Marketplace approval itself is an external operational step, and broader client certifications (Cursor / Windsurf / Warp / ChatGPT) remain deferred to `202.1` or later follow-up work. Validation and roadmap metadata should therefore track that narrower, verified scope instead of the older broader wording.
+
 ## Summary
 
 Phase 202 graduates the in-tree MCP server from a 10-tool JSON-RPC stub to a production MCP 2025-06-18 GA deployment: 30 live tools, OAuth 2.1 + PKCE session management with DB-backed opaque tokens and tenant-binding at consent, per-tenant 24h cost metering in cents with a hard 402 kill-switch, per-session / per-tenant rate-limits via Upstash sliding-window, strict AJV input + output validation, Resources + streaming + notifications, structured JSON logs → Vercel Log Drains, `@sentry/nextjs` exception wrapping, and VS Code as the second certified client.

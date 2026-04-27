@@ -1,16 +1,22 @@
 # Phase 204: CLI `markos` v1 GA — Research
 
-**Researched:** 2026-04-18
+**Researched:** 2026-04-18; gap-closure addendum 2026-04-27
 **Domain:** Cross-platform Node.js CLI · OAuth device flow · OS keychain · package distribution (npm + Homebrew + Scoop) · SSE streaming
 **Confidence:** HIGH on stack/patterns · MEDIUM on distribution CI matrix · ASSUMED on a few server-side endpoint shapes not yet defined
 
 ## Summary
 
-Phase 204 graduates `markos` from a single `generate` command to an 11-command GA CLI distributed on 3 channels (npm + Homebrew + Scoop). The user's CONTEXT.md locks ten decisions (flat command surface, OAuth device flow + OS keychain via keytar, Node 22 LTS + zero-dep hand-rolled UX, pure Node CJS, wave-1 distribution channels). Research here fills the gaps: concrete RFC 8628 endpoint contracts, the keytar-vs-@napi-rs/keyring fallback tree, ready-to-fill Homebrew and Scoop manifest templates, SSE reconnection mechanics for `markos run --watch`, the CI matrix that fans out to 3 registries atomically, and a Nyquist validation map covering 12 behaviors.
+Phase 204 graduates `markos` from a single `generate` command to an 11-command GA CLI distributed on 3 channels (npm + Homebrew + Scoop). The user's CONTEXT.md locks ten decisions (flat command surface, OAuth device flow + OS keychain via keytar, Node 22 LTS + zero-dep hand-rolled UX, pure Node CJS, wave-1 distribution channels). Research here fills the gaps: concrete RFC 8628 endpoint contracts, the keytar-vs-@napi-rs/keyring fallback tree, ready-to-fill Homebrew and Scoop manifest templates, SSE reconnection mechanics for `markos run --watch`, the CI matrix that fans out to 3 registries atomically, and a Nyquist validation map covering 12 behaviors. The late `204-13` gap closure is now treated as a bounded compatibility lock, not a fresh dependency chain on future implementation phases.
 
 **One sharpening recommendation against CONTEXT.md D-08**: CONTEXT locks `keytar` as the only allowed new dep. The npm registry shows `keytar` last published 2025-07-30 at v7.9.0 and the upstream atom/node-keytar repo was archived in March 2026 [CITED: https://github.com/atom/node-keytar]. A drop-in 100%-compatible replacement — `@napi-rs/keyring` v1.2.0 (active; Rust-backed; no libsecret requirement on Linux) [CITED: https://www.npmjs.com/package/@napi-rs/keyring] — exists. The user's locked decision is still honorable; the safe path is "keytar API, @napi-rs/keyring implementation" (they share function signatures). Flag for user confirmation before locking.
 
-**Primary recommendation:** Ship in 4 waves over ~12 plans. **Wave 1** (foundation): extend the dispatch layer + OS keychain primitive + OAuth device flow endpoints + `login`/`whoami`/`keys` + `api/cli/oauth/*` + `api/tenant/api-keys/*` + `api/tenant/whoami`. **Wave 2** (workspace commands): `init`, `plan`, `run` (SSE stream), `eval`, `env pull|push|list`. **Wave 3** (operator tooling): `status`, `doctor`. **Wave 4** (distribution + docs): Homebrew tap · Scoop bucket · GitHub Actions release matrix · per-channel smoke CI · error-code doc page · help footer. This ordering lets 201's existing tenant-API foundations carry Wave 1 immediately, and parks distribution behind functional verification so we never ship a broken brew install.
+**Primary recommendation:** Ship in 4 waves plus 1 bounded compatibility gap-closure plan. **Wave 1** (foundation): extend the dispatch layer + OS keychain primitive + OAuth device flow endpoints + `login`/`whoami`/`keys` + `api/cli/oauth/*` + `api/tenant/api-keys/*` + `api/tenant/whoami`. **Wave 2** (workspace commands): `init`, `plan`, `run` (SSE stream), `eval`, `env pull|push|list`. **Wave 3** (operator tooling): `status`, `doctor`. **Wave 4** (distribution + docs): Homebrew tap · Scoop bucket · GitHub Actions release matrix · per-channel smoke CI · error-code doc page · help footer. The final gap-closure plan only translates already-known run/pricing/freshness doctrine into current CLI safeguards. This ordering lets 201's existing tenant-API foundations carry Wave 1 immediately, parks distribution behind functional verification so we never ship a broken brew install, and keeps the gap closure additive instead of cyclic.
+
+**2026-04-27 gap-closure addendum:** `204-13` should consume later doctrine as compatibility input only.
+
+- `pricing_engine_context` and `{{MARKOS_PRICING_ENGINE_PENDING}}` are current CLI placeholder contracts owned in Phase 204; Phase 205 becomes a later writer/consumer of that surface rather than a prerequisite for the CLI to define it.
+- AgentRun v2 field posture is a schema-alignment target for CLI payloads and status projections; the CLI should align additively without pretending the full Phase 207 substrate already exists.
+- `markos doctor` may flag stale incoming doctrine pages such as `16-SAAS-SUITE.md` and `17-SAAS-MARKETING-OS-STRATEGY.md`, but that is a content-health and freshness check only, not evidence that Phases 214 or 218 are implemented.
 
 <user_constraints>
 ## User Constraints (from CONTEXT.md)

@@ -2,8 +2,9 @@
 phase: 202-mcp-server-ga-claude-marketplace
 verified: 2026-04-18T04:34:52Z
 status: passed
-score: 13/13 must-have clusters verified
+score: 13/13 code-verifiable must-have clusters verified
 verdict: PASS
+scope_reconciled: 2026-04-27
 test_totals:
   phase_202_mcp_regression: 362 pass / 0 fail
   phase_201_regression: 25 pass / 0 fail
@@ -37,13 +38,13 @@ deferred_items:
 
 # Phase 202: MCP Server GA + Claude Marketplace Launch — Verification Report
 
-**Phase Goal (ROADMAP.md):** Graduate the 0-day MCP server to GA: session persistence, +20 skills, public marketplace approval, Cursor / Windsurf / Warp certified.
+**Phase Goal (reconciled scope):** Graduate the 0-day MCP server to GA for the Claude Marketplace launch package plus VS Code cert-ready support: session persistence, +20 skills, OAuth 2.1 + PKCE, resources, cost/budget controls, observability, `/settings/mcp`, docs, and marketplace assets. Cursor / Windsurf / Warp / ChatGPT certifications are deferred to `202.1`.
 
 **Verified:** 2026-04-18T04:34:52Z
-**Status:** PASS
+**Status:** PASS (for the reconciled Claude Marketplace + VS Code cert-ready scope)
 **Re-verification:** No — initial verification
 
-**Scope clarification:** ROADMAP lists "Cursor / Windsurf / Warp certified" but Phase 202 context (202-CONTEXT.md §Out of scope, D-08) explicitly narrows the second-client cert target to **VS Code only** for this phase. Cursor / Windsurf / Warp / ChatGPT certs deferred to 202.1. Verification evaluates Phase 202 against its actual scope (Claude Marketplace + VS Code cert-ready), not the ROADMAP aspirational client list.
+**Scope clarification:** Phase 202 ships the Claude Marketplace launch package and a VS Code cert-ready path. Marketplace approval itself is an external operational workflow, not a code-verification gate inside this phase. Cursor / Windsurf / Warp / ChatGPT certs remain deferred to `202.1`. Verification therefore evaluates the reconciled shipped scope rather than the older broader roadmap wording.
 
 ---
 
@@ -270,7 +271,7 @@ All behavioral spot-checks pass.
 
 ## 9. Human Verification Required
 
-**None.** All must-haves verified programmatically via file reads + node -e inspections + test reruns. Playwright E2E (QA-06) explicitly deferred per plan 202-10 `<phase_level_notes>` with testing-infra phase backfill documented — treated as out-of-scope per Phase 201 precedent.
+**None as phase gates.** All must-haves for the reconciled shipped scope were verified programmatically via file reads, `node -e` inspections, and test reruns. Playwright E2E (QA-06) is explicitly deferred per plan `202-10` `<phase_level_notes>`. Marketplace submission approval, red-team rehearsal, and live smoke runs remain sensible operational checks, but they are not blockers for the phase verdict.
 
 Optional human verification for post-submission cert gate (not phase gate):
 - Claude Marketplace submission (requires `MARKOS_MCP_BEARER`, live production deployment)

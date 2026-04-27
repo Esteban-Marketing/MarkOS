@@ -1,7 +1,7 @@
 # Phase 203: Webhook Subscription Engine GA - Context
 
-**Gathered:** 2026-04-17
-**Status:** Ready for planning
+**Gathered:** 2026-04-27
+**Status:** Code-verified; human UAT pending
 
 <domain>
 ## Phase Boundary
@@ -9,6 +9,8 @@
 Graduate the 200-03 webhook primitive (HMAC signing, pluggable queue adapter, 4 endpoints, migration 70) to GA: tenant-admin dashboard (`/settings/webhooks`), DLQ with replay, signing-secret rotation with 30-day grace, per-subscription rate limits with circuit breaker, webhook status page, telemetry to Sentry.
 
 Out of scope: custom payload transformations (deferred to Phase 210 connector framework per DISCUSS.md).
+
+Current closeout posture: all code-verifiable must-haves are green after the `203-11` gap closure. Remaining exit work is live-environment UAT for rotation UX, Resend delivery, Redis-backed throttling and breaker behavior, replay idempotency in Vercel Queues, and public status cache behavior.
 
 </domain>
 
@@ -62,9 +64,12 @@ Out of scope: custom payload transformations (deferred to Phase 210 connector fr
 **Downstream agents MUST read these before planning or implementing.**
 
 ### Phase 203 discussion inputs
-- `.planning/phases/203-webhook-subscription-engine-ga/DISCUSS.md` — phase-level scope, pre-locked decisions, success criteria, threat-model focus
-- `obsidian/thinking/2026-04-16-markos-saas-roadmap.md` — roadmap synthesis document
-- `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md` — all 15 quality gates apply to 203
+- `.planning/phases/203-webhook-subscription-engine-ga/DISCUSS.md` - phase-level scope, pre-locked decisions, success criteria, threat-model focus
+- `.planning/phases/203-webhook-subscription-engine-ga/203-VERIFICATION.md` - code-verified truth table plus remaining live UAT boundaries
+- `.planning/phases/203-webhook-subscription-engine-ga/203-REVIEWS.md` - planning/metadata drift review findings
+- `.planning/phases/203-webhook-subscription-engine-ga/203-HUMAN-UAT.md` - durable manual signoff checklist
+- `obsidian/thinking/2026-04-16-markos-saas-roadmap.md` - roadmap synthesis document
+- `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md` - all 15 quality gates apply to 203
 
 ### Existing webhook primitive (200-03 output)
 - `.planning/phases/200-saas-readiness-wave-0/200-03-webhooks-PLAN.md` — primitive plan

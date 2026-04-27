@@ -1,7 +1,7 @@
 # Phase 201 Research — SaaS Tenancy Hardening
 
-**Date:** 2026-04-17
-**Mode:** ecosystem
+**Date:** 2026-04-27
+**Mode:** ecosystem + reconciliation
 **Confidence legend:** 🟢 high · 🟡 medium · 🔴 low
 
 ---
@@ -59,6 +59,8 @@
 Phase 201 builds on Supabase Auth's built-in magic-link + OTP system (no external auth library needed), adds passkey registration via `@simplewebauthn/server` + `@simplewebauthn/browser` v13.3.0, and layers a Vercel Next.js `middleware.ts` at the repo root for subdomain resolution + BYOD domain routing. The org model is a two-table schema extension to the existing migration-51 tenant foundation, with RLS policies cloned from the established `markos_tenant_memberships` pattern. The GDPR export reuses the `evidence-pack` builder pattern and `@aws-sdk/s3-request-presigner` for 7-day signed URLs. The audit log adds `prev_hash` + `row_hash` columns to the existing `markos_audit_log` table, fed by a Supabase `postgres_changes` CDC listener in a Vercel background function.
 
 **Primary recommendation:** Build on what is already deployed (Supabase Auth, existing RLS pattern, `evidence-pack.*`, `webhooks/signing.cjs` HMAC) rather than introducing new auth or queue infrastructure.
+
+**Reconciliation addendum (2026-04-27):** Phase 201 should remain closed as a hardening-phase PASS. The 2026-04-17 verification artifact already proves the delivered code, contracts, migrations, docs, and 206 new tests. The unresolved live-platform checks (real DNS propagation, mail delivery, BotID attestation, hardware passkeys, S3/R2 export retrieval, cookie behavior across subdomains, and long-horizon purge timing) are better classified as operational smoke checks for staging or launch confidence than as execution blockers inside this historical phase closeout.
 
 ---
 

@@ -51,9 +51,12 @@ Plans:
 **Goal:** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
 **Requirements Mapped:** API-02, QA-01..15
 **Depends on:** Phase 200
+**Closeout posture:** Historical hardening phase closeout. Live DNS, email, BotID, passkey, export, cookie, purge, and staging-load checks remain informational operational smokes rather than execution blockers.
 **Status:** ✅ Complete — verified 2026-04-17 (see 201-VERIFICATION.md)
 **Plans:** 8/8 plans complete
 **DISCUSS:** `.planning/phases/201-saas-tenancy-hardening/DISCUSS.md`
+**Planning Note:** Reconciled 2026-04-27 so validation, verification, and context artifacts all treat DNS, email, BotID, passkey, export, cookie, purge, and staging-load checks as operational hardening smokes rather than execution blockers.
+**Artifacts:** `201-CONTEXT.md`, `201-RESEARCH.md`, `201-REVIEWS.md`, `201-VALIDATION.md`, `201-VERIFICATION.md`
 
 Plans:
 - [x] 201-01-PLAN.md — Org + tenant schema (markos_orgs + FK + RLS) + reserved-slug blocklist library
@@ -66,19 +69,24 @@ Plans:
 - [x] 201-08-PLAN.md — Cross-domain audit emit wiring + openapi.json regen + 5 docs pages + llms.txt + F-88 audit query + vercel.ts crons + @vercel/edge-config slug cache
 
 ### Phase 202: MCP Server GA + Claude Marketplace Launch
-**Goal:** Graduate the 0-day MCP server to GA: session persistence, +20 skills, public marketplace approval, Cursor / Windsurf / Warp certified.
+**Goal:** Graduate the 0-day MCP server to GA for the Claude Marketplace launch package: session persistence, +20 skills, marketplace-ready assets and docs, and a VS Code cert-ready path. Cursor / Windsurf / Warp / ChatGPT certifications defer to `202.1`.
 **Requirements Mapped:** MCP-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
-**Status:** 📋 Planned
+**Status:** ✅ Verified - Phase 202 closed for Claude Marketplace + VS Code cert-ready scope; broader client certs deferred to 202.1
 **DISCUSS:** `.planning/phases/202-mcp-server-ga-claude-marketplace/DISCUSS.md`
+**Plans:** 10/10 plans complete
+**Planning Note:** Marketplace approval itself is treated as an external operational workflow, not a code-verification gate. Phase 202 verification now aligns to the narrower shipped scope that later artifacts already enforced.
+**Artifacts:** `202-CONTEXT.md`, `202-RESEARCH.md`, `202-REVIEWS.md`, `202-VALIDATION.md`, `202-VERIFICATION.md`, `deferred-items.md`
 
 ### Phase 203: Webhook Subscription Engine GA
 **Goal:** Graduate 200-03 webhook primitive to GA: durable Supabase + Vercel Queues substrate, tenant-admin dashboard (2 surfaces), DLQ + replay, signing-secret rotation with 30-day grace + T-7/T-1/T-0 notifications + Surface 4 banner, per-subscription rate-limits + circuit breaker, public status page, full observability + docs.
 **Requirements Mapped:** WHK-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
-**Status:** 📋 Planned — 10 plans across 5 waves + 1 gap-closure plan (Wave 6)
+**Status:** 🟡 Human UAT pending - 11/11 plans complete; 203-11 gap closure shipped and code verification is green
 **Plans:** 11/11 plans complete
 **DISCUSS:** `.planning/phases/203-webhook-subscription-engine-ga/DISCUSS.md`
+**Planning Note:** Phase 203 is structurally complete and executable. Remaining closeout is live-infrastructure UAT plus reconciled metadata across validation and verification artifacts.
+**Artifacts:** `203-CONTEXT.md`, `203-RESEARCH.md`, `203-REVIEWS.md`, `203-VALIDATION.md`, `203-VERIFICATION.md`, `203-HUMAN-UAT.md`
 
 Plans:
 - [x] 203-01-PLAN.md — Supabase + Vercel Queues adapter swap (Wave 1)
@@ -97,9 +105,11 @@ Plans:
 **Goal:** Graduate CLI to full GA: 11 commands (`init` · `generate` (shipped 200-02) · `plan` · `run` · `eval` · `login` · `keys` · `whoami` · `env` · `status` · `doctor`). Wave 1 distribution (npm · Homebrew · Scoop); winget + apt deferred to 204.1 per CONTEXT §Deferred.
 **Requirements Mapped:** CLI-01, QA-01..15
 **Depends on:** Phase 200, Phase 201
-**Status:** 📋 Planned - discuss/research refreshed 2026-04-23; 13 plans across 4 waves + 1 v2 compliance gap-closure
+**Status:** ✅ Verified - Phase 204 shipped 2026-04-24; 204-13 executable-schema and status reconciliation refreshed 2026-04-27
 **Plans:** 13/13 plans complete
 **DISCUSS:** `.planning/phases/204-cli-markos-v1-ga/DISCUSS.md`
+**Planning Note:** `204-13` now lives in the executable GSD schema and treats later pricing/run/SaaS doctrine as compatibility input instead of a blocking future-phase dependency chain.
+**Artifacts:** `204-CONTEXT.md`, `204-RESEARCH.md`, `204-REVIEWS.md`, `204-VALIDATION.md`, `204-VERIFICATION.md`
 
 Plans:
 - [x] 204-01-PLAN.md — Dispatch extension + 7 shared CLI primitives + 2 migrations (73 device sessions, 74 API keys) + audit domain extension (Wave 1)
@@ -114,7 +124,7 @@ Plans:
 - [x] 204-10-PLAN.md — Homebrew formula `Formula/markos.rb` + bump script + install docs (Wave 4)
 - [x] 204-11-PLAN.md — Scoop bucket manifest `bucket/markos.json` + bump script + install docs (Wave 4)
 - [x] 204-12-PLAN.md — Release CI matrix (verify → npm → brew + scoop → smoke) + docs trio (errors/environment/commands) + llms.txt Phase 204 section + errors-map parity test + 15 tests — **Wave 4 CLOSED; Phase 204 SHIPS** (2026-04-24)
-- [x] 204-13-PLAN.md — v2 compliance guardrails for `run`, `status`, `doctor`, vault freshness, and Pricing Engine placeholder policy (gap closure) — **Phase 204 GA ready for verification** (2026-04-23)
+- [x] 204-13-PLAN.md — v2 compatibility guardrails for `run`, `status`, `doctor`, vault freshness, and Pricing Engine placeholder policy (bounded gap closure; executable schema refreshed 2026-04-27) — **Phase 204 GA ready for verification** (2026-04-23)
 
 ### Phase 204.1: close 5 fixes + Bonus Gap #3/#4 (decision needed) + winget/apt distribution (INSERTED)
 
@@ -149,12 +159,13 @@ Plans:
 - [ ] 205-08-PLAN.md — Tenant 0 pricing dogfood
 
 ### Phase 206: SOC 2 Type I Foundation
-**Goal:** Engage auditor, ratify SOC2 policies, and automate evidence for the real v2 risk profile: AgentRun/approval evidence, Pricing Engine controls, connector privacy, research evidence, learning governance, Tenant 0 proof, first pen test, and Type I readiness.
-**Requirements Mapped:** COMP-01, QA-01..15, RUN-01..08, TASK-01..05, PRC-01..09, CONN-01..06, EVD-01..06, LRN-01..05, T0-01..05
+**Goal:** Define the SOC2 Type I control foundation for the real v2 risk profile: approval-aware agents, pricing and billing controls, connector privacy, evidence and learning governance, Tenant 0 proof boundaries, SaaS financial posture, and auditor-ready Type I packaging.
+**Requirements Mapped:** COMP-01, QA-01..15
 **Depends on:** Phases 200–205; design must stay compatible with Phases 207–213
 **Status:** 📋 Planned — updated for v2 + Pricing Engine controls
 **DISCUSS:** `.planning/phases/206-soc2-type1-foundation/DISCUSS.md`
-**Artifacts:** `206-CONTEXT.md`, `206-RESEARCH.md`
+**Planning Note:** Replanned 2026-04-27 with executable schema frontmatter, a Wave 0.5 compatibility lock, a direct-ownership boundary around `COMP-01`, and explicit translation gates for later implementation phases.
+**Artifacts:** `206-CONTEXT.md`, `206-RESEARCH.md`, `206-REVIEWS.md`, `206-VALIDATION.md`
 **Plans:** 7/7 plans drafted
 
 Plans:
@@ -167,121 +178,128 @@ Plans:
 - [ ] 206-07-PLAN.md — Auditor workspace and Type I readiness package
 
 ### Phase 207: AgentRun v2 Orchestration Substrate
-**Goal:** Upgrade the partial AgentRun lifecycle into the canonical v2 substrate for durable runs, DAG chains, priority tiers, retries, DLQ, cost estimate/actuals, approvals, tasks, and side-effect idempotency.
-**Requirements Mapped:** RUN-01..08, TASK-01, BILL-01, QA-01..15
-**Depends on:** Phases 201, 202, 204, 205 where cost/pricing context is relevant
+**Goal:** Upgrade the partial AgentRun lifecycle into the canonical v2 substrate for durable runs, DAG chains, priority tiers, retries, DLQ, cost estimate/actuals, approval-aware side effects, run handoff records, and compatibility adapters.
+**Requirements Mapped:** RUN-01..08, QA-01..15
+**Depends on:** Phases 201, 202, 204, 205, 206
 **Status:** 📋 Planned - discuss/research refreshed 2026-04-23
 **DISCUSS:** `.planning/phases/207-agentrun-v2-orchestration-substrate/DISCUSS.md`
-**Artifacts:** `207-CONTEXT.md`, `207-RESEARCH.md`
+**Planning Note:** Replanned 2026-04-27 with executable schema frontmatter, explicit Phase 206 preflight, downstream-safe handoff contracts for Phase 208, and a validation strategy before execution begins.
+**Artifacts:** `207-CONTEXT.md`, `207-RESEARCH.md`, `207-REVIEWS.md`, `207-VALIDATION.md`
 **Plans:** 6/6 plans drafted
 
 Plans:
-- [ ] 207-01-PLAN.md - AgentRun v2 contracts, schema, and ID allocation
-- [ ] 207-02-PLAN.md - Durable run API and event stream
-- [ ] 207-03-PLAN.md - Priority, concurrency, retry, timeout, pause, cancel, and DLQ policy
-- [ ] 207-04-PLAN.md - ApprovalGate and Task handoff contracts
-- [ ] 207-05-PLAN.md - Cost estimate, actual cost, billing, and Pricing Engine context
-- [ ] 207-06-PLAN.md - Adoption path for existing and future agents
+- [ ] 207-01-PLAN.md - Upstream preflight, contract lock, and schema baseline
+- [ ] 207-02-PLAN.md - Durable run API and shared event stream
+- [ ] 207-03-PLAN.md - Scheduler, chains, retry, timeout, and DLQ policy
+- [ ] 207-04-PLAN.md - Approval-aware side effects and run handoff records
+- [ ] 207-05-PLAN.md - Run cost, billing bridge, and pricing context
+- [ ] 207-06-PLAN.md - Compatibility adapters, registry, and rollout
 
 ### Phase 208: Human Operating Interface
-**Goal:** Build the Morning Brief, unified Task Board, Approval Inbox, Connector Recovery surface, and Weekly Narrative so operators can make fast, evidence-backed decisions.
-**Requirements Mapped:** TASK-01..05, RUN-01..08, CONN-04, LOOP-01..08, QA-01..15
-**Depends on:** Phase 207
+**Goal:** Build the Morning Brief, unified Task Board, Approval Inbox, Recovery Center, and Weekly Narrative as one operator cockpit, while keeping evidence, connector, loop, and learning systems as later integrations instead of hidden current dependencies.
+**Requirements Mapped:** TASK-01..05, QA-01..15
+**Depends on:** Phases 205-207
 **Status:** 📋 Planned - discuss/research refreshed 2026-04-23
 **DISCUSS:** `.planning/phases/208-human-operating-interface/DISCUSS.md`
-**Artifacts:** `208-CONTEXT.md`, `208-RESEARCH.md`
+**Planning Note:** Replanned 2026-04-27 with explicit upstream preflight, validation strategy, shell-first contracts, and future translation gates for Phases 209-212.
+**Artifacts:** `208-CONTEXT.md`, `208-RESEARCH.md`, `208-REVIEWS.md`, `208-VALIDATION.md`
 **Plans:** 6/6 plans drafted
 
 Plans:
-- [ ] 208-01-PLAN.md - Operating shell information architecture
-- [ ] 208-02-PLAN.md - Morning Brief surface
-- [ ] 208-03-PLAN.md - Unified Task Board
-- [ ] 208-04-PLAN.md - Approval Inbox
-- [ ] 208-05-PLAN.md - Connector Recovery and impacted-agent visibility
-- [ ] 208-06-PLAN.md - Weekly Narrative
+- [ ] 208-01-PLAN.md - Wave 0.5 upstream preflight, architecture lock, and shell route contract
+- [ ] 208-02-PLAN.md - Morning Brief contract and landing experience
+- [ ] 208-03-PLAN.md - Unified Task Board and persisted operator work contract
+- [ ] 208-04-PLAN.md - Approval Inbox contract and blocker states
+- [ ] 208-05-PLAN.md - Recovery Center and impacted-work visibility contract
+- [ ] 208-06-PLAN.md - Weekly Narrative and future integration boundaries
 
 ### Phase 209: Evidence, Research, and Claim Safety
 **Goal:** Create EvidenceMap, source quality score, research freshness, claim TTL, known gaps, and unsupported-claim blocking across customer-facing outputs.
-**Requirements Mapped:** EVD-01..06, LOOP-02..04, PRC-03, PRC-04, QA-01..15
-**Depends on:** Phases 207, 208
+**Requirements Mapped:** EVD-01..06, QA-01..15
+**Depends on:** Phases 205-208
+**Planning Note:** Replanned 2026-04-27 with explicit upstream preflight, validation strategy, EvidenceMap contracts, pricing/compliance integration boundaries, and a future claim-evidence consumer map.
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/209-evidence-research-and-claim-safety/DISCUSS.md`
-**Artifacts:** `209-CONTEXT.md`, `209-RESEARCH.md`
+**Artifacts:** `209-CONTEXT.md`, `209-RESEARCH.md`, `209-REVIEWS.md`, `209-VALIDATION.md`
 **Plans:** 6/6 plans drafted
 
 Plans:
-- [ ] 209-01-PLAN.md - EvidenceMap contracts, schema, and ID allocation
-- [ ] 209-02-PLAN.md - Source Quality Score and research tier policy
-- [ ] 209-03-PLAN.md - Claim TTL, freshness, stale context, and known gaps
-- [ ] 209-04-PLAN.md - Approval UI evidence exposure and claim blocking
-- [ ] 209-05-PLAN.md - Research context reuse
-- [ ] 209-06-PLAN.md - Citation, inference labeling, and hallucination defense tests
+- [ ] 209-01-PLAN.md - Wave 0.5 upstream preflight, architecture-lock, and EvidenceMap foundation
+- [ ] 209-02-PLAN.md - Source quality rubric, research tiers, and pricing-evidence bridge
+- [ ] 209-03-PLAN.md - Freshness, TTL, stale-context, and known-gap policy
+- [ ] 209-04-PLAN.md - Approval evidence snapshots and unsupported-claim blocking
+- [ ] 209-05-PLAN.md - Research context reuse and AgentRun linkage
+- [ ] 209-06-PLAN.md - Citation, inference labeling, hallucination defense, and future claim-evidence matrix
 
 ### Phase 210: Connector Wow Loop and Recovery
 **Goal:** Implement ConnectorInstall, max-3 onboarding recommendations, first GA4/GSC or equivalent wow audit, dependent-agent pause, recovery tasks, backfill, and connector evidence.
-**Requirements Mapped:** CONN-01..06, RUN-01..08, TASK-01..05, QA-01..15
-**Depends on:** Phases 207, 208, 209
+**Requirements Mapped:** CONN-01..06, QA-01..15
+**Depends on:** Phases 206-209
+**Planning Note:** Replanned 2026-04-27 with explicit upstream preflight, validation strategy, ConnectorInstall state contracts, adapter evidence rules, low-risk wow-audit posture, and recovery/backfill governance.
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/210-connector-wow-loop-and-recovery/DISCUSS.md`
-**Artifacts:** `210-CONTEXT.md`, `210-RESEARCH.md`
+**Artifacts:** `210-CONTEXT.md`, `210-RESEARCH.md`, `210-REVIEWS.md`, `210-VALIDATION.md`
 **Plans:** 6/6 plans drafted
 
 Plans:
-- [ ] 210-01-PLAN.md - ConnectorInstall contract and schema
-- [ ] 210-02-PLAN.md - Nango and direct adapter decision matrix
-- [ ] 210-03-PLAN.md - Max-3 onboarding connector recommendation UX
-- [ ] 210-04-PLAN.md - First live-data wow audit
-- [ ] 210-05-PLAN.md - Connector failure agent pause and recovery tasks
-- [ ] 210-06-PLAN.md - Backfill, retry, and recovery evidence
+- [ ] 210-01-PLAN.md - Wave 0.5 upstream preflight, architecture-lock, and ConnectorInstall foundation
+- [ ] 210-02-PLAN.md - Adapter decision matrix with official-doc traceability
+- [ ] 210-03-PLAN.md - Max-3 onboarding recommendation policy and wow-promise copy
+- [ ] 210-04-PLAN.md - First live-data wow audit and fallback paths
+- [ ] 210-05-PLAN.md - Dependent-agent pause and precise recovery tasks
+- [ ] 210-06-PLAN.md - Backfill, retry, recovery evidence, and future connector compatibility map
 
 ### Phase 211: Content, Social, and Revenue Loop
 **Goal:** Prove the first complete MarkOS operating loop: strategy -> brief -> draft -> audit -> approval -> dispatch -> measure -> learn, with social and revenue pathways.
-**Requirements Mapped:** LOOP-01..08, TASK-01..05, EVD-01..06, CONN-01..06, PRC-09, QA-01..15
-**Depends on:** Phases 205, 207, 208, 209, 210
+**Requirements Mapped:** LOOP-01..08, QA-01..15
+**Depends on:** Phases 205-210
+**Planning Note:** Replanned 2026-04-27 with explicit upstream preflight, validation strategy, loop-object contracts, compliance-aware dispatch gates, and future-growth consumer boundaries.
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/211-content-social-revenue-loop/DISCUSS.md`
-**Artifacts:** `211-CONTEXT.md`, `211-RESEARCH.md`
+**Artifacts:** `211-CONTEXT.md`, `211-RESEARCH.md`, `211-REVIEWS.md`, `211-VALIDATION.md`
 **Plans:** 6/6 plans drafted
 
 Plans:
-- [ ] 211-01-PLAN.md - Strategy and brief object model
-- [ ] 211-02-PLAN.md - Draft generation and audit pipeline
-- [ ] 211-03-PLAN.md - Approval-to-dispatch path
-- [ ] 211-04-PLAN.md - Social signal schema and escalation
-- [ ] 211-05-PLAN.md - Revenue attribution feedback
-- [ ] 211-06-PLAN.md - Measurement handoff to learning and weekly narrative
+- [ ] 211-01-PLAN.md - Wave 0.5 upstream preflight, architecture-lock, and strategy/brief contract foundation
+- [ ] 211-02-PLAN.md - MarketingArtifact and ArtifactAudit pipeline
+- [ ] 211-03-PLAN.md - DispatchAttempt state machine and approval-to-dispatch path
+- [ ] 211-04-PLAN.md - SocialSignal routing and escalation posture
+- [ ] 211-05-PLAN.md - Revenue feedback links and weekly narrative inputs
+- [ ] 211-06-PLAN.md - Measurement handoff, next-task generation, and future-growth compatibility map
 
 ### Phase 212: Learning and Literacy Evolution
 **Goal:** Add ArtifactPerformanceLog, TenantOverlay, LiteracyUpdateCandidate, anonymized cross-tenant learning, and admin-reviewed central literacy promotion.
-**Requirements Mapped:** LRN-01..05, EVD-01..06, LOOP-08, QA-01..15
-**Depends on:** Phase 211
+**Requirements Mapped:** LRN-01..05, QA-01..15
+**Depends on:** Phases 206-209, 211
+**Planning Note:** Replanned 2026-04-27 with explicit upstream preflight, validation strategy, tenant-overlay/promotion/privacy gates, and future-growth compatibility boundaries.
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/212-learning-literacy-evolution/DISCUSS.md`
-**Artifacts:** `212-CONTEXT.md`, `212-RESEARCH.md`
+**Artifacts:** `212-CONTEXT.md`, `212-RESEARCH.md`, `212-REVIEWS.md`, `212-VALIDATION.md`
 **Plans:** 5/5 plans drafted
 
 Plans:
-- [ ] 212-01-PLAN.md - ArtifactPerformanceLog schema and outcome envelope
-- [ ] 212-02-PLAN.md - TenantOverlay learning records
-- [ ] 212-03-PLAN.md - LiteracyUpdateCandidate queue and admin review
-- [ ] 212-04-PLAN.md - Cross-tenant anonymization and privacy controls
-- [ ] 212-05-PLAN.md - Learning-driven tasks and strategy recommendations
+- [ ] 212-01-PLAN.md - Wave 0.5 upstream preflight, architecture-lock, and ArtifactPerformanceLog foundation
+- [ ] 212-02-PLAN.md - TenantOverlay records, expiry, suppression, and merge posture
+- [ ] 212-03-PLAN.md - LiteracyUpdateCandidate queue and admin-reviewed promotion path
+- [ ] 212-04-PLAN.md - Cross-tenant anonymization, redaction, and threshold gates
+- [ ] 212-05-PLAN.md - LearningRecommendation handoff and future-growth compatibility map
 
 ### Phase 213: Tenant 0 Dogfood and Compliance Validation
 **Goal:** Run MarkOS on its own marketing with real data, approved claims, Pricing Engine context, and final vault-to-codebase compliance validation.
-**Requirements Mapped:** T0-01..05, LOOP-01..08, PRC-01..09, COMP-01, QA-01..15
+**Requirements Mapped:** T0-01..05, QA-01..15
 **Depends on:** Phases 205-212
+**Planning Note:** Replanned 2026-04-27 with explicit upstream preflight, validation strategy, pricing/public-proof release gates, and an authoritative 214-217 go/no-go closeout.
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/213-tenant0-dogfood-compliance-validation/DISCUSS.md`
-**Artifacts:** `213-CONTEXT.md`, `213-RESEARCH.md`
+**Artifacts:** `213-CONTEXT.md`, `213-RESEARCH.md`, `213-REVIEWS.md`, `213-VALIDATION.md`
 **Plans:** 5/5 plans drafted
 
 Plans:
-- [ ] 213-01-PLAN.md - Tenant 0 workspace, brand pack, connector list, and data policy
-- [ ] 213-02-PLAN.md - Tenant 0 first operating loop
-- [ ] 213-03-PLAN.md - Tenant 0 Pricing Engine dogfood
-- [ ] 213-04-PLAN.md - Public evidence and case-study readiness policy
-- [ ] 213-05-PLAN.md - Final vault-to-codebase compliance validation before enterprise positioning
+- [ ] 213-01-PLAN.md - Wave 0.5 upstream preflight, architecture-lock, Tenant 0 workspace profile, connector inventory, and data policy
+- [ ] 213-02-PLAN.md - First real Tenant 0 operating loop with evidence, approval, dispatch honesty, and learning handoff
+- [ ] 213-03-PLAN.md - Public pricing audit and release gate that consumes Phase 205 Tenant 0 pricing dogfood
+- [ ] 213-04-PLAN.md - Public proof, case-study, and compliance-language boundary
+- [ ] 213-05-PLAN.md - Final requirement matrix, unresolved-gap register, and the authoritative 214-217 go/no-go decision
 
 ## Next Milestone Candidate: v4.1.0 — SaaS Suite 1.0
 
@@ -294,21 +312,22 @@ Plans:
 **Research/context:** `obsidian/brain/SaaS Suite Canon.md`, `obsidian/brain/SaaS Marketing OS Strategy Canon.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-suite-intake.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-marketing-os-strategy-intake.md`, `obsidian/work/incoming/16-SAAS-SUITE.md`, `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md`, `.agent/markos/references/saas-suite.md`, `.planning/V4.0.0-GSD-PHASE-RESEARCH-READINESS-MATRIX.md`.
 
 ### Phase 214: SaaS Suite Activation and Subscription Core
-**Goal:** Build `business_type = saas` activation, SaaS profile, module gating, plan catalog, subscription lifecycle, lifecycle events, RLS schema, and task/approval posture.
-**Requirements Mapped:** SAS-01..03, SAS-04, RUN-01..08, TASK-01..05, QA-01..15
+**Goal:** Build the SaaS Suite foundation: durable `business_type = saas` activation, SaaS profile/plan/subscription substrate, explicit lifecycle governance, CRM identity bridging, and gated SaaS surfaces with a non-runnable growth extension point.
+**Requirements Mapped:** SAS-01..03, QA-01..15
 **Depends on:** Phases 205, 207, 208
+**Planning Note:** Replanned 2026-04-27 with refreshed research, validation strategy, lifecycle state machine, CRM bridge, and Phase 218 growth-extension gate.
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/214-saas-suite-activation-subscription-core/DISCUSS.md`
-**Artifacts:** `214-CONTEXT.md`, `214-RESEARCH.md`
+**Artifacts:** `214-CONTEXT.md`, `214-RESEARCH.md`, `214-REVIEWS.md`, `214-VALIDATION.md`
 **Plans:** 6/6 plans drafted
 
 Plans:
-- [ ] 214-01-PLAN.md - SaaS activation gate, wizard, and ID allocation
-- [ ] 214-02-PLAN.md - SaaS profile, plan, subscription, and lifecycle schema
-- [ ] 214-03-PLAN.md - Subscription lifecycle state machine
-- [ ] 214-04-PLAN.md - SaaS customer identity bridge
-- [ ] 214-05-PLAN.md - Lifecycle tasks, approvals, and audit
-- [ ] 214-06-PLAN.md - SaaS core UI/API and growth-mode extension point
+- [ ] 214-01-PLAN.md - Activation gate, business_type normalization, Wave 0.5 architecture-lock, upstream preflight, and slot/F-ID coordination
+- [ ] 214-02-PLAN.md - Core SaaS profile/plan/subscription/event schema plus Pricing Engine sentinel enforcement
+- [ ] 214-03-PLAN.md - Explicit lifecycle state machine, approval-required transitions, idempotency, and rollback
+- [ ] 214-04-PLAN.md - SaaS customer bridge and CRM identity resolution workflow
+- [ ] 214-05-PLAN.md - Lifecycle governance, approval routing, audit linkage, and evidence-pack enforcement
+- [ ] 214-06-PLAN.md - SaaS API/MCP/operator surfaces and the Phase 218 growth-extension translation gate
 
 ### Phase 215: SaaS Billing, Payments, and Multi-Country Compliance
 **Goal:** Add invoices, payment processors, Stripe/US billing, Mercado Pago/Colombia support, QuickBooks/Siigo/Alegra sync, DIAN setup, legal invoice compliance, and processor webhook routing through the existing webhook engine.

@@ -2,8 +2,9 @@
 phase: 201-saas-tenancy-hardening
 verified: 2026-04-17T00:00:00Z
 status: passed
-score: 10/10 must-have clusters verified
+score: 10/10 code-verifiable must-have clusters verified
 verdict: PASS
+scope_reconciled: 2026-04-27
 test_totals:
   tenancy: 122 pass / 0 fail
   audit: 23 pass / 0 fail
@@ -29,7 +30,8 @@ non_applicable_requirements:
 
 **Phase Goal (ROADMAP.md):** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
 **Verified:** 2026-04-17
-**Status:** PASS
+**Status:** PASS for the delivered hardening scope
+**Reconciliation note:** Metadata reconciled on 2026-04-27; the remaining live-platform smokes are informational follow-up only.
 **Re-verification:** No — initial verification
 
 ---
@@ -286,9 +288,11 @@ Every must-have cluster from the phase goal is VERIFIED with concrete file + gre
 9. Cross-domain audit emit fabric (webhooks + approvals) — wired
 10. Edge-config slug cache + middleware read-through + switcher write-through + 60s TTL + 3 vercel cron schedules — all wired
 
-**No blockers. No structural gaps. No orphaned requirements. Phase goal achieved.**
+**No blockers in the code and contract scope. No structural gaps. No orphaned requirements. Phase goal achieved for the hardening boundary defined in `ROADMAP.md`.**
 
 The one failing pre-existing test (`test/tenant-auth/ui-authorization-negative-path.test.js:188`) is a Phase 51/53/65-era artifact of a layout-shell refactor and is explicitly NOT a Phase 201 regression.
+
+The live-platform smokes retained in `201-VALIDATION.md` remain useful operational follow-up, but they are not treated as blocking phase gates in this reconciled closeout packet.
 
 ---
 

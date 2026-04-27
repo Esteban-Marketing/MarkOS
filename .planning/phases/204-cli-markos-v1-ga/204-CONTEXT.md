@@ -1,7 +1,7 @@
 # Phase 204 Context - CLI `markos` v1 GA
 
-**Gathered:** 2026-04-23  
-**Status:** Ready for planning refresh  
+**Gathered:** 2026-04-27  
+**Status:** Verified; 204-13 compatibility refresh reconciled  
 **Milestone:** v4.0.0 SaaS Readiness 1.0
 
 ## Why this phase exists now
@@ -18,6 +18,8 @@ The deep audit changed the shape of this phase:
 - `.planning/V4.0.0-CODEBASE-VAULT-DEEP-AUDIT.md`
 - `.planning/REQUIREMENTS.md`
 - `.planning/ROADMAP.md`
+- `.planning/phases/204-cli-markos-v1-ga/204-VERIFICATION.md`
+- `.planning/phases/204-cli-markos-v1-ga/204-REVIEWS.md`
 - `package.json`
 - `bin/install.cjs`
 - `bin/cli-runtime.cjs`
@@ -56,6 +58,7 @@ The deep audit changed the shape of this phase:
 - `status` and `doctor` must not become stale snapshots of doctrine. They should read the same operational truth the rest of the system uses.
 - Any CLI run flow should align to Phase 207 durable run/event APIs, not invent its own lifecycle.
 - Pricing-sensitive CLI output must use approved pricing context or `{{MARKOS_PRICING_ENGINE_PENDING}}`.
+- Future-phase SaaS or growth doctrine may inform placeholder and freshness checks, but Phase 204 must not claim those later phases are implemented.
 
 ## Non-negotiables
 
@@ -64,13 +67,14 @@ The deep audit changed the shape of this phase:
 - Do not create a second local execution model for runs that bypasses Phase 207.
 - Do not write secrets outside the approved local/private surfaces.
 - Do not let `doctor` or `status` imply pricing certainty that the Pricing Engine has not approved.
+- Do not make 204-13 wait on active implementation from Phases 205, 207, 214, or 218; later doctrine is compatibility input only.
 
 ## Recommended planning emphasis
 
 - 204-01 must explicitly include compatibility scaffolding for the current CLI runtime.
 - 204-05, 204-06, 204-08, and 204-09 should be planned as thin clients over APIs/substrate, not local logic bundles.
-- 204-13 must remain the doctrine-gap closure plan that keeps CLI aligned with the vault and deep audit.
+- 204-13 must remain the doctrine-gap closure plan that translates later pricing/run/SaaS doctrine into present-tense CLI compatibility checks, not future-phase blocking dependencies.
 
 ## Done means
 
-Phase 204 is done when the CLI can expand MarkOS operator capability without regressing installation/bootstrap behavior and without drifting from the v2 run/pricing/freshness doctrine.
+Phase 204 is done when the CLI can expand MarkOS operator capability without regressing installation/bootstrap behavior, without drifting from the v2 run/pricing/freshness doctrine, and without pretending later pricing/SaaS phases are already implemented.

@@ -1,8 +1,10 @@
 ---
 phase: 203-webhook-subscription-engine-ga
 verified: 2026-04-18T14:00:00Z
-status: passed
-score: 12/12 must-haves verified
+status: human_needed
+score: 12/12 code-verifiable must-haves green
+human_uat_remaining: 7
+last_reconciled: 2026-04-27
 re_verification:
   previous_status: gaps_found
   previous_score: 11/12
@@ -44,7 +46,7 @@ human_verification:
 **Phase Goal:** Graduate 200-03 webhook primitive to GA: durable Supabase + Vercel Queues substrate, tenant-admin dashboard (2 surfaces), DLQ + replay, signing-secret rotation with 30-day grace + T-7/T-1/T-0 notifications + Surface 4 banner, per-subscription rate-limits + circuit breaker, public status page, full observability + docs.
 
 **Verified:** 2026-04-18T14:00:00Z
-**Status:** human_needed
+**Status:** human_needed (12/12 code-verifiable truths green; 7 live-UAT items pending)
 **Re-verification:** Yes — after gap closure (plan 203-11)
 
 ## Re-Verification Summary

@@ -1,7 +1,7 @@
 # Phase 202: MCP Server GA + Claude Marketplace Launch — Context
 
-**Gathered:** 2026-04-17
-**Status:** Ready for planning
+**Gathered:** 2026-04-27
+**Status:** Verified for Claude Marketplace + VS Code cert-ready scope
 
 <domain>
 ## Phase Boundary
@@ -36,6 +36,11 @@ exfil) mitigated end-to-end.
 - 3rd-party agent marketplace (users publishing agents) → Phase 213 alpha
 - Cursor · Windsurf · Warp · ChatGPT certification → 202.1 / follow-up phases (VS Code is the one cert target in 202)
 - SOC 2 Type I evidence collection → Phase 206 (phase 202 emits the logs + audit rows that 206 will collect)
+
+**Current closeout posture:**
+- Phase 202 is verified for the scope it actually executed: Claude Marketplace launch package plus VS Code cert-ready support.
+- Marketplace approval itself is an external operational workflow, not a code-verification gate inside this phase.
+- Cursor / Windsurf / Warp / ChatGPT certs remain explicitly deferred to `202.1` or follow-up client-cert work.
 
 </domain>
 
@@ -115,6 +120,9 @@ None — no backlog todos matched the phase 202 scope.
 
 ### Roadmap + milestone
 - `.planning/ROADMAP.md` §"Phase 202: MCP Server GA + Claude Marketplace Launch" — phase goal, requirements, dependencies
+- `.planning/phases/202-mcp-server-ga-claude-marketplace/202-VERIFICATION.md` — code-verified truth table and scope clarification
+- `.planning/phases/202-mcp-server-ga-claude-marketplace/202-REVIEWS.md` — metadata/scope drift review findings
+- `.planning/phases/202-mcp-server-ga-claude-marketplace/deferred-items.md` — explicit non-blocking leftovers
 - `obsidian/thinking/2026-04-16-markos-saas-roadmap.md` — full v4.0.0 SaaS Readiness synthesis (decisions 1 + 4; Q-A, Q-B, Q-C answers)
 
 ### Phase 200 (MCP 0-day)
