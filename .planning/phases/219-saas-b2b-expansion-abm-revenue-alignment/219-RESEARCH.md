@@ -2,8 +2,8 @@
 
 **Researched:** 2026-04-26
 **Domain:** SaaS B2B Growth — account expansion, customer marketing, ABM/buying committee, advocacy/proof/review, expansion/save/discount pricing controls, B2B growth agent readiness
-**Confidence:** HIGH for codebase-grounded claims, HIGH for schema shapes (derived from doc 17 interfaces + canon), MEDIUM for F-ID/migration slot sequencing (pending P218 slot confirmation)
-**Replaces:** 24-line stub created during initial seeding pass
+**Confidence:** HIGH for codebase-grounded claims, HIGH for schema shapes (derived from doc 17 interfaces + canon), HIGH for F-ID/migration slot sequencing (Q-7 RESOLVED — P218 plans confirm slots 101-106; P219 takes 107-111)
+**Replaces:** 24-line stub created during initial seeding pass; supersedes commit 813008a with targeted slot + cross-phase updates
 
 ---
 
@@ -32,13 +32,19 @@
 
 ## Executive Summary
 
-Phase 219 ships the **first implementation truth** for the B2B growth motions defined in `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md` and distilled into `obsidian/brain/SaaS Marketing OS Strategy Canon.md`. It is the **second phase** of the v4.1.0 SaaS milestone growth layer (P218 owns PLG/in-app/experimentation; P219 owns B2B expansion/ABM/advocacy/revenue-alignment; P220 owns B2C viral/referral/community/events/PR/partnerships/devrel).
+Phase 219 ships the **first implementation truth** for the B2B growth motions defined in `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md` and distilled into `obsidian/brain/SaaS Marketing OS Strategy Canon.md`. It is the **third phase** of the v4.1.0 SaaS milestone growth layer (P217 owns revenue intelligence + SAS agents + API/MCP/UI surface; P218 owns PLG/in-app/experimentation + foundational mode-routing substrate; P219 owns B2B expansion/ABM/advocacy/revenue-alignment; P220 owns B2C viral/referral/community/events/PR/partnerships/devrel).
 
-P219 covers six distinct domains, each comparable in scope to a P221-P228 commercial-engine plan. The phase boundary is intentional: P218 already owns `SaaSGrowthProfile` + PLG/PQL/in-app/experimentation; P219 picks up everything that is **existing-customer focused and B2B specific** — revenue team config, account expansion programs, ABM packages, buying committees, advocacy/proof workflows, and pricing-safe expansion/save/discount controls. P220 picks up B2C viral, community, events, PR, partnerships, and devrel.
+P219 covers six distinct domains, each comparable in scope to a P221-P228 commercial-engine plan. The phase boundary is intentional: P218 already owns `SaaSGrowthProfile` + PLG/PQL/in-app/experimentation AND the `module_mode_eligibility` matrix that P219 must consume; P219 picks up everything that is **existing-customer focused and B2B specific** — revenue team config, account expansion programs, ABM packages, buying committees, advocacy/proof workflows, and pricing-safe expansion/save/discount controls. P220 picks up B2C viral, community, events, PR, partnerships, and devrel.
 
-**Critical sequencing finding:** P219 depends HARD on P214 (SaaSSuiteActivation gating), P215 (billing — expansion/save offers route through billing engine), and P218 (SaaSGrowthProfile — all P219 modules activate by saas_model). P219 depends SOFT on P205 (Pricing Engine — Plan 05 needs hard-prereq OR `{{MARKOS_PRICING_ENGINE_PENDING}}` placeholder per canon). P219 is a SOFT dependency of P220 — P220 can degrade gracefully if P219 is missing (review_requests triggered from advocacy candidates fall back to manual trigger).
+**Critical sequencing finding (updated):** P219 depends HARD on P214 (SaaSSuiteActivation gating), P215 (billing — expansion/save offers route through billing engine), P217 (revenue intelligence — `saas_mrr_snapshots` table + SAS-09 MRR/NRR/expansion signal data consumed by Plan 02 expansion scanner), and P218 (SaaSGrowthProfile — all P219 modules activate by saas_model AND every P219 module-table INSERT is gated by `MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE` pattern via `module_mode_eligibility` table + `lib/markos/profile/mode-eligibility.ts`). P219 depends SOFT on P205 (Pricing Engine — Plan 05 uses `{{MARKOS_PRICING_ENGINE_PENDING}}` sentinel fallback). P219 is a SOFT dependency of P220 — P220 can degrade gracefully if P219 is missing.
 
-**T0-04 resolution:** Plan 04 stub references `T0-04` in requirements. Confirmed in `.planning/REQUIREMENTS.md` line 113: `T0-04: Public Tenant 0 proof is sourced, approved, and privacy-safe.` This is a real requirement — NOT a typo for SG-09. It maps cleanly to Plan 04 (advocacy/review/proof workflows — the Tenant 0 proof posture). Plans must include `T0-04` alongside `SG-03`, `SG-09`, `EVD-01..06`.
+**Migration slot Q-7 RESOLVED (updated):** Previous P219 research (commit 813008a) assumed P219 = slots 85-89. This was incorrect — slots 82-89 are fully occupied by existing foundation migrations (82=audit_hash_chain, 83=unverified_signups, 84=passkey_credentials, 85=sessions_devices, 86=custom_domains_ext, 87=invites_lifecycle, 88=mcp_sessions, 89=mcp_cost_window) [VERIFIED: codebase]. P218 plans (commit a0d1441, 218-01-PLAN.md) lock P218 = slots **101-106**, F-IDs F-238..F-246. P219 takes **slots 107-111** (Plan 06 seeds into 111 additive OR uses 112 if migration is needed). P220 stays at 90-95+97 (locked); slot ordering is resolved via `lib/markos/profile/mode-eligibility.ts` runtime helper (P220 module-table triggers consume mode eligibility at app-layer runtime since P220 migrations at 90-97 apply before P218 at 101+). P219 at 107+ applies after P218 at 101+ — no sequencing conflict within P218→P219.
+
+**P218 contract consumption (new):** Every P219 module-table INSERT trigger must call `isModuleEligible(tenantId, moduleKey)` from `lib/markos/profile/mode-eligibility.ts`. This is the `MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE` pattern from P218. P219 Plan 01 migration SQL must reference this library not duplicate the logic. The mode-eligibility matrix for P219 modules: ABM = [b2b, plg_b2b]; RevTeamConfig = [all 5 modes]; ExpansionPrograms = [all 5 modes]; Advocacy = [all 5 modes]; PricingControls = [all 5 modes]; B2B agents = [b2b, plg_b2b].
+
+**P217 contract consumption (new):** P217 ships `saas_mrr_snapshots` (Plan 01 SaaSMRRSnapshot + Plan 02 waterfall). P219 Plan 02 expansion-signal-scanner cron (`api/cron/b2b-expansion-signal-scanner.js`) consumes MRR/NRR/expansion data from `saas_mrr_snapshots` (read-only). P219 does NOT own or redefine SAS-09. REQUIREMENTS.md line 226 maps `SAS-09 | Phase 217`. P219 INTEGRATES via `integrates_with: [SAS-09 from P217]` frontmatter field.
+
+**T0-04 resolution:** Plan 04 stub references `T0-04` in requirements. Confirmed in `.planning/REQUIREMENTS.md` line 113: `T0-04: Public Tenant 0 proof is sourced, approved, and privacy-safe.` This is a real requirement — NOT a typo for SG-09. It maps cleanly to Plan 04 (advocacy/review/proof workflows — the Tenant 0 proof posture).
 
 **Plan 05 Pricing Engine integration mode:** Recommend `assertUpstreamReady(['P205'])` as SOFT (not hard-fail), with `{{MARKOS_PRICING_ENGINE_PENDING}}` placeholder fallback. Hard-fail would block P219 execution indefinitely since P205 is not yet landed. The placeholder sentinel is the canonical pattern per Pricing Engine Canon and CLAUDE.md placeholder rule.
 
@@ -61,7 +67,8 @@ Because CONTEXT.md is a stub, the entire decision surface beyond the canonical i
 - `obsidian/brain/SaaS Marketing OS Strategy Canon.md` (vault canon — wins for product shape per CLAUDE.md source-of-truth precedence rule 1)
 - `obsidian/reference/MarkOS v2 Operating Loop Spec.md` (spec — wins for object shape)
 - `.planning/REQUIREMENTS.md` SG-03, SG-08, SG-09, SG-10, SG-11, SG-12, LOOP-06, EVD-01..06, QA-01..15
-- P218 coordination (ICP segment ownership; buying committee base ownership)
+- P217 coordination (SAS-09 owned by P217; P219 integrates Plan 02 expansion scanner with saas_mrr_snapshots)
+- P218 coordination (ICP segment ownership; module_mode_eligibility matrix gate; mode ENUM)
 - P220 coordination (advocacy/review boundary)
 - P205 Pricing Engine (Plan 05 hard-prereq OR placeholder fallback)
 
@@ -121,6 +128,7 @@ These directives carry the same authority as locked CONTEXT decisions.
 
 P219 does NOT ship (handled by sibling phases):
 - `SaaSGrowthProfile`, `ActivationDefinition`, `PQLScore`, `UpgradeTrigger`, `InAppCampaign`, `MarketingExperiment` — P218
+- `SaaSMRRSnapshot`, `/v1/saas/*` API surface, SAS agent readiness registry — P217
 - `ReferralProgram`, `ViralLoopMetrics`, `CommunityProfile`, `MarketingEvent`, `AffiliateProgram` — P220
 
 **Approval posture** (canon lines 139-150): approval required by default for:
@@ -181,6 +189,7 @@ This section MUST be verified in Plan 219-01 Task 0.5 (first task in Wave 1 — 
 | Audit emit | `lib/markos/audit/*` (SHA-256 hash chain per migration 82) | filesystem [VERIFIED: codebase] |
 | Tombstone | `lib/markos/governance/*` deletion workflow (migration 56) | filesystem [VERIFIED: codebase] |
 | App Router | OUT OF SCOPE — P219 has NO public-facing App Router routes | architecture-lock |
+| Mode eligibility | `lib/markos/profile/mode-eligibility.ts` → `isModuleEligible(tenantId, moduleKey)` | P218 Plan 01 ships this; P219 consumes at runtime [VERIFIED: 218-01-PLAN.md must_haves] |
 
 ### Helper File Presence Verification Table
 
@@ -193,6 +202,7 @@ This section MUST be verified in Plan 219-01 Task 0.5 (first task in Wave 1 — 
 | `lib/markos/plugins/registry.js` | `resolvePlugin(registry, pluginId)` | EXISTS [VERIFIED: codebase] | 102 |
 | `lib/markos/mcp/tools/index.cjs` | MCP tool family registry (CommonJS) | EXISTS [VERIFIED: codebase] | — |
 | `contracts/openapi.json` | Active OpenAPI 3.1 spec | EXISTS [VERIFIED: codebase] | — |
+| `lib/markos/profile/mode-eligibility.ts` | `isModuleEligible(tenantId, moduleKey)` | SHIPS IN P218 Plan 01 [VERIFIED: 218-01-PLAN.md] | — |
 
 ### Forbidden Patterns (architecture-lock test asserts grep count = 0 across all P219 lib/api paths)
 
@@ -231,9 +241,8 @@ The architecture-lock test (`test/b2b-219/preflight/architecture-lock.test.js`) 
 |-------|----------------|-------------------|-------------|
 | P214 | `saas_suite_activations` | SaaSSuiteActivation — only saas-mode tenants see B2B growth | HARD |
 | P215 | `billing_periods`, `tenant_billing_subscriptions` | Billing engine — expansion offer + save offer + discount routing flow through this | HARD |
-| P218 | `saas_growth_profiles` | SaaSGrowthProfile (`saas_model`) — P219 modules activate only for `b2b`, `plg_b2b`, `b2b2c` modes | HARD |
-| P216 | `saas_health_scores` | Health score — advocacy candidate trigger uses health_score >= 85; review_request trigger uses health_score_high | SOFT |
-| P217 | (saas agents + `/v1/saas/*` surface) | SAS agent conventions — P219 surface follows P217 API conventions | SOFT |
+| P217 | `saas_mrr_snapshots` | SAS-09 revenue intelligence — Plan 02 expansion-signal-scanner reads MRR/NRR/expansion data; P219 does NOT redefine SAS-09 | HARD |
+| P218 | `saas_growth_profiles`, `module_mode_eligibility` | SaaSGrowthProfile (`mode` ENUM) + module eligibility matrix — every P219 module-table INSERT uses `MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE` pattern via `lib/markos/profile/mode-eligibility.ts` | HARD |
 
 ### Soft Upstreams (degrade gracefully)
 
@@ -243,7 +252,10 @@ The architecture-lock test (`test/b2b-219/preflight/architecture-lock.test.js`) 
 | P207 | AgentRun v2 — B2B growth agents emit AgentRun records | Stub to `noopAgentRunEmit()` if not yet shipped |
 | P208 | Approval Inbox UI — approvals show up in operator inbox | DB rows still created via `buildApprovalPackage`; UI degrades to manual SQL query |
 | P209 | EvidenceMap — ABM intelligence + advocacy proof `evidence_refs` validation | Soft warn if `evidence_refs` empty; upgrade to hard-fail once P209 ships |
+| P210 | ConnectorInstall — analytics connector for expansion signal events | `expansion_signal` stored as string; connector is operator-external |
 | P211 | Pricing-engine-pending sentinel infrastructure | Use string literal `{{MARKOS_PRICING_ENGINE_PENDING}}` directly |
+| P212 | P212 LRN substrate — ArtifactPerformanceLog, TenantOverlay | No direct dependency; P219 growth learnings route through P218 experiment decisions |
+| P216 | `saas_health_scores` | Health score — advocacy candidate trigger uses health_score >= 85; review_request trigger uses health_score_high | SOFT |
 | P222 | CRM `buying_committees` SOR table | P219 ships `abm_buying_committee_members` as own table; P222 ships CRM-side `buying_committee_members` — distinct tables, no FK conflict |
 
 ### Preflight Script Pattern
@@ -253,12 +265,14 @@ The architecture-lock test (`test/b2b-219/preflight/architecture-lock.test.js`) 
 'use strict';
 const { createClient } = require('@supabase/supabase-js');
 const REQUIRED_TABLES = [
-  'saas_suite_activations',   // P214 hard prereq
-  'saas_growth_profiles',     // P218 hard prereq
+  'saas_suite_activations',       // P214 hard prereq
+  'saas_mrr_snapshots',           // P217 hard prereq — expansion signal scanner reads MRR/NRR
+  'saas_growth_profiles',         // P218 hard prereq — mode column + MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE pattern
+  'module_mode_eligibility',      // P218 hard prereq — 60-row eligibility seed
 ];
 const SOFT_TABLES = [
-  'pricing_recommendations',  // P205 soft prereq
-  'saas_health_scores',       // P216 soft prereq
+  'pricing_recommendations',      // P205 soft prereq
+  'saas_health_scores',           // P216 soft prereq
 ];
 async function main() {
   const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -285,43 +299,125 @@ Each of Plans 01-06 ships its own `scripts/preconditions/219-NN-check-upstream.c
 
 ## F-ID and Migration Slot Allocation
 
-### Slot Context (from P220 Research + codebase enumeration)
+### Slot Collision History (RESOLVED)
 
-**Highest on-disk migration (verified 2026-04-26):** `96_neuro_literacy_metadata.sql` [VERIFIED: codebase]
+**Verified on-disk migration slots (2026-04-26):** [VERIFIED: codebase — `ls supabase/migrations/`]
 
-**P220 locked slots (from 220-01-PLAN.md frontmatter):**
-- Migration slots: 90, 91, 92, 93, 94, 95, 97 (skip 96 = existing)
-- F-IDs: F-209..F-227 (sequential post-P227 F-198 per P220 Q-3 path-A)
+| Slot | Migration | Owner |
+|------|-----------|-------|
+| 82 | `82_markos_audit_log_hash_chain.sql` | Foundation (existing) |
+| 83 | `83_markos_unverified_signups.sql` | Foundation (existing) |
+| 84 | `84_markos_passkey_credentials.sql` | Foundation (existing) |
+| 85 | `85_markos_sessions_devices.sql` | Foundation (existing) |
+| 86 | `86_markos_custom_domains_ext.sql` | Foundation (existing) |
+| 87 | `87_markos_invites_lifecycle.sql` | Foundation (existing) |
+| 88 | `88_markos_mcp_sessions.sql` | Foundation (existing) |
+| 89 | `89_markos_mcp_cost_window.sql` | Foundation (existing) |
+| 90–95, 97 | RESERVED — P220 plans (220-01-PLAN.md frontmatter locked) | P220 (locked) |
+| 96 | `96_neuro_literacy_metadata.sql` | Existing |
+| 98–99 | UNOCCUPIED | Available (reserved for P217 or other phases) |
+| 100 | `100_crm_schema_identity_graph_hardening.sql` | Existing |
+| 101–106 | RESERVED — P218 plans (218-01-PLAN.md frontmatter: `migration_slots: [101]`) | P218 (locked) |
+| 107–111 | **RESERVED for P219** | P219 (this research) |
+| 112 | Available for P219 Plan 06 if additive seed requires own slot | P219 Plan 06 (conditional) |
 
-**P221 reserved slots (per 220-RESEARCH.md):** migrations ~100-105; F-106..F-112
-**P222 reserved slots:** migrations 106-112; F-113..F-121
+**Previous P219 collision:** Research commit 813008a incorrectly assumed P218 = slots 82-84 and P219 = slots 85-89. Both are wrong — slots 82-89 are fully occupied by existing foundation migrations. Corrected by P218 research (commit bf0205b) which confirmed P218 = 101-106. P219 follows at 107-111.
 
-**Constraint:** P219 migration slots MUST be numbered LESS THAN P220's (90-97) so P219 schema is applied before P220 cron handlers reference P219 tables (e.g., `advocacy_candidates` feeding `advocacy_review_requests` which P220 triggers from). P219 must take slots in the range **82-89** (leaving lower slots for P218).
+**P220 slot ordering note:** P220 migrations at 90-95+97 apply numerically BEFORE P218 at 101+ and P219 at 107+. This is resolved by P218 Plan 01's `lib/markos/profile/mode-eligibility.ts` runtime helper (`isModuleEligible`). P220 module-table triggers consume this helper at app-layer runtime rather than via migration-time JOIN. P219 at 107+ applies after P218 at 101+ — no sequencing conflict within P218→P219. [VERIFIED: 218-01-PLAN.md must_haves]
 
-### Recommended P218/P219 Pre-Allocation (coordinate via V4.1.0-MIGRATION-SLOT-COORDINATION.md)
-
-| Phase | Migration Slots | F-IDs | Rationale |
-|-------|----------------|-------|-----------|
-| P218 | **82-84** (3 slots) | F-200..F-208 (post-P220 cosmetic range) | P218 SaaSGrowthProfile + ActivationDefinition + PQL/UpgradeTrigger + InAppCampaign + Experiment: ~5 tables across 3 plan-migrations |
-| P219 | **85-89** (5 slots) | F-228..F-237 (continuing post-P220 F-227) | P219 6 domains across 5 plan-migrations (Plans 01-05 get 1 each; Plan 06 uses slot 85 additive seed) |
-| P220 | 90-97 (locked, per 220-01-PLAN.md) | F-209..F-227 (locked) | Already resolved in P220 plans |
-
-**F-ID range rationale:** P218 takes F-200..F-208; P219 takes F-228..F-237. Non-monotonic with phase order but matches P220 Q-3 path-A precedent (F-IDs are cosmetic, non-constraint-bearing).
+**V4.1.0-MIGRATION-SLOT-COORDINATION.md forward dependency:** P218 Plan 01 Task 0.1 CREATES this file (P218 is the first phase to ship it). P219 Plan 01 Task 0.1 APPENDS P219's reservation (slots 107-111, F-IDs F-228..F-237) to the document. The file does NOT exist on disk yet — P219 plans must guard against the file not existing when P218 has not yet executed (create-or-append pattern). [ASSUMED: mirrors P218 Plan 01 create pattern]
 
 ### P219 F-ID + Migration Pre-Allocation Table
 
 | Plan | Domain | Migration Slot | Table(s) Created | F-IDs (proposed) | Dependency Chain |
 |------|--------|---------------|------------------|-------------------|-----------------|
-| 219-01 | RevenueTeamConfig + SLAs | 85 | `revenue_team_configs`, `lead_qualification_sla_events`, `marketing_sales_feedback_records` | F-228, F-229 | P214 + P215 + P218 |
-| 219-02 | AccountExpansion + CustomerMarketing | 86 | `account_expansion_opportunities`, `customer_marketing_programs`, `program_enrollments` | F-230, F-231 | P219-01 |
-| 219-03 | ABMAccountPackage + BuyingCommittee | 87 | `abm_account_packages`, `abm_buying_committee_members`, `abm_engagement_events` | F-232, F-233 | P218 + P219-01 |
-| 219-04 | Advocacy + ReviewRequest + Proof | 88 | `advocacy_candidates`, `advocacy_review_requests`, `proof_assets`, `proof_consent_records` | F-234, F-235 | P219-01 + P219-02 |
-| 219-05 | Expansion + Save + Discount | 89 | `expansion_offers`, `save_offers`, `discount_authorizations` | F-236 | P215 + P205(soft) |
-| 219-06 | B2B Agent Readiness | 89b (additive seed via 85_b2b_revenue_team_part2.sql when migration 85 already applied) | `b2b_growth_agent_readiness` | F-237 | P219-01..05 |
+| 219-01 | RevenueTeamConfig + SLAs | **107** | `revenue_team_configs`, `lead_qualification_sla_events`, `marketing_sales_feedback_records` | F-228, F-229 | P214 + P215 + P217 + P218 |
+| 219-02 | AccountExpansion + CustomerMarketing | **108** | `account_expansion_opportunities`, `customer_marketing_programs`, `program_enrollments` | F-230, F-231 | P219-01 + P217 (saas_mrr_snapshots read) |
+| 219-03 | ABMAccountPackage + BuyingCommittee | **109** | `abm_account_packages`, `abm_buying_committee_members`, `abm_engagement_events` | F-232, F-233 | P218 + P219-01 |
+| 219-04 | Advocacy + ReviewRequest + Proof | **110** | `advocacy_candidates`, `advocacy_review_requests`, `proof_assets`, `proof_consent_records` | F-234, F-235 | P219-01 + P219-02 |
+| 219-05 | Expansion + Save + Discount | **111** | `expansion_offers`, `save_offers`, `discount_authorizations` | F-236 | P215 + P205(soft) |
+| 219-06 | B2B Agent Readiness | **111** (additive seed in migration 111) OR **112** (own slot if seed requires separate migration) | `b2b_growth_agent_readiness` | F-237 | P219-01..05 |
 
-**Note on Plan 219-06 table strategy:** P219-06 creates `b2b_growth_agent_readiness` as its own holding table (NOT depending on P220's `growth_agent_readiness` which does not yet exist when P219 runs). P220-06 migration then consolidates the 9 P219 B2B agent rows into `growth_agent_readiness`. This avoids a circular dependency between P219 and P220.
+**Note on Plan 219-06 table strategy:** P219-06 creates `b2b_growth_agent_readiness` as its own holding table (NOT depending on P220's `growth_agent_readiness` which does not yet exist when P219 runs). P220-06 migration consolidates the 9 P219 B2B agent rows into `growth_agent_readiness`. This avoids a circular dependency between P219 and P220. The naming is unambiguously distinct: P219 = `b2b_growth_agent_readiness`; P218 = `plg_growth_agent_readiness`; P217 = `sas_agent_readiness`; P220 = `growth_agent_readiness`. The P218↔P220 naming collision on `growth_agent_readiness` is a SEPARATE cross-phase fix — OUT OF SCOPE for P219.
 
-**Slot coordination action:** Plan 219-01 Task 0.1 creates or appends to `.planning/V4.1.0-MIGRATION-SLOT-COORDINATION.md` documenting P219's reservation of slots 85-89 and F-IDs F-228..F-237, coordinating with P218 (slots 82-84) and P220 (slots 90-97). [ASSUMED — mirrors P220-01-PLAN.md behavior]
+**Slot coordination action:** Plan 219-01 Task 0.1 appends to (or creates if P218 has not yet executed) `.planning/V4.1.0-MIGRATION-SLOT-COORDINATION.md` documenting P219's reservation of slots 107-111 and F-IDs F-228..F-237. Document must include: collision history (foundation 82-89 occupied; P220 90-95+97 locked; slot 96 existing; slot 100 existing; P218 101-106 locked).
+
+---
+
+## P218 Contract Consumption (Module Mode Eligibility)
+
+This section documents the explicit contract P219 consumes from P218 Plan 01.
+
+### What P218 Ships (P219 Upstream Contract)
+
+P218 Plan 01 (migration slot 101) creates:
+1. `saas_growth_profiles` table — `mode markos_growth_mode NOT NULL` column + `b2b_enabled` / `plg_enabled` / `b2c_enabled` generated columns
+2. `module_mode_eligibility` table — 60-row seed (12 modules × 5 modes), `eligible boolean`
+3. `markos_growth_mode` ENUM — exactly 5 values: `'b2b', 'b2c', 'plg_b2b', 'plg_b2c', 'b2b2c'`
+4. `lib/markos/profile/mode-eligibility.ts` — exports `isModuleEligible(tenantId, moduleKey): Promise<boolean>`
+5. `MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE` — documented as the DB-trigger CONTRACT pattern P219/P220 module tables implement using `isModuleEligible` at runtime
+
+### P219 Module → Mode Eligibility Matrix
+
+Derived from P218 RESEARCH.md §Domain 1 module activation matrix (60-row seed) — rows relevant to P219 modules:
+
+| P219 Module | Eligible Modes | Ineligible Modes | Module Key (module_mode_eligibility) |
+|-------------|---------------|-----------------|--------------------------------------|
+| ABM Engine (`abm_account_packages`) | b2b, plg_b2b | b2c, plg_b2c, b2b2c | `abm_engine` |
+| Revenue Team Config (`revenue_team_configs`) | b2b, b2c, plg_b2b, plg_b2c, b2b2c | none | `revenue_alignment` |
+| Account Expansion (`account_expansion_opportunities`) | b2b, b2c, plg_b2b, plg_b2c, b2b2c | none | `account_expansion` |
+| Customer Marketing (`customer_marketing_programs`) | b2b, b2c, plg_b2b, plg_b2c, b2b2c | none | `customer_marketing` |
+| Advocacy Programs (`advocacy_candidates`) | b2b, b2c, plg_b2b, plg_b2c, b2b2c | none | `advocacy` |
+| Pricing Controls (`expansion_offers`, `save_offers`) | b2b, b2c, plg_b2b, plg_b2c, b2b2c | none | `expansion_pricing` |
+| B2B Growth Agents (`b2b_growth_agent_readiness`) | b2b, plg_b2b | b2c, plg_b2c, b2b2c | `b2b_growth_agents` |
+
+**ABM + B2B agent scope constraint:** ABM packages and B2B growth agents are only eligible for `b2b` and `plg_b2b` modes. A tenant in `b2c` or `plg_b2c` mode must receive `isModuleEligible(tenantId, 'abm_engine') = false`. Plan 219-03 migration SQL MUST include a `BEFORE INSERT` trigger referencing `lib/markos/profile/mode-eligibility.ts` (runtime) or the `module_mode_eligibility` table (via JOIN at application time).
+
+### How P219 Consumes the Contract
+
+```typescript
+// lib/markos/abm/packages.ts — example module-gate pattern
+import { isModuleEligible } from '../profile/mode-eligibility';
+
+export async function createAbmAccountPackage(tenantId: string, input: ABMPackageInput) {
+  const eligible = await isModuleEligible(tenantId, 'abm_engine');
+  if (!eligible) {
+    throw new Error('MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE: abm_engine not eligible for tenant growth mode');
+  }
+  // ... proceed with insert
+}
+```
+
+**DB-trigger defense-in-depth:** Each P219 module table ships a `BEFORE INSERT` DB-trigger that calls `isModuleEligible` via a Postgres wrapper function (or raises `EXCEPTION 'MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE'` directly via a JOIN against `module_mode_eligibility`). App-layer check + DB-trigger = dual enforcement per P226 RH5/RH6 lesson.
+
+---
+
+## P217 Contract Consumption (Revenue Intelligence)
+
+This section documents the explicit contract P219 consumes from P217.
+
+### What P217 Ships (P219 Upstream Contract)
+
+P217 Plan 01 + Plan 02 create:
+1. `saas_mrr_snapshots` table — MRR, ARR, NRR, GRR, churn, expansion, contraction per tenant per period
+2. Revenue metric source precedence rules (billing > processor > accounting > CRM > manual)
+3. `SAS-09` requirement satisfied — SaaS product usage and revenue intelligence (REQUIREMENTS.md line 226 maps `SAS-09 | Phase 217`)
+
+**P219 read-only consumption of `saas_mrr_snapshots`:**
+- `api/cron/b2b-expansion-signal-scanner.js` (Plan 219-02) queries `saas_mrr_snapshots` for expansion signals
+- Fields consumed: `period_end`, `mrr_cents`, `nrr_pct`, `expansion_cents`, `contraction_cents`, `churn_cents`
+- P219 NEVER writes to `saas_mrr_snapshots` — consume-only contract
+- `lib/markos/expansion/signal-scanner.ts` includes static-analysis grep guard: `from('saas_mrr_snapshots').insert` returns 0
+
+### SAS-09 Ownership Boundary
+
+| Phase | Relation | SAS-09 Activity |
+|-------|----------|----------------|
+| P217 | OWNS SAS-09 | Creates `saas_mrr_snapshots` + metric definitions + source precedence rules |
+| P218 | INTEGRATES | Reads `saas_mrr_snapshots` for PQL score signals + module activation eligibility check |
+| P219 | INTEGRATES | Reads `saas_mrr_snapshots` for expansion opportunity signals (Plan 02 cron scanner) |
+
+P219 Plan 01 frontmatter must include `integrates_with: [SAS-09 from P217]` (NOT `requirements: [SAS-09]`). This avoids the double-ownership drift detected in P218-REVIEWS.md MEDIUM concern #7 and P217-REVIEWS.md MEDIUM concern.
 
 ---
 
@@ -438,6 +534,8 @@ ALTER TABLE marketing_sales_feedback_records ENABLE ROW LEVEL SECURITY;
 
 **Requirements:** SG-03, SG-09, SG-12, EVD-01..04
 
+**P217 integration (expansion signal scanner):** `api/cron/b2b-expansion-signal-scanner.js` reads `saas_mrr_snapshots` (P217) for MRR growth signals alongside `saas_health_scores` (P216). Consumes MRR delta, NRR, and expansion_cents to prioritize expansion targets. P219 NEVER writes to P217 tables.
+
 **Object model** (per doc 17 line ~377-400 + expansion flywheel Part 3):
 
 ```sql
@@ -451,7 +549,8 @@ CREATE TABLE account_expansion_opportunities (
   )),
   trigger_signal      text NOT NULL CHECK (trigger_signal IN (
     'usage_growth', 'seat_pressure', 'champion_role_change', 'company_growth_news',
-    'contract_renewal', 'qbr_upcoming', 'budget_cycle', 'pql_signal', 'health_score_high'
+    'contract_renewal', 'qbr_upcoming', 'budget_cycle', 'pql_signal', 'health_score_high',
+    'mrr_expansion_detected'
   )),
   estimated_arr_delta_cents  bigint,
   recommended_approach  text,
@@ -530,13 +629,14 @@ ALTER TABLE program_enrollments ENABLE ROW LEVEL SECURITY;
 | `/v1/b2b/customer-marketing/programs/{id}/enrollments` | GET / POST | Enrollment CRUD | F-231 (subpath) |
 
 **Cron handler:**
-- `api/cron/b2b-expansion-signal-scanner.js` — daily: scan `saas_health_scores` + revenue signals for expansion triggers; create new `account_expansion_opportunities` rows.
+- `api/cron/b2b-expansion-signal-scanner.js` — daily: scan `saas_health_scores` (P216) + `saas_mrr_snapshots` (P217) for expansion triggers; create new `account_expansion_opportunities` rows.
 
 **Test strategy:**
 - `test/b2b-219/expansion/opportunities-crud.test.js` — CRUD + RLS
 - `test/b2b-219/expansion/outreach-trigger.test.js` — DB-trigger blocks outreach without approval
 - `test/b2b-219/expansion/program-activation.test.js` — program status machine + approval gate
 - `test/b2b-219/expansion/enrollment-dedup.test.js` — UNIQUE constraint on (tenant, program, account)
+- `test/b2b-219/expansion/mrr-snapshot-consume.test.js` — expansion scanner reads saas_mrr_snapshots; static grep confirms no writes to saas_mrr_snapshots
 
 ---
 
@@ -545,6 +645,8 @@ ALTER TABLE program_enrollments ENABLE ROW LEVEL SECURITY;
 **Requirements:** SG-03, SG-09, SG-12, EVD-01..06
 
 **Cross-phase coordination (Q-1 — see section below):** P219 names its table `abm_buying_committee_members` (ABM-specific overlay). P222 will ship `buying_committee_members` (CRM-side). Distinct tables, distinct FK parents.
+
+**Mode eligibility gate:** ABM modules (`abm_account_packages`, `abm_buying_committee_members`) are eligible only for `b2b` and `plg_b2b` modes. Plan 219-03 migration ships `BEFORE INSERT` trigger on `abm_account_packages` that calls `isModuleEligible(tenantId, 'abm_engine')` (via `lib/markos/profile/mode-eligibility.ts`). Tenants in `b2c`, `plg_b2c`, or `b2b2c` modes will receive `MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE` exception.
 
 **Object model** (per doc 17 line ~496-569):
 
@@ -584,6 +686,7 @@ CREATE POLICY abm_tenant_isolation ON abm_account_packages
 CREATE INDEX idx_abm_tier_stage ON abm_account_packages(tenant_id, abm_tier, stage);
 
 -- abm_buying_committee_members (P219-owned; distinct from P222 CRM buying_committee_members)
+-- See Cross-Phase Q-1 for naming disambiguation
 CREATE TABLE abm_buying_committee_members (
   member_id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id                 uuid NOT NULL REFERENCES markos_orgs(org_id),
@@ -639,6 +742,7 @@ CREATE INDEX idx_abm_engagement_package ON abm_engagement_events(tenant_id, pack
 
 **Test strategy:**
 - `test/b2b-219/abm/package-crud.test.js` — CRUD + RLS + UNIQUE account constraint
+- `test/b2b-219/abm/mode-eligibility-gate.test.js` — b2c-mode tenant INSERT raises MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE
 - `test/b2b-219/abm/enrichment-audit-trigger.test.js` — automated enrichment without audit raises exception
 - `test/b2b-219/abm/committee-inferred-flag.test.js` — `is_inferred=true` EVD-03 flag correctly set/cleared
 - `test/b2b-219/abm/stage-transition-approval.test.js` — stage advancement blocked without approval
@@ -792,6 +896,25 @@ ALTER TABLE proof_consent_records ENABLE ROW LEVEL SECURITY;
 **Object model:**
 
 ```sql
+-- discount_authorizations (P219-owned; CREATED first — FK parent of expansion/save offers)
+CREATE TABLE discount_authorizations (
+  authorization_id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  tenant_id                   uuid NOT NULL REFERENCES markos_orgs(org_id),
+  discount_type               text NOT NULL CHECK (discount_type IN (
+    'promotional', 'loyalty', 'partner_channel', 'event_specific', 'save_offer', 'expansion_incentive'
+  )),
+  discount_pct                numeric(5,2) NOT NULL CHECK (discount_pct > 0 AND discount_pct <= 100),
+  max_uses                    int,
+  valid_from                  date NOT NULL,
+  valid_until                 date,
+  pricing_recommendation_id   uuid,
+  approval_id                 uuid NOT NULL,
+  approved_at                 timestamptz NOT NULL,
+  approved_by                 uuid NOT NULL,
+  created_at                  timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE discount_authorizations ENABLE ROW LEVEL SECURITY;
+
 -- expansion_offers (P219-owned)
 CREATE TABLE expansion_offers (
   offer_id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -846,28 +969,9 @@ CREATE TABLE save_offers (
   created_at                  timestamptz NOT NULL DEFAULT now()
 );
 ALTER TABLE save_offers ENABLE ROW LEVEL SECURITY;
-
--- discount_authorizations (P219-owned; CREATED first — FK parent of expansion/save offers)
-CREATE TABLE discount_authorizations (
-  authorization_id            uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  tenant_id                   uuid NOT NULL REFERENCES markos_orgs(org_id),
-  discount_type               text NOT NULL CHECK (discount_type IN (
-    'promotional', 'loyalty', 'partner_channel', 'event_specific', 'save_offer', 'expansion_incentive'
-  )),
-  discount_pct                numeric(5,2) NOT NULL CHECK (discount_pct > 0 AND discount_pct <= 100),
-  max_uses                    int,
-  valid_from                  date NOT NULL,
-  valid_until                 date,
-  pricing_recommendation_id   uuid,
-  approval_id                 uuid NOT NULL,
-  approved_at                 timestamptz NOT NULL,
-  approved_by                 uuid NOT NULL,
-  created_at                  timestamptz NOT NULL DEFAULT now()
-);
-ALTER TABLE discount_authorizations ENABLE ROW LEVEL SECURITY;
 ```
 
-**Note on migration order:** `discount_authorizations` must be created before `expansion_offers` and `save_offers` in migration 89 (FK parent first). The migration creates all 3 tables in the correct order.
+**Note on migration order:** `discount_authorizations` must be created before `expansion_offers` and `save_offers` in migration 111 (FK parent first). The migration creates all 3 tables in the correct order.
 
 **DB-trigger compliance enforcement (pricing immutability DB-trigger):**
 - `BEFORE UPDATE` trigger on `expansion_offers`: raises `EXCEPTION 'EXPANSION_OFFER_PRICING_REQUIRED'` when `NEW.status = 'active' AND NEW.pricing_recommendation_id IS NULL AND NEW.offer_copy NOT LIKE '%MARKOS_PRICING_ENGINE_PENDING%'`.
@@ -896,6 +1000,17 @@ ALTER TABLE discount_authorizations ENABLE ROW LEVEL SECURITY;
 **Requirements:** SG-10, RUN-01..08
 
 **Pattern:** Mirror P220 Plan 06 + P226 Wave 1 model (`autonomous: false` + `checkpoint:human-action` for first-run activation).
+
+**Agent registry naming disambiguation:**
+
+| Phase | Table | Prefix | Scope |
+|-------|-------|--------|-------|
+| P217 | `sas_agent_readiness` | SAS | SaaS Revenue Intelligence agents (SAS-01..06) |
+| P218 | `plg_growth_agent_readiness` | PLG | PLG/in-app/experimentation agents |
+| P219 | `b2b_growth_agent_readiness` | B2B | B2B expansion/ABM/advocacy/revenue agents |
+| P220 | `growth_agent_readiness` | (consolidated) | All growth agents (P218+P219 rows consolidated) |
+
+**Naming collision note:** P218 `growth_agent_readiness` vs P220 `growth_agent_readiness` — this is a SEPARATE cross-phase collision, OUT OF SCOPE for P219. P219's `b2b_growth_agent_readiness` is unambiguously distinct from all four tables above.
 
 **P219 B2B target agents** (from canon + doc 17 Part 3/4/13):
 
@@ -966,9 +1081,11 @@ INSERT INTO b2b_growth_agent_readiness (agent_id, agent_name, agent_tier, blocki
 
 ## Cross-Phase Coordination
 
-### Q-1: P219 Buying Committee (Plan 03) vs P218 ICPSegmentDefinition — RESOLVED
+### Q-1: P219 Buying Committee (Plan 03) vs P218 ICPSegmentDefinition — RESOLVED + AFFIRMED
 
-P218 RESEARCH.md (26-line stub) lists gaps as: `SaaSGrowthProfile`, `ActivationDefinition`, `PQLScore`, `UpgradeTrigger`, `InAppCampaign`, `MarketingExperiment`. No buying committee table. P218 uses pre-existing `markos_icps` + `markos_segments` (migration 37) for ICP definition. P219 owns ABM-specific `abm_buying_committee_members` as an overlay — NOT a modification to `markos_icps`. P222 will ship CRM-side `buying_committee_members` (per ROADMAP P222 description). Both P219 and P222 tables are distinct.
+**Previous resolution (commit 813008a):** P218 uses pre-existing `markos_icps` + `markos_segments` (migration 37) for ICP definition. P219 owns ABM-specific `abm_buying_committee_members` as an overlay — NOT a modification to `markos_icps`. P222 will ship CRM-side `buying_committee_members` (per ROADMAP P222 description). Both P219 and P222 tables are distinct.
+
+**P218 final contract affirmed (commit bf0205b):** P218 research confirms P218 does NOT ship a buying committee table. P218 Plan 01 migration 101 creates `saas_growth_profiles` + `module_mode_eligibility` only. P219 `abm_buying_committee_members` ownership is unambiguous.
 
 **Coordination rule:** P219's `abm_account_packages.company_profile_jsonb` may include an `icp_fit_score` field referencing ICP data by value, but P219 does NOT modify `markos_icps` or `markos_segments`. The P219-03 migration SQL must include comment: `-- P219-owned: abm_buying_committee_members. P222 will ship buying_committee_members (CRM-side). Distinct tables, distinct FK parents. No collision.`
 
@@ -984,9 +1101,47 @@ P218 RESEARCH.md (26-line stub) lists gaps as: `SaaSGrowthProfile`, `ActivationD
 
 No overlap. P219 is existing-customer B2B expansion/ABM/advocacy. P220 is B2C viral/community/PR/partnerships. Both depend on P218 SaaSGrowthProfile mode routing. F-ID cosmetic ordering: P220 takes F-209..F-227; P219 takes F-228..F-237 (continuing sequentially, non-monotonic with phase order, acceptable per P220 Q-3 precedent).
 
-### Q-4: P219 Plan 05 Pricing Engine vs P205 — RESOLVED (SOFT with sentinel)
+### Q-4: P219 Plan 05 Pricing Engine vs P205 — RESOLVED + AFFIRMED
 
 SOFT dependency. Warn on absence, never block. Sentinel `{{MARKOS_PRICING_ENGINE_PENDING}}` accepted as valid alternative to `pricing_recommendation_id`. When P205 lands, emit enrichment tasks to convert sentinel records. See Domain 5 DB-trigger for enforcement pattern.
+
+**P218 alignment:** P218 Plans 03+04 use the same SOFT + sentinel pattern for UpgradeTrigger and InAppCampaign. P219 Plan 05 is consistent with P218's established approach.
+
+### Q-5: P219 SAS-09 Integration vs P217 Ownership — RESOLVED (NEW)
+
+**Resolution:** P219 does NOT own SAS-09. REQUIREMENTS.md line 226 maps `SAS-09 | Phase 217`. P217 owns `saas_mrr_snapshots` + revenue metric definitions. P219 Plan 02 INTEGRATES via read-only consumption of `saas_mrr_snapshots` in expansion signal scanner.
+
+**P217-REVIEWS.md alignment:** P217 REVIEWS.md explicitly flags SAS-09 as P217-owned territory. P219 Plan 01 frontmatter must use `integrates_with: [SAS-09 from P217]` field (NOT `requirements: [SAS-09]`). This mirrors the identical fix recommended for P218 Plan 01 SAS-09 handling.
+
+**Preflight guard:** P219 Plan 02 `lib/markos/expansion/signal-scanner.ts` includes static-analysis grep guard: `from('saas_mrr_snapshots').insert` returns 0. Confirms consume-only contract.
+
+### Q-6: P218↔P220 growth_agent_readiness Naming Collision — OUT OF SCOPE for P219
+
+P218 `plg_growth_agent_readiness` table and P220 `growth_agent_readiness` consolidation table have a potential collision documented in P217/P218 reviews. P219's `b2b_growth_agent_readiness` is a THIRD distinct table. The P218↔P220 naming issue is a separate cross-phase coordination item, does not affect P219, and must be resolved between P218 and P220 planners.
+
+### Q-7: Migration Slot Ordering Conflict — RESOLVED (updated from commit 813008a)
+
+**Previous state (commit 813008a):** Q-7 was OPEN. P219 assumed slots 85-89 and P218 assumed slots 82-84. Both were wrong.
+
+**Resolution (from P218 research commit bf0205b + 218-01-PLAN.md):**
+- Foundation migrations fully occupy slots 82-89 (verified on disk)
+- P218 locks slots 101-106, F-IDs F-238..F-246 (218-01-PLAN.md frontmatter confirmed)
+- P219 takes slots 107-111 (Plan 06 additive in 111 OR own slot 112)
+- P220 stays at 90-95+97 (locked, unchanged)
+- Ordering conflict resolution: P220 migrations at 90-97 apply before P218/P219 at 101+. P218 Plan 01 ships `lib/markos/profile/mode-eligibility.ts` (`isModuleEligible`) as the app-layer runtime contract. P220 module-table triggers consume this helper at runtime rather than at migration apply time. P219 at 107+ has no sequencing conflict with P218 at 101+ (107 > 101 — correct dependency order).
+
+**Slot collision history summary:**
+
+| Range | Owner | Status |
+|-------|-------|--------|
+| 82–89 | Foundation (existing on-disk) | OCCUPIED — do not use |
+| 90–95, 97 | P220 (locked in plans) | RESERVED — do not use |
+| 96 | neuro_literacy_metadata (existing on-disk) | OCCUPIED |
+| 98–99 | Available (P217 may use) | AVAILABLE |
+| 100 | CRM hardening (existing on-disk) | OCCUPIED |
+| 101–106 | P218 (locked in 218-01-PLAN.md) | RESERVED |
+| 107–111 | P219 (this research) | RESERVED |
+| 112 | P219 Plan 06 conditional | CONDITIONAL |
 
 ---
 
@@ -1012,9 +1167,9 @@ SOFT dependency. Warn on absence, never block. Sentinel `{{MARKOS_PRICING_ENGINE
 
 | Domain | Unit Tests | Integration Tests | Regression |
 |--------|-----------|-------------------|-----------|
-| Domain 1 (RevTeam/SLA) | RLS, schema, SLA validators | DB-trigger SLA change; cron MQL aging | No migration collision with 96 |
-| Domain 2 (Expansion/CustMarketing) | RLS, schema, enrollment dedup | DB-trigger outreach gate; signal scanner cron | P215 billing soft-degrade |
-| Domain 3 (ABM/BuyingCommittee) | RLS, schema, enrichment audit flag | DB-trigger enrichment audit; stage gate | P218 SaaSGrowthProfile mode gate |
+| Domain 1 (RevTeam/SLA) | RLS, schema, SLA validators | DB-trigger SLA change; cron MQL aging | No migration collision with 107 |
+| Domain 2 (Expansion/CustMarketing) | RLS, schema, enrollment dedup | DB-trigger outreach gate; signal scanner cron; saas_mrr_snapshots consume | P215 billing soft-degrade; P217 MRR read |
+| Domain 3 (ABM/BuyingCommittee) | RLS, schema, enrichment audit flag | DB-trigger enrichment audit; stage gate; mode eligibility gate (b2c blocked) | P218 mode-eligibility isModuleEligible |
 | Domain 4 (Advocacy/Review/Proof) | RLS, schema, consent revocation cascade | DB-trigger review send gate; proof publish gate | T0-04 proof posture regression |
 | Domain 5 (Pricing Controls) | RLS, schema, sentinel detection | DB-trigger pricing immutability; discount chain | P205 sentinel upgrade path |
 | Domain 6 (Agent Readiness) | All 9 agents runnable=false seed | Activation gate trigger | P220 growth_agent_readiness coordination |
@@ -1100,6 +1255,10 @@ test('mcp/tools/index.cjs exists (not .ts)', () => {
   assert.ok(existsSync('lib/markos/mcp/tools/index.cjs'));
   assert.ok(!existsSync('lib/markos/mcp/tools/index.ts'));
 });
+test('mode-eligibility helper will exist (P218 hard upstream)', () => {
+  // This test hard-fails if P218 has not yet executed — correct behavior
+  assert.ok(existsSync('lib/markos/profile/mode-eligibility.ts'));
+});
 test('createApprovalPackage DOES NOT exist anywhere in lib/markos/', () => {
   let c = 0;
   try { c = parseInt(execSync('grep -r "createApprovalPackage" lib/markos/ 2>/dev/null | wc -l').toString().trim(), 10); } catch {}
@@ -1111,7 +1270,7 @@ test('createApprovalPackage DOES NOT exist anywhere in lib/markos/', () => {
 
 All test files are new — no existing coverage for P219 domain.
 
-- [ ] `scripts/preconditions/219-01-check-upstream.cjs` — hard P214/P215/P218; soft P205/P207-212/P216
+- [ ] `scripts/preconditions/219-01-check-upstream.cjs` — hard P214/P215/P217/P218; soft P205/P207-212/P216
 - [ ] `lib/markos/b2b/preflight/upstream-gate.ts`
 - [ ] `lib/markos/b2b/preflight/architecture-lock.ts`
 - [ ] `lib/markos/b2b/preflight/errors.ts`
@@ -1148,11 +1307,11 @@ lib/markos/expansion/                 # Domain 2
   opportunities.cjs
   customer-marketing.ts               # CustomerMarketingProgram CRUD + enrollment
   enrollment.ts                       # program_enrollments + activation triggers
-  signal-scanner.ts                   # health_score + MRR signal ingestion
+  signal-scanner.ts                   # saas_health_scores + saas_mrr_snapshots (P217) read-only
   *.test.js
 
 lib/markos/abm/                       # Domain 3
-  packages.ts                         # ABMAccountPackage CRUD + stage machine
+  packages.ts                         # ABMAccountPackage CRUD + stage machine + mode-eligibility gate
   packages.cjs
   buying-committee.ts                 # abm_buying_committee_members CRUD
   engagement.ts                       # abm_engagement_events ingestion
@@ -1205,7 +1364,7 @@ lib/markos/b2b-agents/                # Domain 6
 |--------|-----------|-----------|-----------------|
 | Plan 01 (RevTeam/SLA) | `buildApprovalPackage` on feedback record dispatch | SLA breach trigger on `revenue_team_configs` | `EXCEPTION 'SLA_CONFIG_REQUIRES_APPROVAL'` on SLA change without approval |
 | Plan 02 (Expansion/CustMarketing) | `buildApprovalPackage` on outreach + program activation | Expansion approval trigger on `account_expansion_opportunities` | `EXCEPTION 'EXPANSION_OUTREACH_REQUIRES_APPROVAL'` |
-| Plan 03 (ABM/BuyingCommittee) | `buildApprovalPackage` on external ABM outreach | Committee enrichment audit trigger on `abm_account_packages` | `EXCEPTION 'ABM_ENRICHMENT_AUDIT_REQUIRED'` |
+| Plan 03 (ABM/BuyingCommittee) | `buildApprovalPackage` on external ABM outreach + `isModuleEligible` mode gate | Committee enrichment audit trigger on `abm_account_packages` + mode eligibility gate | `EXCEPTION 'ABM_ENRICHMENT_AUDIT_REQUIRED'` + `EXCEPTION 'MODULE_REQUIRES_ELIGIBLE_GROWTH_MODE'` |
 | Plan 04 (Advocacy/Review/Proof) | `buildApprovalPackage` on every review ask + proof publish | Consent + evidence FK trigger on `proof_assets` + `advocacy_review_requests` | `EXCEPTION 'REVIEW_REQUEST_REQUIRES_APPROVAL'` + `EXCEPTION 'PROOF_REQUIRES_CONSENT_AND_EVIDENCE'` |
 | Plan 05 (Pricing Controls) | `buildApprovalPackage` on every offer + discount | Pricing immutability trigger on `expansion_offers` + `save_offers` | `EXCEPTION 'EXPANSION_OFFER_PRICING_REQUIRED'` |
 | Plan 06 (Agent Readiness) | `checkpoint:human-action` for first-run activation | Activation gate trigger on `b2b_growth_agent_readiness` | `EXCEPTION 'AGENT_ACTIVATION_REQUIRES_READINESS'` |
@@ -1217,12 +1376,14 @@ lib/markos/b2b-agents/                # Domain 6
 | # | Claim | Section | Risk if Wrong |
 |---|-------|---------|---------------|
 | A1 | npm test runner command is `node --test test/**/*.test.js` | Architecture Lock | Wrong runner invalidates all test commands in plans |
-| A2 | P218 does NOT own a buying_committee table (only markos_icps + markos_segments from migration 37) | Cross-Phase Q-1 | Naming collision if P218 ships its own buying_committee_members |
-| A3 | P220-01-PLAN.md seeds the migration-slot-coordination doc; P219 appends its rows | F-ID/Migration | If P220 hasn't run yet, P219-01 must create the document from scratch |
+| A2 | P218 does NOT own a buying_committee table (only markos_icps + markos_segments from migration 37; saas_growth_profiles + module_mode_eligibility from migration 101) | Cross-Phase Q-1 | Naming collision if P218 ships its own buying_committee_members |
+| A3 | `.planning/V4.1.0-MIGRATION-SLOT-COORDINATION.md` created by P218 Plan 01 Task 0.1; P219 Plan 01 Task 0.1 appends P219 reservation | F-ID/Migration | If P218 has not yet executed, P219-01 must create the doc from scratch (create-or-append pattern required) |
 | A4 | P215 billing engine has `billing_periods` + `tenant_billing_subscriptions` from migration 54 | Upstream Dependencies | Domain 2 expansion offers route through billing engine; fails if P215 schema differs |
 | A5 | P222 will ship `buying_committee_members` CRM table (per ROADMAP P222 description) | Cross-Phase Q-1 | If P222 uses different name, coordination comment is stale but no collision |
 | A6 | F-ID range F-228..F-237 is unallocated (no other phase claims this range) | F-ID Allocation | Collision if another phase grabs same range before P219 plans land |
 | A7 | `openapi:build` script exists in package.json matching P220 pattern | Architecture Lock | Planner must verify before Plan 01 Task 0.5 |
+| A8 | P217 ships `saas_mrr_snapshots` table (Plan 01 SaaSMRRSnapshot per 217-CONTEXT.md "Define SaaSMRRSnapshot and MRR waterfall") | Upstream Dependencies | Domain 2 expansion signal scanner reads this table; fails if P217 uses different name |
+| A9 | `lib/markos/profile/mode-eligibility.ts` exports `isModuleEligible(tenantId, moduleKey)` (confirmed in 218-01-PLAN.md must_haves) | Architecture Lock / P218 Contract | If P218 Plan 01 does not ship this export, P219 mode-eligibility gates fail at runtime |
 
 ---
 
@@ -1246,18 +1407,24 @@ Step 2.6: SKIPPED — P219 is code/schema/config changes with no new external CL
 - `lib/markos/plugins/registry.js:102` — `resolvePlugin` function [VERIFIED: codebase grep]
 - `lib/markos/mcp/tools/index.cjs` — MCP tool registry (CommonJS) [VERIFIED: codebase file check]
 - `contracts/openapi.json` — active OpenAPI spec [VERIFIED: codebase file check]
+- `supabase/migrations/` filesystem listing — slots 82-89, 96, 100 occupied; no 101+ yet [VERIFIED: codebase 2026-04-26]
 
 ### Secondary (MEDIUM confidence — verified from planning artifacts)
 
-- `.planning/REQUIREMENTS.md` — T0-04 confirmed (line 113); all SG/LOOP/EVD IDs confirmed [VERIFIED]
+- `.planning/REQUIREMENTS.md` — T0-04 confirmed (line 113); all SG/LOOP/EVD IDs confirmed; SAS-09 = P217 (line 226) [VERIFIED]
 - `.planning/ROADMAP.md` lines 381-413 — P219/P220 phase entries; P220 migration/F-ID slots [VERIFIED]
 - `220-RESEARCH.md` §F-ID and Migration Slot Allocation — Q-3 path-A resolution; slot collision analysis [VERIFIED]
 - `220-01-PLAN.md` frontmatter — migration slots 90-97 locked for P220 [VERIFIED]
+- `218-01-PLAN.md` frontmatter — migration_slots: [101], F-IDs F-238..F-246 locked for P218 [VERIFIED]
+- `218-RESEARCH.md` §F-ID (commit bf0205b) — slot collision history, corrected slot table, Q-7 analysis [VERIFIED]
+- `218-REVIEWS.md` — Q-7 collision documentation; P219 slot 85-89 invalid finding [VERIFIED]
+- `217-CONTEXT.md` — SaaSMRRSnapshot + MRR waterfall in P217 required phase shape [VERIFIED]
+- `217-REVIEWS.md` — SAS-09 owned by P217 (Plan 01); SG-10 = P218/P219/P220 territory [VERIFIED]
 - `219-REVIEWS.md` — 1 HIGH + 7 MEDIUM + 2 LOW concerns; T0-04 query surfaced here [VERIFIED]
 
 ### Tertiary (LOW confidence — see Assumptions Log)
 
-- P218 specific schema tables — 218-RESEARCH.md is 26-line stub, no table enumeration [LOW: A2]
+- P217 exact table name `saas_mrr_snapshots` — inferred from 217-CONTEXT.md + 218-01-PLAN.md REQUIRED_TABLES list; P217 plans are stubs [LOW: A8]
 - P222 buying_committee_members naming — inferred from ROADMAP; P222 plans are stubs [LOW: A5]
 - npm test runner exact command — assumed from P220 confirmed pattern [LOW: A1]
 
@@ -1266,10 +1433,11 @@ Step 2.6: SKIPPED — P219 is code/schema/config changes with no new external CL
 ## Metadata
 
 **Confidence breakdown:**
-- Standard stack: HIGH — all helpers verified on disk; codebase patterns confirmed
-- Architecture: HIGH — mirrors P220 gold standard; codebase-grounded
+- Standard stack: HIGH — all helpers verified on disk; codebase patterns confirmed; P218 contract verified in 218-01-PLAN.md
+- Architecture: HIGH — mirrors P220 gold standard; codebase-grounded; P218 mode-eligibility contract confirmed
 - Domain schemas: HIGH — derived from doc 17 TypeScript interfaces (canonical intake source)
-- F-ID/Migration slots: MEDIUM — P218 slots unconfirmed; P219 range estimated; planner must lock before execution
+- F-ID/Migration slots: HIGH — collision resolved; P218 slots confirmed in 218-01-PLAN.md; P219 takes 107-111
+- Cross-phase coordination: HIGH — P217/P218/P220 contracts verified from planning artifacts
 - Pitfalls: HIGH — sourced from P220 review lessons (P226 RH5/RH6) and P223 D-45/D-50/D-51 patterns
 
 **Research date:** 2026-04-26
@@ -1278,3 +1446,16 @@ Step 2.6: SKIPPED — P219 is code/schema/config changes with no new external CL
 ---
 
 ## RESEARCH COMPLETE
+
+**Changes vs commit 813008a:**
+- Migration slots updated: 85-89 (invalid) → 107-111; full collision history table added (Q-7 RESOLVED)
+- Upstream dependencies: P217 added as HARD (saas_mrr_snapshots); preflight script includes P217 table; total HARD = [P214, P215, P217, P218]
+- New section: "P218 Contract Consumption" — module_mode_eligibility matrix for P219 modules, isModuleEligible runtime pattern, dual enforcement pattern
+- New section: "P217 Contract Consumption" — saas_mrr_snapshots read-only contract, SAS-09 ownership affirmed as P217, consume-only grep guard
+- Cross-phase coordination: Q-5 (SAS-09/P217) added as RESOLVED; Q-6 (P218↔P220 collision) noted OUT OF SCOPE; Q-7 updated from OPEN to RESOLVED with full slot history
+- Domain 2: expansion signal scanner updated to include saas_mrr_snapshots read + mrr_expansion_detected trigger signal + consume test
+- Domain 3: mode eligibility gate (b2c blocked) added to ABM INSERT trigger spec + new mode-eligibility-gate test
+- Plan 219-06: agent registry naming disambiguation table added; b2b_growth_agent_readiness confirmed distinct from P217 sas_agent_readiness, P218 plg_growth_agent_readiness, P220 growth_agent_readiness
+- Assumption A8 + A9 added (P217 table name; mode-eligibility.ts export)
+- helper-presence test: mode-eligibility.ts P218 upstream guard added
+- Wave 0 preflight script: hard upstream table list expanded to include saas_mrr_snapshots + module_mode_eligibility

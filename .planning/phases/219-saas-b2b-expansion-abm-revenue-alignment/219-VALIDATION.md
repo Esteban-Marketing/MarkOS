@@ -55,7 +55,7 @@ Detailed per-task map populates during planning iteration; planner expands rows 
 
 ## Wave 0 Requirements
 
-- [ ] `scripts/preconditions/219-check-upstream.cjs` — assertUpstreamReady CLI for P214/P215/P218 (hard) + P205/P207-212/P216/P217 (soft)
+- [ ] `scripts/preconditions/219-check-upstream.cjs` — assertUpstreamReady CLI for P214/P215/P217/P218 (hard — Q-7 fix added P217 for SAS-09 saas_mrr_snapshots) + P205/P207-212/P216 (soft)
 - [ ] `lib/markos/b2b/preflight/upstream-gate.ts` — runtime helper
 - [ ] `lib/markos/b2b/preflight/architecture-lock.ts` — forbidden-pattern detector
 - [ ] `lib/markos/b2b/preflight/errors.ts` — UpstreamPhaseNotLandedError + PricingEnginePendingError
