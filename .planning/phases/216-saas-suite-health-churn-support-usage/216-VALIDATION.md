@@ -39,12 +39,12 @@ created: 2026-04-26
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
 | 216-01-00 | 01 | 1 | QA-01,02 | preflight | `npm test -- test/saas-216/preflight/` | ❌ W0 | ⬜ pending |
-| 216-01-01 | 01 | 1 | SAS-07 | schema+trigger | `npm test -- test/saas-216/health/` | ❌ W0 | ⬜ pending |
-| 216-02-01 | 02 | 2 | SAS-07 | schema+trigger | `npm test -- test/saas-216/usage/` | ❌ W0 | ⬜ pending |
-| 216-03-01 | 03 | 2 | SAS-08 | schema+trigger | `npm test -- test/saas-216/support/` | ❌ W0 | ⬜ pending |
-| 216-04-01 | 04 | 3 | SAS-08 | schema+trigger | `npm test -- test/saas-216/churn/` | ❌ W0 | ⬜ pending |
-| 216-05-01 | 05 | 3 | SAS-07,08 (privacy substrate) | schema+trigger | `npm test -- test/saas-216/privacy/` | ❌ W0 | ⬜ pending |
-| 216-06-01 | 06 | 4 | translation-gate + closeout | regression | `npm test -- test/saas-216/handoff/` | ❌ W0 | ⬜ pending |
+| 216-01-01 | 01 | 1 | SAS-07 | schema+trigger | `npm test -- test/saas-216/domain-1/` | ❌ W0 | ⬜ pending |
+| 216-02-01 | 02 | 2 | SAS-07 | schema+trigger | `npm test -- test/saas-216/domain-2/` | ❌ W0 | ⬜ pending |
+| 216-03-01 | 03 | 2 | SAS-08 | schema+trigger | `npm test -- test/saas-216/domain-3/` | ❌ W0 | ⬜ pending |
+| 216-04-01 | 04 | 3 | SAS-08 | schema+trigger | `npm test -- test/saas-216/domain-4/` | ❌ W0 | ⬜ pending |
+| 216-05-01 | 05 | 3 | SAS-07,08 (privacy substrate) | schema+trigger | `npm test -- test/saas-216/domain-5/` | ❌ W0 | ⬜ pending |
+| 216-06-01 | 06 | 4 | translation-gate + closeout | regression | `npm test -- test/saas-216/domain-6/` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky · ❌ W0 = file does not exist yet (created in Wave 0)*
 
@@ -60,8 +60,8 @@ created: 2026-04-26
 - [ ] `test/saas-216/preflight/upstream-gate.test.js`
 - [ ] `test/saas-216/preflight/helper-presence.test.js` — verifies buildApprovalPackage / requireHostedSupabaseAuth / resolvePlugin exist; createApprovalPackage / requireSupabaseAuth / lookupPlugin DO NOT
 - [ ] Test fixtures under `test/fixtures/saas-216/*.js` (NOT `.ts`)
-- [ ] APPEND row to `.planning/V4.1.0-MIGRATION-SLOT-COORDINATION.md` (P217 Plan 01 Task 0.1 CREATES doc; P216 Plan 01 Task 0.1 APPENDS P216 reservation slots 112-117 + F-259..F-270)
-  - Document Q-7 Slot Ordering Crisis: P216 execution-order BEFORE P217 but slot-order AFTER P219 (slots 112-117); FK direction strictly P217/P218/P219/P220 READ P216 (no reverse FKs); execution gating via assertUpstreamReady not migration slot numbers
+- [ ] CREATE-or-APPEND `.planning/V4.1.0-MIGRATION-SLOT-COORDINATION.md` (P216 Plan 01 Task 0.1 implements CREATE-or-APPEND defensive pattern: if doc exists, APPEND P216 reservation rows slots 112-117 + F-259..F-270; if missing because P216 executes BEFORE P217 in real deployment, CREATE doc with full v4.1.0 history + P216 rows)
+  - Document Q-6 Slot Ordering Crisis: P216 execution-order BEFORE P217 but slot-order AFTER P219 (slots 112-117); FK direction strictly P217/P218/P219/P220 READ P216 (no reverse FKs); execution gating via assertUpstreamReady not migration slot numbers
 - [ ] `data_retention_classes` table seed (foundational for P217-P228) — Plan 05 ships in slot 116; Plan 01 references via ENUM `pii_classification`
 
 ---
