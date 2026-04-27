@@ -41,10 +41,10 @@ created: 2026-04-26
 | 215-01-00 | 01 | 1 | QA-01,02 | preflight | `npm test -- test/saas-215/preflight/` | ❌ W0 | ⬜ pending |
 | 215-01-01 | 01 | 1 | SAS-04, BILL-01 | schema+trigger | `npm test -- test/saas-215/domain-1/` | ❌ W0 | ⬜ pending |
 | 215-02-01 | 02 | 2 | SAS-05 (US path) | schema+trigger | `npm test -- test/saas-215/domain-2/` | ❌ W0 | ⬜ pending |
-| 215-03-01 | 03 | 2 | SAS-05, SAS-06, COMP-01 (Colombia + DIAN) | schema+trigger | `npm test -- test/saas-215/domain-3/` | ❌ W0 | ⬜ pending |
-| 215-04-01 | 04 | 3 | SAS-05 (webhooks) | webhook+trigger | `npm test -- test/saas-215/domain-4/` | ❌ W0 | ⬜ pending |
-| 215-05-01 | 05 | 3 | SAS-04, SAS-05 (corrections) | schema+trigger | `npm test -- test/saas-215/domain-5/` | ❌ W0 | ⬜ pending |
-| 215-06-01 | 06 | 4 | translation-gate + closeout | regression | `npm test -- test/saas-215/domain-6/` | ❌ W0 | ⬜ pending |
+| 215-03-01 | 03 | 3 | SAS-05, SAS-06, COMP-01 (Colombia + DIAN) | schema+trigger | `npm test -- test/saas-215/domain-3/` | ❌ W0 | ⬜ pending |
+| 215-04-01 | 04 | 4 | SAS-05 (webhooks) | webhook+trigger | `npm test -- test/saas-215/domain-4/` | ❌ W0 | ⬜ pending |
+| 215-05-01 | 05 | 4 | SAS-04, SAS-05 (corrections) | schema+trigger | `npm test -- test/saas-215/domain-5/` | ❌ W0 | ⬜ pending |
+| 215-06-01 | 06 | 5 | translation-gate + closeout | regression | `npm test -- test/saas-215/domain-6/` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky · ❌ W0 = file does not exist yet (created in Wave 0)*
 
