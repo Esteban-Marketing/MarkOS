@@ -68,6 +68,14 @@ Plans:
 - [x] 201-07-PLAN.md — Members + invites (seat pool) + Surface 5 switcher + Surface 4 + Surface 6 offboarding + GDPR export
 - [x] 201-08-PLAN.md — Cross-domain audit emit wiring + openapi.json regen + 5 docs pages + llms.txt + F-88 audit query + vercel.ts crons + @vercel/edge-config slug cache
 
+### Phase 201.1: SaaS Tenancy Hardening — Review-Driven Followups
+**Goal:** Close 6 HIGH and 1 MEDIUM concerns surfaced by the 2026-04-27 cross-AI review of Phase 201: move audit emit inline (drop res.end footgun in approve.js / submit.js), harden GDPR signed URL beyond bearer-credential semantics, pin canonical-JSON spec for Node↔Postgres parity with property-based fuzzer, add jittered-TTL + single-flight + transitional-410 to edge-config slug cache, eliminate the Plan-03 rate-limit race by promoting the SQL fn into Plan 03 (or a hard deploy-gate), and resolve the right-to-erasure vs hash-chain conflict with an explicit pseudonymize-with-tombstone policy. Operational smokes (DNS, email, BotID live, real-device passkey, GDPR retrieval, 30-day cron, cookie SameSite, staging perf) reclassified back to v4.0.0-release gates with a staging smoke harness rather than informational notes.
+**Requirements Mapped:** API-02, QA-01, QA-02, QA-04, QA-05, QA-09, QA-11, QA-12, QA-13, QA-15
+**Depends on:** Phase 201
+**Status:** Planning
+**Source:** `.planning/phases/201-saas-tenancy-hardening/201-REVIEWS.md` (claude-cli separate-session pass, 2026-04-27)
+**Artifacts:** `201.1-CONTEXT.md`, `201.1-REVIEWS.md` (mirrors 201-REVIEWS.md)
+
 ### Phase 202: MCP Server GA + Claude Marketplace Launch
 **Goal:** Graduate the 0-day MCP server to GA for the Claude Marketplace launch package: session persistence, +20 skills, marketplace-ready assets and docs, and a VS Code cert-ready path. Cursor / Windsurf / Warp / ChatGPT certifications defer to `202.1`.
 **Requirements Mapped:** MCP-01, QA-01..15
