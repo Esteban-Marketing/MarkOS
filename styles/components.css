@@ -396,6 +396,64 @@ textarea.c-input { height: auto; min-height: calc(var(--h-control) * 2); resize:
 .c-modal__actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Notice / Banner · full-shell-width contextual banner                   ║
+   ║ Distinct from .c-toast (transient floating notification).              ║
+   ║ Persistent ambient state — rotation grace, billing issues,             ║
+   ║ verification-pending, oauth-consent. Pairs with bracketed glyph        ║
+   ║ ([warn]/[err]/[info]/[ok]) per DESIGN.md "Color blindness" rule.       ║
+   ║ Source: DESIGN.md "Components · Notice / Banner".                      ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-md);
+  line-height: var(--lh-body-md);
+  background: var(--color-surface-raised);
+  color: var(--color-on-surface);
+  border-inline-start: 4px solid var(--color-on-surface-subtle);
+}
+.c-notice--success {
+  background: rgb(63 185 80 / 0.12);
+  color: var(--color-success);
+  border-inline-start-color: var(--color-success);
+}
+.c-notice--warning {
+  background: rgb(255 184 0 / 0.12);
+  color: var(--color-warning);
+  border-inline-start-color: var(--color-warning);
+}
+.c-notice--error {
+  background: rgb(248 81 73 / 0.12);
+  color: var(--color-error);
+  border-inline-start-color: var(--color-error);
+}
+.c-notice--info {
+  background: rgb(88 166 255 / 0.12);
+  color: var(--color-info);
+  border-inline-start-color: var(--color-info);
+}
+.c-notice strong { font-weight: var(--fw-semibold); }
+.c-notice a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: var(--fw-semibold);
+  min-height: var(--h-control-touch);
+  display: inline-flex;
+  align-items: center;
+  transition: color var(--duration-base) var(--ease-out);
+}
+.c-notice--success a:hover { color: var(--color-success-hover); }
+.c-notice--warning a:hover { color: var(--color-warning-hover); }
+.c-notice--error   a:hover { color: var(--color-error-hover); }
+.c-notice--info    a:hover { color: var(--color-info-hover); }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
    ║ Toast                                                                  ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
 

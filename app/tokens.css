@@ -44,10 +44,23 @@
   --color-error:   #F85149;
   --color-info:    #58A6FF;
 
+  --color-success-hover: #4ED561;
+  --color-warning-hover: var(--color-accent-hover); /* aliased per DESIGN.md "State · warning · aliased to accent" */
+  --color-error-hover:   #FF6961;                   /* error +lift; ratio against surface = 5.4:1 (AA normal) */
+  --color-info-hover:    #79B8FF;                   /* info +lift; ratio against surface = 7.6:1 (AA normal) */
+
   --color-on-success: #0A0E14;
   --color-on-warning: #0A0E14;
   --color-on-error:   #0A0E14;
   --color-on-info:    #0A0E14;
+  /* Text-on-tinted-surface rule (DESIGN.md "Components · Badges").
+   * On 12% alpha tinted state surfaces (badges, notice banners, chips), the
+   * text is the state color itself: e.g., var(--color-warning) on
+   * rgb(255 184 0 / 0.12).
+   * The --color-on-{state} pair (#0A0E14 Kernel Black) is reserved for text
+   * on a 100% solid state fill (e.g., a fully-amber primary button). Mistaking
+   * --color-on-warning for the right text color on a warning-tint surface
+   * breaks the badge canon (unreadable on dark, ambiguous on light). */
 
   /* ── Typography ───────────────────────────────────────────────── */
   --font-mono: "JetBrains Mono", "Source Code Pro", Menlo, Consolas, monospace;
