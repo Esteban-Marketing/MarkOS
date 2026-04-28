@@ -47,6 +47,14 @@ Plans:
 - [ ] 200-07-PLAN.md — SDK auto-gen CI (TS + Python)
 - [ ] 200-08-PLAN.md — Claude Marketplace landing + demo sandbox
 
+### Phase 200.1: SaaS Readiness Wave 0 — Review-Driven Hardening
+**Goal:** Close 7 HIGH and 5 MEDIUM concerns surfaced by the 2026-04-27 cross-AI review of Phase 200: webhook URL SSRF deny-list + DNS-pin + redirect cap (H1); HMAC replay window 300s + nonce/idempotency store (H2); HMAC secret encrypted at rest via Supabase Vault (H3) + rotation endpoint; MCP per-tenant API-key bearer auth + rate-limit + cost-meter (H4) + gate-10 kill-switch via `markos_tenant_billing_holds`; demo sandbox BotID + ephemeral signed token + restricted tool subset (`draft_message`+`audit_claim` only) + per-token total-cost cap (H5); STRIDE threat models authored for MCP, webhooks, marketplace (H6); Phase 200 retroactive `200-VERIFICATION.md` scoring all 15 quality gates with concrete code/test evidence + closeout reconciliation against Phase 201 substrate consumption (H7+M10); migration 70 rollback (M3); eval-as-test suite for the 10 MCP tools under `lib/markos/evals/mcp/` (M4); OTEL + cost telemetry on `api/webhooks/*` + `api/mcp/*` with `webhook_subscription_id` + `mcp_session_id` trace fields (M5); CI parity check between `bin/lib/presets/` and `.agent/markos/templates/presets/` (M9).
+**Requirements Mapped:** API-01, MCP-01, WHK-01, QA-01, QA-02, QA-04, QA-05, QA-08, QA-09, QA-10, QA-11, QA-12, QA-13, QA-15
+**Depends on:** Phase 200
+**Status:** Planning
+**Source:** `.planning/phases/200-saas-readiness-wave-0/200-REVIEWS.md` (claude-cli separate-session pass, 2026-04-27)
+**Artifacts:** `200.1-CONTEXT.md`, `200.1-REVIEWS.md` (mirrors 200-REVIEWS.md)
+
 ### Phase 201: SaaS Tenancy Hardening
 **Goal:** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
 **Requirements Mapped:** API-02, QA-01..15
@@ -73,8 +81,22 @@ Plans:
 **Requirements Mapped:** API-02, QA-01, QA-02, QA-04, QA-05, QA-09, QA-11, QA-12, QA-13, QA-15
 **Depends on:** Phase 201
 **Status:** Planning
+**Plans:** 11 plans
 **Source:** `.planning/phases/201-saas-tenancy-hardening/201-REVIEWS.md` (claude-cli separate-session pass, 2026-04-27)
 **Artifacts:** `201.1-CONTEXT.md`, `201.1-REVIEWS.md` (mirrors 201-REVIEWS.md)
+
+Plans:
+- [ ] 201.1-01-PLAN.md — D-103 canonical-JSON spec lock + Postgres fn + 10k fuzzer (closes H4) — Wave 1
+- [ ] 201.1-02-PLAN.md — D-105 atomic increment_signup_rate SQL fn (closes H6) — Wave 1
+- [ ] 201.1-03-PLAN.md — D-109 versioned reserved-slug list + admin override + obscenity dataset + F-106 (closes M6) — Wave 1
+- [ ] 201.1-04-PLAN.md — D-101 inline audit emit fail-closed for approve/submit + webhooks fail-closed mode (closes H1) — Wave 2
+- [ ] 201.1-05-PLAN.md — D-104 jittered TTL + single-flight + transitional-410 rename (closes H5) — Wave 2
+- [ ] 201.1-06-PLAN.md — D-106 pseudonymize-with-tombstone erase_audit_pii + tombstone-aware verifier (closes M4) — Wave 2
+- [ ] 201.1-07-PLAN.md — D-110 vanity-login WCAG AA luminance gate + DB CHECK constraint (closes M3) — Wave 2
+- [ ] 201.1-08-PLAN.md — D-102 GDPR signed-URL hardening: 24h TTL + nonce + audience + reissue + F-107 (closes H3) — Wave 3
+- [ ] 201.1-09-PLAN.md — D-107 BYOD verified→failed 24h grace window + alert via webhook engine (closes M2) — Wave 3
+- [ ] 201.1-10-PLAN.md — D-111 Playwright golden-path tenancy smoke (closes M7, reverses QA-06 NA for tenancy) — Wave 3
+- [ ] 201.1-11-PLAN.md — D-108 STATE/ROADMAP/VERIFICATION reclass + scripts/staging-smokes scaffold + F-106/F-107 openapi regen (closes H2) — Wave 4
 
 ### Phase 202: MCP Server GA + Claude Marketplace Launch
 **Goal:** Graduate the 0-day MCP server to GA for the Claude Marketplace launch package: session persistence, +20 skills, marketplace-ready assets and docs, and a VS Code cert-ready path. Cursor / Windsurf / Warp / ChatGPT certifications defer to `202.1`.
