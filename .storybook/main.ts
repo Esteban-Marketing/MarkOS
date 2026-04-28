@@ -41,7 +41,16 @@ const config: StorybookConfig = {
     },
   },
 
-  webpackFinal: async (config) => {
+  // Force automatic JSX runtime regardless of tsconfig `jsx: "preserve"` (Next.js setting).
+  // Without this, esbuild compiles `<X />` to `React.createElement(...)` and story bundles
+  // throw `ReferenceError: React is not defined` because component files don't import React
+  // (they use JSX only). Phase 213.1 chrome stories surfaced this; fix is global.
+  viteFinal: async (config) => {
+    config.esbuild = {
+      ...(config.esbuild || {}),
+      jsx: "automatic",
+      jsxImportSource: "react",
+    };
     return config;
   },
 
