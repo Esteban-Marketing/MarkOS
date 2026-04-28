@@ -1,0 +1,480 @@
+/**
+ * MarkOS component primitives.
+ * Vanilla CSS — usable with or without Tailwind.
+ * Every selector traces back to a token in DESIGN.md.
+ *
+ * Pattern:  .c-{component}              · default
+ *           .c-{component}--{variant}   · variant
+ *           .c-{component}.is-{state}   · runtime state (loading, active, error)
+ */
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Buttons                                                                ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  height: var(--h-control);
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-md);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color     var(--duration-base) var(--ease-out),
+    color            var(--duration-base) var(--ease-out),
+    transform        var(--duration-fast) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.c-button:disabled,
+.c-button[aria-disabled="true"] {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.c-button.is-loading { color: transparent; position: relative; }
+.c-button.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 16px; height: 16px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: var(--radius-full);
+  animation: spin var(--duration-pulse) linear infinite;
+  color: var(--color-on-primary);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* — Primary — */
+.c-button--primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.c-button--primary:hover { background: var(--color-primary-hover); }
+.c-button--primary:active { background: var(--color-primary-pressed); transform: translateY(1px); }
+.c-button--primary:disabled,
+.c-button--primary[aria-disabled="true"] {
+  background: var(--color-primary-subtle);
+  color: var(--color-on-surface-subtle);
+}
+
+/* — Secondary — */
+.c-button--secondary {
+  background: transparent;
+  color: var(--color-on-surface);
+  border-color: var(--color-secondary);
+  padding: 11px 19px;
+}
+.c-button--secondary:hover { background: var(--color-surface-raised); }
+
+/* — Tertiary (text-only, in-flow) — */
+.c-button--tertiary {
+  background: transparent;
+  color: var(--color-primary);
+  padding: 12px 16px;
+  border-color: transparent;
+}
+.c-button--tertiary:hover { background: var(--color-primary-subtle); }
+
+/* — Destructive — */
+.c-button--destructive {
+  background: rgb(248 81 73 / 0.12);
+  color: var(--color-error);
+}
+.c-button--destructive:hover { background: rgb(248 81 73 / 0.20); }
+
+/* — Icon-only button — */
+.c-button--icon { width: var(--h-control); padding: 0; }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Inputs                                                                 ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-field { display: flex; flex-direction: column; gap: var(--space-xs); }
+
+.c-field__label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--color-on-surface-muted);
+}
+
+.c-field__help {
+  font-size: var(--fs-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--color-on-surface-muted);
+}
+
+.c-field__error {
+  font-size: var(--fs-body-sm);
+  color: var(--color-error);
+  font-family: var(--font-mono);
+}
+.c-field__error::before { content: "[err] "; }
+
+.c-input {
+  display: block;
+  width: 100%;
+  height: var(--h-control);
+  padding: 10px 12px;
+  background: var(--color-surface-raised);
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-md);
+  line-height: 1.4;
+  transition: border-color var(--duration-base) var(--ease-out),
+              box-shadow   var(--duration-base) var(--ease-out);
+}
+.c-input::placeholder { color: var(--color-on-surface-subtle); }
+.c-input:focus-visible {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 var(--focus-ring-offset) var(--color-surface),
+              0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width)) var(--color-primary);
+}
+.c-input:disabled,
+.c-input[aria-disabled="true"] {
+  background: var(--color-surface);
+  color: var(--color-on-surface-subtle);
+  cursor: not-allowed;
+}
+.c-input.is-error,
+.c-input[aria-invalid="true"] { border-color: var(--color-error); }
+
+textarea.c-input { height: auto; min-height: calc(var(--h-control) * 2); resize: vertical; line-height: var(--lh-body-md); }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Cards                                                                  ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-card {
+  background: var(--color-surface-raised);
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+
+.c-card--interactive {
+  cursor: pointer;
+  transition: background-color var(--duration-base) var(--ease-out),
+              border-color     var(--duration-base) var(--ease-out);
+}
+.c-card--interactive:hover {
+  background: var(--color-surface-overlay);
+  border-color: var(--color-border-strong);
+}
+
+.c-card--feature {
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Navigation                                                             ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-on-surface-muted);
+  text-decoration: none;
+  font-size: var(--fs-body-md);
+  transition: background-color var(--duration-base) var(--ease-out),
+              color            var(--duration-base) var(--ease-out);
+}
+.c-nav-link:hover { background: var(--color-surface-raised); color: var(--color-on-surface); }
+.c-nav-link.is-active,
+.c-nav-link[aria-current="page"] {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+/* (pointer: coarse) >=44px touch-target — DESIGN.md "Responsive Behavior . Touch vs. pointer" + "Touch targets . 44x44 minimum on (pointer: coarse)". Phase 213.1 UI-SPEC AC#15. Padding-block 11px lifts c-nav-link to ~44.6px (11 + 11 + 16 x 1.6 line-height). */
+@media (pointer: coarse) {
+  .c-nav-link { padding-block: 11px; }
+}
+
+.c-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: var(--h-topbar);
+  padding-inline: var(--space-md);
+  border-bottom: 1px solid rgb(45 52 65 / 0.50);
+}
+
+.c-sidebar {
+  width: var(--w-sidebar);
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+@media (max-width: 1023.98px) { .c-sidebar { width: var(--w-sidebar-md); } }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Chips & Tags                                                           ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+  height: 24px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-raised);
+  color: var(--color-on-surface-muted);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1;
+}
+.c-chip--mint { background: var(--color-primary-subtle); color: var(--color-primary); }
+
+/* Signature MarkOS protocol chip — squared, e.g. [F-105] */
+.c-chip-protocol {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 2px 6px;
+  background: var(--color-surface-raised);
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+  font-size: var(--fs-code);
+  border-radius: var(--radius-sm);
+}
+.c-chip-protocol::before { content: "["; }
+.c-chip-protocol::after  { content: "]"; }
+.c-chip-protocol.is-historical { color: var(--color-on-surface-muted); }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Badges (state)                                                         ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-sans);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-label);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+.c-badge--success { background: rgb(63 185 80 / 0.12);  color: var(--color-success); }
+.c-badge--warning { background: rgb(255 184 0 / 0.12);  color: var(--color-warning); }
+.c-badge--error   { background: rgb(248 81 73 / 0.12);  color: var(--color-error); }
+.c-badge--info    { background: rgb(88 166 255 / 0.12); color: var(--color-info); }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Code surfaces · signature                                              ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-code-inline {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--color-surface-raised);
+  color: var(--color-on-surface);
+  font-family: var(--font-mono);
+  font-size: var(--fs-code);
+  line-height: 1.4;
+  border-radius: var(--radius-sm);
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
+.c-code-block {
+  display: block;
+  padding: var(--space-md);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-mono);
+  font-size: var(--fs-code);
+  line-height: var(--lh-code-block);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  font-feature-settings: "liga" 1, "calt" 1;
+}
+
+/* Terminal frame — wraps code blocks */
+.c-terminal {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.c-terminal__header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  height: 32px;
+  padding-inline: var(--space-sm);
+  background: var(--color-surface-raised);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-sm);
+}
+.c-terminal__dots { display: inline-flex; gap: 6px; }
+.c-terminal__dots span {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-on-surface-subtle);
+}
+.c-terminal__filename {
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-sm);
+  color: var(--color-on-surface-muted);
+}
+.c-terminal__copy {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px; height: 24px;
+  background: transparent;
+  color: var(--color-on-surface-muted);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.c-terminal__copy:hover { background: var(--color-surface-overlay); color: var(--color-on-surface); }
+.c-terminal__body { padding: var(--space-md); font-family: var(--font-mono); font-size: var(--fs-code); line-height: var(--lh-code-block); }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Modal · Dialog                                                         ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(10 14 20 / 0.70);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 90;
+}
+
+.c-modal {
+  position: fixed;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%, -50%);
+  width: min(var(--w-modal), calc(100vw - var(--space-xl)));
+  background: var(--color-surface-overlay);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-modal);
+  z-index: 100;
+}
+.c-modal__header { font-family: var(--font-mono); font-size: var(--fs-h3); font-weight: var(--fw-semibold); margin-bottom: var(--space-md); }
+.c-modal__body { margin-bottom: var(--space-lg); }
+.c-modal__actions { display: flex; gap: var(--space-xs); justify-content: flex-end; }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Toast                                                                  ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-toast-region {
+  position: fixed;
+  inset-block-end: var(--space-md);
+  inset-inline-end: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  z-index: 110;
+  pointer-events: none;
+}
+
+.c-toast {
+  pointer-events: auto;
+  width: var(--w-toast);
+  background: var(--color-surface-overlay);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  box-shadow: var(--shadow-popover);
+  border-inline-start: 4px solid var(--color-on-surface-subtle);
+}
+.c-toast--success { border-inline-start-color: var(--color-success); }
+.c-toast--warning { border-inline-start-color: var(--color-warning); }
+.c-toast--error   { border-inline-start-color: var(--color-error); }
+.c-toast--info    { border-inline-start-color: var(--color-info); }
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Status dot · signature kernel-heartbeat                                ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-status-dot {
+  display: inline-block;
+  width: var(--status-dot);
+  height: var(--status-dot);
+  border-radius: var(--radius-full);
+  background: var(--color-on-surface-subtle);
+  /* 12px hit-area via parent padding when interactive */
+}
+.c-status-dot--live  {
+  background: var(--color-primary);
+  animation: kernel-pulse var(--duration-pulse) linear infinite;
+}
+.c-status-dot--error { background: var(--color-error); }
+
+@keyframes kernel-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Popover                                                                ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.c-popover {
+  background: var(--color-surface-overlay);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  box-shadow: var(--shadow-popover);
+  max-width: 320px;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║ Utility                                                                ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+.u-visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.u-no-select { user-select: none; }
+.u-mono      { font-family: var(--font-mono); }
+.u-sans      { font-family: var(--font-sans); }
+.u-tnum      { font-feature-settings: "tnum" 1; }
