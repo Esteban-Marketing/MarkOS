@@ -2,22 +2,27 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Milestone complete
-last_updated: "2026-04-28T16:43:39.786Z"
+status: Ready to execute
+last_updated: "2026-04-28T20:17:06.561Z"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 132
   completed_plans: 50
+  percent: 38
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 213.1 (ui-canon-adoption-wave-1-chrome) — READY FOR VERIFICATION
-Plan: Not started
-Next: `/gsd-verify-work 213.1` for phase verification, then manual Chromatic + forced-colors + light-mode gates, then `/gsd-discuss-phase 213.2` (auth surfaces).
+Phase: 213.2 (ui-canon-adoption-wave-2-auth-surfaces) — EXECUTING
+Plan: 2 of 5
+Next: `/gsd-execute-phase 213.2` to continue with Plan 213.2-02 (signup surface).
+
+## Phase 213.2 Plan Progress
+
+- [x] 213.2-01: /login surface to DESIGN.md tokens — page.module.css rewritten (12→25 LOC, zero hex, only 2px text-underline-offset whitelist) + page.tsx removed `--accent` BYOD inline-style + dead `primary` variable (UI-SPEC L-4 single-mint-signal rule) + new `_components/LoginCard.tsx` `'use client'` subcomponent composes 6 primitives (.c-card--feature, .c-input, .c-field, .c-field__label, .c-field__help, .c-button--primary) preserving `<form method="POST" action="/api/auth/signup">` Phase 200/204 contract + new `_components/LoginCard.stories.tsx` (CSF3 4 named state stories: Default / Filled / Branded / ErrorState) registered as `Auth/LoginCard` in storybook-static/index.json. RESEARCH.md R-2 mitigation: server-component page.tsx + presentational client subcomponent extraction pattern. 61/61 test/auth tests + 34/34 Phase 213.1 a11y suites preserved. Closes UI-SPEC AC#L-1, L-2, L-3, L-4, L-5, X-2 (login slice), X-3 (login slice), X-4 (login slice). (2026-04-28)
 
 ## Phase 213.1 Plan Progress
 
