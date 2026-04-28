@@ -376,11 +376,11 @@ Plans:
 **Goal:** Redesign the global `(markos)` chrome (layout-shell + RotationGraceBanner) from the legacy light-mode/Sora/teal/gradient/28px-radius/drop-shadow surface to the canonical DESIGN.md token system (Kernel Black surface, Protocol Mint signal, JetBrains Mono headings, strict 8px grid, 1px Border Mist hairlines, no gradients, no drop-shadows, no hover-translate jiggle, bracketed-glyph state coding); compose the `.c-*` primitive set from `styles/components.css`; preserve Phase 203 banner wiring contract; ship Storybook + a11y coverage; close UI-SPEC.md acceptance criteria #1–#15.
 **Requirements**: UI-SPEC AC#1..AC#15 (binding contract — `213.1-UI-SPEC.md` is canonical for this phase since no REQ-IDs map)
 **Depends on:** Phase 213
-**Plans:** 1/3 plans executed
+**Plans:** 2/3 plans executed
 
 Plans:
 - [x] 213.1-01-PLAN.md — layout-shell module.css rewrite + tsx className updates + new NavList client subcomponent + existing layout.stories.tsx update (AC#1, AC#2, AC#3, AC#5, AC#7, AC#8, AC#11, AC#12, AC#13, AC#14)
-- [ ] 213.1-02-PLAN.md — RotationGraceBanner module.css rewrite + tsx bracketed-glyph (`[warn]`/`[err]`) + .pulseDot→.warningDot rename + Phase 203 ui-s4-a11y.test.js rewrite (AC#1, AC#2, AC#3, AC#5, AC#6, AC#9, AC#10, AC#10b, AC#11, AC#12, AC#13)
+- [x] 213.1-02-PLAN.md — RotationGraceBanner module.css rewrite + tsx bracketed-glyph (`[warn]`/`[err]`) + .pulseDot→.warningDot rename + Phase 203 ui-s4-a11y.test.js rewrite (AC#1, AC#2, AC#3, AC#5, AC#6, AC#9, AC#10, AC#10b, AC#11, AC#12, AC#13)
 - [ ] 213.1-03-PLAN.md — RotationGraceBanner.stories.tsx + 213-1-chrome-a11y.test.js + (pointer: coarse) on .c-nav-link in components.css + .storybook/preview.tsx globals.css import + legacy ThemeProvider opt-in gate (AC#3, AC#4, AC#9, AC#11, AC#12, AC#13, AC#15)
 
 ### Phase 214: SaaS Suite Activation and Subscription Core

@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Executing Phase 213.1
-last_updated: "2026-04-28T05:40:32.703Z"
+status: Ready to execute
+last_updated: "2026-04-28T05:58:20.477Z"
 progress:
   total_phases: 17
   completed_phases: 5
@@ -17,13 +17,13 @@ progress:
 ## Current Position
 
 Phase: 213.1 (ui-canon-adoption-wave-1-chrome) — EXECUTING
-Plan: 2 of 3
-Next: Plan 213.1-02 (RotationGraceBanner module + tsx + Phase 203 banner-shape test bracketed-glyph update) → Plan 213.1-03 (Storybook stories + axe a11y tests + (pointer: coarse) `.c-nav-link` enforcement).
+Plan: 3 of 3
+Next: Plan 213.1-03 (Storybook stories + axe a11y tests + (pointer: coarse) `.c-nav-link` enforcement).
 
 ## Phase 213.1 Plan Progress
 
 - [x] 213.1-01: layout-shell.module.css token rewrite (187→106 LOC) + NavList.tsx client subcomponent + layout-shell.tsx + layout.stories.tsx primitive composition; pre-existing postcss.config.mjs JSDoc terminator bug fixed (Rule 3 deviation) so storybook build is clean. Closes UI-SPEC AC#1, AC#2, AC#3, AC#5, AC#7, AC#8, AC#9, AC#11, AC#12, AC#13, AC#14. (2026-04-28)
-- [ ] 213.1-02: RotationGraceBanner.module.css token rewrite + RotationGraceBanner.tsx [warn]/[err] bracketed-glyph prefix + test/webhooks/layout-shell-banner.test.js assertion update.
+- [x] 213.1-02: RotationGraceBanner.module.css token rewrite (109→75 LOC; zero hex; rgb(255 184 0 / 0.12) warn + rgb(248 81 73 / 0.12) T-0 err alpha-tints; .pulseDot→.warningDot rename composing global .c-status-dot primitive; deleted local :focus-visible + prefers-reduced-motion overrides) + RotationGraceBanner.tsx 3× [warn] + 1× [err] bracketed-glyph state coding on <strong> per DESIGN.md "Color blindness" rule + test/webhooks/ui-s4-a11y.test.js rewritten 17/17 pass (per RESEARCH.md correction; layout-shell-banner.test.js stays UNTOUCHED 7/7). Closes UI-SPEC AC#1, AC#2, AC#3, AC#5, AC#6, AC#9, AC#10, AC#10b, AC#11, AC#12, AC#13. (2026-04-28)
 - [ ] 213.1-03: Storybook *.stories.tsx coverage + test/ui-a11y/ axe assertions + styles/components.css `(pointer: coarse)` ≥44px on `.c-nav-link`.
 
 ## Phase 204 Plan Progress
