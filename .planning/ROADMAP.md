@@ -366,14 +366,14 @@ Plans:
 **Goal:** Redesign the 4 auth surfaces (login, signup, invite/[token], oauth/consent — 8 files, 997 LOC, 82 inline-hex matches) from the legacy teal-Sora-light-bg-gradients-drop-shadows implementation to the canonical DESIGN.md token system (Kernel Black surface, Protocol Mint signal, JetBrains Mono headings + Inter body, strict 8px grid, 1px Border Mist hairlines, no gradients, no drop-shadows, no emoji, bracketed-glyph state coding); compose form primitives exhaustively (.c-input/.c-field/.c-button{,--primary,--tertiary,--destructive}/.c-card--feature/.c-chip-protocol/.c-code-inline); preserve Phase 200/201/202/204 wiring contracts; ship Storybook + a11y coverage (24+ named state stories + 213-2-auth-a11y.test.js); patch breaking visual-token assertions in test/auth/signup.test.js + test/mcp/consent-ui-a11y.test.js; close 213.2-UI-SPEC.md acceptance criteria #1–#29 (29 ACs across 5 sub-tables: login 5 + signup 6 + invite 5 + oauth 8 + cross-cutting 5).
 **Requirements**: 213.2-UI-SPEC.md AC L-1..L-5 + S-1..S-6 + I-1..I-5 + O-1..O-8 + X-1..X-5 (29 ACs binding contract — `213.2-UI-SPEC.md` is canonical for this phase since no REQ-IDs map)
 **Depends on:** Phase 213.1
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [x] 213.2-01-PLAN.md — login module.css rewrite + page.tsx classNames + new LoginCard client subcomponent + LoginCard.stories.tsx (L-1, L-2, L-3, L-4, L-5, X-4 login slice)
 - [x] 213.2-02-PLAN.md — signup module.css rewrite + page.tsx classNames + layout.tsx preserved + page.stories.tsx + test/auth/signup.test.js visual-token block patch (S-1, S-2, S-3, S-4, S-5, S-6, X-4 signup slice)
 - [x] 213.2-03-PLAN.md — invite/[token] module.css rewrite + page.tsx classNames + reasonCopy() [err] glyph revisions + page.stories.tsx (I-1, I-2, I-3, I-4, I-5, X-4 invite slice)
 - [x] 213.2-04-PLAN.md — oauth/consent module.css rewrite + page.tsx classNames + new ConsentCard client subcomponent + ConsentCard.stories.tsx + test/mcp/consent-ui-a11y.test.js visual-token+Sora+reduced-motion+copy patch (O-1, O-2, O-3, O-4, O-5, O-6, O-7, O-8, X-4 consent slice)
-- [ ] 213.2-05-PLAN.md — styles/components.css (pointer: coarse) extension to .c-button + new test/ui-a11y/213-2-auth-a11y.test.js (≥18 tests, ≥7 AC# mentions) (X-1, X-2, X-3, X-4, X-5)
+- [x] 213.2-05-PLAN.md — styles/components.css (pointer: coarse) extension to .c-button + new test/ui-a11y/213-2-auth-a11y.test.js (≥18 tests, ≥7 AC# mentions) (X-1, X-2, X-3, X-4, X-5)
 
 ### Phase 213.1: UI Canon Adoption Wave 1 — chrome (layout-shell + RotationGraceBanner) to DESIGN.md tokens (INSERTED)
 
