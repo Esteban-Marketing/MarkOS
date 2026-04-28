@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Ready to execute
-last_updated: "2026-04-28T05:58:20.477Z"
+status: Phase complete — ready for verification
+last_updated: "2026-04-28T06:08:29.998Z"
 progress:
   total_phases: 17
   completed_phases: 5
@@ -16,15 +16,15 @@ progress:
 
 ## Current Position
 
-Phase: 213.1 (ui-canon-adoption-wave-1-chrome) — EXECUTING
-Plan: 3 of 3
-Next: Plan 213.1-03 (Storybook stories + axe a11y tests + (pointer: coarse) `.c-nav-link` enforcement).
+Phase: 213.1 (ui-canon-adoption-wave-1-chrome) — READY FOR VERIFICATION
+Plan: 3 of 3 (COMPLETE)
+Next: `/gsd-verify-work 213.1` for phase verification, then manual Chromatic + forced-colors + light-mode gates, then `/gsd-discuss-phase 213.2` (auth surfaces).
 
 ## Phase 213.1 Plan Progress
 
 - [x] 213.1-01: layout-shell.module.css token rewrite (187→106 LOC) + NavList.tsx client subcomponent + layout-shell.tsx + layout.stories.tsx primitive composition; pre-existing postcss.config.mjs JSDoc terminator bug fixed (Rule 3 deviation) so storybook build is clean. Closes UI-SPEC AC#1, AC#2, AC#3, AC#5, AC#7, AC#8, AC#9, AC#11, AC#12, AC#13, AC#14. (2026-04-28)
 - [x] 213.1-02: RotationGraceBanner.module.css token rewrite (109→75 LOC; zero hex; rgb(255 184 0 / 0.12) warn + rgb(248 81 73 / 0.12) T-0 err alpha-tints; .pulseDot→.warningDot rename composing global .c-status-dot primitive; deleted local :focus-visible + prefers-reduced-motion overrides) + RotationGraceBanner.tsx 3× [warn] + 1× [err] bracketed-glyph state coding on <strong> per DESIGN.md "Color blindness" rule + test/webhooks/ui-s4-a11y.test.js rewritten 17/17 pass (per RESEARCH.md correction; layout-shell-banner.test.js stays UNTOUCHED 7/7). Closes UI-SPEC AC#1, AC#2, AC#3, AC#5, AC#6, AC#9, AC#10, AC#10b, AC#11, AC#12, AC#13. (2026-04-28)
-- [ ] 213.1-03: Storybook *.stories.tsx coverage + test/ui-a11y/ axe assertions + styles/components.css `(pointer: coarse)` ≥44px on `.c-nav-link`.
+- [x] 213.1-03: RotationGraceBanner.stories.tsx (Storybook 8 CSF3, 5 named state stories: Empty / T7Warning / T1Warning / T0Error / MultiWarning) + test/ui-a11y/213-1-chrome-a11y.test.js (22 tests / 22 pass — grep-shape AC#3/8/9/11/12/13/15 + Storybook preview wiring + token consumption + 5 banner story exports) + styles/components.css `@media (pointer: coarse) { .c-nav-link { padding-block: 11px } }` (>=44px touch target on coarse pointers, rule on global primitive so all .c-nav-link consumers inherit) + .storybook/preview.tsx 3-edit surgery (`import "../app/globals.css"` cascade root + ThemeProvider gated behind `parameters.theme === "legacy" | "white-label"` opt-in — RESEARCH.md R2 mitigation). Closes UI-SPEC AC#3, AC#4, AC#9, AC#11, AC#12, AC#13, AC#15. Wave 1 closed. (2026-04-28)
 
 ## Phase 204 Plan Progress
 
