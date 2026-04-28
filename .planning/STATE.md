@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Ready to execute
-last_updated: "2026-04-28T20:26:15.937Z"
+last_updated: "2026-04-28T20:33:43.826Z"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 132
-  completed_plans: 50
-  percent: 38
+  completed_plans: 51
+  percent: 39
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,12 +17,14 @@ progress:
 ## Current Position
 
 Phase: 213.2 (ui-canon-adoption-wave-2-auth-surfaces) — EXECUTING
-Plan: 3 of 5
-Next: `/gsd-execute-phase 213.2` to continue with Plan 213.2-02 (signup surface).
+Plan: 4 of 5
+Next: `/gsd-execute-phase 213.2` to continue with Plan 213.2-04 (oauth/consent surface).
 
 ## Phase 213.2 Plan Progress
 
 - [x] 213.2-01: /login surface to DESIGN.md tokens — page.module.css rewritten (12→25 LOC, zero hex, only 2px text-underline-offset whitelist) + page.tsx removed `--accent` BYOD inline-style + dead `primary` variable (UI-SPEC L-4 single-mint-signal rule) + new `_components/LoginCard.tsx` `'use client'` subcomponent composes 6 primitives (.c-card--feature, .c-input, .c-field, .c-field__label, .c-field__help, .c-button--primary) preserving `<form method="POST" action="/api/auth/signup">` Phase 200/204 contract + new `_components/LoginCard.stories.tsx` (CSF3 4 named state stories: Default / Filled / Branded / ErrorState) registered as `Auth/LoginCard` in storybook-static/index.json. RESEARCH.md R-2 mitigation: server-component page.tsx + presentational client subcomponent extraction pattern. 61/61 test/auth tests + 34/34 Phase 213.1 a11y suites preserved. Closes UI-SPEC AC#L-1, L-2, L-3, L-4, L-5, X-2 (login slice), X-3 (login slice), X-4 (login slice). (2026-04-28)
+- [x] 213.2-02: /signup surface to DESIGN.md tokens — page.module.css rewritten (186→64 LOC, zero hex, only 4px success-border + 2px text-underline-offset whitelist) + page.tsx composition updates with `[ok] Check your inbox.` success copy + 2× `[warn]` glyphs (BotBlocked / RateLimited) + aria-invalid migration + .spinner deletion (.c-button.is-loading::after primitive composes spinner) + new page.stories.tsx (CSF3 7 named state stories: Default / Filled / Loading / Sent / BotBlocked / RateLimited / Error) registered as `Auth/SignupPage` + test/auth/signup.test.js lines 144-155 token-citation block migrated; lines 128-142 wiring assertions preserved. Closes UI-SPEC AC S-1, S-2, S-3, S-4, S-5, S-6, X-2/X-3/X-4 (signup slice). (2026-04-28)
+- [x] 213.2-03: /invite/[token] surface to DESIGN.md tokens — page.module.css rewritten (73→43 LOC, zero hex, only 4px error-border whitelist; consumes var(--color-surface), var(--color-error), var(--space-xl/md/sm/xs), var(--w-modal); 12% alpha-tint rgb(248 81 73 / 0.12) on errorMessage per DESIGN.md badge canon) + page.tsx composes .c-card c-card--feature + .c-button c-button--primary + .t-lead utility, reasonCopy() all 7 reason-code keys preserved (server contract per CONTEXT D-19) with [err] glyph prefix on every return (Invite expired / Email mismatch / Invite withdrawn / Invite already accepted / Invite not found / Seat limit reached / Accept failed), success CTA prepends [ok] (`[ok] Accepted. Redirecting…`), subheading drops "You'll" softener, aria-busy 'true'/'false' string ARIA-spec compliance (Rule 1 deviation), buttonLabel hoisted out of nested ternary (Rule 1 lint clean), preserves 'use client' + /api/tenant/invites/accept POST + window.location.href redirect verbatim (Phase 201/202 wiring) + new page.stories.tsx (NEW; CSF3 10 named state stories: Default / Accepting / Success / Error / ErrorEmailMismatch / ErrorWithdrawn / ErrorAlreadyAccepted / ErrorNotFound / ErrorSeatQuota / ErrorAcceptFailed — exceeds X-4 minimum of 4 by 250%) registered as `Auth/InviteAcceptPage` in storybook-static/index.json (10 stories × 2 entries = 20 lookups). 10/10 test/tenancy/invites + 61/61 test/auth + 22/22 213-1-chrome-a11y preserved; pre-existing test/tenant-auth/ui-authorization-negative-path.test.js failure (asserts on app/(markos)/layout.tsx, NOT invite) verified pre-existing via git stash + retest, logged to deferred-items.md per scope-boundary rule. Closes UI-SPEC AC I-1, I-2, I-3, I-4, I-5, X-1 (invite slice), X-2 (invite slice), X-3 (invite slice), X-4 (invite slice). (2026-04-28)
 
 ## Phase 213.1 Plan Progress
 
