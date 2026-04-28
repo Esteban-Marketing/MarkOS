@@ -341,6 +341,48 @@ Plans:
 
 **Research/context:** `obsidian/brain/SaaS Suite Canon.md`, `obsidian/brain/SaaS Marketing OS Strategy Canon.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-suite-intake.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-marketing-os-strategy-intake.md`, `obsidian/work/incoming/16-SAAS-SUITE.md`, `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md`, `.agent/markos/references/saas-suite.md`, `.planning/V4.0.0-GSD-PHASE-RESEARCH-READINESS-MATRIX.md`.
 
+### Phase 213.4: UI Canon Adoption Wave 4 — admin + operations + status + 404-workspace to DESIGN.md tokens (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 213
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 213.4 to break down)
+
+### Phase 213.3: UI Canon Adoption Wave 3 — settings/* (8 files: billing, members, sessions, domain, danger, mcp, plugins, webhooks) to DESIGN.md tokens (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 213
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 213.3 to break down)
+
+### Phase 213.2: UI Canon Adoption Wave 2 — auth surfaces (login, signup, invite, oauth-consent) to DESIGN.md tokens (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 213
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 213.2 to break down)
+
+### Phase 213.1: UI Canon Adoption Wave 1 — chrome (layout-shell + RotationGraceBanner) to DESIGN.md tokens (INSERTED)
+
+**Goal:** Redesign the global `(markos)` chrome (layout-shell + RotationGraceBanner) from the legacy light-mode/Sora/teal/gradient/28px-radius/drop-shadow surface to the canonical DESIGN.md token system (Kernel Black surface, Protocol Mint signal, JetBrains Mono headings, strict 8px grid, 1px Border Mist hairlines, no gradients, no drop-shadows, no hover-translate jiggle, bracketed-glyph state coding); compose the `.c-*` primitive set from `styles/components.css`; preserve Phase 203 banner wiring contract; ship Storybook + a11y coverage; close UI-SPEC.md acceptance criteria #1–#15.
+**Requirements**: UI-SPEC AC#1..AC#15 (binding contract — `213.1-UI-SPEC.md` is canonical for this phase since no REQ-IDs map)
+**Depends on:** Phase 213
+**Plans:** 1/3 plans executed
+
+Plans:
+- [x] 213.1-01-PLAN.md — layout-shell module.css rewrite + tsx className updates + new NavList client subcomponent + existing layout.stories.tsx update (AC#1, AC#2, AC#3, AC#5, AC#7, AC#8, AC#11, AC#12, AC#13, AC#14)
+- [ ] 213.1-02-PLAN.md — RotationGraceBanner module.css rewrite + tsx bracketed-glyph (`[warn]`/`[err]`) + .pulseDot→.warningDot rename + Phase 203 ui-s4-a11y.test.js rewrite (AC#1, AC#2, AC#3, AC#5, AC#6, AC#9, AC#10, AC#10b, AC#11, AC#12, AC#13)
+- [ ] 213.1-03-PLAN.md — RotationGraceBanner.stories.tsx + 213-1-chrome-a11y.test.js + (pointer: coarse) on .c-nav-link in components.css + .storybook/preview.tsx globals.css import + legacy ThemeProvider opt-in gate (AC#3, AC#4, AC#9, AC#11, AC#12, AC#13, AC#15)
+
 ### Phase 214: SaaS Suite Activation and Subscription Core
 **Goal:** Build the SaaS Suite foundation: durable `business_type = saas` activation, SaaS profile/plan/subscription substrate, explicit lifecycle governance, CRM identity bridging, and gated SaaS surfaces with a non-runnable growth extension point.
 **Requirements Mapped:** SAS-01..03, QA-01..15

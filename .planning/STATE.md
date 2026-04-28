@@ -2,22 +2,29 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Ready to plan
-last_updated: "2026-04-24T07:49:21.346Z"
+status: Executing Phase 213.1
+last_updated: "2026-04-28T05:40:32.703Z"
 progress:
-  total_phases: 14
+  total_phases: 17
   completed_phases: 5
-  total_plans: 105
+  total_plans: 132
   completed_plans: 50
+  percent: 38
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 204 (cli-markos-v1-ga) — PHASE 204 GA READY FOR VERIFICATION (all 13 plans complete)
-Plan: Not started
-Next: Phase 204 verification pass (gsd-verify-work) → advance to Phase 205 (Pricing Engine foundation).
+Phase: 213.1 (ui-canon-adoption-wave-1-chrome) — EXECUTING
+Plan: 2 of 3
+Next: Plan 213.1-02 (RotationGraceBanner module + tsx + Phase 203 banner-shape test bracketed-glyph update) → Plan 213.1-03 (Storybook stories + axe a11y tests + (pointer: coarse) `.c-nav-link` enforcement).
+
+## Phase 213.1 Plan Progress
+
+- [x] 213.1-01: layout-shell.module.css token rewrite (187→106 LOC) + NavList.tsx client subcomponent + layout-shell.tsx + layout.stories.tsx primitive composition; pre-existing postcss.config.mjs JSDoc terminator bug fixed (Rule 3 deviation) so storybook build is clean. Closes UI-SPEC AC#1, AC#2, AC#3, AC#5, AC#7, AC#8, AC#9, AC#11, AC#12, AC#13, AC#14. (2026-04-28)
+- [ ] 213.1-02: RotationGraceBanner.module.css token rewrite + RotationGraceBanner.tsx [warn]/[err] bracketed-glyph prefix + test/webhooks/layout-shell-banner.test.js assertion update.
+- [ ] 213.1-03: Storybook *.stories.tsx coverage + test/ui-a11y/ axe assertions + styles/components.css `(pointer: coarse)` ≥44px on `.c-nav-link`.
 
 ## Phase 204 Plan Progress
 
@@ -1196,6 +1203,7 @@ None — Q-A / Q-B / Q-C answered on 2026-04-16. See `obsidian/brain/Target ICP.
 ### Roadmap Evolution
 
 - Phase 204.1 inserted after Phase 204: close 5 fixes + Bonus Gap #3/#4 (decision needed) + winget/apt distribution (URGENT — UI-REVIEW d9ede52: 17/24, P0 audit trail wiring, P1 spinner primitive + stderr stream, P2 ASCII fallback + width breakpoint, mask-rule decision)
+- Phases 213.1–213.4 inserted after Phase 213 (2026-04-27): UI Canon Adoption — bridges v4.0.0 → v4.1.0 SaaS Suite. Driven by DESIGN.md (canonical visual contract) landing alongside generated artifacts (`tokens/tokens.json`, `tailwind.config.ts`, `app/tokens.css`, `app/globals.css`, `styles/components.css`, `tokens/index.ts`). Existing 21 `*.module.css` files (4,867 LOC, 704 inline hex matches) implement contradictory design system (light bg `#f8fbfd`, teal `#0d9488`, Sora/Space Grotesk, 28px radii, gradients, drop shadows) that violates DESIGN.md (dark Kernel Black `#0A0E14` / Protocol Mint `#00D9A3` / JetBrains Mono+Inter / 8px grid / borders over shadows / flat). Per CLAUDE.md drift rule, this is a **redesign**, not a port. Each wave: `/gsd-ui-phase` → UI-SPEC.md citing DESIGN.md tokens by name → `/gsd-execute-phase` → `/gsd-ui-review` 6-pillar audit (Pillar 1 Tokens auto-FAILs on any inline hex/px or off-grid value). Wave 1 (213.1): chrome — `app/(markos)/layout-shell.module.css` + `_components/RotationGraceBanner.module.css`. Wave 2 (213.2): auth — `login` + `signup` + `invite/[token]` + `oauth/consent`. Wave 3 (213.3): `settings/*` — billing, members, sessions, domain, danger, mcp, plugins, webhooks (8 files). Wave 4 (213.4): `admin/billing` + `admin/governance` + `operations/*` + `status/webhooks` + `404-workspace`. Acceptance per phase: zero inline hex matches in scoped files, zero off-grid spacing, composes `.c-*` primitives where applicable, WCAG 2.1 AA min/AAA on body+primary, focus rings 2px solid #00D9A3 + 2px offset, prefers-reduced-motion respected.
 
 ## Carry-over context from v3.9.0
 
