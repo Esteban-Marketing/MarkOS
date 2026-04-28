@@ -211,8 +211,9 @@ textarea.c-input { height: auto; min-height: calc(var(--h-control) * 2); resize:
   color: var(--color-primary-text);
 }
 
-/* (pointer: coarse) >=44px touch-target — DESIGN.md "Responsive Behavior . Touch vs. pointer" + "Touch targets . 44x44 minimum on (pointer: coarse)". Phase 213.1 UI-SPEC AC#15. Padding-block 11px lifts c-nav-link to ~44.6px (11 + 11 + 16 x 1.6 line-height). */
+/* (pointer: coarse) >=44px touch-target — DESIGN.md "Responsive Behavior . Touch vs. pointer" + "Touch targets . 44x44 minimum on (pointer: coarse)". Phase 213.1 UI-SPEC AC#15 (.c-nav-link); Phase 213.2 UI-SPEC Rule 4 (.c-button extension per RESEARCH.md R-3). Padding-block 11px lifts c-nav-link to ~44.6px (11 + 11 + 16 x 1.6 line-height). c-button uses var(--h-control-touch) 44px direct min-height since it has fixed control-height baseline (var(--h-control) 40px desktop). */
 @media (pointer: coarse) {
+  .c-button { min-height: var(--h-control-touch); }
   .c-nav-link { padding-block: 11px; }
 }
 
