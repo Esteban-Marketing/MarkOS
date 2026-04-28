@@ -61,7 +61,7 @@ export default function RotationGraceBanner({ rotations }: RotationGraceBannerPr
   if (rotations.length > 1) {
     return (
       <div className={styles.rotationGraceBanner} role="status" data-stage="multi">
-        <strong>{rotations.length} signing-secret rotations in progress.</strong>{' '}
+        <strong>[warn] {rotations.length} signing-secret rotations in progress.</strong>{' '}
         <a href="/settings/webhooks?filter=rotating" className={styles.graceLink}>
           Review all rotations
         </a>
@@ -82,7 +82,7 @@ export default function RotationGraceBanner({ rotations }: RotationGraceBannerPr
   if (stage === 't-7') {
     return (
       <div className={styles.rotationGraceBanner} role="status" data-stage="t-7">
-        <strong>Signing-secret rotation in progress.</strong>{' '}
+        <strong>[warn] Signing-secret rotation in progress.</strong>{' '}
         7 days remain in the grace window.{' '}
         <a href={settingsHref} className={styles.graceLink}>
           Review rotation for {r.url}
@@ -94,8 +94,8 @@ export default function RotationGraceBanner({ rotations }: RotationGraceBannerPr
   if (stage === 't-1') {
     return (
       <div className={styles.rotationGraceBanner} role="status" data-stage="t-1">
-        <span className={styles.pulseDot} aria-hidden="true" />
-        <strong>Signing-secret rotation ends tomorrow.</strong>{' '}
+        <span className={`${styles.warningDot} c-status-dot`} aria-hidden="true" />
+        <strong>[warn] Signing-secret rotation ends tomorrow.</strong>{' '}
         Verify subscribers have switched to the new signature.{' '}
         <a href={settingsHref} className={styles.graceLink}>
           Open settings
@@ -107,7 +107,7 @@ export default function RotationGraceBanner({ rotations }: RotationGraceBannerPr
   // stage === 't-0' (final day escalation).
   return (
     <div className={styles.rotationGraceBanner} role="status" data-stage="t-0">
-      <strong>Grace window ends today.</strong>{' '}
+      <strong>[err] Grace window ends today.</strong>{' '}
       The old signing secret will be purged at {formatGraceTime(r.grace_ends_at)}.{' '}
       <a href={settingsHref} className={styles.graceLink}>
         Open settings
