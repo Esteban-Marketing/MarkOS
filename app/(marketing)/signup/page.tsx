@@ -19,8 +19,8 @@ type UiState =
   | { status: 'bot_blocked' }
   | { status: 'rate_limited' };
 
-const RATE_LIMIT_COPY = 'Too many requests from this device. Try again in an hour.';
-const BOT_BLOCKED_COPY = "We couldn't verify this request. Try again or contact support.";
+const RATE_LIMIT_COPY = 'Rate-limited. Retry in an hour.';
+const BOT_BLOCKED_COPY = 'Verification failed. Retry or contact support.';
 const RESEND_COOLDOWN_MS = 60_000;
 
 export default function SignupPage() {
@@ -71,66 +71,76 @@ export default function SignupPage() {
     const body = await resp.json().catch(() => ({}));
     setUi({
       status: 'error',
-      message: body.message || 'Signup failed. Try again.',
+      message: body.message || 'Signup failed. Retry.',
       code: body.error,
     });
   }
 
   const isSubmitting = ui.status === 'submitting';
   const canResend = resendReadyAt !== null && now >= resendReadyAt;
+  const isError = ui.status === 'error';
 
   return (
     <main className={styles.signupPage}>
-      <section className={styles.authCard} aria-labelledby="signup-heading">
-        <p className={styles.eyebrow}>markos.dev</p>
-        <h1 id="signup-heading" className={styles.displayHeading}>
-          Start your workspace
-        </h1>
+      <section className={`c-card c-card--feature ${styles.authCard}`} aria-labelledby="signup-heading">
+        <p className="t-label-caps">markos.dev</p>
+        <h1 id="signup-heading">Start your workspace</h1>
 
         {ui.status === 'sent' ? (
           <div className={styles.successPanel} role="status" aria-live="polite">
-            <strong>Check your inbox.</strong>
-            <br />
-            We sent a magic link to <em>{ui.email}</em>.
+            <strong>[ok] Check your inbox.</strong>
+            <span>Magic link sent to <em>{ui.email}</em>.</span>
             <button
               type="button"
-              className={styles.resendButton}
+              className="c-button c-button--tertiary"
               onClick={() => submit()}
               disabled={!canResend || isSubmitting}
               aria-live="polite"
             >
-              {canResend ? 'Resend link' : `Resend available in ${Math.ceil(((resendReadyAt || 0) - now) / 1000)}s`}
+              {canResend ? 'Resend link' : `Resend in ${Math.ceil(((resendReadyAt || 0) - now) / 1000)}s`}
             </button>
           </div>
         ) : (
           <>
-            <p className={styles.subheading}>
-              One email, one click, you're in. No credit card, no ceremony.
-            </p>
+            <p className="t-lead">One email. No credit card.</p>
             <form className={styles.form} onSubmit={submit} noValidate>
-              <label htmlFor="signup-email" className={styles.label}>Work email</label>
-              <input
-                id="signup-email"
-                name="email"
-                type="email"
-                required
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                aria-describedby="signup-help"
-                className={`${styles.input}${ui.status === 'error' ? ' ' + styles.inputError : ''}`}
-              />
-              <button type="submit" className={styles.primaryCta} disabled={isSubmitting}>
-                {isSubmitting ? <span className={styles.spinner} aria-hidden="true" /> : 'Create workspace'}
+              <div className="c-field">
+                <label htmlFor="signup-email" className="c-field__label">Work email</label>
+                <input
+                  id="signup-email"
+                  name="email"
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  aria-describedby="signup-help"
+                  aria-invalid={isError}
+                  className="c-input"
+                />
+                <p id="signup-help" role="status" aria-live="polite" className="c-field__help">
+                  {ui.status === 'bot_blocked' && (
+                    <span className={styles.fieldWarning}>[warn] {BOT_BLOCKED_COPY}</span>
+                  )}
+                  {ui.status === 'rate_limited' && (
+                    <span className={styles.fieldWarning}>[warn] {RATE_LIMIT_COPY}</span>
+                  )}
+                  {ui.status === 'error' && (
+                    <span className="c-field__error">{ui.message}</span>
+                  )}
+                  {ui.status === 'idle' && 'We send a magic link to verify your email.'}
+                </p>
+              </div>
+              <button
+                type="submit"
+                className={`c-button c-button--primary${isSubmitting ? ' is-loading' : ''}`}
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+              >
+                Create workspace
               </button>
-              <p id="signup-help" role="status" aria-live="polite" className={styles.help}>
-                {ui.status === 'bot_blocked' && <span className={styles.errorText}>{BOT_BLOCKED_COPY}</span>}
-                {ui.status === 'rate_limited' && <span className={styles.errorText}>{RATE_LIMIT_COPY}</span>}
-                {ui.status === 'error' && <span className={styles.errorText}>{ui.message}</span>}
-                {ui.status === 'idle' && 'We\'ll send you a magic link — no password to remember.'}
-              </p>
             </form>
-            <p className={styles.help}>
+            <p className="c-field__help">
               Already have a workspace? <a className={styles.signinLink} href="/login">Sign in instead</a>.
             </p>
           </>
