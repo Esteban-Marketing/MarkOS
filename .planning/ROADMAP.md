@@ -47,6 +47,14 @@ Plans:
 - [ ] 200-07-PLAN.md — SDK auto-gen CI (TS + Python)
 - [ ] 200-08-PLAN.md — Claude Marketplace landing + demo sandbox
 
+### Phase 200.1: SaaS Readiness Wave 0 — Review-Driven Hardening
+**Goal:** Close 7 HIGH and 5 MEDIUM concerns surfaced by the 2026-04-27 cross-AI review of Phase 200: webhook URL SSRF deny-list + DNS-pin + redirect cap (H1); HMAC replay window 300s + nonce/idempotency store (H2); HMAC secret encrypted at rest via Supabase Vault (H3) + rotation endpoint; MCP per-tenant API-key bearer auth + rate-limit + cost-meter (H4) + gate-10 kill-switch via `markos_tenant_billing_holds`; demo sandbox BotID + ephemeral signed token + restricted tool subset (`draft_message`+`audit_claim` only) + per-token total-cost cap (H5); STRIDE threat models authored for MCP, webhooks, marketplace (H6); Phase 200 retroactive `200-VERIFICATION.md` scoring all 15 quality gates with concrete code/test evidence + closeout reconciliation against Phase 201 substrate consumption (H7+M10); migration 70 rollback (M3); eval-as-test suite for the 10 MCP tools under `lib/markos/evals/mcp/` (M4); OTEL + cost telemetry on `api/webhooks/*` + `api/mcp/*` with `webhook_subscription_id` + `mcp_session_id` trace fields (M5); CI parity check between `bin/lib/presets/` and `.agent/markos/templates/presets/` (M9).
+**Requirements Mapped:** API-01, MCP-01, WHK-01, QA-01, QA-02, QA-04, QA-05, QA-08, QA-09, QA-10, QA-11, QA-12, QA-13, QA-15
+**Depends on:** Phase 200
+**Status:** Planning
+**Source:** `.planning/phases/200-saas-readiness-wave-0/200-REVIEWS.md` (claude-cli separate-session pass, 2026-04-27)
+**Artifacts:** `200.1-CONTEXT.md`, `200.1-REVIEWS.md` (mirrors 200-REVIEWS.md)
+
 ### Phase 201: SaaS Tenancy Hardening
 **Goal:** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
 **Requirements Mapped:** API-02, QA-01..15
@@ -67,6 +75,28 @@ Plans:
 - [x] 201-06-PLAN.md — BYOD custom domain (Vercel Domains API + webhook verify) + Surface 3 + Surface 7 vanity login + tenant branding
 - [x] 201-07-PLAN.md — Members + invites (seat pool) + Surface 5 switcher + Surface 4 + Surface 6 offboarding + GDPR export
 - [x] 201-08-PLAN.md — Cross-domain audit emit wiring + openapi.json regen + 5 docs pages + llms.txt + F-88 audit query + vercel.ts crons + @vercel/edge-config slug cache
+
+### Phase 201.1: SaaS Tenancy Hardening — Review-Driven Followups
+**Goal:** Close 6 HIGH and 1 MEDIUM concerns surfaced by the 2026-04-27 cross-AI review of Phase 201: move audit emit inline (drop res.end footgun in approve.js / submit.js), harden GDPR signed URL beyond bearer-credential semantics, pin canonical-JSON spec for Node↔Postgres parity with property-based fuzzer, add jittered-TTL + single-flight + transitional-410 to edge-config slug cache, eliminate the Plan-03 rate-limit race by promoting the SQL fn into Plan 03 (or a hard deploy-gate), and resolve the right-to-erasure vs hash-chain conflict with an explicit pseudonymize-with-tombstone policy. Operational smokes (DNS, email, BotID live, real-device passkey, GDPR retrieval, 30-day cron, cookie SameSite, staging perf) reclassified back to v4.0.0-release gates with a staging smoke harness rather than informational notes.
+**Requirements Mapped:** API-02, QA-01, QA-02, QA-04, QA-05, QA-09, QA-11, QA-12, QA-13, QA-15
+**Depends on:** Phase 201
+**Status:** Planning
+**Plans:** 11 plans
+**Source:** `.planning/phases/201-saas-tenancy-hardening/201-REVIEWS.md` (claude-cli separate-session pass, 2026-04-27)
+**Artifacts:** `201.1-CONTEXT.md`, `201.1-REVIEWS.md` (mirrors 201-REVIEWS.md)
+
+Plans:
+- [ ] 201.1-01-PLAN.md — D-103 canonical-JSON spec lock + Postgres fn + 10k fuzzer (closes H4) — Wave 1
+- [ ] 201.1-02-PLAN.md — D-105 atomic increment_signup_rate SQL fn (closes H6) — Wave 1
+- [ ] 201.1-03-PLAN.md — D-109 versioned reserved-slug list + admin override + obscenity dataset + F-106 (closes M6) — Wave 1
+- [ ] 201.1-04-PLAN.md — D-101 inline audit emit fail-closed for approve/submit + webhooks fail-closed mode (closes H1) — Wave 2
+- [ ] 201.1-05-PLAN.md — D-104 jittered TTL + single-flight + transitional-410 rename (closes H5) — Wave 2
+- [ ] 201.1-06-PLAN.md — D-106 pseudonymize-with-tombstone erase_audit_pii + tombstone-aware verifier (closes M4) — Wave 2
+- [ ] 201.1-07-PLAN.md — D-110 vanity-login WCAG AA luminance gate + DB CHECK constraint (closes M3) — Wave 2
+- [ ] 201.1-08-PLAN.md — D-102 GDPR signed-URL hardening: 24h TTL + nonce + audience + reissue + F-107 (closes H3) — Wave 3
+- [ ] 201.1-09-PLAN.md — D-107 BYOD verified→failed 24h grace window + alert via webhook engine (closes M2) — Wave 3
+- [ ] 201.1-10-PLAN.md — D-111 Playwright golden-path tenancy smoke (closes M7, reverses QA-06 NA for tenancy) — Wave 3
+- [ ] 201.1-11-PLAN.md — D-108 STATE/ROADMAP/VERIFICATION reclass + scripts/staging-smokes scaffold + F-106/F-107 openapi regen (closes H2) — Wave 4
 
 ### Phase 202: MCP Server GA + Claude Marketplace Launch
 **Goal:** Graduate the 0-day MCP server to GA for the Claude Marketplace launch package: session persistence, +20 skills, marketplace-ready assets and docs, and a VS Code cert-ready path. Cursor / Windsurf / Warp / ChatGPT certifications defer to `202.1`.
@@ -310,6 +340,52 @@ Plans:
 **Requirements to map:** SAS-01..10, PRC-01..09, RUN-01..08, TASK-01..05, EVD-01..06, CONN-01..06, LOOP-01..08, COMP-01, QA-01..15. Preserve compatibility with future SG-01..12 requirements without implementing the full SaaS Marketing OS in phases 214-217.
 
 **Research/context:** `obsidian/brain/SaaS Suite Canon.md`, `obsidian/brain/SaaS Marketing OS Strategy Canon.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-suite-intake.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-marketing-os-strategy-intake.md`, `obsidian/work/incoming/16-SAAS-SUITE.md`, `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md`, `.agent/markos/references/saas-suite.md`, `.planning/V4.0.0-GSD-PHASE-RESEARCH-READINESS-MATRIX.md`.
+
+### Phase 213.4: UI Canon Adoption Wave 4 — admin + operations + status + 404-workspace to DESIGN.md tokens (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 213
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 213.4 to break down)
+
+### Phase 213.3: UI Canon Adoption Wave 3 — settings/* (8 files: billing, members, sessions, domain, danger, mcp, plugins, webhooks) to DESIGN.md tokens (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 213
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 213.3 to break down)
+
+### Phase 213.2: UI Canon Adoption Wave 2 — auth surfaces (login, signup, invite, oauth-consent) to DESIGN.md tokens (INSERTED)
+
+**Goal:** Redesign the 4 auth surfaces (login, signup, invite/[token], oauth/consent — 8 files, 997 LOC, 82 inline-hex matches) from the legacy teal-Sora-light-bg-gradients-drop-shadows implementation to the canonical DESIGN.md token system (Kernel Black surface, Protocol Mint signal, JetBrains Mono headings + Inter body, strict 8px grid, 1px Border Mist hairlines, no gradients, no drop-shadows, no emoji, bracketed-glyph state coding); compose form primitives exhaustively (.c-input/.c-field/.c-button{,--primary,--tertiary,--destructive}/.c-card--feature/.c-chip-protocol/.c-code-inline); preserve Phase 200/201/202/204 wiring contracts; ship Storybook + a11y coverage (24+ named state stories + 213-2-auth-a11y.test.js); patch breaking visual-token assertions in test/auth/signup.test.js + test/mcp/consent-ui-a11y.test.js; close 213.2-UI-SPEC.md acceptance criteria #1–#29 (29 ACs across 5 sub-tables: login 5 + signup 6 + invite 5 + oauth 8 + cross-cutting 5).
+**Requirements**: 213.2-UI-SPEC.md AC L-1..L-5 + S-1..S-6 + I-1..I-5 + O-1..O-8 + X-1..X-5 (29 ACs binding contract — `213.2-UI-SPEC.md` is canonical for this phase since no REQ-IDs map)
+**Depends on:** Phase 213.1
+**Plans:** 5/5 plans complete
+
+Plans:
+- [x] 213.2-01-PLAN.md — login module.css rewrite + page.tsx classNames + new LoginCard client subcomponent + LoginCard.stories.tsx (L-1, L-2, L-3, L-4, L-5, X-4 login slice)
+- [x] 213.2-02-PLAN.md — signup module.css rewrite + page.tsx classNames + layout.tsx preserved + page.stories.tsx + test/auth/signup.test.js visual-token block patch (S-1, S-2, S-3, S-4, S-5, S-6, X-4 signup slice)
+- [x] 213.2-03-PLAN.md — invite/[token] module.css rewrite + page.tsx classNames + reasonCopy() [err] glyph revisions + page.stories.tsx (I-1, I-2, I-3, I-4, I-5, X-4 invite slice)
+- [x] 213.2-04-PLAN.md — oauth/consent module.css rewrite + page.tsx classNames + new ConsentCard client subcomponent + ConsentCard.stories.tsx + test/mcp/consent-ui-a11y.test.js visual-token+Sora+reduced-motion+copy patch (O-1, O-2, O-3, O-4, O-5, O-6, O-7, O-8, X-4 consent slice)
+- [x] 213.2-05-PLAN.md — styles/components.css (pointer: coarse) extension to .c-button + new test/ui-a11y/213-2-auth-a11y.test.js (≥18 tests, ≥7 AC# mentions) (X-1, X-2, X-3, X-4, X-5)
+
+### Phase 213.1: UI Canon Adoption Wave 1 — chrome (layout-shell + RotationGraceBanner) to DESIGN.md tokens (INSERTED)
+
+**Goal:** Redesign the global `(markos)` chrome (layout-shell + RotationGraceBanner) from the legacy light-mode/Sora/teal/gradient/28px-radius/drop-shadow surface to the canonical DESIGN.md token system (Kernel Black surface, Protocol Mint signal, JetBrains Mono headings, strict 8px grid, 1px Border Mist hairlines, no gradients, no drop-shadows, no hover-translate jiggle, bracketed-glyph state coding); compose the `.c-*` primitive set from `styles/components.css`; preserve Phase 203 banner wiring contract; ship Storybook + a11y coverage; close UI-SPEC.md acceptance criteria #1–#15.
+**Requirements**: UI-SPEC AC#1..AC#15 (binding contract — `213.1-UI-SPEC.md` is canonical for this phase since no REQ-IDs map)
+**Depends on:** Phase 213
+**Plans:** 3/3 plans complete
+
+Plans:
+- [x] 213.1-01-PLAN.md — layout-shell module.css rewrite + tsx className updates + new NavList client subcomponent + existing layout.stories.tsx update (AC#1, AC#2, AC#3, AC#5, AC#7, AC#8, AC#11, AC#12, AC#13, AC#14)
+- [x] 213.1-02-PLAN.md — RotationGraceBanner module.css rewrite + tsx bracketed-glyph (`[warn]`/`[err]`) + .pulseDot→.warningDot rename + Phase 203 ui-s4-a11y.test.js rewrite (AC#1, AC#2, AC#3, AC#5, AC#6, AC#9, AC#10, AC#10b, AC#11, AC#12, AC#13)
+- [x] 213.1-03-PLAN.md — RotationGraceBanner.stories.tsx + 213-1-chrome-a11y.test.js + (pointer: coarse) on .c-nav-link in components.css + .storybook/preview.tsx globals.css import + legacy ThemeProvider opt-in gate (AC#3, AC#4, AC#9, AC#11, AC#12, AC#13, AC#15)
 
 ### Phase 214: SaaS Suite Activation and Subscription Core
 **Goal:** Build the SaaS Suite foundation: durable `business_type = saas` activation, SaaS profile/plan/subscription substrate, explicit lifecycle governance, CRM identity bridging, and gated SaaS surfaces with a non-runnable growth extension point.

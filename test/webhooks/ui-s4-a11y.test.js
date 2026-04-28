@@ -1,9 +1,11 @@
 'use strict';
 
-// Phase 203 Plan 06 Task 2: Surface S4 RotationGraceBanner grep-shape + a11y suite.
-// Asserts every UI-SPEC §"Surface 4 grep targets" Copy + a11y marker + CSS token
-// lives in the compiled sources. Mirrors test/mcp/mcp-settings-ui-a11y.test.js
-// pattern (202-09) — read source → string-match assertions.
+// Phase 213.1 Plan-02 — Surface S4 RotationGraceBanner grep-shape + a11y suite.
+// REWRITTEN from Phase 203 to assert the token-cited DESIGN.md shape after
+// the 213.1 chrome canon adoption wave. The Phase 203 wiring contract
+// (import shape, mount, fetch URL, role="status", no-dismiss) is asserted
+// independently in test/webhooks/layout-shell-banner.test.js — that file
+// stays unchanged.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -20,45 +22,45 @@ function readSource(p) {
 // ---------------------------------------------------------------------------
 // Behavior 2a — empty rotations returns null (conditional-render grep).
 // ---------------------------------------------------------------------------
-test('Suite 203-06 S4: 2a — empty rotations branch returns null (early return)', () => {
+test('Suite 213-1 S4: 2a — empty rotations branch returns null (early return)', () => {
   const tsx = readSource(TSX);
-  // Must contain a length-zero check paired with a return null on the empty path.
   assert.match(tsx, /rotations\.length === 0|!rotations|rotations\s*\?\s*\.length\s*===\s*0|!rotations\s*\?\?|rotations\s*==\s*null/);
   assert.match(tsx, /return null/);
 });
 
 // ---------------------------------------------------------------------------
-// Behavior 2b-2e — per-stage locked copy from UI-SPEC §Surface 4.
+// Behavior 2b–2e — per-stage locked copy from Phase 203 contract (UNCHANGED
+// strings, prefixed with bracketed glyph per UI-SPEC AC#9).
 // ---------------------------------------------------------------------------
-test('Suite 203-06 S4: 2b — T-7 copy: "Signing-secret rotation in progress." + "7 days remain in the grace window."', () => {
+test('Suite 213-1 S4: 2b — T-7 copy: "[warn] Signing-secret rotation in progress." + "7 days remain in the grace window."', () => {
   const tsx = readSource(TSX);
-  assert.match(tsx, /Signing-secret rotation in progress\./);
+  assert.match(tsx, /\[warn\] Signing-secret rotation in progress\./);
   assert.match(tsx, /7 days remain in the grace window\./);
 });
 
-test('Suite 203-06 S4: 2c — T-7 link "Review rotation for" + href /settings/webhooks/<id>?tab=settings', () => {
+test('Suite 213-1 S4: 2c — T-7 link "Review rotation for" + href /settings/webhooks/<id>?tab=settings', () => {
   const tsx = readSource(TSX);
   assert.match(tsx, /Review rotation for/);
   assert.match(tsx, /\/settings\/webhooks\/[^"`']+\?tab=settings|\/settings\/webhooks\/\$\{[^}]+\}\?tab=settings/);
 });
 
-test('Suite 203-06 S4: 2d — T-1 copy: "Signing-secret rotation ends tomorrow." + "Open settings"', () => {
+test('Suite 213-1 S4: 2d — T-1 copy: "[warn] Signing-secret rotation ends tomorrow." + "Open settings"', () => {
   const tsx = readSource(TSX);
-  assert.match(tsx, /Signing-secret rotation ends tomorrow\./);
+  assert.match(tsx, /\[warn\] Signing-secret rotation ends tomorrow\./);
   assert.match(tsx, /Verify subscribers have switched to the new signature\./);
   assert.match(tsx, /Open settings/);
 });
 
-test('Suite 203-06 S4: 2e — T-0 copy: "Grace window ends today." + "will be purged at" + data-stage="t-0"', () => {
+test('Suite 213-1 S4: 2e — T-0 copy: "[err] Grace window ends today." + "will be purged at" + data-stage="t-0"', () => {
   const tsx = readSource(TSX);
-  assert.match(tsx, /Grace window ends today\./);
+  assert.match(tsx, /\[err\] Grace window ends today\./);
   assert.match(tsx, /will be purged at/);
   assert.match(tsx, /data-stage="t-0"|data-stage=\{.*?t-0/);
 });
 
-test('Suite 203-06 S4: 2f — multi variant: "signing-secret rotations in progress." + "Review all rotations" + data-stage="multi"', () => {
+test('Suite 213-1 S4: 2f — multi variant: "[warn] {N} signing-secret rotations in progress." + "Review all rotations" + data-stage="multi"', () => {
   const tsx = readSource(TSX);
-  assert.match(tsx, /signing-secret rotations in progress\./);
+  assert.match(tsx, /\[warn\] \{rotations\.length\} signing-secret rotations in progress\./);
   assert.match(tsx, /Review all rotations/);
   assert.match(tsx, /\/settings\/webhooks\?filter=rotating/);
   assert.match(tsx, /data-stage="multi"|data-stage=\{.*?multi/);
@@ -67,46 +69,46 @@ test('Suite 203-06 S4: 2f — multi variant: "signing-secret rotations in progre
 // ---------------------------------------------------------------------------
 // Behavior 2g — no dismiss/close button (UI-SPEC explicit security rule).
 // ---------------------------------------------------------------------------
-test('Suite 203-06 S4: 2g — NO close/dismiss button (UI-SPEC explicit rule)', () => {
+test('Suite 213-1 S4: 2g — NO close/dismiss button (UI-SPEC explicit rule)', () => {
   const tsx = readSource(TSX);
-  // We must NOT see any close/dismiss UI patterns.
   assert.doesNotMatch(tsx, /\bclose\b/i);
   assert.doesNotMatch(tsx, /\bdismiss\b/i);
-  // Exclude the actual ×/aria-label="Close" combos.
   assert.doesNotMatch(tsx, /aria-label="Close"/i);
   assert.doesNotMatch(tsx, /×/);
 });
 
 // ---------------------------------------------------------------------------
-// Behavior 2h — CSS token literals (UI-SPEC §Surface 4 CSS tokens).
+// Behavior 2h — CSS token literals (DESIGN.md tokens replacing legacy hex).
 // ---------------------------------------------------------------------------
-test('Suite 203-06 S4: 2h — CSS warn banner tokens (#fef3c7, #78350f, #d97706)', () => {
+test('Suite 213-1 S4: 2h — CSS warn banner tokens (var(--color-warning) + canonical 12% alpha-tint formula)', () => {
   const css = readSource(CSS);
-  assert.match(css, /#fef3c7/);
-  assert.match(css, /#78350f/);
-  assert.match(css, /#d97706/);
+  assert.match(css, /var\(--color-warning\)/);
+  assert.match(css, /rgb\(255 184 0 \/ 0\.12\)/);
+  assert.doesNotMatch(css, /#fef3c7|#78350f|#d97706|#451a03/);
 });
 
-test('Suite 203-06 S4: 2h — CSS T-0 escalation tokens (#fef2f2, #991b1b, #dc2626)', () => {
+test('Suite 213-1 S4: 2h — CSS T-0 escalation tokens (var(--color-error) + canonical 12% alpha-tint formula)', () => {
   const css = readSource(CSS);
-  assert.match(css, /#fef2f2/);
-  assert.match(css, /#991b1b/);
-  assert.match(css, /#dc2626/);
+  assert.match(css, /var\(--color-error\)/);
+  assert.match(css, /rgb\(248 81 73 \/ 0\.12\)/);
+  assert.doesNotMatch(css, /#fef2f2|#991b1b|#dc2626|#7f1d1d/);
 });
 
 // ---------------------------------------------------------------------------
-// Behavior 2i — 44px tap target + focus outline.
+// Behavior 2i — 44px tap target token + global focus inheritance.
 // ---------------------------------------------------------------------------
-test('Suite 203-06 S4: 2i — CSS 44px tap target + 2px #0d9488 focus outline', () => {
+test('Suite 213-1 S4: 2i — CSS uses var(--h-control-touch) for tap target + delegates focus to globals.css', () => {
   const css = readSource(CSS);
-  assert.match(css, /min-height:\s*44px/);
-  assert.match(css, /outline:\s*2px solid #0d9488/);
+  assert.match(css, /min-height:\s*var\(--h-control-touch\)/);
+  // Local focus-visible override DELETED — focus inherits from globals.css.
+  assert.doesNotMatch(css, /outline:\s*2px solid #/);
+  assert.doesNotMatch(css, /#0d9488/);
 });
 
 // ---------------------------------------------------------------------------
 // Behavior 2j — [data-stage="t-0"] selector escalation.
 // ---------------------------------------------------------------------------
-test('Suite 203-06 S4: 2j — CSS [data-stage="t-0"] selector overrides base styling', () => {
+test('Suite 213-1 S4: 2j — CSS [data-stage="t-0"] selector overrides base styling', () => {
   const css = readSource(CSS);
   assert.match(css, /\[data-stage="t-0"\]/);
 });
@@ -114,23 +116,53 @@ test('Suite 203-06 S4: 2j — CSS [data-stage="t-0"] selector overrides base sty
 // ---------------------------------------------------------------------------
 // UI-SPEC §Testing Hooks Surface 4 a11y markers.
 // ---------------------------------------------------------------------------
-test('Suite 203-06 S4: a11y — role="status" + <a href=', () => {
+test('Suite 213-1 S4: a11y — role="status" + <a href=', () => {
   const tsx = readSource(TSX);
   assert.match(tsx, /role="status"/);
   assert.match(tsx, /<a href=/);
 });
 
-test('Suite 203-06 S4: client directive — use client + default export', () => {
+test('Suite 213-1 S4: client directive — use client + default export', () => {
   const tsx = readSource(TSX);
   assert.match(tsx, /['"]use client['"]/);
 });
 
-test('Suite 203-06 S4: CSS prefers-reduced-motion respected', () => {
+// ---------------------------------------------------------------------------
+// Behavior — global prefers-reduced-motion inheritance (local override deleted).
+// ---------------------------------------------------------------------------
+test('Suite 213-1 S4: CSS does NOT redeclare prefers-reduced-motion (inherits globally from app/globals.css)', () => {
   const css = readSource(CSS);
-  assert.match(css, /prefers-reduced-motion/);
+  assert.doesNotMatch(css, /prefers-reduced-motion/);
 });
 
-test('Suite 203-06 S4: files exist at UI-SPEC-declared paths', () => {
+// ---------------------------------------------------------------------------
+// UI-SPEC AC#9 — bracketed-glyph state coding (NEW assertion in 213.1).
+// ---------------------------------------------------------------------------
+test('Suite 213-1 S4: AC#9 — bracketed-glyph prefix on every banner <strong>', () => {
+  const tsx = readSource(TSX);
+  assert.match(tsx, /<strong>\[warn\] Signing-secret rotation in progress\./);
+  assert.match(tsx, /<strong>\[warn\] Signing-secret rotation ends tomorrow\./);
+  assert.match(tsx, /<strong>\[err\] Grace window ends today\./);
+  assert.match(tsx, /<strong>\[warn\] \{rotations\.length\} signing-secret rotations in progress\./);
+});
+
+// ---------------------------------------------------------------------------
+// Behavior — .pulseDot rename to .warningDot + c-status-dot composition.
+// ---------------------------------------------------------------------------
+test('Suite 213-1 S4: pulseDot renamed to warningDot + composes c-status-dot primitive', () => {
+  const tsx = readSource(TSX);
+  const css = readSource(CSS);
+  assert.doesNotMatch(tsx, /pulseDot/);
+  assert.doesNotMatch(css, /pulseDot/);
+  assert.match(tsx, /styles\.warningDot/);
+  assert.match(tsx, /c-status-dot/);
+  assert.match(css, /\.warningDot\s*\{/);
+});
+
+// ---------------------------------------------------------------------------
+// Files exist at UI-SPEC-declared paths (preserved from Phase 203).
+// ---------------------------------------------------------------------------
+test('Suite 213-1 S4: files exist at UI-SPEC-declared paths', () => {
   assert.ok(fs.existsSync(TSX), 'RotationGraceBanner.tsx exists');
   assert.ok(fs.existsSync(CSS), 'RotationGraceBanner.module.css exists');
 });

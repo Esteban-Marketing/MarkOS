@@ -17,10 +17,10 @@ function LayoutStory({
 
   return (
     <MarkOSLayoutShell tenantId={tenantId}>
-      <section className={styles.heroCard}>
-        <p className={styles.eyebrow}>Milestone workspace shell</p>
-        <h2 className={styles.previewTitle}>Milestone UI Shell Preview</h2>
-        <p className={styles.previewText}>
+      <section className={`${styles.heroCardLocal} c-card c-card--feature`}>
+        <p className="t-label-caps">Milestone workspace shell</p>
+        <h2>Milestone UI Shell Preview</h2>
+        <p className={styles.previewTextLocal}>
           Protected MarkOS shell with resolved tenant context and milestone navigation.
         </p>
       </section>

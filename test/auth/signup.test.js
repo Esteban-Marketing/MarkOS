@@ -141,15 +141,14 @@ test('Suite 201-03: app/(marketing)/signup/page.tsx exists with required semanti
   assert.match(src, /__botId/); // BotID pre-submit hook
 });
 
-test('Suite 201-03: signup page.module.css locks UI-SPEC tokens', () => {
+test('Suite 201-03 (213.2 redesigned): signup page.module.css cites DESIGN.md tokens', () => {
   const fs = require('fs');
   const path = require('path');
   const p = path.join(__dirname, '..', '..', 'app', '(marketing)', 'signup', 'page.module.css');
   const css = fs.readFileSync(p, 'utf8');
-  assert.match(css, /min-height: 44px/);          // touch targets
-  assert.match(css, /border-radius: 28px/);        // hero card radius
-  assert.match(css, /#0d9488/);                     // accent colour
-  assert.match(css, /outline: 2px solid #0d9488/);  // focus ring (WCAG)
-  assert.match(css, /'Sora'/);                      // display font
-  assert.match(css, /'Space Grotesk'/);             // body font
+  assert.match(css, /var\(--color-surface\)/);
+  assert.match(css, /var\(--space-/);
+  assert.doesNotMatch(css, /'Sora'|'Space Grotesk'/);
+  assert.doesNotMatch(css, /#0d9488|#0f766e|#14b8a6|#e6fffb/i);
+  assert.doesNotMatch(css, /linear-gradient|radial-gradient|box-shadow/);
 });

@@ -1,109 +1,80 @@
-/* Phase 203 Plan 06 Task 2 — Surface 4: Global rotation grace banner.
+/* Phase 213.1 Plan-02 — Token-only RotationGraceBanner.
  *
- * Token sources (copy-and-rename, per UI-SPEC §Design-Token Alignment Table):
- *   - Warn bg/text/border: 201 danger/page.module.css .purgeBanner +
- *     202 /settings/mcp/page.module.css .atCapBanner.
- *   - Error escalation (T-0): 201 invite/[token]/page.module.css .errorMessage.
- *   - Focus ring + 44px tap target: every 201 + 202 surface.
+ * Phase 203 contract preserved (data-stage attribute set, role="status" on
+ * the JSX div, locked copy prefixed with [warn]/[err] bracketed glyph,
+ * no dismiss button). Visual contract redesigned to DESIGN.md tokens:
  *
- * UI-SPEC §Surface 4 explicit constraints:
- *   - Padding: 12px 20px
- *   - Background: #fef3c7 (T-7, T-1) -> #fef2f2 (T-0)
- *   - Border-left: 4px solid #d97706 (T-7, T-1) -> #dc2626 (T-0)
- *   - Text: #78350f (T-7, T-1) -> #991b1b (T-0)
- *   - role="status" (ambient; no alert-severity escalation)
- *   - NO dismiss button (security anti-pattern)
+ *   - Warn palette (T-7 / T-1 / multi): rgb(255 184 0 / 0.12) tint +
+ *     var(--color-warning) text/border, per DESIGN.md "Badges" 12% alpha
+ *     formula.
+ *   - Error escalation (T-0): rgb(248 81 73 / 0.12) tint +
+ *     var(--color-error) text/border.
+ *   - Focus ring: globally inherited from globals.css :focus-visible
+ *     (was a teal local override — now deleted).
+ *   - Reduced motion: globally inherited from globals.css
+ *     (the global motion-collapse rule covers this banner; no local
+ *     override needed).
+ *   - Severity dot renamed warningDot — DESIGN.md reserves kernel-pulse
+ *     animation for live-system signals; banner dot is static.
+ *
+ * Allowed pixel exceptions (DESIGN.md spacing.exceptions):
+ *   - 4px on border-inline-start (xxs × 2 — accent thickness for
+ *     notice/banner pattern; canonical per DESIGN.md "Badges").
  */
 
 .rotationGraceBanner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  background: #fef3c7;
-  color: #78350f;
-  border-left: 4px solid #d97706;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  /* No border-radius — banner spans the shell header width, seam-free with layout. */
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  background: rgb(255 184 0 / 0.12);
+  color: var(--color-warning);
+  border-inline-start: 4px solid var(--color-warning);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-md);
+  line-height: var(--lh-body-md);
 }
 
 .rotationGraceBanner strong {
-  color: #78350f;
-  font-weight: 600;
+  color: var(--color-warning);
+  font-weight: var(--fw-semibold);
 }
 
 .graceLink {
-  color: #78350f;
-  font-weight: 600;
+  color: var(--color-warning);
+  font-weight: var(--fw-semibold);
   text-decoration: underline;
-  min-height: 44px;
+  text-underline-offset: 2px;
+  min-height: var(--h-control-touch);
   display: inline-flex;
   align-items: center;
-  transition: color 120ms ease-out;
+  transition: color var(--duration-base) var(--ease-out);
 }
 
 .graceLink:hover {
-  color: #451a03;
+  color: var(--color-accent-hover);
 }
 
-.graceLink:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* Pulse dot — used in T-1 variant for low-key escalation signal.
- * Static in 203 (no keyframes); prefers-reduced-motion-safe by default.
- * Size + color mirror UI-SPEC §Component Inventory Surface 4. */
-.pulseDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: #d97706;
+.warningDot {
+  background: var(--color-warning);
   flex-shrink: 0;
-  display: inline-block;
 }
 
-/* T-0 escalation — final-day banner swaps to error-alert token family.
- * Matches 201 invite/[token]/page.module.css .errorMessage palette so the
- * escalation reads as "this is now error-severity" without breaking
- * role="status" ambient a11y (content change alone is the signal). */
 [data-stage="t-0"].rotationGraceBanner {
-  background: #fef2f2;
-  color: #991b1b;
-  border-left-color: #dc2626;
+  background: rgb(248 81 73 / 0.12);
+  color: var(--color-error);
+  border-inline-start-color: var(--color-error);
 }
 
 [data-stage="t-0"].rotationGraceBanner strong {
-  color: #991b1b;
+  color: var(--color-error);
 }
 
 [data-stage="t-0"] .graceLink {
-  color: #991b1b;
+  color: var(--color-error);
 }
 
-[data-stage="t-0"] .graceLink:hover {
-  color: #7f1d1d;
-}
-
-[data-stage="t-0"] .pulseDot {
-  background: #dc2626;
-}
-
-/* Multi-rotation variant keeps the warn palette — we surface the aggregate
- * count without escalating, since individual rotations may still be in
- * their T-7 grace window. */
-[data-stage="multi"].rotationGraceBanner {
-  background: #fef3c7;
-  color: #78350f;
-  border-left-color: #d97706;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .graceLink {
-    transition: none;
-  }
+[data-stage="t-0"] .warningDot {
+  background: var(--color-error);
 }

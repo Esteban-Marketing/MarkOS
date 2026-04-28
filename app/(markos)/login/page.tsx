@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 import styles from './page.module.css';
+import LoginCard from './_components/LoginCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,37 +26,19 @@ export default async function LoginPage() {
   const tenantId = h.get('x-markos-tenant-id');
 
   const branding = isByod ? await fetchBranding(tenantId) : null;
-  const primary = branding?.primary_color || '#0d9488';
   const displayName = branding?.display_name || 'MarkOS';
   const logo = branding?.logo_url || null;
 
   // Surface 7: only show tenant-branded chrome when vanity_login_enabled + verified BYOD.
-  const useTenantChrome = isByod && branding && branding.vanity_login_enabled;
+  const useTenantChrome = Boolean(isByod && branding && branding.vanity_login_enabled);
 
   return (
-    <main className={styles.page} style={{ '--accent': primary } as React.CSSProperties}>
-      <section className={styles.authCard} aria-labelledby="login-heading">
-        {useTenantChrome && logo && (
-          <img src={logo} alt={`${displayName} logo`} className={styles.logo} />
-        )}
-        <h1 id="login-heading" className={styles.heading}>
-          {useTenantChrome ? `Sign in to ${displayName}` : 'Sign in'}
-        </h1>
-        <form className={styles.form} method="POST" action="/api/auth/signup">
-          <label htmlFor="email" className={styles.label}>Email</label>
-          <input id="email" name="email" type="email" required className={styles.input} />
-          <button type="submit" className={styles.primaryCta}>Send magic link</button>
-        </form>
-        {useTenantChrome && (
-          <a
-            href="https://markos.dev"
-            className={styles.poweredBy}
-            aria-label="Powered by MarkOS — open markos.dev"
-          >
-            Powered by MarkOS
-          </a>
-        )}
-      </section>
+    <main className={styles.page}>
+      <LoginCard
+        useTenantChrome={useTenantChrome}
+        displayName={displayName}
+        logo={logo}
+      />
     </main>
   );
 }

@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Ready to plan
-last_updated: "2026-04-24T07:49:21.346Z"
+status: Milestone complete
+last_updated: "2026-04-28T21:05:17.813Z"
 progress:
-  total_phases: 14
+  total_phases: 17
   completed_phases: 5
-  total_plans: 105
+  total_plans: 132
   completed_plans: 50
 ---
 
@@ -15,9 +15,23 @@ progress:
 
 ## Current Position
 
-Phase: 204 (cli-markos-v1-ga) — PHASE 204 GA READY FOR VERIFICATION (all 13 plans complete)
+Phase: 213.2 (ui-canon-adoption-wave-2-auth-surfaces) — COMPLETE (5/5 plans shipped)
 Plan: Not started
-Next: Phase 204 verification pass (gsd-verify-work) → advance to Phase 205 (Pricing Engine foundation).
+Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `/gsd-discuss-phase 213.3` for the next decimal phase (settings surfaces — Files / Billing / Members / Sessions / Domain / Danger / MCP / Plugins / Webhooks).
+
+## Phase 213.2 Plan Progress
+
+- [x] 213.2-01: /login surface to DESIGN.md tokens — page.module.css rewritten (12→25 LOC, zero hex, only 2px text-underline-offset whitelist) + page.tsx removed `--accent` BYOD inline-style + dead `primary` variable (UI-SPEC L-4 single-mint-signal rule) + new `_components/LoginCard.tsx` `'use client'` subcomponent composes 6 primitives (.c-card--feature, .c-input, .c-field, .c-field__label, .c-field__help, .c-button--primary) preserving `<form method="POST" action="/api/auth/signup">` Phase 200/204 contract + new `_components/LoginCard.stories.tsx` (CSF3 4 named state stories: Default / Filled / Branded / ErrorState) registered as `Auth/LoginCard` in storybook-static/index.json. RESEARCH.md R-2 mitigation: server-component page.tsx + presentational client subcomponent extraction pattern. 61/61 test/auth tests + 34/34 Phase 213.1 a11y suites preserved. Closes UI-SPEC AC#L-1, L-2, L-3, L-4, L-5, X-2 (login slice), X-3 (login slice), X-4 (login slice). (2026-04-28)
+- [x] 213.2-02: /signup surface to DESIGN.md tokens — page.module.css rewritten (186→64 LOC, zero hex, only 4px success-border + 2px text-underline-offset whitelist) + page.tsx composition updates with `[ok] Check your inbox.` success copy + 2× `[warn]` glyphs (BotBlocked / RateLimited) + aria-invalid migration + .spinner deletion (.c-button.is-loading::after primitive composes spinner) + new page.stories.tsx (CSF3 7 named state stories: Default / Filled / Loading / Sent / BotBlocked / RateLimited / Error) registered as `Auth/SignupPage` + test/auth/signup.test.js lines 144-155 token-citation block migrated; lines 128-142 wiring assertions preserved. Closes UI-SPEC AC S-1, S-2, S-3, S-4, S-5, S-6, X-2/X-3/X-4 (signup slice). (2026-04-28)
+- [x] 213.2-03: /invite/[token] surface to DESIGN.md tokens — page.module.css rewritten (73→43 LOC, zero hex, only 4px error-border whitelist; consumes var(--color-surface), var(--color-error), var(--space-xl/md/sm/xs), var(--w-modal); 12% alpha-tint rgb(248 81 73 / 0.12) on errorMessage per DESIGN.md badge canon) + page.tsx composes .c-card c-card--feature + .c-button c-button--primary + .t-lead utility, reasonCopy() all 7 reason-code keys preserved (server contract per CONTEXT D-19) with [err] glyph prefix on every return (Invite expired / Email mismatch / Invite withdrawn / Invite already accepted / Invite not found / Seat limit reached / Accept failed), success CTA prepends [ok] (`[ok] Accepted. Redirecting…`), subheading drops "You'll" softener, aria-busy 'true'/'false' string ARIA-spec compliance (Rule 1 deviation), buttonLabel hoisted out of nested ternary (Rule 1 lint clean), preserves 'use client' + /api/tenant/invites/accept POST + window.location.href redirect verbatim (Phase 201/202 wiring) + new page.stories.tsx (NEW; CSF3 10 named state stories: Default / Accepting / Success / Error / ErrorEmailMismatch / ErrorWithdrawn / ErrorAlreadyAccepted / ErrorNotFound / ErrorSeatQuota / ErrorAcceptFailed — exceeds X-4 minimum of 4 by 250%) registered as `Auth/InviteAcceptPage` in storybook-static/index.json (10 stories × 2 entries = 20 lookups). 10/10 test/tenancy/invites + 61/61 test/auth + 22/22 213-1-chrome-a11y preserved; pre-existing test/tenant-auth/ui-authorization-negative-path.test.js failure (asserts on app/(markos)/layout.tsx, NOT invite) verified pre-existing via git stash + retest, logged to deferred-items.md per scope-boundary rule. Closes UI-SPEC AC I-1, I-2, I-3, I-4, I-5, X-1 (invite slice), X-2 (invite slice), X-3 (invite slice), X-4 (invite slice). (2026-04-28)
+- [x] 213.2-04: /oauth/consent surface to DESIGN.md tokens — page.module.css rewritten + page.tsx composition updates + new `_components/ConsentCard.tsx` `'use client'` subcomponent composing 7 primitives (.c-card--feature, .c-button--primary, .c-button--destructive, .c-chip-protocol, .c-code-inline, .c-field__help, .t-lead) + new `ConsentCard.stories.tsx` (CSF3 9 named state stories: Default / MultiScope / MultiTenant / Loading / Approving / Declined / InvalidExpired / InvalidMissingFields / InvalidRedirectUri) + 4 [err] invalidReason strings on page.tsx (Consent request missing / Consent request expired / Approval failed / Invalid redirect_uri). RESEARCH.md R-4 mitigation: server-component page.tsx + presentational client subcomponent. test/mcp/consent-ui-a11y.test.js preserved. Closes UI-SPEC AC O-1, O-2, O-3, O-4, O-5, X-2 (consent slice), X-3 (consent slice), X-4 (consent slice). (2026-04-28)
+- [x] 213.2-05: cross-cutting closure — styles/components.css `(pointer: coarse)` block extended in-place to scope BOTH `.c-button { min-height: var(--h-control-touch); }` (Phase 213.2 extension; RESEARCH.md R-3 mitigation) AND `.c-nav-link { padding-block: 11px; }` (Phase 213.1 carry-forward) — single block, no redeclaration anywhere else (verified across 4 auth modules + layout-shell + RotationGraceBanner + globals.css = 7 candidate files all return 0) + new `test/ui-a11y/213-2-auth-a11y.test.js` (268 LOC; 25 individual `test(...)` blocks; 21 AC#3/9/11/12/13/15 mentions; mirrors Phase 213.1 canonical pattern: 5-line `node:test` opener + `read()` helper + AC# section comments) covering 4 X-4 file-existence + 4 AC#3 primitive composition + 3 AC#9 bracketed-glyph + 1 AC#11/X-1 multi-file + 1 AC#12/X-2 multi-file + 1 AC#13/X-3 multi-file + 3 AC#15 dual-rule + non-redeclaration + 4 X-4 named-state-export + 3 token-consumption + 1 banned-lexicon. 25/25 new tests pass; 22/22 213-1-chrome + 12/12 213-1-light-and-forced-colors + 61/61 auth + 10/10 tenancy/invites + mcp/consent-ui-a11y all green. Storybook build 12.05s clean. 2 pre-existing failures (test/onboarding-server.test.js MODULE_NOT_FOUND + carry-forward of test/tenant-auth/ui-authorization-negative-path.test.js) verified via git stash + logged to deferred-items.md per Rule 5 scope boundary. Closes UI-SPEC AC X-1, X-2, X-3, X-4, X-5 (cross-cutting). **Wave 2 CLOSED.** (2026-04-28)
+
+## Phase 213.1 Plan Progress
+
+- [x] 213.1-01: layout-shell.module.css token rewrite (187→106 LOC) + NavList.tsx client subcomponent + layout-shell.tsx + layout.stories.tsx primitive composition; pre-existing postcss.config.mjs JSDoc terminator bug fixed (Rule 3 deviation) so storybook build is clean. Closes UI-SPEC AC#1, AC#2, AC#3, AC#5, AC#7, AC#8, AC#9, AC#11, AC#12, AC#13, AC#14. (2026-04-28)
+- [x] 213.1-02: RotationGraceBanner.module.css token rewrite (109→75 LOC; zero hex; rgb(255 184 0 / 0.12) warn + rgb(248 81 73 / 0.12) T-0 err alpha-tints; .pulseDot→.warningDot rename composing global .c-status-dot primitive; deleted local :focus-visible + prefers-reduced-motion overrides) + RotationGraceBanner.tsx 3× [warn] + 1× [err] bracketed-glyph state coding on <strong> per DESIGN.md "Color blindness" rule + test/webhooks/ui-s4-a11y.test.js rewritten 17/17 pass (per RESEARCH.md correction; layout-shell-banner.test.js stays UNTOUCHED 7/7). Closes UI-SPEC AC#1, AC#2, AC#3, AC#5, AC#6, AC#9, AC#10, AC#10b, AC#11, AC#12, AC#13. (2026-04-28)
+- [x] 213.1-03: RotationGraceBanner.stories.tsx (Storybook 8 CSF3, 5 named state stories: Empty / T7Warning / T1Warning / T0Error / MultiWarning) + test/ui-a11y/213-1-chrome-a11y.test.js (22 tests / 22 pass — grep-shape AC#3/8/9/11/12/13/15 + Storybook preview wiring + token consumption + 5 banner story exports) + styles/components.css `@media (pointer: coarse) { .c-nav-link { padding-block: 11px } }` (>=44px touch target on coarse pointers, rule on global primitive so all .c-nav-link consumers inherit) + .storybook/preview.tsx 3-edit surgery (`import "../app/globals.css"` cascade root + ThemeProvider gated behind `parameters.theme === "legacy" | "white-label"` opt-in — RESEARCH.md R2 mitigation). Closes UI-SPEC AC#3, AC#4, AC#9, AC#11, AC#12, AC#13, AC#15. Wave 1 closed. (2026-04-28)
 
 ## Phase 204 Plan Progress
 
@@ -1149,7 +1163,7 @@ After verification clears, proceed to Phase 202 per ROADMAP.
 Phase: 201 (saas-tenancy-hardening)
 Plan: 1 of 8
 **Milestone:** v4.0.0 — SaaS Readiness 1.0 — active
-**Phase:** 205
+**Phase:** 213.2
 **Quality Baseline:** 15 gates defined in `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`; inherited by every subsequent phase.
 
 ## What just happened (2026-04-16)
@@ -1196,6 +1210,7 @@ None — Q-A / Q-B / Q-C answered on 2026-04-16. See `obsidian/brain/Target ICP.
 ### Roadmap Evolution
 
 - Phase 204.1 inserted after Phase 204: close 5 fixes + Bonus Gap #3/#4 (decision needed) + winget/apt distribution (URGENT — UI-REVIEW d9ede52: 17/24, P0 audit trail wiring, P1 spinner primitive + stderr stream, P2 ASCII fallback + width breakpoint, mask-rule decision)
+- Phases 213.1–213.4 inserted after Phase 213 (2026-04-27): UI Canon Adoption — bridges v4.0.0 → v4.1.0 SaaS Suite. Driven by DESIGN.md (canonical visual contract) landing alongside generated artifacts (`tokens/tokens.json`, `tailwind.config.ts`, `app/tokens.css`, `app/globals.css`, `styles/components.css`, `tokens/index.ts`). Existing 21 `*.module.css` files (4,867 LOC, 704 inline hex matches) implement contradictory design system (light bg `#f8fbfd`, teal `#0d9488`, Sora/Space Grotesk, 28px radii, gradients, drop shadows) that violates DESIGN.md (dark Kernel Black `#0A0E14` / Protocol Mint `#00D9A3` / JetBrains Mono+Inter / 8px grid / borders over shadows / flat). Per CLAUDE.md drift rule, this is a **redesign**, not a port. Each wave: `/gsd-ui-phase` → UI-SPEC.md citing DESIGN.md tokens by name → `/gsd-execute-phase` → `/gsd-ui-review` 6-pillar audit (Pillar 1 Tokens auto-FAILs on any inline hex/px or off-grid value). Wave 1 (213.1): chrome — `app/(markos)/layout-shell.module.css` + `_components/RotationGraceBanner.module.css`. Wave 2 (213.2): auth — `login` + `signup` + `invite/[token]` + `oauth/consent`. Wave 3 (213.3): `settings/*` — billing, members, sessions, domain, danger, mcp, plugins, webhooks (8 files). Wave 4 (213.4): `admin/billing` + `admin/governance` + `operations/*` + `status/webhooks` + `404-workspace`. Acceptance per phase: zero inline hex matches in scoped files, zero off-grid spacing, composes `.c-*` primitives where applicable, WCAG 2.1 AA min/AAA on body+primary, focus rings 2px solid #00D9A3 + 2px offset, prefers-reduced-motion respected.
 
 ## Carry-over context from v3.9.0
 

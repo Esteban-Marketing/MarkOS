@@ -1,0 +1,231 @@
+/**
+ * MarkOS design tokens — CSS custom properties.
+ * Source of truth: /DESIGN.md
+ * Pure variables only; no selectors beyond :root and theme overrides. Composition lives in globals.css and styles/components.css.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* ── Colors · Brand ───────────────────────────────────────────── */
+  --color-primary:           #00D9A3;
+  --color-primary-hover:     #00C492;
+  --color-primary-pressed:   #00B083;
+  --color-primary-subtle:    rgb(0 217 163 / 0.10);
+  --color-on-primary:        #0A0E14;
+
+  --color-secondary:         #7B8DA6;
+  --color-secondary-hover:   #8C9DB5;
+  --color-on-secondary:      #0A0E14;
+
+  --color-accent:            #FFB800;
+  --color-accent-hover:      #FFC633;
+  --color-on-accent:         #0A0E14;
+
+  /* ── Colors · Surfaces ────────────────────────────────────────── */
+  --color-surface:           #0A0E14;
+  --color-surface-raised:    #1A1F2A;
+  --color-surface-overlay:   #242B38;
+  --color-surface-inverse:   #F4F4F0;
+
+  /* ── Colors · Borders ─────────────────────────────────────────── */
+  --color-border:            #2D3441;
+  --color-border-strong:     #3A4250;
+  --color-border-subtle:     rgb(45 52 65 / 0.40);
+
+  /* ── Colors · Text ────────────────────────────────────────────── */
+  --color-on-surface:        #E6EDF3;
+  --color-on-surface-muted:  #7B8DA6;
+  --color-on-surface-subtle: #6B7785;
+
+  /* ── Colors · State ───────────────────────────────────────────── */
+  --color-success: #3FB950;
+  --color-warning: #FFB800;
+  --color-error:   #F85149;
+  --color-info:    #58A6FF;
+
+  --color-success-hover: #4ED561;
+  --color-warning-hover: var(--color-accent-hover); /* aliased per DESIGN.md "State · warning · aliased to accent" */
+  --color-error-hover:   #FF6961;                   /* error +lift; ratio against surface = 5.4:1 (AA normal) */
+  --color-info-hover:    #79B8FF;                   /* info +lift; ratio against surface = 7.6:1 (AA normal) */
+
+  --color-on-success: #0A0E14;
+  --color-on-warning: #0A0E14;
+  --color-on-error:   #0A0E14;
+  --color-on-info:    #0A0E14;
+  /* Text-on-tinted-surface rule (DESIGN.md "Components · Badges").
+   * On 12% alpha tinted state surfaces (badges, notice banners, chips), the
+   * text is the state color itself: e.g., var(--color-warning) on
+   * rgb(255 184 0 / 0.12).
+   * The --color-on-{state} pair (#0A0E14 Kernel Black) is reserved for text
+   * on a 100% solid state fill (e.g., a fully-amber primary button). Mistaking
+   * --color-on-warning for the right text color on a warning-tint surface
+   * breaks the badge canon (unreadable on dark, ambiguous on light). */
+
+  /* ── Typography ───────────────────────────────────────────────── */
+  --font-mono: "JetBrains Mono", "Source Code Pro", Menlo, Consolas, monospace;
+  --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  --fs-display:  3.052rem;
+  --fs-h1:       2.441rem;
+  --fs-h2:       1.953rem;
+  --fs-h3:       1.563rem;
+  --fs-h4:       1.250rem;
+  --fs-lead:     1.250rem;
+  --fs-body-md:  1.000rem;
+  --fs-body-sm:  0.800rem;
+  --fs-label:    0.640rem;
+  --fs-code:     0.875rem;
+
+  --lh-display: 1.05;
+  --lh-h1:      1.10;
+  --lh-h2:      1.20;
+  --lh-h3:      1.30;
+  --lh-h4:      1.40;
+  --lh-lead:    1.50;
+  --lh-body-md: 1.60;
+  --lh-body-sm: 1.50;
+  --lh-label:   1.40;
+  --lh-code:    1.50;
+  --lh-code-block: 1.65;
+
+  --ls-display: -0.02em;
+  --ls-h1:      -0.015em;
+  --ls-h2:      -0.01em;
+  --ls-h3:      -0.005em;
+  --ls-h4:      0;
+  --ls-lead:    -0.005em;
+  --ls-body-sm: 0.01em;
+  --ls-label:   0.04em;
+
+  /* ── Spacing · 8px grid ───────────────────────────────────────── */
+  --space-none: 0;
+  --space-xxs:  2px;
+  --space-xs:   8px;
+  --space-sm:   16px;
+  --space-md:   24px;
+  --space-lg:   32px;
+  --space-xl:   48px;
+  --space-xxl:  96px;
+
+  /* ── Radii ────────────────────────────────────────────────────── */
+  --radius-none: 0;
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-full: 9999px;
+
+  /* ── Elevation · borders preferred on dark ────────────────────── */
+  --shadow-flat:    none;
+  --shadow-raised:  0 1px 0 0 var(--color-border);
+  --shadow-card:    0 1px 2px 0 rgb(0 0 0 / 0.35);
+  --shadow-popover: 0 8px 24px -4px rgb(0 0 0 / 0.45), 0 0 0 1px var(--color-border);
+  --shadow-modal:   0 24px 64px -8px rgb(0 0 0 / 0.55), 0 0 0 1px var(--color-border-strong);
+
+  /* ── Motion ───────────────────────────────────────────────────── */
+  --duration-instant: 0ms;
+  --duration-fast:    100ms;
+  --duration-base:    150ms;
+  --duration-slow:    300ms;
+  --duration-pulse:   2000ms;
+  --ease-out:         cubic-bezier(0.2, 0, 0, 1);
+  --ease-in-out:      cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-linear:      linear;
+
+  /* ── Breakpoints (for container queries / JS reads) ───────────── */
+  --bp-sm:  640px;
+  --bp-md:  768px;
+  --bp-lg:  1024px;
+  --bp-xl:  1280px;
+  --bp-xxl: 1536px;
+
+  /* ── Container widths ─────────────────────────────────────────── */
+  --w-prose:     720px;
+  --w-container: 1280px;
+  --w-modal:     560px;
+  --w-toast:     360px;
+
+  /* ── Sizing ───────────────────────────────────────────────────── */
+  --h-control:       40px;
+  --h-control-touch: 44px;
+  --h-topbar:        64px;
+  --w-sidebar:       240px;
+  --w-sidebar-md:    200px;
+
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 32px;
+
+  --status-dot:      6px;
+  --status-dot-hit:  12px;
+
+  /* ── Focus ring (non-negotiable) ──────────────────────────────── */
+  --focus-ring-width:  2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color:  var(--color-primary);
+
+  /* ── Semantic mint-as-TEXT token (theme-aware) ─────────────────────
+   * Per DESIGN.md "❌ Mint as a text color on light-surface — contrast 1.6:1 (fails)."
+   * Components rendering mint as TEXT (active nav, tertiary button, protocol chip,
+   * mint chip) MUST consume `--color-primary-text` (this token) instead of
+   * `--color-primary` directly. On dark theme this aliases the brand mint
+   * (10.5:1 on Kernel Black, AAA). On light theme it shifts to a darker mint
+   * (4.95:1 on White, 4.49:1 on Lino — both AA normal). `--color-primary`
+   * itself stays the canonical brand value for fills, focus rings, and signal
+   * indicators on tinted surfaces (where the surrounding alpha-tint provides
+   * its own contrast).
+   */
+  --color-primary-text: var(--color-primary);
+}
+
+/* ── Light theme · opt-in ───────────────────────────────────────── */
+[data-theme="light"] {
+  color-scheme: light;
+  --color-surface:           #F4F4F0;
+  --color-surface-raised:    #FFFFFF;
+  --color-surface-overlay:   #FFFFFF;
+  --color-on-surface:        #0A0E14;
+  --color-on-surface-muted:  #4A5468;
+  --color-on-surface-subtle: #6B7785;
+  --color-border:            #D6D6D0;
+  --color-border-strong:     #B8B8B0;
+  --color-border-subtle:     rgb(214 214 208 / 0.50);
+  /* primary, accent, and state colors are unchanged across modes — but
+   * the mint-as-text alias swaps to a darker variant per DESIGN.md
+   * "❌ Mint as a text color on light-surface" rule. */
+  --color-primary-text:      #00805F;
+}
+
+/* ── Reduced motion · WCAG 2.1 ───────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast:    0ms;
+    --duration-base:    0ms;
+    --duration-slow:    0ms;
+    /* duration-pulse intentionally preserved per DESIGN.md — but the dot freezes via animation override in components.css */
+  }
+}
+
+/* ── Forced-colors (Windows High Contrast) ───────────────────────── */
+@media (forced-colors: active) {
+  :root {
+    --color-border:        CanvasText;
+    --color-border-strong: CanvasText;
+    --focus-ring-color:    Highlight;
+    /* Map mint-as-text to system LinkText so active nav, protocol chip,
+     * tertiary button still read as semantically "linked / active" under
+     * High Contrast — without relying on the brand mint hex which the
+     * browser overrides anyway. Bracketed-glyph state prefixes
+     * ([warn]/[err]) survive forced-colors automatically as text. */
+    --color-primary-text:  LinkText;
+  }
+}

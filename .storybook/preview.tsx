@@ -2,6 +2,7 @@ import type { Preview, Decorator, Parameters } from "@storybook/react";
 import React from "react";
 import { defaultBrandPack, mergeBrandPack } from "../lib/markos/theme/brand-pack";
 import { tokenMap, baseSemanticTokens } from "../lib/markos/theme/tokens";
+import "../app/globals.css"; // Phase 213.1 — DESIGN.md cascade (tokens.css + components.css) for stories.
 
 // ============================================================================
 // Deterministic Global State
@@ -28,10 +29,19 @@ const deterministicRNG = seededRNG(42);
 // Theme Provider Decorator
 // ============================================================================
 
-type ThemeVariant = "default" | "white-label";
+type ThemeVariant = "default" | "legacy" | "white-label";
 
 const ThemeProvider: Decorator = (Story, context) => {
   const themeVariant: ThemeVariant = context.parameters.theme || "default";
+
+  // Phase 213.1 — default + future DESIGN.md-aligned stories bypass the
+  // legacy lib/markos/theme/brand-pack wrapper. The wrapper is preserved
+  // for stories that explicitly opt in via `parameters.theme: "legacy"`
+  // or `parameters.theme: "white-label"` (legacy white-label preview path).
+  if (themeVariant !== "legacy" && themeVariant !== "white-label") {
+    return <Story />;
+  }
+
   const brandPack =
     themeVariant === "white-label"
       ? {
