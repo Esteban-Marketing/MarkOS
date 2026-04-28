@@ -33,27 +33,37 @@ export default function InviteAcceptPage({ params }: Props) {
     setErrorMessage(reasonCopy(body.error || 'accept_failed'));
   }
 
+  const isAccepting = status === 'accepting';
+  const isSuccess = status === 'success';
+
+  let buttonLabel = 'Accept invite';
+  if (isAccepting) {
+    buttonLabel = 'Accepting…';
+  } else if (isSuccess) {
+    buttonLabel = '[ok] Accepted. Redirecting…';
+  }
+
   return (
     <main className={styles.page}>
-      <section className={styles.contentCard} aria-labelledby="invite-heading">
-        <h1 id="invite-heading" className={styles.heading}>You&apos;re invited to MarkOS</h1>
-        <p className={styles.subheading}>
-          Accept the invite to join this workspace. You&apos;ll sign in with the email the invite was
-          sent to.
+      <section className={`c-card c-card--feature ${styles.contentCard}`} aria-labelledby="invite-heading">
+        <h1 id="invite-heading">You&apos;re invited to MarkOS</h1>
+        <p className="t-lead">
+          Accept the invite to join this workspace. Sign in with the email the invite was sent to.
         </p>
 
         <button
           type="button"
-          className={styles.acceptButton}
+          className={`c-button c-button--primary${isAccepting ? ' is-loading' : ''}`}
           onClick={acceptInvite}
-          disabled={status === 'accepting' || status === 'success'}
+          disabled={isAccepting || isSuccess}
+          aria-busy={isAccepting ? 'true' : 'false'}
         >
-          {status === 'accepting' ? 'Accepting…' : status === 'success' ? 'Accepted. Redirecting…' : 'Accept invite'}
+          {buttonLabel}
         </button>
 
         <div role="status" aria-live="polite" className={styles.statusRegion}>
           {status === 'error' && errorMessage && (
-            <p className={styles.errorMessage}>{errorMessage}</p>
+            <p className={`c-card ${styles.errorMessage}`}>{errorMessage}</p>
           )}
         </div>
       </section>
@@ -63,12 +73,19 @@ export default function InviteAcceptPage({ params }: Props) {
 
 function reasonCopy(reason: string): string {
   switch (reason) {
-    case 'invite_expired': return 'This invite has expired. Ask the person who invited you to send a fresh one.';
-    case 'invite_email_mismatch': return 'Sign in with the email this invite was sent to, then retry.';
-    case 'invite_withdrawn': return 'This invite was withdrawn.';
-    case 'invite_already_accepted': return 'This invite was already accepted.';
-    case 'invite_not_found': return 'This invite link is no longer valid.';
-    case 'seat_quota_reached': return 'The workspace has hit its seat limit. Ask the owner to free a seat.';
-    default: return 'Could not accept invite. Try again later.';
+    case 'invite_expired':
+      return '[err] Invite expired. Ask the person who invited you to send a fresh one.';
+    case 'invite_email_mismatch':
+      return '[err] Email mismatch. Sign in with the address this invite was sent to, then retry.';
+    case 'invite_withdrawn':
+      return '[err] Invite withdrawn.';
+    case 'invite_already_accepted':
+      return '[err] Invite already accepted.';
+    case 'invite_not_found':
+      return '[err] Invite not found.';
+    case 'seat_quota_reached':
+      return '[err] Seat limit reached. Ask the workspace owner to free a seat.';
+    default:
+      return '[err] Accept failed. Retry later.';
   }
 }

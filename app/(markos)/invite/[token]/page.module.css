@@ -1,73 +1,43 @@
+/* Phase 213.2 Plan-03 — Token-only invite acceptance surface.
+ * Composes .c-card c-card--feature for the auth panel; .c-button c-button--primary
+ * for the accept CTA; .t-lead utility for the subheading (composed JSX-side).
+ * This module carries only page-composition + width-override + status-region + error-notice concerns.
+ * Mirrors login `.page` recipe; mirrors signup `.successPanel` accent recipe but error-tinted. */
+
 .page {
-  min-height: 100vh;
-  padding: 48px 24px;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  color: #0f172a;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding-block: var(--space-xl);
+  padding-inline: var(--space-md);
+  background: var(--color-surface);
 }
 
 .contentCard {
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 40px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+  width: min(var(--w-modal), 100%);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 560px;
-  width: 100%;
-}
-
-.heading {
-  margin: 0;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.subheading {
-  margin: 0;
-  font-size: 16px;
-  color: #475569;
-  line-height: 1.6;
-}
-
-.acceptButton {
-  align-self: flex-start;
-  min-height: 48px;
-  padding: 12px 22px;
-  background: #0d9488;
-  color: #ffffff;
-  border: 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-}
-
-.acceptButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-
-.acceptButton:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
+  gap: var(--space-sm);
 }
 
 .statusRegion {
-  min-height: 24px;
+  min-height: var(--space-md);
 }
 
 .errorMessage {
+  border-inline-start: 4px solid var(--color-error);
+  padding: var(--space-sm) var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: rgb(248 81 73 / 0.12);
+  /* .c-card composed JSX-side provides border + radius + raised bg.
+     12% alpha-tint formula per DESIGN.md "Badges" canonical recipe. */
   margin: 0;
-  padding: 12px 16px;
-  background: #fef2f2;
-  color: #991b1b;
-  border-left: 4px solid #dc2626;
-  border-radius: 12px;
-  font-size: 14px;
+}
+
+@media (max-width: 1023.98px) {
+  .page {
+    padding: var(--space-sm);
+  }
 }
