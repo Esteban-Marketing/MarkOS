@@ -82,7 +82,7 @@
 /* — Tertiary (text-only, in-flow) — */
 .c-button--tertiary {
   background: transparent;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   padding: 12px 16px;
   border-color: transparent;
 }
@@ -208,7 +208,7 @@ textarea.c-input { height: auto; min-height: calc(var(--h-control) * 2); resize:
 .c-nav-link.is-active,
 .c-nav-link[aria-current="page"] {
   background: var(--color-primary-subtle);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 /* (pointer: coarse) >=44px touch-target — DESIGN.md "Responsive Behavior . Touch vs. pointer" + "Touch targets . 44x44 minimum on (pointer: coarse)". Phase 213.1 UI-SPEC AC#15. Padding-block 11px lifts c-nav-link to ~44.6px (11 + 11 + 16 x 1.6 line-height). */
@@ -253,7 +253,7 @@ textarea.c-input { height: auto; min-height: calc(var(--h-control) * 2); resize:
   font-weight: var(--fw-medium);
   line-height: 1;
 }
-.c-chip--mint { background: var(--color-primary-subtle); color: var(--color-primary); }
+.c-chip--mint { background: var(--color-primary-subtle); color: var(--color-primary-text); }
 
 /* Signature MarkOS protocol chip — squared, e.g. [F-105] */
 .c-chip-protocol {
@@ -262,7 +262,7 @@ textarea.c-input { height: auto; min-height: calc(var(--h-control) * 2); resize:
   height: 20px;
   padding: 2px 6px;
   background: var(--color-surface-raised);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-family: var(--font-mono);
   font-size: var(--fs-code);
   border-radius: var(--radius-sm);
