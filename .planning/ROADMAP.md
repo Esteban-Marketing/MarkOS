@@ -81,13 +81,13 @@ Plans:
 **Requirements Mapped:** API-02, QA-01, QA-02, QA-04, QA-05, QA-09, QA-11, QA-12, QA-13, QA-15
 **Depends on:** Phase 201
 **Status:** Planning
-**Plans:** 1/11 plans executed
+**Plans:** 2/11 plans executed
 **Source:** `.planning/phases/201-saas-tenancy-hardening/201-REVIEWS.md` (claude-cli separate-session pass, 2026-04-27)
 **Artifacts:** `201.1-CONTEXT.md`, `201.1-REVIEWS.md` (mirrors 201-REVIEWS.md)
 
 Plans:
 - [x] 201.1-01-PLAN.md — D-103 canonical-JSON spec lock + Postgres fn + 10k fuzzer (closes H4) — Wave 1
-- [ ] 201.1-02-PLAN.md — D-105 atomic increment_signup_rate SQL fn (closes H6) — Wave 1
+- [x] 201.1-02-PLAN.md — D-105 atomic increment_signup_rate SQL fn (closes H6) — Wave 1
 - [ ] 201.1-03-PLAN.md — D-109 versioned reserved-slug list + admin override + obscenity dataset + F-106 (closes M6) — Wave 1
 - [ ] 201.1-04-PLAN.md — D-101 inline audit emit fail-closed for approve/submit + webhooks fail-closed mode (closes H1) — Wave 2
 - [ ] 201.1-05-PLAN.md — D-104 jittered TTL + single-flight + transitional-410 rename (closes H5) — Wave 2
