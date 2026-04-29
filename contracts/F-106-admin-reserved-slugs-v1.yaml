@@ -1,0 +1,261 @@
+id: F-106-admin-reserved-slugs-v1
+flow_id: F-106-admin-reserved-slugs-v1
+flow_name: admin_reserved_slugs
+domain: governance
+phase: 201.1
+name: Admin Reserved Slug Override
+version: v1
+status: active
+summary: |
+  CRUD surface for the markos_reserved_slugs DB table. Allows system admins (Tenant-0 owner)
+  to add, remove, and list reserved slug entries without a code deploy. Closes review concern M6.
+  Note: F-90 was already taken (F-90-mcp-tools-marketing-v1.yaml) — this flow uses F-106 per
+  the next available contract ID at planning time.
+
+boundary:
+  tenant_scoped: false
+  requires_session: true
+  read_only: false
+  system_admin_only: true
+
+decisions:
+  - D-109 versioned reserved-slug list (closes M6)
+  - Threat T-201.1-03-01 mitigated via requireSystemAdmin (Tenant-0 owner check)
+  - Threat T-201.1-03-02 mitigated via category_locked guard on remove
+
+paths:
+  /api/admin/reserved-slugs/list:
+    get:
+      summary: List all reserved slugs
+      operationId: listAdminReservedSlugs
+      tags:
+        - admin
+        - governance
+      parameters:
+        - name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Caller user ID — must have org_role=owner on Tenant-0 org.
+      responses:
+        '200':
+          description: Full reserved slug list ordered by category then slug
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - slugs
+                  - total
+                properties:
+                  slugs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ReservedSlugEntry'
+                  total:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '503':
+          $ref: '#/components/responses/Tenant0Unavailable'
+
+  /api/admin/reserved-slugs/add:
+    post:
+      summary: Add a reserved slug
+      operationId: addAdminReservedSlug
+      tags:
+        - admin
+        - governance
+      parameters:
+        - name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddReservedSlugRequest'
+      responses:
+        '200':
+          description: Slug added
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                  - slug
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+                  slug:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Slug already exists
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '503':
+          $ref: '#/components/responses/Tenant0Unavailable'
+
+  /api/admin/reserved-slugs/remove:
+    post:
+      summary: Remove a reserved slug
+      operationId: removeAdminReservedSlug
+      tags:
+        - admin
+        - governance
+      parameters:
+        - name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveReservedSlugRequest'
+      responses:
+        '200':
+          description: Slug removed
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                properties:
+                  ok:
+                    type: boolean
+                    enum: [true]
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthenticated'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: Slug not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '409':
+          description: Category locked (system/protected/single_char cannot be removed)
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '503':
+          $ref: '#/components/responses/Tenant0Unavailable'
+
+components:
+  schemas:
+    ReservedSlugEntry:
+      type: object
+      required:
+        - slug
+        - category
+        - source_version
+        - added_at
+      properties:
+        slug:
+          type: string
+        category:
+          type: string
+          enum: [system, protected, vendor, single_char, profanity]
+        source_version:
+          type: string
+          description: '201-01 for migration seeds; admin-YYYY-MM-DD for operator additions'
+        added_at:
+          type: string
+          format: date-time
+        added_by:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+
+    AddReservedSlugRequest:
+      type: object
+      required:
+        - slug
+        - category
+      properties:
+        slug:
+          type: string
+          pattern: '^[a-z0-9-]{1,63}$'
+          description: Lowercase alphanumeric slug (hyphens allowed).
+        category:
+          type: string
+          enum: [system, protected, vendor, single_char, profanity]
+        notes:
+          type: string
+          nullable: true
+
+    RemoveReservedSlugRequest:
+      type: object
+      required:
+        - slug
+      properties:
+        slug:
+          type: string
+
+    Problem:
+      type: object
+      properties:
+        error:
+          type: string
+        detail:
+          type: string
+          nullable: true
+
+  responses:
+    Unauthenticated:
+      description: Missing or invalid X-Markos-User-Id header
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Forbidden:
+      description: Caller does not have org_role=owner on Tenant-0
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    BadRequest:
+      description: Invalid request body (slug format or unknown category)
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Tenant0Unavailable:
+      description: Tenant-0 system org record not found in DB
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+
+security_considerations:
+  - Only actors with org_role=owner on the Tenant-0 system org can mutate the blocklist (T-201.1-03-01).
+  - DELETE rejects category in (system, protected, single_char) unless source_version starts with 'admin-' (T-201.1-03-02).
+  - Every add/remove emits an audit row via enqueueAuditStaging with source_domain=governance (T-201.1-03-04).
+  - All mutations use the service_role Supabase client server-side; anon clients cannot reach this table (RLS enforced).
+  - Notes field is operator-authored and not treated as PII (T-201.1-03-03 accepted).
