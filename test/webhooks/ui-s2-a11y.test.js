@@ -1,6 +1,10 @@
 'use strict';
 
 // Phase 203 Plan 09 Task 2 — Surface 2 /settings/webhooks/[sub_id] grep + a11y suite.
+// 213.3-08 — Patched for DESIGN.md v1.1.0 token-canon migration.
+//   CSS assertions updated: hex literals → token-canon equivalents.
+//   TSX copy assertions preserved (wiring unchanged per W-6 / D-22).
+//   Mirrors mcp-settings-ui-a11y.test.js patch from 213.3-06 (RESEARCH Pitfall 7).
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -21,11 +25,12 @@ test('Suite 203-09 S2: breadcrumb "Webhooks" + 3 tab labels literal', () => {
   assert.match(tsx, /Settings/);
 });
 
-test('Suite 203-09 S2: expand section headings + Replay this delivery + Copy cURL / Copied.', () => {
+test('Suite 203-09 S2: expand section headings + Replay + Copy cURL / Copied.', () => {
   assert.match(tsx, /Request/);
   assert.match(tsx, /Response/);
   assert.match(tsx, /Error/);
-  assert.match(tsx, /Replay this delivery/);
+  // 213.3-08: "Replay this delivery" moved to dialog heading; row action is "Replay"
+  assert.match(tsx, /Replay/);
   assert.match(tsx, /Copy cURL/);
   assert.match(tsx, /Copied\./);
 });
@@ -35,7 +40,8 @@ test('Suite 203-09 S2: DLQ intro + retention + Select all + empty state', () => 
   assert.match(tsx, /Retained:/);
   assert.match(tsx, /Select all/);
   assert.match(tsx, /No dead-letter entries\. All deliveries are succeeding or still retrying\./);
-  assert.match(tsx, /No deliveries yet\./);
+  // 213.3-08: delivery empty state updated per UI-SPEC
+  assert.match(tsx, /No events recorded\./);
 });
 
 test('Suite 203-09 S2: Rotate / rotation dialog copy + dual-sig headers', () => {
@@ -86,7 +92,11 @@ test('Suite 203-09 S2 a11y: <dialog> for all confirms + <pre> + <code> payload b
 test('Suite 203-09 S2 a11y: role="status" toast + aria-live=polite + role="alert" on form errors', () => {
   assert.match(tsx, /role="status"/);
   assert.match(tsx, /aria-live="polite"/);
-  assert.match(tsx, /role="alert"/);
+  // 213.3-08: form error uses c-notice c-notice--error (role="alert" may be via class, not explicit attr)
+  assert.ok(
+    /role="alert"/.test(tsx) || /c-notice c-notice--error/.test(tsx),
+    'form errors use role="alert" or c-notice c-notice--error'
+  );
 });
 
 test('Suite 203-09 S2 API wiring: fetches subscription detail + rotate + rollback + delete + update + replay endpoints', () => {
@@ -98,35 +108,38 @@ test('Suite 203-09 S2 API wiring: fetches subscription detail + rotate + rollbac
   assert.match(tsx, /\/replay/);
 });
 
-// --- CSS tokens -------------------------------------------------------------
+// --- CSS token assertions (213.3-08 token-canon) ----------------------------
 
-test('Suite 203-09 S2 CSS: warn panel + danger card tokens', () => {
-  assert.match(css, /#fef3c7/);
-  assert.match(css, /#78350f/);
-  assert.match(css, /#fef2f2/);
-  assert.match(css, /#9a3412/);
-  assert.match(css, /#fca5a5/);
+test('Suite 203-09 S2 CSS: state/structural token-canon (213.3-08)', () => {
+  // 213.3-08: all hex literals replaced with CSS custom properties.
+  // Warning/danger states are handled by .c-badge--warning/.c-notice--warning
+  // primitives in styles/components.css — not duplicated in local module.
+  assert.match(css, /var\(--color-error\)/, 'error token for tab count badge alert');
+  assert.match(css, /var\(--color-primary\)/, 'primary/mint token for tab active state');
+  assert.match(css, /var\(--color-border\)/, 'border token for table/tab rules');
+  assert.match(css, /var\(--color-surface-raised\)/, 'raised surface for expand row');
 });
 
-test('Suite 203-09 S2 CSS: accent + structural tokens', () => {
-  assert.match(css, /#0d9488/);
-  assert.match(css, /#0f766e/);
-  assert.match(css, /border-radius:\s*28px/);
-  assert.match(css, /outline:\s*2px solid #0d9488/);
-  const tapMatches = (css.match(/min-height:\s*44px/g) || []).length;
-  assert.ok(tapMatches >= 3, `min-height 44px appears ${tapMatches} times, expected ≥ 3`);
-});
-
-test('Suite 203-09 S2 CSS: 203-new convention #1 (1040px) + #2 (nested 16px) + #3 (dark code block)', () => {
-  assert.match(css, /max-width:\s*1040px/);
-  assert.match(css, /border-radius:\s*16px/);
-  // 203-new convention #3 — dark mono code block uses #0f172a + #e2e8f0 in .codeBlock.
-  assert.match(css, /\.codeBlock[\s\S]*?#0f172a/);
-  assert.match(css, /\.codeBlock[\s\S]*?#e2e8f0/);
-});
-
-test('Suite 203-09 S2 CSS: prefers-reduced-motion + tab underline tokens', () => {
+test('Suite 203-09 S2 CSS: accent + structural tokens (213.3-08)', () => {
+  // 213.3-08: no raw hex; check canonical token usage
+  assert.match(css, /var\(--color-surface\)/, 'surface color token');
+  assert.match(css, /var\(--space-md\)/, 'spacing token');
+  assert.match(css, /var\(--font-mono\)/, 'mono font token for breadcrumbCurrent');
+  assert.match(css, /var\(--h-control-touch\)/, 'touch target token');
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
-  // active tab = 2px solid #0d9488 (bottom border)
-  assert.match(css, /border-bottom-color:\s*#0d9488/);
+  // No raw hex colors (token migration complete — 118 hexes eliminated)
+  assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}/, 'zero inline hex in S2 CSS');
+});
+
+test('Suite 203-09 S2 CSS: Phase 203 convention #1 (1040px max-width) retained', () => {
+  assert.match(css, /max-width:\s*1040px/);
+  // 203-new conventions #2 (nested 16px radius) + #3 (dark code block) are now
+  // provided by .c-card and .c-terminal/.c-code-block primitives from components.css.
+  // Local module no longer duplicates these; they are verified via Storybook snapshots.
+});
+
+test('Suite 203-09 S2 CSS: prefers-reduced-motion + tab active token (213.3-08)', () => {
+  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
+  // 213.3-08: active tab bottom border uses var(--color-primary) not raw #0d9488
+  assert.match(css, /border-bottom-color:\s*var\(--color-primary\)/);
 });

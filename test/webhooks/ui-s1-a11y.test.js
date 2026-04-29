@@ -1,8 +1,10 @@
 'use strict';
 
 // Phase 203 Plan 09 Task 2 — Surface 1 /settings/webhooks grep + a11y suite.
-// Pattern mirrors test/mcp/mcp-settings-ui-a11y.test.js (Plan 202-09).
-// Every UI-SPEC §"Testing Hooks" Surface 1 target must live in the compiled sources.
+// 213.3-08 — Patched for DESIGN.md v1.1.0 token-canon migration.
+//   CSS assertions updated: hex literals → token-canon equivalents.
+//   TSX assertions updated: legacy copy variants → UI-SPEC bracketed-glyph copy.
+//   Mirrors mcp-settings-ui-a11y.test.js patch from 213.3-06 (RESEARCH Pitfall 7).
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -29,19 +31,21 @@ test('Suite 203-09 S1: 4 hero labels literal', () => {
   assert.match(tsx, /Dead-letter queue/);
 });
 
-test('Suite 203-09 S1: subscriptions h2 + table caption + 3 chip copy variants', () => {
+test('Suite 203-09 S1: subscriptions h2 + table caption + badge copy variants (213.3-08)', () => {
   assert.match(tsx, /Subscriptions/);
   assert.match(tsx, /Active webhook subscriptions/);
-  assert.match(tsx, /Healthy/);
-  assert.match(tsx, /Half-open/);
-  assert.match(tsx, /Tripped/);
+  // 213.3-08: bracketed-glyph badge copy per UI-SPEC W-2
+  assert.match(tsx, /\[ok\] Enabled/);
+  assert.match(tsx, /\[warn\] Disabled/);
+  assert.match(tsx, /\[err\] Failing/);
 });
 
-test('Suite 203-09 S1: View + Test fire + Firing… + empty state copy', () => {
+test('Suite 203-09 S1: View + Test fire + Firing… + empty state copy (213.3-08)', () => {
   assert.match(tsx, /View/);
   assert.match(tsx, /Test fire/);
   assert.match(tsx, /Firing…/);
-  assert.match(tsx, /No webhook subscriptions yet\. Create one to start receiving event callbacks\./);
+  // 213.3-08: updated empty state copy per UI-SPEC Surface 8
+  assert.match(tsx, /No webhook subscriptions\./);
 });
 
 test('Suite 203-09 S1: loading strings + create dialog heading', () => {
@@ -82,22 +86,21 @@ test('Suite 203-09 S1 API wiring: fetches /api/tenant/webhooks/fleet-metrics + /
   assert.match(tsx, /\/api\/tenant\/webhooks\/subscriptions/);
 });
 
-// --- CSS token assertions ---------------------------------------------------
+// --- CSS token assertions (213.3-08 token-canon) ----------------------------
 
-test('Suite 203-09 S1 CSS: accent + dark-teal + warn + destructive tokens', () => {
-  const matches = (re) => (css.match(re) || []).length;
-  assert.ok(matches(/#0d9488/g) >= 3, 'accent teal appears ≥ 3 times');
-  assert.match(css, /#0f766e/);
-  assert.match(css, /#fef3c7/);
-  assert.match(css, /#fef2f2/);
+test('Suite 203-09 S1 CSS: accent + dark-teal + warn + destructive tokens (213.3-08)', () => {
+  // 213.3-08: hex literals replaced with CSS custom property tokens
+  assert.match(css, /var\(--color-success\)/, 'success token present');
+  assert.match(css, /var\(--color-error\)/, 'error token present');
+  assert.match(css, /var\(--color-warning\)/, 'warning token (meterFill)');
+  assert.match(css, /var\(--color-border\)/, 'border token present');
 });
 
-test('Suite 203-09 S1 CSS: structural tokens — 28px card + 12px button + focus ring + 44px tap + motion query', () => {
-  assert.match(css, /border-radius:\s*28px/);
-  assert.match(css, /border-radius:\s*12px/);
-  assert.match(css, /outline:\s*2px solid #0d9488/);
-  const tapMatches = (css.match(/min-height:\s*44px/g) || []).length;
-  assert.ok(tapMatches >= 3, `min-height 44px appears ${tapMatches} times, expected ≥ 3`);
+test('Suite 203-09 S1 CSS: structural tokens — surface + spacing + radius + font-mono (213.3-08)', () => {
+  assert.match(css, /var\(--color-surface\)/, 'surface color token');
+  assert.match(css, /var\(--space-md\)/, 'spacing token');
+  assert.match(css, /var\(--font-mono\)/, 'mono font token for heroNumber');
+  assert.match(css, /var\(--radius-full\)/, 'radius-full for meter track');
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
@@ -105,16 +108,20 @@ test('Suite 203-09 S1 CSS: 203-new convention #1 — max-width 1040px', () => {
   assert.match(css, /max-width:\s*1040px/);
 });
 
-test('Suite 203-09 S1 CSS: card shadow + hero + meter fill transition tokens', () => {
-  assert.match(css, /0 18px 45px/);
+test('Suite 203-09 S1 CSS: hero grid + hero number + meter token recipe (213.3-08)', () => {
+  // hero layout tokens
   assert.match(css, /heroGrid/);
   assert.match(css, /heroNumber/);
-  // success-rate fill matches 202 .costMeterFill semantics — 180ms ease-out
-  assert.match(css, /successBarFill[\s\S]*?transition:[\s\S]*?180ms[\s\S]*?ease-out/);
+  // meter renamed from successBarFill → meterFill
+  assert.match(css, /meterFill/);
+  assert.match(css, /meterTrack/);
+  // transition uses token duration
+  assert.match(css, /transition:[\s\S]*?var\(--duration-base\)/);
 });
 
-test('Suite 203-09 S1 CSS: table caption eyebrow + letter-spacing + dark-teal', () => {
+test('Suite 203-09 S1 CSS: table recipe — uppercase caption + letter-spacing token (213.3-08)', () => {
   assert.match(css, /text-transform:\s*uppercase/);
-  assert.match(css, /letter-spacing:\s*0\.08em/);
-  assert.match(css, /#0f766e/);
+  assert.match(css, /letter-spacing:\s*var\(--ls-label\)/);
+  // No raw hex colors (token migration complete)
+  assert.doesNotMatch(css, /#[0-9a-fA-F]{3,8}/, 'zero inline hex in S1 CSS');
 });
