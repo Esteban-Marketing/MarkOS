@@ -1,0 +1,62 @@
+# MarkOS — Marketing Operating System
+
+> Protocol-grade marketing infrastructure for AI-ready teams. MarkOS is the structured system layer that makes AI marketing agents consistent, brand-safe, and measurable. Install in one command: `npx markos`.
+
+## Docs
+
+- [Quick Start](https://markos.dev/docs/quickstart): Install and configure MarkOS in minutes.
+- [LLM BYOK Architecture](https://markos.dev/docs/llm-byok-architecture): Multi-provider LLM support with Anthropic, OpenAI, and Gemini behind a unified adapter.
+- [Operator LLM Setup](https://markos.dev/docs/operator-llm-setup): Configure provider keys, run smoke tests, monitor usage.
+- [CRM Overview](https://markos.dev/docs/crm): Unified pipeline, identity graph, and execution queue.
+- [Execution Queues](https://markos.dev/docs/execution-queues): AI-ranked task queue with recommendation engine.
+- [Attribution & Tracking](https://markos.dev/docs/attribution): Activity normalization, timeline, cross-channel attribution.
+
+## API
+
+- [OpenAPI Reference](https://markos.dev/api/openapi.json): Full OpenAPI 3.1 specification for all MarkOS API endpoints.
+- [Webhook Subscriptions](https://markos.dev/docs/webhooks): Subscribe to events; HMAC-SHA256 signed deliveries.
+- [MCP Server](https://markos.dev/docs/mcp): 10 MCP tools for Claude Desktop, Cursor, and Windsurf integration.
+
+## Examples
+
+- [Generate a Draft](https://markos.dev/docs/examples/generate-draft): `markos generate ./brief.yaml` → audit-passing draft in seconds.
+- [Onboarding Presets](https://markos.dev/docs/examples/presets): `npx markos init --preset=b2b-saas` — seed your instance for your business model.
+- [Webhook Test Fire](https://markos.dev/docs/examples/webhook-test): End-to-end webhook subscribe → test-fire → signed callback.
+
+# Phase 201 — Tenancy
+
+- [Subdomain + BYOD Routing](https://markos.dev/docs/routing): Middleware resolution (bare/system/reserved/first_party/byod), reserved-slug policy, Vercel Domains API flow, edge-config slug cache.
+- [Operator Settings](https://markos.dev/docs/admin): /settings/members · /settings/domain · /settings/sessions · /settings/danger — seat usage, BYOD, sessions revoke, offboarding.
+- [Tenant Lifecycle](https://markos.dev/docs/tenancy-lifecycle): D-14 30-day soft-delete → purge timeline, cancel window, purge cron, audit emits.
+- [GDPR Export](https://markos.dev/docs/gdpr-export): D-15 signed-URL zip bundle shape, BUNDLE_DOMAINS, 7-day TTL, hash-chain replay verification.
+- [Phase 201 LLM Summary](https://markos.dev/docs/llms/phase-201-tenancy): Decisions · artifacts · contracts (F-80..F-88) · migrations (81..87).
+
+## Phase 202 — MCP Server GA
+
+- [MCP tool reference (30 tools)](https://markos.dev/docs/mcp-tools): All 30 live tools — marketing, CRM, literacy, tenancy — with inputSchema summary, latency tier, and mutating flags.
+- [VS Code MCP setup](https://markos.dev/docs/vscode-mcp-setup): `.vscode/mcp.json` snippet + OAuth consent walkthrough + troubleshooting (401, DCR, token expiry).
+- [OAuth 2.1 + PKCE flow](https://markos.dev/docs/oauth): Full RFC 7636/7591/8707/9728 flow with curl examples for register → authorize → token → revoke.
+- [Red-team checklist](https://markos.dev/docs/mcp-redteam-checklist): Manual verification for injection, cross-tenant, budget, approval-token, rate-limit, D-31 rolling releases, D-19 observability alerts.
+- [Phase 202 LLM Summary](https://markos.dev/docs/llms/phase-202-mcp): Contracts (F-89/F-90..F-95) + decisions + MCP 2025-06-18 alignment.
+
+## Phase 203 — Webhooks
+
+- [Webhooks integration guide](https://markos.dev/docs/webhooks): Node.js/Python/Go signature verification, 300s skew window, dual-sign during rotation, header reference.
+- [Secret rotation](https://markos.dev/docs/webhooks/rotation): 30-day dual-sign grace (D-09..D-12), T-7/T-1/T-0 notifications, rollback window, post-grace purge.
+- [Dead-letter queue](https://markos.dev/docs/webhooks/dlq): 24-attempt cap, 7-day retention (D-08), single + batch admin replay (D-05), x-markos-replayed-from header.
+- [Public status page](https://markos.dev/docs/webhooks/status): /status/webhooks (F-99, 60s cache, no auth); 4 platform-wide hero numbers; Stripe/Vercel lineage.
+- [Phase 203 LLM Summary](https://markos.dev/docs/llms/phase-203-webhooks): Contracts (F-72/F-73 extended + F-96..F-100) + decisions + durability substrate.
+
+## Phase 204 — MarkOS CLI
+
+- [Homebrew install (macOS/Linux)](https://markos.dev/docs/cli/installation-homebrew.md): `brew install markos/markos/markos` — tap registry, formula-path Formula/markos.rb, auto-bump on tagged release via mislav/bump-homebrew-formula-action.
+- [Scoop install (Windows)](https://markos.dev/docs/cli/installation-scoop.md): `scoop bucket add markos && scoop install markos` — bucket registry, manifest at bucket/markos.json, bump-scoop-manifest.cjs on tagged release.
+- [11-command index](https://markos.dev/docs/cli/commands.md): init · generate · plan · run · eval · login · keys · whoami · env · status · doctor — global flags, subcommands, D-10 exit-code usage per command.
+- [Stable error-code reference](https://markos.dev/docs/cli/errors.md): 13 public-API error codes (INVALID_BRIEF..INTERNAL) + RFC 8628 device-flow codes + D-10 exit bands + TTY/JSON envelope shape; grep-asserted against bin/lib/cli/errors.cjs ERROR_TO_EXIT.
+- [Environment variables reference](https://markos.dev/docs/cli/environment.md): MARKOS_API_KEY/PROFILE/API_BASE_URL/NO_BROWSER + XDG_CONFIG_HOME + NO_COLOR + CI/GITHUB_ACTIONS; credential resolution order (env > keychain > XDG).
+
+## Optional
+
+- [Full Docs (concatenated markdown)](https://markos.dev/docs/llms-full.txt): Single-file concatenation of all documentation pages for LLM ingestion.
+- [Changelog](https://markos.dev/changelog): Version history and breaking changes.
+- [GitHub Repository](https://github.com/estebanooortz/markos): Source code, issues, and contributions.

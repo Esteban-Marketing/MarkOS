@@ -1,0 +1,45 @@
+import{j as e}from"./jsx-runtime-D_zvdyIk.js";const k="_page_f0my8_8",E="_shell_f0my8_16",O="_contentGrid_f0my8_23",G="_mainColumn_f0my8_35",H="_sideColumn_f0my8_36",U="_actionRow_f0my8_41",T="_table_f0my8_48",$="_emptyState_f0my8_72",i={page:k,shell:E,contentGrid:O,mainColumn:G,sideColumn:H,actionRow:U,table:T,emptyState:$},V="/api/billing/tenant-summary",L=[{category:"Seats",included:"10",used:"4",projectedOverage:"0",chargeImpact:"$0"},{category:"Projects",included:"5",used:"3",projectedOverage:"0",chargeImpact:"$0"},{category:"Agent Runs",included:"1,000",used:"312",projectedOverage:"0",chargeImpact:"$0"},{category:"AI Usage",included:"100,000 tokens",used:"41,500",projectedOverage:"0",chargeImpact:"$0"},{category:"Storage",included:"50 GB-days",used:"8 GB-days",projectedOverage:"0",chargeImpact:"$0"}],u=[{id:"INV-2026-04",status:"healthy",total:"$150.00",dueDate:"2026-05-01"}];function h({variant:d="healthy",reviewCurrentInvoiceAction:S,reviewBillingDetailsAction:D}){const a=d==="hold",R=a?"Billing period: April 2026. Current status: on hold. Restricted write, execute, and premium actions are paused while billing health is restored. Hold history, release evidence, impacted workflows, communication cadence, and the restored active snapshot remain visible to the tenant.":"Billing period: April 2026. Current status: healthy. Next invoice: 2026-05-01. No hold is active. Release evidence shows the first same-period provider sync restored an active snapshot without hiding the failed attempt, and the impacted workflows plus recovery criteria remain visible to the tenant.",P=a?"Premium features are temporarily paused. Billing history, settings, invoices, and recovery evidence remain available while the hold is active.":"Premium features remain available. If a workspace is on hold, restricted write, execute, and premium actions pause while usage records and invoices remain visible.",p=a?"Restricted write, execute, and premium actions are paused while payment or reconciliation issues are resolved. Usage records, invoices, settings, and release evidence remain available throughout the hold interval.":"No active hold is blocking the workspace. If a future provider sync fails, the hold interval and recovery evidence will appear here without hiding the failed attempt.";return e.jsx("div",{className:i.page,children:e.jsxs("div",{className:i.shell,children:[e.jsxs("section",{className:"c-card",children:[e.jsxs("div",{children:[e.jsx("span",{className:"t-label-caps",children:"Billing status summary"}),e.jsx("h1",{children:"Growth Monthly"}),e.jsx("p",{children:R})]}),e.jsxs("div",{className:i.actionRow,children:[e.jsx("form",{action:S,children:e.jsx("button",{type:"submit",className:"c-button c-button--primary",children:"Review current invoice"})}),e.jsx("form",{action:D,children:e.jsx("button",{type:"submit",className:"c-button c-button--secondary",children:"Review billing details"})})]})]}),e.jsxs("section",{className:i.contentGrid,children:[e.jsxs("div",{className:i.mainColumn,children:[e.jsxs("article",{className:"c-card",children:[e.jsx("h2",{children:"Current plan and included usage"}),e.jsxs("p",{children:["Included usage and current invoice data are sourced from ",V," and translated into plain billing language."]}),e.jsxs("table",{className:i.table,children:[e.jsx("thead",{children:e.jsxs("tr",{children:[e.jsx("th",{scope:"col",children:"Category"}),e.jsx("th",{scope:"col",children:"Included"}),e.jsx("th",{scope:"col",children:"Used"}),e.jsx("th",{scope:"col",children:"Projected overage"}),e.jsx("th",{scope:"col",children:"Charge impact"})]})}),e.jsx("tbody",{children:L.map(t=>e.jsxs("tr",{children:[e.jsx("td",{children:t.category}),e.jsx("td",{children:t.included}),e.jsx("td",{children:t.used}),e.jsx("td",{children:t.projectedOverage}),e.jsx("td",{children:t.chargeImpact})]},t.category))})]})]}),e.jsxs("article",{className:"c-card",children:[e.jsx("h2",{children:"Invoice list"}),e.jsxs("table",{className:i.table,children:[e.jsx("thead",{children:e.jsxs("tr",{children:[e.jsx("th",{scope:"col",children:"Invoice"}),e.jsx("th",{scope:"col",children:"Status"}),e.jsx("th",{scope:"col",children:"Amount"}),e.jsx("th",{scope:"col",children:"Due date"})]})}),e.jsx("tbody",{children:u.length===0?e.jsx("tr",{children:e.jsx("td",{colSpan:4,className:i.emptyState,children:"No invoices yet. Invoices appear here after your first billing cycle."})}):u.map(t=>e.jsxs("tr",{children:[e.jsx("td",{children:t.id}),e.jsx("td",{children:t.status}),e.jsx("td",{children:t.total}),e.jsx("td",{children:t.dueDate})]},t.id))})]})]})]}),e.jsxs("aside",{className:i.sideColumn,children:[e.jsxs("section",{className:"c-card",children:[e.jsx("h2",{children:"Entitlement and premium-feature availability"}),e.jsx("p",{children:P})]}),e.jsxs("section",{className:"c-card",children:[e.jsx("h2",{children:"Billing evidence drawer trigger"}),e.jsx("p",{children:"Billing evidence uses translated labels first and keeps raw lineage references behind a secondary drawer, including hold history, release evidence, impacted workflows, communication cadence, and the restored active snapshot."}),e.jsx("button",{type:"button",className:"c-button c-button--secondary",children:"Review billing details"})]}),a&&e.jsxs("div",{className:"c-notice c-notice--warning",role:"status",children:[e.jsx("strong",{children:"[warn]"})," ","Payment issue. Resolve to continue using MarkOS."," ",p]}),!a&&e.jsxs("div",{className:"c-notice c-notice--warning",role:"status",children:[e.jsx("strong",{children:"[warn]"})," ","No active billing hold. ",p]})]})]})]})})}try{h.displayName="BillingSettingsPageShell",h.__docgenInfo={description:"",displayName:"BillingSettingsPageShell",props:{variant:{defaultValue:{value:"healthy"},description:"",name:"variant",required:!1,type:{name:"BillingSettingsPageVariant"}},reviewCurrentInvoiceAction:{defaultValue:null,description:"",name:"reviewCurrentInvoiceAction",required:!1,type:{name:"BillingSettingsAction"}},reviewBillingDetailsAction:{defaultValue:null,description:"",name:"reviewBillingDetailsAction",required:!1,type:{name:"BillingSettingsAction"}}}}}catch{}async function n(d){}const q={title:"Routes/Settings - Billing",component:h,parameters:{layout:"fullscreen"}},r={args:{variant:"healthy",reviewCurrentInvoiceAction:n,reviewBillingDetailsAction:n}},s={args:{variant:"hold",reviewCurrentInvoiceAction:n,reviewBillingDetailsAction:n},parameters:{docs:{description:{story:"Renders the `.c-notice c-notice--warning` payment-issue banner per UI-SPEC AC B-3. Bracketed `[warn]` glyph + remediation copy."}}}},c={args:{variant:"healthy",reviewCurrentInvoiceAction:n,reviewBillingDetailsAction:n},parameters:{docs:{description:{story:"Multi-row invoice table per UI-SPEC AC B-4. Semantic `<table>` with token-cited `<th>`/`<td>` recipe (D-14)."}}}},o={args:{variant:"healthy",reviewCurrentInvoiceAction:n,reviewBillingDetailsAction:n}},l={args:{variant:"hold",reviewCurrentInvoiceAction:n,reviewBillingDetailsAction:n}};var m,g,v;r.parameters={...r.parameters,docs:{...(m=r.parameters)==null?void 0:m.docs,source:{originalSource:`{
+  args: {
+    variant: "healthy",
+    reviewCurrentInvoiceAction: noopAction,
+    reviewBillingDetailsAction: noopAction
+  }
+}`,...(v=(g=r.parameters)==null?void 0:g.docs)==null?void 0:v.source}}};var y,x,j;s.parameters={...s.parameters,docs:{...(y=s.parameters)==null?void 0:y.docs,source:{originalSource:`{
+  args: {
+    variant: "hold",
+    reviewCurrentInvoiceAction: noopAction,
+    reviewBillingDetailsAction: noopAction
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Renders the \`.c-notice c-notice--warning\` payment-issue banner per UI-SPEC AC B-3. Bracketed \`[warn]\` glyph + remediation copy."
+      }
+    }
+  }
+}`,...(j=(x=s.parameters)==null?void 0:x.docs)==null?void 0:j.source}}};var w,A,b;c.parameters={...c.parameters,docs:{...(w=c.parameters)==null?void 0:w.docs,source:{originalSource:`{
+  args: {
+    variant: "healthy",
+    reviewCurrentInvoiceAction: noopAction,
+    reviewBillingDetailsAction: noopAction
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: "Multi-row invoice table per UI-SPEC AC B-4. Semantic \`<table>\` with token-cited \`<th>\`/\`<td>\` recipe (D-14)."
+      }
+    }
+  }
+}`,...(b=(A=c.parameters)==null?void 0:A.docs)==null?void 0:b.source}}};var f,I,_;o.parameters={...o.parameters,docs:{...(f=o.parameters)==null?void 0:f.docs,source:{originalSource:`{
+  args: {
+    variant: "healthy",
+    reviewCurrentInvoiceAction: noopAction,
+    reviewBillingDetailsAction: noopAction
+  }
+}`,...(_=(I=o.parameters)==null?void 0:I.docs)==null?void 0:_.source}}};var B,C,N;l.parameters={...l.parameters,docs:{...(B=l.parameters)==null?void 0:B.docs,source:{originalSource:`{
+  args: {
+    variant: "hold",
+    reviewCurrentInvoiceAction: noopAction,
+    reviewBillingDetailsAction: noopAction
+  }
+}`,...(N=(C=l.parameters)==null?void 0:C.docs)==null?void 0:N.source}}};const z=["Default","HoldState","InvoiceList","Healthy","Hold"];export{r as Default,o as Healthy,l as Hold,s as HoldState,c as InvoiceList,z as __namedExportsOrder,q as default};
