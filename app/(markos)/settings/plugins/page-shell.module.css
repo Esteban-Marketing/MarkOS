@@ -1,308 +1,189 @@
+/* ──────────────────────────────────────────────────────────────────────────
+ * /settings/plugins — layout module (DESIGN.md v1.1.0)
+ * Token-only: zero hex, zero off-grid spacing, zero gradients.
+ * Composition (c-card, c-button, c-chip, c-badge, c-notice) lives in JSX.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* Page wrapper */
 .page {
-  font-family: "Space Grotesk", sans-serif;
-  background: #f5f7fa;
-  min-height: 100vh;
-  padding: 32px;
+  padding: var(--space-md);
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
+/* Max-width shell */
 .shell {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  gap: 32px;
+  gap: var(--space-lg);
 }
 
-.summaryCard,
-.panel {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 24px;
-}
-
+/* Summary header: brand overview + brand card */
 .summaryHeader {
   display: grid;
   grid-template-columns: 1.3fr 0.9fr;
-  gap: 24px;
+  gap: var(--space-md);
   align-items: start;
 }
 
-.eyebrow {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #475569;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.title {
-  margin: 8px 0 0;
-  font-family: "Sora", sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.summaryText,
-.bodyText,
-.toggleDescription,
-.dangerText,
-.brandMeta {
-  color: #475569;
-}
-
-.summaryText {
-  margin: 8px 0 0;
-  font-size: 16px;
-}
-
+/* Brand card — gradient ELIMINATED per RESEARCH.md key finding #2 + UI-SPEC AC X-3.
+ * Replaced with flat token-cited surface (surface-raised + border). */
 .brandCard {
-  background: linear-gradient(135deg, #0f766e, #155e75);
-  color: #f8fafc;
-  border-radius: 20px;
-  padding: 20px;
-  min-height: 132px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
   display: flex;
   align-items: center;
+  gap: var(--space-md);
 }
 
+/* Card header row: logo + meta */
 .cardHeader {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
+/* Plugin brand logo (image) — sizing literal 48px is an image dimension, not a spacing token */
 .logo {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-sm);
   object-fit: cover;
 }
 
+/* Plugin brand logo fallback (initials) */
 .logoFallback {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  background: rgba(15, 23, 42, 0.24);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #f8fafc;
-  font-weight: 700;
-  font-size: 1.25rem;
+  color: var(--color-on-surface);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h4);
+  flex-shrink: 0;
 }
 
-.brandLabel {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.brandMeta {
-  margin: 0;
-  font-size: 0.875rem;
-}
-
+/* Main content grid: main column + side column */
 .contentGrid {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
-  gap: 24px;
+  gap: var(--space-md);
 }
 
-.mainColumn,
-.sideColumn,
+/* Main column stacks sections */
+.mainColumn {
+  display: grid;
+  gap: var(--space-md);
+}
+
+/* Side column stacks panels */
+.sideColumn {
+  display: grid;
+  gap: var(--space-md);
+}
+
+/* Form stack within the main panel */
 .formStack {
   display: grid;
-  gap: 24px;
+  gap: var(--space-md);
 }
 
+/* Section header: title + status badge row */
 .sectionHeader {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-sm);
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-sm);
 }
 
-.sectionTitle {
-  margin: 0 0 12px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.bodyText {
-  margin: 0;
-  font-size: 16px;
-}
-
-.statusBadge {
-  border-radius: 999px;
-  background: #ecfeff;
-  color: #155e75;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
+/* Toggle card: enable/disable row */
 .toggleCard {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-sm);
   align-items: center;
-  border: 1px solid #dbeafe;
-  background: #f8fafc;
-  border-radius: 16px;
-  padding: 18px 20px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-lg);
+  padding: var(--space-sm) var(--space-md);
   cursor: pointer;
 }
 
-.toggleTitle {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.toggleDescription {
-  margin: 6px 0 0;
-  font-size: 14px;
-}
-
-.toggleInput {
-  width: 20px;
-  height: 20px;
-}
-
+/* Toggle control (label wrapper) */
 .toggleControl {
   display: inline-flex;
   align-items: center;
 }
 
+/* Capability fieldset */
 .fieldset {
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
   margin: 0;
 }
 
-.legend {
-  font-weight: 600;
-  padding: 0 8px;
-  font-size: 0.875rem;
-  color: #334155;
-}
-
+/* Capability grid: two columns */
 .capabilityGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
 }
 
+/* Capability column stacks rows */
 .capabilityColumn {
   display: grid;
-  gap: 12px;
+  gap: var(--space-xs);
 }
 
+/* Individual capability checkbox row */
 .capabilityCard {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 0.9375rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 14px 16px;
-  background: #ffffff;
+  gap: var(--space-xs);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-surface-raised);
 }
 
-.capabilityInput {
-  width: 16px;
-  height: 16px;
-}
-
-.capabilityText {
-  color: #0f172a;
-  font-weight: 500;
-}
-
+/* Action row: buttons */
 .actionRow {
   display: flex;
-  gap: 12px;
+  gap: var(--space-xs);
   flex-wrap: wrap;
 }
 
-.primaryButton {
-  background: #0f766e;
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-
-.secondaryButton {
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #0f172a;
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
+/* Detail list: feature bullets */
 .detailList {
   display: grid;
-  gap: 10px;
-  margin: 16px 0 0;
+  gap: var(--space-xs);
+  margin: var(--space-sm) 0 0;
   padding: 0;
   list-style: none;
 }
 
+/* Detail item */
 .detailItem {
-  border-left: 4px solid #0d9488;
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 12px 14px;
-  color: #0f172a;
-  font-weight: 500;
+  border-left: 1px solid var(--color-border-strong);
+  background: var(--color-surface-raised);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--color-on-surface);
+  font-size: var(--fs-body-sm);
 }
 
-.dangerCard {
-  background: #fff7ed;
-  border-left: 4px solid #b45309;
-  border-radius: 16px;
-  padding: 24px;
-}
-
-.dangerTitle {
-  margin: 0 0 12px;
-  color: #7c2d12;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.dangerText {
-  font-size: 0.9375rem;
-  margin: 0 0 16px;
-  color: #9a3412;
-}
-
-.dangerButton {
-  background: #7c2d12;
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 12px 18px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 0.875rem;
-}
-
+/* Screen-reader only */
 .srOnly {
   position: absolute;
   width: 1px;
@@ -315,7 +196,8 @@
   border: 0;
 }
 
-@media (max-width: 960px) {
+/* Responsive: stack columns below 960px */
+@media (max-width: 959.98px) {
   .summaryHeader,
   .contentGrid,
   .capabilityGrid {
@@ -325,6 +207,6 @@
   .sectionHeader,
   .toggleCard {
     flex-direction: column;
-    align-items: start;
+    align-items: flex-start;
   }
 }
