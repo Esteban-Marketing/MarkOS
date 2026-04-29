@@ -2,21 +2,22 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Milestone complete
-last_updated: "2026-04-29T16:27:37.830Z"
+status: Ready to execute
+last_updated: "2026-04-29T17:04:02.087Z"
 progress:
   total_phases: 17
   completed_phases: 5
   total_plans: 132
-  completed_plans: 50
+  completed_plans: 51
+  percent: 39
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
 
 ## Current Position
 
-Phase: 213.5 (marketing-claude-landing-canon) — EXECUTING
-Plan: Not started
+Phase: 201.1 (saas-tenancy-followups) — EXECUTING
+Plan: 2 of 11
 Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `/gsd-discuss-phase 213.3` for the next decimal phase (settings surfaces — Files / Billing / Members / Sessions / Domain / Danger / MCP / Plugins / Webhooks).
 
 ## Phase 213.4 Plan Progress

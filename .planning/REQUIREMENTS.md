@@ -27,7 +27,7 @@
 ### SaaS Readiness
 
 - [ ] **API-01**: Public OpenAPI, generated SDKs, and API contracts remain current.
-- [ ] **API-02**: Tenancy, RLS, auth, audit, domains, membership, and lifecycle controls remain production-safe.
+- [x] **API-02**: Tenancy, RLS, auth, audit, domains, membership, and lifecycle controls remain production-safe.
 - [ ] **SDK-01**: SDK generation and CI stay compatible with generated contracts.
 - [ ] **MCP-01**: MCP server, sessions, tools, OAuth, cost/budget controls, and marketplace readiness remain tenant-safe.
 - [ ] **WHK-01**: Webhook subscription engine remains durable, observable, replay-safe, rate-limited, and tenant-admin visible.
