@@ -92,7 +92,7 @@ jobs:
 
       - name: Upload accessibility report
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: accessibility-report
           path: test/ui-a11y
@@ -124,7 +124,7 @@ jobs:
 
       - name: Upload security report
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-report
           path: test/ui-security
@@ -151,7 +151,7 @@ jobs:
         run: npm ci
 
       - name: Run literacy e2e regression gate
-        run: node --test test/literacy-e2e.test.js -x
+        run: node --test test/literacy-e2e.test.js
 
       - name: Validate story coverage matrix
         run: |
