@@ -22,31 +22,36 @@ import { TaskStepState, TaskStepRecord } from "./task-types";
 import styles from "./task-ui.module.css";
 
 /**
- * State badge styling (locked enum values)
+ * State badge config — composes .c-badge--{*} primitives with bracketed glyphs (OT-4)
  */
 const STATE_BADGE_CONFIG: Record<
   TaskStepState,
-  { className: string; label: string }
+  { cls: string; glyph: string; label: string }
 > = {
   [TaskStepState.Queued]: {
-    className: styles.badgeQueued,
-    label: "queued",
+    cls: "c-badge c-badge--info",
+    glyph: "[–]",
+    label: "Queued",
   },
   [TaskStepState.Approved]: {
-    className: styles.badgeApproved,
-    label: "approved",
+    cls: "c-badge c-badge--info",
+    glyph: "[ok]",
+    label: "Approved",
   },
   [TaskStepState.Executing]: {
-    className: styles.badgeExecuting,
-    label: "executing",
+    cls: "c-badge c-badge--warning",
+    glyph: "[•]",
+    label: "Executing",
   },
   [TaskStepState.Completed]: {
-    className: styles.badgeCompleted,
-    label: "completed",
+    cls: "c-badge c-badge--success",
+    glyph: "[ok]",
+    label: "Completed",
   },
   [TaskStepState.Failed]: {
-    className: styles.badgeFailed,
-    label: "failed",
+    cls: "c-badge c-badge--error",
+    glyph: "[err]",
+    label: "Failed",
   },
 };
 
@@ -74,6 +79,7 @@ function StepCard({
       type="button"
       onClick={() => selectEvidenceStep(step.id)}
       className={[
+        "c-card",
         styles.stepCard,
         isCurrentStep ? styles.stepCardCurrent : styles.stepCardDimmed,
       ].join(" ")}
@@ -84,24 +90,24 @@ function StepCard({
           <span className={styles.stepIndex}>
             #{stepIndex + 1}
           </span>
-          <h3 className={styles.stepTitle}>{step.title}</h3>
+          <h3>{step.title}</h3>
         </div>
-        <span className={`${styles.badge} ${badgeConfig.className}`}>
-          {badgeConfig.label}
+        <span className={badgeConfig.cls}>
+          {badgeConfig.glyph} {badgeConfig.label}
         </span>
       </div>
 
-      <p className={styles.panelText}>{step.description}</p>
+      <p>{step.description}</p>
 
       <div className={styles.metaRow}>
         {step.requires_approval && (
-          <span className={`${styles.metaChip} ${styles.metaChipWarning}`}>
+          <span className="c-chip c-chip--warning">
             Requires Approval
           </span>
         )}
         {step.latest_error && (
-          <span className={`${styles.metaChip} ${styles.metaChipError}`}>
-            Error: {step.latest_error.substring(0, 30)}...
+          <span className="c-chip c-chip--error">
+            [err] {step.latest_error.substring(0, 30)}...
           </span>
         )}
       </div>
@@ -110,7 +116,7 @@ function StepCard({
         <span>by {lastActor}</span>
         {lastTimestamp !== "—" && (
           <>
-            <span className="mx-1">•</span>
+            <span>•</span>
             <span>{new Date(lastTimestamp).toLocaleTimeString()}</span>
           </>
         )}
@@ -118,7 +124,7 @@ function StepCard({
 
       {/* Sequential gating message for future steps */}
       {!isCurrentStep && step.state === TaskStepState.Queued && (
-        <div className={styles.helperCard}>
+        <div className="c-notice c-notice--info" role="status">
           Complete all prior steps to unlock this step for execution.
         </div>
       )}
@@ -127,18 +133,18 @@ function StepCard({
       {isCurrentStep &&
         step.requires_approval &&
         step.approval.status === "pending" && (
-          <div className={`${styles.helperCard} ${styles.helperWarning}`}>
+          <div className="c-notice c-notice--warning" role="status">
             This step requires approval before execution.
           </div>
         )}
 
       {step.approval.status === "rejected" && (
-        <div className={`${styles.helperCard} ${styles.helperError}`}>
-          <p className={styles.sectionHeading}>Rejected</p>
+        <div className="c-notice c-notice--error" role="status">
+          <strong>Rejected</strong>
           {step.approval.rejection_reason && (
-            <p className={styles.sectionBody}>{step.approval.rejection_reason}</p>
+            <p>{step.approval.rejection_reason}</p>
           )}
-          <p className={styles.sectionBody}>
+          <p>
             by {step.approval.decided_by} at{" "}
             {new Date(step.approval.decided_at).toLocaleString()}
           </p>
@@ -160,7 +166,7 @@ export function TaskGraph() {
     return (
       <div className={styles.emptyState}>
         <p className={styles.emptyTitle}>No operator task selected</p>
-        <p className={styles.sectionBody}>
+        <p>
           Select a queued task from the list to review steps, approvals, and
           evidence before execution.
         </p>

@@ -143,7 +143,7 @@ export function StepRunner() {
     return (
       <div className={styles.emptyState}>
         <p className={styles.emptyTitle}>No operator task selected</p>
-        <p className={styles.sectionBody}>
+        <p>
           Select a queued task from the list to begin step execution.
         </p>
       </div>
@@ -153,19 +153,18 @@ export function StepRunner() {
   return (
     <div className={styles.runnerStack}>
       <div>
-        <h3 className={styles.heroTitle}>{currentStep.title}</h3>
-        <p className={styles.heroText}>{currentStep.description}</p>
+        <h3>{currentStep.title}</h3>
+        <p>{currentStep.description}</p>
 
-        <div className={styles.statusCard}>
-          <div className={styles.statusHeader}>
+        {/* Status card — .c-card sub-section (OT-7) */}
+        <div className="c-card">
+          <div className={styles.stepHeader}>
             <div>
-              <p className={styles.statusLabel}>
-                Current Status: {currentStep.state}
-              </p>
-              <p className={styles.statusText}>{stateDescriptions[currentStep.state]}</p>
+              <span className="t-label-caps">Current Status</span>
+              <p>{currentStep.state} — {stateDescriptions[currentStep.state]}</p>
             </div>
             {currentStep.retry_count > 0 && (
-              <span className={`${styles.metaChip} ${styles.metaChipWarning}`}>
+              <span className="c-chip c-chip--warning">
                 Retried {currentStep.retry_count}x
               </span>
             )}
@@ -173,26 +172,36 @@ export function StepRunner() {
         </div>
       </div>
 
-      {/* Approval requirement message */}
+      {/* Approval requirement banner — .c-notice c-notice--warning (OT-6) */}
       {currentStep.requires_approval &&
         currentStep.approval.status === "pending" && (
-          <div className={`${styles.helperCard} ${styles.helperWarning}`}>
-            <p className={styles.sectionHeading}>Approval Required</p>
-            <p className={styles.sectionBody}>
-              This step requires operator approval before execution can proceed.
-              Review the evidence and click the execute button to approve and run.
-            </p>
+          <div className="c-notice c-notice--warning" role="status">
+            <strong>[warn]</strong>{" "}Approval Required — This step requires operator approval before execution can proceed. Review the evidence and click Execute to approve and run.
           </div>
         )}
 
+      {/* Executing banner — .c-notice c-notice--info (OT-6) */}
+      {currentStep.state === TaskStepState.Executing && (
+        <div className="c-notice c-notice--info" role="status">
+          <strong>[•]</strong>{" "}Step is executing. Wait for completion or use Abort run to stop.
+        </div>
+      )}
+
+      {/* Failed banner — .c-notice c-notice--error (OT-6) */}
+      {currentStep.state === TaskStepState.Failed && (
+        <div className="c-notice c-notice--error" role="status">
+          <strong>[err]</strong>{" "}Step failed. Review the error output and retry or abort the run.
+        </div>
+      )}
+
       <div className={styles.fieldGrid}>
-        <div>
-          <label className={styles.fieldLabel} htmlFor="mock-input-json">
+        <div className="c-field">
+          <label className="c-field__label" htmlFor="mock-input-json">
             Mock Input (JSON)
           </label>
           <textarea
             id="mock-input-json"
-            className={styles.textarea}
+            className="c-input"
             rows={3}
             placeholder='{"key": "value"}'
             onChange={(e) => {
@@ -207,13 +216,13 @@ export function StepRunner() {
 
         {currentStep.state === TaskStepState.Executing && (
           <>
-            <div>
-              <label className={styles.fieldLabel} htmlFor="mock-output-json">
+            <div className="c-field">
+              <label className="c-field__label" htmlFor="mock-output-json">
                 Mock Output (JSON)
               </label>
               <textarea
                 id="mock-output-json"
-                className={styles.textarea}
+                className="c-input"
                 rows={3}
                 placeholder='{"result": "success"}'
                 onChange={(e) => {
@@ -225,13 +234,13 @@ export function StepRunner() {
                 }}
               />
             </div>
-            <div>
-              <label className={styles.fieldLabel} htmlFor="execution-logs">
+            <div className="c-field">
+              <label className="c-field__label" htmlFor="execution-logs">
                 Execution Logs (newline-separated)
               </label>
               <textarea
                 id="execution-logs"
-                className={styles.textarea}
+                className="c-input"
                 rows={2}
                 placeholder="Log line 1&#10;Log line 2"
                 onChange={(e) => {
@@ -244,14 +253,14 @@ export function StepRunner() {
 
         {(currentStep.state === TaskStepState.Executing ||
           currentStep.state === TaskStepState.Failed) && (
-          <div>
-            <label className={styles.fieldLabel} htmlFor="step-error-message">
+          <div className="c-field">
+            <label className="c-field__label" htmlFor="step-error-message">
               Error Message
             </label>
             <input
               id="step-error-message"
               type="text"
-              className={styles.input}
+              className="c-input"
               placeholder="Error details (if step fails)"
               value={mockError}
               onChange={(e) => setMockError(e.target.value)}
@@ -260,14 +269,14 @@ export function StepRunner() {
         )}
 
         {currentStep.state === TaskStepState.Failed && (
-          <div>
-            <label className={styles.fieldLabel} htmlFor="retry-reason">
+          <div className="c-field">
+            <label className="c-field__label" htmlFor="retry-reason">
               Retry Reason (optional)
             </label>
             <input
               id="retry-reason"
               type="text"
-              className={styles.input}
+              className="c-input"
               placeholder="Reason for retry"
               value={retryReason}
               onChange={(e) => setRetryReason(e.target.value)}
@@ -276,11 +285,13 @@ export function StepRunner() {
         )}
       </div>
 
+      {/* Step action buttons — .c-button primitives (OT-8) */}
       <div className={styles.buttonRow}>
         {currentStep.state === TaskStepState.Queued && (
           <button
+            type="button"
             onClick={handleStartStep}
-            className={styles.buttonPrimary}
+            className="c-button c-button--primary"
           >
             Execute Task Step {currentStep.requires_approval ? "(+ Approve)" : ""}
           </button>
@@ -289,12 +300,17 @@ export function StepRunner() {
         {currentStep.state === TaskStepState.Executing && (
           <>
             <button
+              type="button"
               onClick={handleCompleteStep}
-              className={styles.buttonPrimary}
+              className="c-button c-button--primary"
             >
               Mark Complete
             </button>
-            <button onClick={handleFailStep} className={styles.buttonDanger}>
+            <button
+              type="button"
+              onClick={handleFailStep}
+              className="c-button c-button--destructive"
+            >
               Fail Step
             </button>
           </>
@@ -302,8 +318,9 @@ export function StepRunner() {
 
         {currentStep.state === TaskStepState.Failed && (
           <button
+            type="button"
             onClick={handleRetryStep}
-            className={styles.buttonSecondary}
+            className="c-button c-button--secondary"
           >
             Retry Step
           </button>
@@ -311,12 +328,13 @@ export function StepRunner() {
 
         {currentStep.state === TaskStepState.Approved && (
           <button
+            type="button"
             onClick={() =>
               executeStep(selectedTask.id, currentStep.id, currentActorId, {
                 ...mockInputs,
               })
             }
-            className={styles.buttonPrimary}
+            className="c-button c-button--primary"
           >
             Execute Approved Step
           </button>
@@ -324,16 +342,14 @@ export function StepRunner() {
 
         {currentStep.state === TaskStepState.Completed && (
           <div className={styles.completedNote}>
-            ✓ This step is completed. No further actions available.
+            [ok] This step is completed. No further actions available.
           </div>
         )}
       </div>
 
-      <div className={styles.helperCard}>
-        <p className={styles.sectionHeading}>Sequential Execution</p>
-        <p className={styles.sectionBody}>
-          Only the current actionable step displays controls. Future steps become available after all prior steps complete.
-        </p>
+      {/* Sequential execution info banner — .c-notice c-notice--info (OT-6) */}
+      <div className="c-notice c-notice--info" role="status">
+        <strong>Sequential Execution</strong>{" "}— Only the current actionable step displays controls. Future steps become available after all prior steps complete.
       </div>
 
       {modalState.type === "approval" && modalState.stepId && (
