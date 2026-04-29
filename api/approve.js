@@ -1,61 +1,37 @@
-// Phase 201 Plan 08 Task 1: audit wiring wrapper around phase-46 handleApprove.
-// Emits source_domain: 'approvals' action: 'approval.approved' | 'approval.rejected'
-// AFTER the primary write succeeds. Fail-soft: audit errors never block the primary flow.
+// Phase 201.1 D-101 (closes H1): inline audit emit for approval flows.
+// Replaces the Phase 201 post-res.end wrapper (post-response audit emit footgun).
+// Failure semantics: if audit emit fails, return 500 — never silent log.
 
 const { handleApprove, handleCorsPreflight } = require('../onboarding/backend/handlers.cjs');
+const { runWithDeferredEnd, emitInlineApprovalAudit } = require('../lib/markos/audit/inline-emit.cjs');
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return handleCorsPreflight(req, res);
 
-  // Capture response body shape by hooking res.end so we can see the decision.
-  const originalEnd = res.end.bind(res);
-  let capturedBody = null;
-  let capturedStatus = null;
-  res.end = function patchedEnd(chunk, ...rest) {
+  // 1. Run business handler with deferred-end: captures status/headers/body in-memory.
+  //    Original res is NOT written to yet — client has received nothing.
+  const captured = await runWithDeferredEnd(req, res, handleApprove);
+
+  // 2. Only emit audit if business write succeeded (2xx).
+  //    Fail-CLOSED: if staging insert fails, return 500 before the client sees a 200.
+  if (captured.status >= 200 && captured.status < 300) {
     try {
-      capturedStatus = res.statusCode;
-      if (typeof chunk === 'string') capturedBody = chunk;
-      else if (Buffer.isBuffer(chunk)) capturedBody = chunk.toString('utf8');
-    } catch { /* noop */ }
-    return originalEnd(chunk, ...rest);
-  };
-
-  await handleApprove(req, res);
-
-  // Emit audit only on 2xx success. Best-effort; never throws.
-  try {
-    if (!capturedStatus || capturedStatus < 200 || capturedStatus >= 300) return;
-    const headers = req.headers || {};
-    const tenant_id = headers['x-markos-tenant-id'] || 'unknown';
-    const actor_id = headers['x-markos-user-id'] || 'system';
-
-    let decision = 'approved';
-    let approval_id = null;
-    try {
-      const parsed = capturedBody ? JSON.parse(capturedBody) : {};
-      if (parsed?.decision && String(parsed.decision).toLowerCase() === 'rejected') {
-        decision = 'rejected';
-      }
-      if (parsed?.approval_id || parsed?.run_id) approval_id = parsed.approval_id || parsed.run_id;
-    } catch { /* body may not be JSON */ }
-
-    const { createClient } = require('@supabase/supabase-js');
-    const client = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://example.supabase.co',
-      process.env.SUPABASE_SERVICE_ROLE_KEY || 'anon-key',
-      { auth: { persistSession: false } },
-    );
-    const { enqueueAuditStaging } = require('../lib/markos/audit/writer.cjs');
-    await enqueueAuditStaging(client, {
-      tenant_id,
-      org_id: null,
-      source_domain: 'approvals',
-      action: decision === 'rejected' ? 'approval.rejected' : 'approval.approved',
-      actor_id,
-      actor_role: 'owner',
-      payload: { approval_id, decision },
-    });
-  } catch {
-    // Primary flow already completed; swallow audit failures.
+      await emitInlineApprovalAudit(req, captured, { action: 'approve' });
+    } catch (err) {
+      // Business write succeeded on the server, but the audit row is missing.
+      // Return 500 with a compensation marker so callers can identify the gap.
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({
+        error: 'audit_emit_failed',
+        detail: err?.message ?? String(err),
+        compensation: 'business_write_succeeded_audit_pending',
+      }));
+    }
   }
+
+  // 3. Replay captured response to the client.
+  res.statusCode = captured.status;
+  for (const [k, v] of captured.headers) res.setHeader(k, v);
+  return res.end(captured.body);
 };
