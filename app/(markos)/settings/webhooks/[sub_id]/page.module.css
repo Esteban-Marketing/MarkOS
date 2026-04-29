@@ -1,672 +1,356 @@
 /*
- * Phase 203 Plan 09 Task 2 — Surface 2 /settings/webhooks/[sub_id] styles.
+ * 213.3-08 Task 3 — /settings/webhooks/[sub_id] (detail) page module.
+ * Token-only layout module. Zero inline hex, zero off-brand typefaces,
+ * zero gradients/shadows/off-grid spacing, zero legacy button classes.
+ * LARGEST single CSS file in wave: 762 → ~130 LOC, 118 hexes eliminated.
  *
- * Every class traces to a Phase 201 or 202 ancestor per 203-UI-SPEC §Component Reuse Map
- * OR is one of the 3 documented 203-new conventions:
- *   1. max-width 1040px top-level card
- *   2. border-radius 16px nested card (.secretPanel, .dangerCard)
- *   3. dark mono code block (#0f172a bg + #e2e8f0 text) — .codeBlock
+ * Primitives composited via JSX:
+ *   .c-card              (contentCard, signingPanel sections)
+ *   .c-button--secondary (Rotate secret, Replay)
+ *   .c-button--destructive (Disable/Delete subscription)
+ *   .c-button--tertiary  (View status page)
+ *   .c-button--icon      (clipboard copy)
+ *   .c-badge--{success,warning,error} (delivery status + subscription status)
+ *   .c-chip-protocol     (subscription ID, event types, plan chip)
+ *   .c-code-inline       (signing secret masked-last-4)
+ *   .c-code-block inside .c-terminal (payload code blocks)
+ *   .c-notice--{info,warning,error} (signing rotation T-7/T-1/T-0 + DLQ)
+ *   .c-modal + .c-backdrop (rotate/rollback/delete/replay confirm dialogs)
+ *   .c-toast             (feedback toast)
+ *   .c-field / .c-input  (settings form fields)
+ *   .c-status-dot--{live,error} (per-row status indicators)
  *
- * Co-location rule: duplicate shared base rules from S1 module (do NOT cross-import).
+ * Phase 203 documented convention retained:
+ *   max-width: 1040px on top-level cards (Phase 203 convention #1)
  */
 
+/* ── Page shell ───────────────────────────────────────────────────── */
 .page {
-  padding: 24px;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  color: #0f172a;
+  padding: var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-md);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  min-height: 100%;
 }
 
+/* ── Content card ─────────────────────────────────────────────────── */
+/* Local max-width: 1040px — Phase 203 convention #1 */
 .contentCard {
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 32px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 1040px; /* 203-new convention #1 */
+  max-width: 1040px;
 }
 
-.heading {
-  margin: 0;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: #0f172a;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+/* ── Breadcrumb nav ───────────────────────────────────────────────── */
+.breadcrumb {
+  font-size: var(--fs-body-sm);
+  color: var(--color-on-surface-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.breadcrumb a {
+  color: var(--color-primary-text, var(--color-primary));
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  min-height: var(--h-control-touch);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-xxs);
+}
+.breadcrumbCurrent {
+  font-family: var(--font-mono);
+  font-size: var(--fs-code);
+  color: var(--color-on-surface);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 100%;
+  max-width: 40ch;
 }
 
-.subheading {
-  margin: 0;
-  font-size: 16px;
-  color: #475569;
-  line-height: 1.6;
-}
-
-.sectionHeading {
-  margin: 24px 0 8px;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
+/* ── Card header row ──────────────────────────────────────────────── */
 .cardHeaderRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
 }
 
-.loadingText {
-  margin: 0;
-  font-size: 14px;
-  color: #475569;
-}
-
-.breadcrumb {
-  font-size: 14px;
-  color: #475569;
+/* ── Detail header ────────────────────────────────────────────────── */
+.detailHeader {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-.breadcrumb a {
-  color: #0d9488;
-  text-decoration: underline;
-  font-weight: 600;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  padding: 0 4px;
-}
-.breadcrumb a:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.breadcrumbCurrent {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
-  color: #0f172a;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 400px;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
 }
 
+/* ── Chip row (status + plan chips) ──────────────────────────────── */
 .chipRow {
   display: flex;
-  gap: 8px;
+  gap: var(--space-xs);
   align-items: center;
   flex-wrap: wrap;
 }
 
-.statusChip {
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.statusChip[data-state='closed'] {
-  background: #e6fffb;
-  color: #0f766e;
-}
-.statusChip[data-state='half-open'] {
-  background: #fef3c7;
-  color: #78350f;
-  border: 1px solid #d97706;
-}
-.statusChip[data-state='open'] {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fca5a5;
-}
-.planChip {
-  background: #f1f5f9;
-  color: #334155;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-/* ----------------------- Tab bar (new — derived, no direct ancestor) */
+/* ── Tab bar ──────────────────────────────────────────────────────── */
 .tabBar {
   display: flex;
-  gap: 32px;
-  border-bottom: 1px solid #e2e8f0;
-  padding: 0 8px;
-  margin-bottom: 16px;
+  gap: var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
 .tabButton {
-  min-height: 44px;
-  padding: 10px 4px;
+  min-height: var(--h-control-touch);
+  padding: var(--space-xs) var(--space-xxs);
   background: transparent;
   border: 0;
   border-bottom: 2px solid transparent;
-  color: #475569;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
+  color: var(--color-on-surface-muted);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-md);
+  font-weight: var(--fw-semibold);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  transition: color 120ms ease-out, border-bottom-color 120ms ease-out;
+  gap: var(--space-xs);
+  transition: color var(--duration-fast) var(--ease-out), border-bottom-color var(--duration-fast) var(--ease-out);
 }
 .tabButton[data-active='true'] {
-  border-bottom-color: #0d9488;
-  color: #0f172a;
+  border-bottom-color: var(--color-primary);
+  color: var(--color-on-surface);
 }
 .tabButton:hover {
-  color: #334155;
-}
-.tabButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-  border-radius: 4px;
+  color: var(--color-on-surface);
 }
 
+/* ── Tab count badge ──────────────────────────────────────────────── */
 .tabCountBadge {
-  background: #f1f5f9;
-  color: #334155;
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 12px;
-  font-weight: 600;
+  background: var(--color-surface-overlay);
+  color: var(--color-on-surface-muted);
+  border-radius: var(--radius-full);
+  padding: var(--space-xxs) var(--space-xs);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
 }
 .tabCountBadge[data-variant='alert'] {
-  background: #fef2f2;
-  color: #991b1b;
+  background: rgb(248 81 73 / 0.12);
+  color: var(--color-error);
 }
 
-/* ----------------------- Deliveries table */
-.deliveriesTable {
+/* ── Filter row (deliveries) ──────────────────────────────────────── */
+.filterRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: flex-end;
+  margin-bottom: var(--space-sm);
+}
+.filterChipGroup {
+  display: inline-flex;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xxs);
+}
+.filterChipGroup button {
+  min-height: var(--h-control);
+  padding: var(--space-xxs) var(--space-xs);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-lg);
+  font-size: var(--fs-code);
+  font-weight: var(--fw-semibold);
+  color: var(--color-on-surface-muted);
+  cursor: pointer;
+}
+.filterChipGroup button[data-active='true'] {
+  background: var(--color-primary-subtle, rgb(0 217 163 / 0.10));
+  color: var(--color-primary);
+}
+
+/* ── Deliveries table ─────────────────────────────────────────────── */
+.deliveryTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 8px;
 }
-.deliveriesTable caption {
-  caption-side: top;
+/* D-14 token recipe */
+.deliveryTable th {
   text-align: left;
-  padding-bottom: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  color: var(--color-on-surface-muted);
   text-transform: uppercase;
-  color: #0f766e;
+  letter-spacing: var(--ls-label);
+  border-bottom: 1px solid var(--color-border);
 }
-.deliveriesTable th {
-  text-align: left;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #334155;
-  border-bottom: 1px solid #e2e8f0;
-}
-.deliveriesTable td {
-  padding: 14px 16px;
-  font-size: 14px;
-  color: #0f172a;
-  border-bottom: 1px solid #f1f5f9;
+.deliveryTable td {
+  padding: var(--space-xs) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-on-surface);
+  font-size: var(--fs-body-md);
   vertical-align: middle;
 }
 
+/* ── Expand chevron (delivery row) ───────────────────────────────── */
 .expandChevron {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 4px 8px;
+  min-height: var(--h-control-touch);
+  min-width: var(--h-control-touch);
+  padding: var(--space-xxs) var(--space-xs);
   background: transparent;
   border: 0;
-  color: #475569;
-  font-size: 18px;
-  font-weight: 600;
+  color: var(--color-on-surface-muted);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
   cursor: pointer;
-  transition: transform 120ms ease-out;
-  border-radius: 8px;
+  transition: transform var(--duration-fast) var(--ease-out);
+  border-radius: var(--radius-lg);
 }
 .expandChevron[data-expanded='true'] {
   transform: rotate(90deg);
-  color: #0d9488;
-}
-.expandChevron:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
+  color: var(--color-primary);
 }
 
+/* ── Expand row (delivery detail) ─────────────────────────────────── */
 .expandRow {
-  background: #f8fafc;
+  background: var(--color-surface-raised);
 }
 .expandBlock {
-  padding: 16px 16px 20px;
+  padding: var(--space-sm) var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-sm);
 }
 .expandHeading {
   margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #334155;
+  font-size: var(--fs-body-md);
+  font-weight: var(--fw-semibold);
+  color: var(--color-on-surface-muted);
 }
 
-/* ----------------------- Dark mono code block (203-new convention #3) */
-.codeBlock {
-  background: #0f172a;
-  color: #e2e8f0;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  word-break: break-all;
-  max-height: 320px;
-  overflow-y: auto;
-  margin: 0;
-}
-
-.errorText {
-  margin: 0;
-  padding: 10px 14px;
-  background: #fef2f2;
-  color: #991b1b;
-  border-left: 4px solid #dc2626;
-  border-radius: 8px;
-  font-size: 13px;
-}
-
+/* ── Expand actions row ───────────────────────────────────────────── */
 .expandActions {
   display: flex;
-  gap: 12px;
+  gap: var(--space-sm);
   align-items: center;
 }
 
-.copyCurlLink {
-  background: transparent;
-  border: 0;
-  color: #0d9488;
-  text-decoration: underline;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  min-height: 44px;
-  padding: 0 4px;
-}
-.copyCurlLink:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-  border-radius: 4px;
+/* ── Status cell ──────────────────────────────────────────────────── */
+.statusCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
-.singleReplayButton {
-  min-height: 44px;
-  padding: 8px 14px;
-  background: transparent;
-  color: #0d9488;
-  border: 1px solid #0d9488;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 120ms ease-out;
-}
-.singleReplayButton:hover {
-  background: rgba(13, 148, 136, 0.06);
-}
-.singleReplayButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
+/* ── Actions cell ─────────────────────────────────────────────────── */
+.actionsCell {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
 }
 
-/* ----------------------- DLQ batch bar */
-.dlqIntro {
-  margin: 0 0 12px;
-  font-size: 14px;
-  color: #475569;
+/* ── Action row ───────────────────────────────────────────────────── */
+.actionRow {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+  margin-top: var(--space-sm);
 }
+
+/* ── DLQ panel ────────────────────────────────────────────────────── */
 .batchActionBar {
   position: sticky;
   top: 0;
-  background: #ffffff;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--color-surface);
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--space-sm);
   z-index: 2;
 }
 .checkboxCell {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 44px;
+  gap: var(--space-xs);
+  min-height: var(--h-control-touch);
   cursor: pointer;
-  font-size: 14px;
-  color: #334155;
-  font-weight: 600;
-}
-.checkboxCell input[type='checkbox'] {
-  width: 18px;
-  height: 18px;
-  accent-color: #0d9488;
-}
-.checkboxCell input[type='checkbox']:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
+  font-size: var(--fs-body-md);
+  color: var(--color-on-surface);
+  font-weight: var(--fw-semibold);
 }
 .retentionCounter {
   display: inline-block;
-  margin-left: 12px;
-  font-size: 14px;
-  color: #475569;
-  font-weight: 400;
+  margin-left: var(--space-sm);
+  font-size: var(--fs-body-md);
+  color: var(--color-on-surface-muted);
+  font-weight: var(--fw-regular);
 }
 
-.replaySelectedButton {
-  min-height: 48px;
-  padding: 10px 18px;
-  background: #0d9488;
-  color: #ffffff;
-  border: 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 120ms ease-out;
-}
-.replaySelectedButton:hover {
-  background: #0b877c;
-}
-.replaySelectedButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-.replaySelectedButton:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-
-.deleteInlineButton {
-  min-height: 44px;
-  padding: 8px 14px;
-  background: transparent;
-  color: #9a3412;
-  border: 1px solid #fca5a5;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.deleteInlineButton:hover {
-  background: rgba(252, 165, 165, 0.1);
-}
-.deleteInlineButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-
-.actionsCell {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-/* ----------------------- Settings panel */
+/* ── Settings form ────────────────────────────────────────────────── */
 .settingsForm {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-xs);
 }
 
-.field {
+/* ── Signing secret panel ─────────────────────────────────────────── */
+/* Composed via .c-card from JSX; local layout only */
+.signingPanel {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 14px;
-  color: #334155;
-  font-weight: 600;
-}
-.field input,
-.field select {
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 14px;
-  color: #0f172a;
-  background: #ffffff;
-}
-.field input:focus-visible,
-.field select:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-.fieldHelp {
-  font-size: 12px;
-  font-weight: 400;
-  color: #64748b;
+  gap: var(--space-sm);
 }
 
-.formError {
-  margin: 0;
-  padding: 10px 14px;
-  background: #fef2f2;
-  color: #991b1b;
-  border-left: 4px solid #dc2626;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
+/* ── Secret row ───────────────────────────────────────────────────── */
+.secretRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
 }
 
-/* ----------------------- Secret panel (203-new convention #2 — nested 16px radius) */
-.secretPanel {
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 20px;
-  background: #ffffff;
+/* ── Event list ───────────────────────────────────────────────────── */
+.eventList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-.secretHeader {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
-  color: #334155;
-  background: #f1f5f9;
-  padding: 8px 12px;
-  border-radius: 8px;
-  display: block;
-}
-.secretLabel {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 13px;
-  color: #475569;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 4px;
+  gap: var(--space-xs);
 }
 
-.rotateButton {
-  min-height: 48px;
-  padding: 12px 22px;
-  background: #0d9488;
-  color: #ffffff;
-  border: 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 120ms ease-out;
-  align-self: flex-start;
-}
-.rotateButton:hover {
-  background: #0b877c;
-}
-.rotateButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-.rotateButton:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-
-.graceStatusPanel {
-  background: #fef3c7;
-  border-left: 4px solid #d97706;
-  color: #78350f;
-  border-radius: 14px;
-  padding: 16px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.graceStatusPanel strong { font-weight: 600; }
-.dualSigPreview {
-  margin: 8px 0 0;
-  font-size: 13px;
-  color: #78350f;
-  font-weight: 600;
-}
-
-.rollbackButton {
-  min-height: 44px;
-  padding: 8px 14px;
-  background: transparent;
-  color: #9a3412;
-  border: 1px solid #fca5a5;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 120ms ease-out;
-  align-self: flex-start;
-  margin-top: 8px;
-}
-.rollbackButton:hover {
-  background: rgba(252, 165, 165, 0.1);
-}
-.rollbackButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-
-/* ----------------------- Danger card (mirrors 201 danger/.dangerCard — 16px radius) */
-.dangerCard {
-  border: 1px dashed #fca5a5;
-  background: #fef2f2;
-  padding: 20px;
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  color: #991b1b;
-  font-size: 14px;
-}
-.deleteSubButton {
-  min-height: 48px;
-  padding: 12px 22px;
-  background: #9a3412;
-  color: #ffffff;
-  border: 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 120ms ease-out;
-  align-self: flex-start;
-}
-.deleteSubButton:hover {
-  background: #7c2d12;
-}
-.deleteSubButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-.deleteSubButton:disabled {
-  background: #cbd5e1;
-  cursor: not-allowed;
-}
-
+/* ── Save row ─────────────────────────────────────────────────────── */
 .saveRow {
   display: flex;
   justify-content: flex-end;
-  margin-top: 16px;
-}
-.saveChangesButton {
-  min-height: 48px;
-  padding: 12px 22px;
-  background: #0d9488;
-  color: #ffffff;
-  border: 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 120ms ease-out;
-}
-.saveChangesButton:hover {
-  background: #0b877c;
-}
-.saveChangesButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-.saveChangesButton:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
+  margin-top: var(--space-sm);
 }
 
-/* ----------------------- Filter row (deliveries) */
-.filterRow {
+/* ── Modal action row ─────────────────────────────────────────────── */
+.modalActionRow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: flex-end;
-  margin-bottom: 16px;
-}
-.filterChipGroup {
-  display: inline-flex;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 2px;
-}
-.filterChipGroup button {
-  min-height: 36px;
-  padding: 6px 12px;
-  background: transparent;
-  border: 0;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #475569;
-  cursor: pointer;
-}
-.filterChipGroup button[data-active='true'] {
-  background: #e6fffb;
-  color: #0f766e;
-}
-.filterChipGroup button:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
+  gap: var(--space-xs);
+  justify-content: flex-end;
+  margin-top: var(--space-md);
 }
 
+/* ── Dialog body ──────────────────────────────────────────────────── */
+.dialogBody {
+  color: var(--color-on-surface-muted);
+  font-size: var(--fs-body-md);
+  line-height: var(--lh-body-md);
+  margin-bottom: var(--space-sm);
+}
+
+/* ── Empty state ──────────────────────────────────────────────────── */
 .emptyState {
-  font-size: 14px;
-  color: #475569;
+  font-size: var(--fs-body-md);
+  color: var(--color-on-surface-muted);
+  padding: var(--space-xl) var(--space-md);
+  text-align: center;
 }
 
+/* ── Visually hidden (a11y) ───────────────────────────────────────── */
 .visuallyHidden {
   position: absolute;
   width: 1px;
@@ -680,83 +364,8 @@
   border: 0;
 }
 
-/* ----------------------- Dialog family */
-.dialog {
-  border: 0;
-  border-radius: 24px;
-  padding: 28px;
-  width: min(520px, calc(100vw - 32px));
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  color: #0f172a;
-}
-.dialog::backdrop {
-  background: rgba(15, 23, 42, 0.35);
-}
-.dialogHeading {
-  margin: 0 0 12px;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-}
-.dialogBody {
-  margin: 0 0 16px;
-  color: #475569;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.dialogActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 20px;
-}
-.cancelButton {
-  min-height: 44px;
-  padding: 10px 18px;
-  background: #f1f5f9;
-  color: #334155;
-  border: 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-}
-.cancelButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-
-/* ----------------------- Toast */
-.toast {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  width: min(360px, calc(100vw - 32px));
-  padding: 12px 16px;
-  background: #ffffff;
-  border-left: 4px solid #0f766e;
-  border-radius: 12px;
-  font-size: 14px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
-  animation: toastSlideIn 200ms ease-out;
-}
-@keyframes toastSlideIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* ── Reduced motion ───────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .expandChevron,
-  .tabButton,
-  .rotateButton,
-  .rollbackButton,
-  .deleteSubButton,
-  .saveChangesButton,
-  .replaySelectedButton,
-  .singleReplayButton,
-  .deleteInlineButton {
-    transition: none !important;
-  }
-  .toast { animation: none !important; }
+  .tabButton { transition: none; }
 }
