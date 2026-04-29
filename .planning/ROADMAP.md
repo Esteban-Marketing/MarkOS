@@ -322,7 +322,7 @@ Plans:
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/213-tenant0-dogfood-compliance-validation/DISCUSS.md`
 **Artifacts:** `213-CONTEXT.md`, `213-RESEARCH.md`, `213-REVIEWS.md`, `213-VALIDATION.md`
-**Plans:** 5/5 plans drafted
+**Plans:** 0/5 plans executed
 
 Plans:
 - [ ] 213-01-PLAN.md - Wave 0.5 upstream preflight, architecture-lock, Tenant 0 workspace profile, connector inventory, and data policy

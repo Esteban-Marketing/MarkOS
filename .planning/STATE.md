@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Milestone complete
-last_updated: "2026-04-28T21:05:17.813Z"
+status: Ready to execute
+last_updated: "2026-04-29T00:53:19.219Z"
 progress:
   total_phases: 17
   completed_phases: 5
@@ -15,8 +15,8 @@ progress:
 
 ## Current Position
 
-Phase: 213.2 (ui-canon-adoption-wave-2-auth-surfaces) — COMPLETE (5/5 plans shipped)
-Plan: Not started
+Phase: 213.3 (ui-canon-adoption-wave-3-settings) — EXECUTING
+Plan: 2 of 9
 Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `/gsd-discuss-phase 213.3` for the next decimal phase (settings surfaces — Files / Billing / Members / Sessions / Domain / Danger / MCP / Plugins / Webhooks).
 
 ## Phase 213.2 Plan Progress
