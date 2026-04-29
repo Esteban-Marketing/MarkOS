@@ -9,11 +9,13 @@
  *   brand: markos
  *   promise: ship drafts and audits from the same chat window you already use
  *
- * Voice target: score >= 85 via test/marketing/claude-landing.test.js heuristic.
+ * Voice target: score >= 100 via test/marketing/claude-landing.test.js heuristic
+ * (Phase 200 baseline preserved per Phase 213.5 D-11 — copy text nodes unchanged).
  */
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import styles from './page.module.css';
 
 export const metadata: Metadata = {
   title: 'MarkOS for Claude — Ship drafts from Claude',
@@ -42,26 +44,26 @@ const TOOLS: Array<{ name: string; description: string }> = [
 
 export default function ClaudeIntegrationLanding() {
   return (
-    <main className="claude-integration-landing">
-      <section aria-labelledby="hero-heading" className="hero">
+    <main className={styles.landing}>
+      <section aria-labelledby="hero-heading" className="c-card c-card--feature">
         <h1 id="hero-heading">Ship drafts from Claude.</h1>
-        <p className="hero-sub">
+        <p className="t-lead">
           MarkOS connects to Claude via MCP. Ten tools for drafting, auditing, and scheduling
           campaigns — grounded in your canon, fired from the chat window you already use.
         </p>
-        <div className="cta-row">
-          <Link href="/integrations/claude/demo" className="btn btn-primary" aria-label="Open the MarkOS for Claude demo sandbox">
+        <div className={styles.ctaRow}>
+          <Link href="/integrations/claude/demo" className="c-button c-button--primary" aria-label="Open the MarkOS for Claude demo sandbox">
             Try the demo
           </Link>
-          <Link href="/docs/quickstart" className="btn btn-secondary" aria-label="Read the Claude MCP quickstart guide">
+          <Link href="/docs/quickstart" className="c-button c-button--tertiary" aria-label="Read the Claude MCP quickstart guide">
             Read the quickstart
           </Link>
         </div>
       </section>
 
-      <section aria-labelledby="value-heading" className="value-props">
+      <section aria-labelledby="value-heading" className={styles.valueProps}>
         <h2 id="value-heading">Why solopreneurs and vibe-coders ship with MarkOS for Claude</h2>
-        <ul className="value-list">
+        <ul className={styles.valueList}>
           <li>
             <h3>Stop re-briefing the model</h3>
             <p>
@@ -86,34 +88,34 @@ export default function ClaudeIntegrationLanding() {
         </ul>
       </section>
 
-      <section aria-labelledby="tools-heading" className="tools">
+      <section aria-labelledby="tools-heading" className={styles.tools}>
         <h2 id="tools-heading">Ten tools, one chat window</h2>
-        <ul className="tool-grid" aria-label="MCP tool grid">
+        <ul className={styles.toolGrid} aria-label="MCP tool grid">
           {TOOLS.map((tool) => (
-            <li key={tool.name}>
-              <code>{tool.name}</code>
+            <li key={tool.name} className="c-card c-card--interactive">
+              <span className="c-chip-protocol">{tool.name}</span>
               <p>{tool.description}</p>
             </li>
           ))}
         </ul>
       </section>
 
-      <section aria-labelledby="install-heading" className="install">
+      <section aria-labelledby="install-heading" className={styles.install}>
         <h2 id="install-heading">Install in under a minute</h2>
         <ol>
           <li>Open Claude Desktop settings.</li>
-          <li>Add a Custom MCP Server pointing at <code>https://markos.dev/api/mcp/session</code>.</li>
+          <li>Add a Custom MCP Server pointing at <code className="c-code-inline">https://markos.dev/api/mcp/session</code>.</li>
           <li>Ask Claude: <em>draft a LinkedIn post about pipeline velocity for founder-sam</em>.</li>
         </ol>
-        <p className="install-note">
+        <p>
           Full quickstart with tenant auth, webhook subscriptions, and drift-free canon sync lives
-          in <Link href="/docs/quickstart">the quickstart</Link>.
+          in <Link href="/docs/quickstart" className={styles.installLink}>the quickstart</Link>.
         </p>
       </section>
 
-      <section aria-labelledby="cta-heading" className="final-cta">
+      <section aria-labelledby="cta-heading" className={styles.finalCta}>
         <h2 id="cta-heading">Your pipeline wants drafts, not tabs.</h2>
-        <Link href="/integrations/claude/demo" className="btn btn-primary">
+        <Link href="/integrations/claude/demo" className="c-button c-button--primary">
           Open the demo sandbox
         </Link>
       </section>
