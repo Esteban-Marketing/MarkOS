@@ -18,7 +18,6 @@
 
 import React from "react";
 import { useSelectedEvidenceStep } from "./task-store";
-import { TaskStepEvidence } from "./task-types";
 import styles from "./task-ui.module.css";
 
 /**
@@ -33,7 +32,7 @@ function EvidenceSection({
 }) {
   return (
     <div className={styles.sectionBlock}>
-      <h4 className={styles.sectionHeading}>{title}</h4>
+      <h4 className="t-label-caps">{title}</h4>
       <div>{children}</div>
     </div>
   );
@@ -72,7 +71,7 @@ export function EvidencePanel() {
     return (
       <div className={styles.emptyState}>
         <p className={styles.emptyTitle}>No evidence selected</p>
-        <p className={styles.sectionBody}>
+        <p>
           Click on a step in the task list to view its evidence and audit details.
         </p>
       </div>
@@ -84,24 +83,21 @@ export function EvidencePanel() {
   return (
     <div>
       <div className={styles.sectionBlock}>
-        <h3 className={styles.panelTitle}>
-          {selectedEvidenceStep.title}
-        </h3>
-        <p className={styles.panelText}>
-          Step {selectedEvidenceStep.order_index + 1} • State: {selectedEvidenceStep.state}
+        <h3>{selectedEvidenceStep.title}</h3>
+        <p>
+          Step {selectedEvidenceStep.order_index + 1} •{" "}
+          <span className="c-chip-protocol">[step_{selectedEvidenceStep.id}]</span>
         </p>
+        <p>State: {selectedEvidenceStep.state}</p>
       </div>
 
-      <div className={styles.helperCard}>
-        <p className={styles.sectionHeading}>Evidence is immutable</p>
-        <p className={styles.sectionBody}>
-          This evidence was recorded during step execution and cannot be edited.
-        </p>
+      <div className="c-notice c-notice--info" role="status">
+        <strong>Evidence is immutable</strong>{" "}— This evidence was recorded during step execution and cannot be edited.
       </div>
 
       <EvidenceSection title="Inputs">
         {Object.keys(evidence.inputs).length === 0 ? (
-          <p className={styles.sectionBody}>No inputs recorded</p>
+          <p>No inputs recorded</p>
         ) : (
           Object.entries(evidence.inputs).map(([key, value]) => (
             <EvidenceField key={key} label={key} value={value} />
@@ -111,11 +107,11 @@ export function EvidencePanel() {
 
       <EvidenceSection title="Outputs">
         {evidence.outputs === null ? (
-          <p className={styles.sectionBody}>
+          <p>
             Outputs not yet available (step not completed)
           </p>
         ) : Object.keys(evidence.outputs).length === 0 ? (
-          <p className={styles.sectionBody}>Empty output set</p>
+          <p>Empty output set</p>
         ) : (
           Object.entries(evidence.outputs).map(([key, value]) => (
             <EvidenceField key={key} label={key} value={value} />
@@ -125,11 +121,11 @@ export function EvidencePanel() {
 
       <EvidenceSection title="Execution Logs">
         {evidence.logs.length === 0 ? (
-          <p className={styles.sectionBody}>No logs recorded</p>
+          <p>No logs recorded</p>
         ) : (
           <code className={`${styles.codeBlock} ${styles.scrollBlock}`}>
             {evidence.logs.map((log, idx) => (
-              <div key={idx} className={styles.sectionBody}>
+              <div key={idx}>
                 {log}
               </div>
             ))}
@@ -152,35 +148,35 @@ export function EvidencePanel() {
 
       <EvidenceSection title="Actor ID">
         {evidence.actor_id === null ? (
-          <p className={styles.sectionBody}>No actor recorded</p>
+          <p>No actor recorded</p>
         ) : (
-          <EvidenceField label="Executed By" value={evidence.actor_id} />
+          <div className={styles.kvPair}>
+            <p className={styles.kvLabel}>Executed By</p>
+            <span className="c-chip-protocol">[actor_{evidence.actor_id}]</span>
+          </div>
         )}
       </EvidenceSection>
 
       {selectedEvidenceStep.retry_count > 0 && (
         <EvidenceSection title="Retry History">
           <div>
-            <p className={styles.sectionHeading}>
+            <p className={styles.kvLabel}>
               Total retry attempts: {selectedEvidenceStep.retry_count}
             </p>
             {selectedEvidenceStep.retry_attempts.map((attempt, idx) => (
-              <div
-                key={idx}
-                className={styles.retryCard}
-              >
-                <p className={styles.sectionHeading}>
+              <article key={idx} className="c-card">
+                <p className="t-label-caps">
                   Attempt {attempt.attempt}
                 </p>
-                <p className={styles.sectionBody}>
+                <p>
                   Requested by {attempt.requested_by} at {new Date(attempt.requested_at).toLocaleString()}
                 </p>
                 {attempt.previous_error && (
-                  <p className={`${styles.codeBlock} ${styles.scrollBlock}`}>
-                    Error: {attempt.previous_error}
-                  </p>
+                  <code className={`${styles.codeBlock} ${styles.scrollBlock}`}>
+                    [err] {attempt.previous_error}
+                  </code>
                 )}
-              </div>
+              </article>
             ))}
           </div>
         </EvidenceSection>
@@ -188,11 +184,11 @@ export function EvidencePanel() {
 
       {selectedEvidenceStep.latest_error && (
         <EvidenceSection title="Latest Error">
-          <div className={styles.errorCard}>
-            <p className={`${styles.codeBlock} ${styles.scrollBlock}`}>
+          <article className="c-card">
+            <code className={`${styles.codeBlock} ${styles.scrollBlock}`}>
               {selectedEvidenceStep.latest_error}
-            </p>
-          </div>
+            </code>
+          </article>
         </EvidenceSection>
       )}
     </div>

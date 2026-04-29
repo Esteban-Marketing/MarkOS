@@ -24,7 +24,7 @@ import styles from "./task-ui.module.css";
  * ApprovalGate: Blocking modal component
  * Rendered by StepRunner when requires_approval=true and decision is pending
  */
-export function ApprovalGate({ stepId }: { stepId: string }) {
+export function ApprovalGate({ stepId }: Readonly<{ stepId: string }>) {
   const selectedTask = useSelectedTask();
   const currentStep = useCurrentStep();
   const { approveStep, rejectStep, closeModal } = useTaskActions();
@@ -36,6 +36,29 @@ export function ApprovalGate({ stepId }: { stepId: string }) {
   // Mock actor ID (would come from auth context in production)
   const currentActorId = "operator-id-123";
 
+  // Hooks must be declared before any early return (Rules of Hooks)
+  const handleApprove = useCallback(async () => {
+    if (!selectedTask) return;
+    setIsDeciding(true);
+    try {
+      approveStep(selectedTask.id, stepId, currentActorId);
+      setTimeout(() => closeModal(), 100);
+    } finally {
+      setIsDeciding(false);
+    }
+  }, [selectedTask, stepId, approveStep, closeModal, currentActorId]);
+
+  const handleReject = useCallback(async () => {
+    if (!selectedTask) return;
+    setIsDeciding(true);
+    try {
+      rejectStep(selectedTask.id, stepId, currentActorId, rejectReason);
+      setTimeout(() => closeModal(), 100);
+    } finally {
+      setIsDeciding(false);
+    }
+  }, [selectedTask, stepId, rejectStep, closeModal, rejectReason, currentActorId]);
+
   if (
     !selectedTask ||
     !currentStep ||
@@ -45,84 +68,54 @@ export function ApprovalGate({ stepId }: { stepId: string }) {
     return null; // Modal should not render if not applicable
   }
 
-  const handleApprove = useCallback(async () => {
-    setIsDeciding(true);
-    try {
-      approveStep(selectedTask.id, stepId, currentActorId);
-      // Close modal after approval
-      setTimeout(() => closeModal(), 100);
-    } finally {
-      setIsDeciding(false);
-    }
-  }, [selectedTask, stepId, approveStep, closeModal, currentActorId]);
-
-  const handleReject = useCallback(async () => {
-    setIsDeciding(true);
-    try {
-      rejectStep(selectedTask.id, stepId, currentActorId, rejectReason);
-      // Close modal after rejection
-      setTimeout(() => closeModal(), 100);
-    } finally {
-      setIsDeciding(false);
-    }
-  }, [selectedTask, stepId, rejectStep, closeModal, rejectReason, currentActorId]);
-
   return (
-    <div
-      className={styles.modalBackdrop}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="approval-gate-title"
-    >
-      <div className={styles.modalCard}>
-        <h2
-          id="approval-gate-title"
-          className={styles.modalTitle}
-        >
-          Approval Required
-        </h2>
+    <>
+      <div className="c-backdrop" />
+      <div
+        className="c-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="approval-gate-title"
+      >
+        <h2 id="approval-gate-title">Approval Required</h2>
 
-        <div className={styles.modalInfo}>
-          <p className={styles.modalInfoTitle}>
-            Step: {currentStep.title}
-          </p>
-          <p className={styles.modalText}>
-            {currentStep.description}
-          </p>
+        <div className="c-card">
+          <p className="t-label-caps">Step: {currentStep.title}</p>
+          <p>{currentStep.description}</p>
         </div>
 
-        <div>
-          <p className={styles.modalText}>
-            This step requires explicit operator approval before execution.
-            Please review the step details and make a decision:
-          </p>
+        <p>
+          This step requires explicit operator approval before execution.
+          Review the step details and make a decision:
+        </p>
 
-          {currentStep.requires_approval && (
-            <div className={styles.auditNote}>
-              <p className={styles.auditNoteTitle}>Approval Gate Details</p>
-              <ul className={styles.modalList}>
-                <li>Review step inputs and expected outputs</li>
-                <li>Verify step execution prerequisites are met</li>
-                <li>Approval cannot be undone after execution</li>
-              </ul>
-            </div>
-          )}
-        </div>
+        {currentStep.requires_approval && (
+          <div className="c-notice c-notice--info" role="status">
+            <strong>Approval Gate Details</strong>
+            <ul>
+              <li>Review step inputs and expected outputs</li>
+              <li>Verify step execution prerequisites are met</li>
+              <li>Approval cannot be undone after execution</li>
+            </ul>
+          </div>
+        )}
 
         <div className={styles.modalActions}>
           <button
+            type="button"
             onClick={handleApprove}
             disabled={isDeciding}
-            className={styles.buttonPrimary}
+            className="c-button c-button--primary"
             aria-label="Approve this step"
           >
             {isDeciding ? "Recording..." : "Approve"}
           </button>
 
           <button
+            type="button"
             onClick={() => setShowRejectReason(!showRejectReason)}
             disabled={isDeciding}
-            className={styles.buttonDanger}
+            className="c-button c-button--destructive"
             aria-label="Reject this step"
           >
             {isDeciding ? "Recording..." : "Reject"}
@@ -130,32 +123,35 @@ export function ApprovalGate({ stepId }: { stepId: string }) {
         </div>
 
         {showRejectReason && (
-          <div className={styles.errorCard}>
-            <label className={styles.fieldLabel}>
+          <div className={`c-field ${styles.rejectField}`}>
+            <label htmlFor="rejection-reason" className="c-field__label">
               Rejection Reason (optional)
             </label>
             <textarea
-              className={styles.textarea}
+              id="rejection-reason"
+              className="c-input"
               rows={2}
               placeholder="Why are you rejecting this step? (e.g., Missing prerequisites, Data validation concerns)"
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
             />
-            <div className={styles.modalActions}>
+            <div className={styles.rejectActions}>
               <button
+                type="button"
                 onClick={handleReject}
                 disabled={isDeciding}
-                className={styles.buttonDanger}
+                className="c-button c-button--destructive"
               >
                 {isDeciding ? "Recording..." : "Confirm Rejection"}
               </button>
               <button
+                type="button"
                 onClick={() => {
                   setShowRejectReason(false);
                   setRejectReason("");
                 }}
                 disabled={isDeciding}
-                className={styles.buttonSecondary}
+                className="c-button c-button--secondary"
               >
                 Back
               </button>
@@ -163,14 +159,10 @@ export function ApprovalGate({ stepId }: { stepId: string }) {
           </div>
         )}
 
-        <div className={styles.auditNote}>
-          <p className={styles.auditNoteTitle}>Audit Trail</p>
-          <p className={styles.modalText}>
-            Your decision (and optional reason) will be recorded with timestamp
-            and actor ID for compliance audit trail.
-          </p>
+        <div className={`c-notice c-notice--info ${styles.auditNotice}`} role="status">
+          <strong>Audit Trail</strong>{" "}— Your decision (and optional reason) will be recorded with timestamp and actor ID for compliance audit trail.
         </div>
       </div>
-    </div>
+    </>
   );
 }

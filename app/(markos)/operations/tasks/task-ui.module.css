@@ -183,6 +183,28 @@
  * MUST carry an explicit override. The global cascade in tokens.css already
  * collapses --duration-* to 0ms, but explicit redundancy ensures consistency
  * with any third-party transitions inherited via .c-card primitive. */
+.modalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+.rejectField {
+  margin-top: var(--space-sm);
+}
+
+.rejectActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.auditNotice {
+  margin-top: var(--space-sm);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .stepCard {
     transition: none;
