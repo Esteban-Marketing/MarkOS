@@ -20,39 +20,32 @@
  *      YAML)
  *   6. Writes the cleaned JSON back
  *
- * After running, contracts/openapi.json is a valid OpenAPI 3.1 document and
- * passes both `openapi-typescript` and the Spectral lint.
+ * Hash placeholder note: js-yaml treats `#` as a comment-start marker which
+ * truncates string values like `#RRGGBB`. We substitute `#` with the literal
+ * sequence `MARKOS_HASH_TOKEN` before parsing, then restore.
  *
  * Usage: node scripts/openapi/cleanup-malformed-schemas.cjs
  */
 
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const yaml = require('js-yaml');
 
 const TARGET = path.resolve(__dirname, '..', '..', 'contracts', 'openapi.json');
+const HASH_TOKEN = 'MARKOS_HASH_TOKEN';
 
 let parsedCount = 0;
 let unquotedKeyCount = 0;
 
-/**
- * If a string looks like YAML flow ({...} or [...]), parse and return the
- * parsed value. Otherwise return the string unchanged.
- */
-// Placeholder for `#` inside YAML flow strings — js-yaml treats `#` as a
-// comment-start marker which truncates string values like `#RRGGBB`. We
-// substitute, parse, then restore.
-const HASH_PLACEHOLDER = 'HASH';
-
 function restoreHashes(value) {
-  if (typeof value === 'string') return value.replace(/HASH/g, '#');
+  if (typeof value === 'string') return value.split(HASH_TOKEN).join('#');
   if (Array.isArray(value)) return value.map(restoreHashes);
   if (value !== null && typeof value === 'object') {
     const out = {};
     for (const [k, v] of Object.entries(value)) {
-      out[k.replace(/HASH/g, '#')] = restoreHashes(v);
+      out[k.split(HASH_TOKEN).join('#')] = restoreHashes(v);
     }
     return out;
   }
@@ -62,16 +55,10 @@ function restoreHashes(value) {
 function maybeParseYamlFlow(s) {
   if (typeof s !== 'string') return s;
   const trimmed = s.trim();
-  if (
-    !(
-      (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
-      (trimmed.startsWith('[') && trimmed.endsWith(']'))
-    )
-  ) {
-    return s;
-  }
-  // Substitute # so js-yaml doesn't treat it as comment
-  const safe = trimmed.replace(/#/g, HASH_PLACEHOLDER);
+  const isFlowMap = trimmed.startsWith('{') && trimmed.endsWith('}');
+  const isFlowArr = trimmed.startsWith('[') && trimmed.endsWith(']');
+  if (!isFlowMap && !isFlowArr) return s;
+  const safe = trimmed.split('#').join(HASH_TOKEN);
   try {
     const parsed = yaml.load(safe);
     if (parsed !== null && parsed !== undefined && typeof parsed === 'object') {
@@ -84,14 +71,9 @@ function maybeParseYamlFlow(s) {
   return s;
 }
 
-/**
- * Some keys in the source are wrapped in single quotes (e.g. `'400'`) because
- * the YAML emitter quoted them. In OpenAPI JSON, status codes are bare string
- * keys ("400"). Unquote.
- */
 function unquoteKey(key) {
   if (typeof key !== 'string') return key;
-  if (key.length >= 2 && key.startsWith("'") && key.endsWith("'")) {
+  if (key.length >= 2 && key.charCodeAt(0) === 39 && key.charCodeAt(key.length - 1) === 39) {
     unquotedKeyCount++;
     return key.slice(1, -1);
   }
@@ -117,20 +99,10 @@ function main() {
   const raw = fs.readFileSync(TARGET, 'utf8');
   const doc = JSON.parse(raw);
   const cleaned = walk(doc);
-  // Multi-pass: a parsed flow-map may itself contain flow-strings inside.
-  // Re-walk until stable (max 5 iterations to avoid infinite loop).
-  let prev = JSON.stringify(cleaned);
-  let next;
-  for (let i = 0; i < 5; i++) {
-    next = JSON.stringify(walk(JSON.parse(prev)));
-    if (next === prev) break;
-    prev = next;
-  }
-  const out = JSON.parse(prev);
-  fs.writeFileSync(TARGET, JSON.stringify(out, null, 2) + '\n');
-  console.log(`Cleaned ${TARGET}`);
-  console.log(`  Pseudo-YAML strings parsed: ${parsedCount}`);
-  console.log(`  Single-quoted keys unquoted: ${unquotedKeyCount}`);
+  fs.writeFileSync(TARGET, JSON.stringify(cleaned, null, 2) + '\n');
+  console.log('Cleaned ' + TARGET);
+  console.log('  Pseudo-YAML strings parsed: ' + parsedCount);
+  console.log('  Single-quoted keys unquoted: ' + unquotedKeyCount);
 }
 
 main();
