@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Ready to execute
-last_updated: "2026-04-29T01:39:05.844Z"
+last_updated: "2026-04-29T01:46:13.332Z"
 progress:
   total_phases: 17
   completed_phases: 5
@@ -17,7 +17,7 @@ progress:
 ## Current Position
 
 Phase: 213.3 (ui-canon-adoption-wave-3-settings) — EXECUTING
-Plan: 7 of 9
+Plan: 8 of 9
 Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `/gsd-discuss-phase 213.3` for the next decimal phase (settings surfaces — Files / Billing / Members / Sessions / Domain / Danger / MCP / Plugins / Webhooks).
 
 ## Phase 213.3 Plan Progress
@@ -27,6 +27,7 @@ Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `
 - [x] 213.3-03: sessions surface to DESIGN.md tokens — page.module.css rewritten (133→78 LOC, zero hex) + .c-status-dot--live + [ok] Active now current-session indicator + .c-badge--success [ok] Current badge + .c-modal + .c-backdrop revoke-confirm dialogs (per-session + revoke-all) + SessionsPageView extraction + page.stories.tsx (CSF3 4 named state stories: Default/RevokeConfirm/SingleSession/Empty). sessions-api.test.js stale CSS-lock + copy assertions updated to token-canon (Rule 1). Closes UI-SPEC AC S-1..S-4 + X-4 (sessions slice). (2026-04-29)
 - [x] 213.3-04: domain surface to DESIGN.md tokens — page.module.css rewritten (22→54 LOC GROWS, zero hex — highest hex-density surface in wave: 19 hex/22 LOC eliminated) + 4 .c-notice DNS state compositions (success/info/warning/error) + .c-status-dot--live/default/--error modifiers + bracketed-glyph pairing + .c-code-block inside .c-terminal CNAME display + .c-button--destructive Remove domain + .c-button--tertiary Resolve now + DomainPageView extraction + page.stories.tsx (CSF3 5 named state stories: Default/Pending/Verified/RotationGrace/Failed). Closes UI-SPEC AC D-1..D-5 + X-4 (domain slice). (2026-04-29)
 - [x] 213.3-06: MCP surface to DESIGN.md tokens — page.module.css rewritten (503→216 LOC, all 61 hex eliminated — largest CSS file in wave) + 3 .c-notice cost-state variants (c-notice--error >=100%, c-notice--warning >=70%, c-notice--info key-rotation) + .c-chip-protocol for tool names/client_id/key prefix + .c-code-inline masked API key [mk_xxx_•1234] + .c-button--icon clipboard SVG + .c-status-dot--live (connected) / .c-status-dot--error (expired session) + bracketed-glyph [ok]/[err] pairing + meterFillClass() state-aware helper + MCPPageView named presentational export (D-15) + page.stories.tsx (CSF3 5 named state stories: Default/KeyRotation/CostMeterWarning/ToolList/Empty) + mcp-settings-ui-a11y.test.js 6 legacy hex assertions patched to token-canon (RESEARCH Pitfall 7). Phase 200+200.1 wiring preserved (4 API routes). Closes UI-SPEC AC MC-1..MC-7 + X-4 (mcp slice). (2026-04-29)
+- [x] 213.3-07: plugins surface to DESIGN.md tokens — page-shell.module.css rewritten (329→190 LOC, zero hex, **CRITICAL: linear-gradient(135deg,#0f766e,#155e75) on .brandCard ELIMINATED** — only gradient in entire wave, replaced with flat var(--color-surface-raised) + var(--color-border)) + .c-card c-card--interactive capability rows + .c-chip c-chip--mint [ok] Installed + .c-badge c-badge--warning [warn] Disabled + .c-badge c-badge--info [info] Update available + .c-chip-protocol plugin:slug + .c-button c-button--primary Save + .c-button c-button--destructive Disable + .c-notice c-notice--warning compatibility gate + page.stories.tsx (CSF3 5 named state stories: Default/Installed/Disabled/Updated/Marketplace). Closes UI-SPEC AC P-1..P-5 + X-3 (gradient elimination). (2026-04-29)
 
 ## Phase 213.2 Plan Progress
 
