@@ -125,7 +125,7 @@ function StepCard({
       {/* Sequential gating message for future steps */}
       {!isCurrentStep && step.state === TaskStepState.Queued && (
         <div className="c-notice c-notice--info" role="status">
-          Complete all prior steps to unlock this step for execution.
+          Complete all prior steps to enable this step for execution.
         </div>
       )}
 
