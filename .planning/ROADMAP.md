@@ -341,15 +341,22 @@ Plans:
 
 **Research/context:** `obsidian/brain/SaaS Suite Canon.md`, `obsidian/brain/SaaS Marketing OS Strategy Canon.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-suite-intake.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-marketing-os-strategy-intake.md`, `obsidian/work/incoming/16-SAAS-SUITE.md`, `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md`, `.agent/markos/references/saas-suite.md`, `.planning/V4.0.0-GSD-PHASE-RESEARCH-READINESS-MATRIX.md`.
 
-### Phase 213.4: UI Canon Adoption Wave 4 — admin + operations + status + 404-workspace to DESIGN.md tokens (INSERTED)
+### Phase 213.4: UI Canon Adoption Wave 4 — admin + operations + status + 404-workspace + theme to DESIGN.md tokens (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
-**Depends on:** Phase 213
-**Plans:** 0 plans
+**Goal:** Final wave of the 213.x DESIGN.md adoption initiative. Redesign the 7 operator + admin + system surfaces (admin/billing 175 CSS LOC + admin/governance 120 + operations 189 + operations/tasks composite 525+1384 + status/webhooks 179 + 404-workspace 75 + settings/theme 15 = 1263 CSS LOC + 2049 TSX LOC across 14 files; 182 inline hex eliminated) from the legacy teal-Sora-Space-Grotesk-light-bg-gradients-drop-shadows implementation to the canonical DESIGN.md v1.1.0 token system (Kernel Black surface, Protocol Mint signal, JetBrains Mono + Inter, strict 8px grid, 1px Border Mist hairlines, no gradients, no drop-shadows, no emoji, bracketed-glyph state coding); fold in 3 priority polish fixes flagged by Phase 213.3 ui-review (commit 34e4bee — F-1 webhooks/[sub_id] light-theme WCAG; F-2 webhooks meter-height parity; F-3 members reduced-motion block); compose .c-card / .c-button / .c-notice c-notice--{state} / .c-badge--{state} / .c-status-dot / .c-modal / .c-input / .c-field / .c-chip / .c-chip-protocol / .c-card--feature (404-workspace D-13 hero exception); preserve Phase 200/201/202/203/204/205/207 wiring (D-20 Phase 203 status-page + D-21 Phase 207 AgentRun v2 substrate + D-22 admin role-gate + D-23 Next.js notFound); ship Storybook + a11y coverage (≥20 named state stories across 7 surfaces + new test/ui-a11y/213-4-admin-ops-a11y.test.js ≥30 tests + ≥7 AC# mentions); close 213.4-UI-SPEC.md acceptance criteria (65 ACs across 8 plans).
+**Requirements**: 213.4-UI-SPEC.md AC P-1..P-4 + AB-1..AB-8 + AG-1..AG-6 + O-1..O-8 + OT-1..OT-12 + SW-1..SW-7 + F-1..F-7 + T-1..T-7 + X-1..X-6 (65 ACs binding contract — 213.4-UI-SPEC.md is canonical for this phase since no REQ-IDs map)
+**Depends on:** Phase 213.3
+**Plans:** 8 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 213.4 to break down)
+- [ ] 213.4-01-PLAN.md — polish: Phase 213.3 ui-review F-1+F-2+F-3 fixes (webhooks/[sub_id] filter chip + expand chevron --color-primary-text; webhooks meter 8px parity; members prefers-reduced-motion block) (P-1, P-2, P-3, P-4)
+- [ ] 213.4-02-PLAN.md — admin/billing surface to DESIGN.md tokens — page.module.css rewrite + page.tsx primitive composition (.c-card + .c-button + .c-modal write-off + .c-notice variant-driven + .c-badge row state) + reconciliation.stories.tsx (Healthy/HoldState/SyncFailure) (AB-1..AB-8)
+- [ ] 213.4-03-PLAN.md — admin/governance surface to DESIGN.md tokens — page.module.css rewrite (teal border-left stripe eliminated) + page.tsx (.c-card + .c-button + .c-modal Reject + .c-notice + .c-badge decision column + 4 semantic tables) + governance.stories.tsx (Default/DeniedMapping/ExportReady) (AG-1..AG-6)
+- [ ] 213.4-04-PLAN.md — operations (root) to DESIGN.md tokens — page.module.css rewrite (gradients + shadows + jiggle eliminated) + page.tsx (.c-card + .c-button anchor + .c-notice denied + .c-badge + .c-status-dot dual-signal) + operations.stories.tsx (Authorized/Denied) (O-1..O-8)
+- [ ] 213.4-05-PLAN.md — operations/tasks composite to DESIGN.md tokens (LARGEST surface; 525 CSS LOC + 1384 TSX LOC) — task-ui.module.css rewrite + page.tsx Tailwind hex elimination + 5 sub-component className-only updates (D-15+D-21 server/client preserved) + tasks.stories.tsx (Queued/Executing/Completed/Failed/ApprovalRequired) (OT-1..OT-12)
+- [ ] 213.4-06-PLAN.md — status/webhooks (public Phase 203 substrate) to DESIGN.md tokens — page.module.css rewrite (!important wildcard removed) + page.tsx (.c-notice className-driven + .c-status-dot + Phase 203 wiring preserved per D-20) + NEW page.stories.tsx (Operational/Retrying/Elevated) (SW-1..SW-7)
+- [ ] 213.4-07-PLAN.md — 404-workspace error hero to DESIGN.md tokens — page.module.css rewrite + page.tsx (.c-card--feature D-13 hero exception + .c-button--primary + --tertiary; notFound/force-dynamic/searchParams preserved per D-23) + NEW page.stories.tsx (Available/Reserved) (F-1..F-7)
+- [ ] 213.4-08-PLAN.md — settings/theme + cross-cutting closure — theme.stories.tsx extended (ColorTokens/SpacingTokens/PrimitiveSampler design diagnostic) + NEW test/ui-a11y/213-4-admin-ops-a11y.test.js (≥30 tests / ≥7 AC# mentions) + (pointer: coarse) inheritance verified + final 213.x milestone wave commit (T-1..T-7 + X-1..X-6)
 
 ### Phase 213.3: UI Canon Adoption Wave 3 — settings/* (8 files: billing, members, sessions, domain, danger, mcp, plugins, webhooks) to DESIGN.md tokens (INSERTED)
 
@@ -359,7 +366,8 @@ Plans:
 **Plans:** 9/9 plans complete
 
 Plans:
-- [x] TBD (run /gsd:plan-phase 213.3 to break down) (completed 2026-04-29)
+- [x] TBD (run /gsd:plan-phase 213.3 to break down)
+ (completed 2026-04-29)
 
 ### Phase 213.2: UI Canon Adoption Wave 2 — auth surfaces (login, signup, invite, oauth-consent) to DESIGN.md tokens (INSERTED)
 
