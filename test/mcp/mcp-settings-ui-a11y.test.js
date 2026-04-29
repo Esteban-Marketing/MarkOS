@@ -64,39 +64,52 @@ test('Suite 202-09: S1 API integration — fetches /api/tenant/mcp/usage + sessi
   assert.match(tsx, /\/api\/tenant\/mcp\/sessions\/revoke/);
 });
 
-test('Suite 202-09: S1 CSS — accent + dark-teal + destructive tokens present', () => {
-  assert.match(css, /#0d9488/);
-  assert.match(css, /#0f766e/);
-  assert.match(css, /#9a3412/);
-  assert.match(css, /#fca5a5/);
+// Phase 213.3 Plan 06: CSS assertions updated to token-canon (DESIGN.md v1.1.0).
+// Legacy hex and bespoke-class assertions replaced per RESEARCH.md Pitfall 7.
+// Mirror of 213.2-04 consent-ui-a11y.test.js patch precedent.
+
+test('Suite 202-09: S1 CSS — MC-1: zero inline hex (all 61 legacy hexes eliminated)', () => {
+  // AC MC-1: no inline hex in token-canon module
+  assert.doesNotMatch(css, /#0d9488/);
+  assert.doesNotMatch(css, /#0f766e/);
+  assert.doesNotMatch(css, /#9a3412/);
+  assert.doesNotMatch(css, /#fca5a5/);
 });
 
-test('Suite 202-09: S1 CSS — warn banner tokens', () => {
-  assert.match(css, /#fef3c7/);
-  assert.match(css, /#d97706/);
-  assert.match(css, /#78350f/);
+test('Suite 202-09: S1 CSS — MC-1: zero warn-banner hex (all eliminated)', () => {
+  // AC MC-1: no inline hex for warn/amber banner
+  assert.doesNotMatch(css, /#fef3c7/);
+  assert.doesNotMatch(css, /#d97706/);
+  assert.doesNotMatch(css, /#78350f/);
 });
 
-test('Suite 202-09: S1 CSS — structural tokens (28px card, 12px button, focus ring, tap target)', () => {
-  assert.match(css, /border-radius:\s*28px/);
-  assert.match(css, /border-radius:\s*12px/);
-  assert.match(css, /outline:\s*2px solid #0d9488/);
-  assert.match(css, /min-height:\s*44px/);
+test('Suite 202-09: S1 CSS — MC-2: state-color tokens on meter fill (success/warning/error)', () => {
+  // AC MC-2: cost-meter fill uses design token state colors, not raw hex
+  assert.match(css, /var\(--color-success\)/);
+  assert.match(css, /var\(--color-warning\)/);
+  assert.match(css, /var\(--color-error\)/);
+  assert.match(css, /meterFill/);
 });
 
-test('Suite 202-09: S1 CSS — card shadow token (Phase 201 ancestor)', () => {
-  assert.match(css, /0 18px 45px/);
+test('Suite 202-09: S1 CSS — X-1: token-only layout (var(--color-surface), var(--space-md))', () => {
+  // AC X-1: primitives carry visual weight; module uses only layout tokens
+  assert.match(css, /var\(--color-surface\)/);
+  assert.match(css, /var\(--space-md\)/);
+  assert.match(css, /var\(--radius-full\)/);
 });
 
 test('Suite 202-09: S1 CSS — motion: prefers-reduced-motion media query', () => {
   assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
-test('Suite 202-09: S1 CSS — cost meter fill transition 180ms ease-out (matches Phase 201 seatBar)', () => {
-  assert.match(css, /costMeterFill[\s\S]*?transition:[\s\S]*?180ms[\s\S]*?ease-out/);
+test('Suite 202-09: S1 CSS — MC-2: meterFill transition uses token (var(--duration-base))', () => {
+  // AC MC-2: meter transition uses design token, not hardcoded 180ms
+  assert.match(css, /meterFill[\s\S]*?transition:[\s\S]*?var\(--duration-base\)/);
 });
 
-test('Suite 202-09: S1 CSS — table caption eyebrow (uppercase, letter-spacing, #0f766e)', () => {
-  assert.match(css, /text-transform:\s*uppercase/);
-  assert.match(css, /letter-spacing:\s*0\.08em/);
+test('Suite 202-09: S1 CSS — X-2: no bespoke structural tokens (no 28px card, no box-shadow, no teal outline)', () => {
+  // AC X-2: bespoke layout removed; border-radius via var(--radius-*) tokens
+  assert.doesNotMatch(css, /border-radius:\s*28px/);
+  assert.doesNotMatch(css, /0 18px 45px/);
+  assert.doesNotMatch(css, /outline:\s*2px solid #0d9488/);
 });

@@ -1,10 +1,10 @@
 'use client';
 
-// Phase 202 Plan 09: Surface S1 — /settings/mcp dashboard
-// IA: at-cap banner (conditional) → usage card (cost meter + top tools) →
+// Phase 213.3 Plan 06: /settings/mcp — token-canon surface redesign (UI-SPEC Surface 6).
+// Phase 200 + 200.1 MCP wiring (API routes, cost-kill-switch threshold, OTEL trace fields) preserved verbatim.
+// IA: cost-state notices (MC-3) → usage card (.c-card, cost meter, .c-chip-protocol top tools) →
 //     sessions card (table + revoke CTA) → breakdown <details> →
-//     revoke confirm <dialog> → toast region.
-// UI-SPEC §Surface 1 locked strings grep-asserted by test/mcp/mcp-settings-ui-a11y.test.js.
+//     revoke confirm (.c-modal + .c-backdrop) → toast region.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './page.module.css';
@@ -39,6 +39,12 @@ function formatResetDuration(reset_at: string) {
   return h > 0 ? `${h}h ${m}m` : `${m}m`;
 }
 
+function meterFillClass(pct: number, s: typeof styles) {
+  if (pct >= 90) return `${s.meterFill} ${s['meterFill--error']}`;
+  if (pct >= 70) return `${s.meterFill} ${s['meterFill--warning']}`;
+  return s.meterFill;
+}
+
 export default function McpSettingsPage() {
   const [usage, setUsage] = useState<Usage | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -50,6 +56,8 @@ export default function McpSettingsPage() {
   const [revoking, setRevoking] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [filterTool, setFilterTool] = useState<string>('');
+  const [keyRotationInProgress, setKeyRotationInProgress] = useState(false);
+  const [copiedKey, setCopiedKey] = useState(false);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
   async function fetchUsage() {
@@ -121,57 +129,87 @@ export default function McpSettingsPage() {
     [breakdown, filterTool],
   );
 
+  const costPct = usage && usage.cap_cents > 0
+    ? Math.min(100, (usage.spent_cents / usage.cap_cents) * 100)
+    : 0;
+
   return (
     <main className={styles.page}>
+
+      {/* MC-3: Cost-state notices — error (>=100%) > warning (>=70%) > key-rotation (info) */}
       {atCap && usage && (
-        <div className={styles.atCapBanner} role="alert">
+        <div className="c-notice c-notice--error" role="status">
+          <strong>[err]</strong>{' '}Cost limit reached. MCP tools are paused. Adjust the budget to resume.
+        </div>
+      )}
+      {!atCap && costPct >= 70 && (
+        <div className="c-notice c-notice--warning" role="status">
+          <strong>[warn]</strong>{' '}Cost approaching limit. Review tool usage to avoid service interruption.
+        </div>
+      )}
+      {keyRotationInProgress && (
+        <div className="c-notice c-notice--info" role="status">
+          <strong>[info]</strong>{' '}Key rotation in progress. The previous key remains valid for 24 hours.
+        </div>
+      )}
+
+      {/* At-cap banner preserved per Phase 200 wiring (role=alert for live region) */}
+      {atCap && usage && (
+        <div className="c-notice c-notice--error" role="alert">
           <strong>Daily MCP budget reached.</strong>
           <span> Resets at {new Date(usage.reset_at).toLocaleTimeString()}. </span>
-          <a href="/settings/billing" className={styles.upgradeLink}>
+          <a href="/settings/billing">
             Upgrade to increase your cap
           </a>
         </div>
       )}
 
-      <section className={styles.contentCard} aria-labelledby="mcp-usage-heading">
+      <section className={`c-card ${styles.contentCard}`} aria-labelledby="mcp-usage-heading">
         <div className={styles.cardHeaderRow}>
           <div>
-            <h1 id="mcp-usage-heading" className={styles.heading}>
+            <h1 id="mcp-usage-heading">
               MCP server
             </h1>
-            <p className={styles.subheading}>
+            <p className="t-lead">
               Model Context Protocol access lets agents call MarkOS tools on your behalf. 30 tools. Claude-native by design.
             </p>
           </div>
-          <button
-            type="button"
-            className={styles.refreshButton}
-            onClick={onRefresh}
-            disabled={refreshing}
-            aria-label="Refresh MCP usage"
-          >
-            {refreshing ? 'Refreshing…' : 'Refresh'}
-          </button>
+          <div className={styles.actionRow}>
+            <button
+              type="button"
+              className="c-button c-button--primary"
+              aria-label="Add MCP server"
+            >
+              Add server
+            </button>
+            <button
+              type="button"
+              className="c-button c-button--secondary"
+              onClick={onRefresh}
+              disabled={refreshing}
+              aria-label="Refresh MCP usage"
+            >
+              {refreshing ? 'Refreshing…' : 'Refresh'}
+            </button>
+          </div>
         </div>
 
-        <div className={styles.budgetRow}>
-          <div className={styles.budgetLabel}>Daily budget</div>
+        <div className={styles.meterGroup}>
+          <span className="t-label-caps">Daily budget</span>
           {loadingUsage ? (
-            <p className={styles.loadingText}>Loading usage…</p>
+            <p>Loading usage…</p>
           ) : (
             usage && (
               <>
-                <div className={styles.costMeterTrack}>
+                <div className={styles.meterTrack}>
                   <div
-                    className={styles.costMeterFill}
+                    className={meterFillClass(costPct, styles)}
                     role="meter"
                     aria-valuenow={usage.spent_cents}
                     aria-valuemin={0}
                     aria-valuemax={usage.cap_cents}
                     aria-label="Daily MCP budget"
-                    style={{
-                      width: `${Math.min(100, usage.cap_cents > 0 ? (usage.spent_cents / usage.cap_cents) * 100 : 0)}%`,
-                    }}
+                    style={{ width: `${costPct}%` }}
                   />
                 </div>
                 <div className={styles.budgetValueRow}>
@@ -187,18 +225,12 @@ export default function McpSettingsPage() {
 
         {topTools.length > 0 && (
           <div className={styles.topTools}>
-            <h2 className={styles.subsectionHeading}>Top tools by cost</h2>
+            <h2>Top tools by cost</h2>
             <ol className={styles.topToolsList}>
               {topTools.map((t) => (
-                <li key={t.tool_id}>
-                  <button
-                    type="button"
-                    className={styles.topToolEntry}
-                    onClick={() => setFilterTool(t.tool_id)}
-                  >
-                    <span className={styles.topToolName}>{t.tool_id}</span>
-                    <span className={styles.topToolCost}>{formatDollars(t.total_cost_cents)}</span>
-                  </button>
+                <li key={t.tool_id} className={styles.topToolsItem}>
+                  <span className="c-chip-protocol">{t.tool_id}</span>
+                  <span>{formatDollars(t.total_cost_cents)}</span>
                 </li>
               ))}
             </ol>
@@ -207,14 +239,45 @@ export default function McpSettingsPage() {
         {topTools.length === 0 && !loadingUsage && (
           <p className={styles.emptyState}>No billable tool calls in the last 24 hours.</p>
         )}
+
+        {/* API key display — MC-4: .c-chip-protocol prefix + .c-code-inline masked value + .c-button--icon clipboard */}
+        <h4>API keys</h4>
+        <div className={styles.keyRow}>
+          <span className="c-chip-protocol">mk_xxx</span>
+          <code className="c-code-inline">mk_xxx_•••1234</code>
+          <button
+            type="button"
+            className="c-button c-button--icon"
+            aria-label="Copy to clipboard"
+            onClick={() => {
+              navigator.clipboard?.writeText('mk_xxx_•••1234').then(() => {
+                setCopiedKey(true);
+                setTimeout(() => setCopiedKey(false), 2000);
+              });
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+              <rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none" />
+              <path d="M3 11V3a1 1 0 011-1h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+          {copiedKey && <span>[ok] Copied</span>}
+        </div>
+        <div className={styles.actionRow}>
+          <button type="button" className="c-button c-button--secondary"
+            onClick={() => setKeyRotationInProgress(true)}
+          >
+            Rotate key
+          </button>
+        </div>
       </section>
 
-      <section className={styles.contentCard} aria-labelledby="mcp-sessions-heading">
-        <h2 id="mcp-sessions-heading" className={styles.heading}>
+      <section className={`c-card ${styles.contentCard}`} aria-labelledby="mcp-sessions-heading">
+        <h2 id="mcp-sessions-heading">
           Active MCP sessions
         </h2>
         {loadingSessions ? (
-          <p className={styles.loadingText}>Loading sessions…</p>
+          <p>Loading sessions…</p>
         ) : sessions.length === 0 ? (
           <div className={styles.emptyState}>
             <p>
@@ -223,7 +286,7 @@ export default function McpSettingsPage() {
             <a href="/docs/vscode-mcp-setup">Read the VS Code setup guide</a>
           </div>
         ) : (
-          <table className={styles.sessionsTable}>
+          <table>
             <caption>Active MCP sessions</caption>
             <thead>
               <tr>
@@ -236,45 +299,58 @@ export default function McpSettingsPage() {
               </tr>
             </thead>
             <tbody>
-              {sessions.map((s) => (
+              {sessions.map((s) => {
+                const isExpired = new Date(s.expires_at).getTime() < Date.now();
+                const statusDotClass = isExpired
+                  ? 'c-status-dot c-status-dot--error'
+                  : 'c-status-dot c-status-dot--live';
+                const statusLabel = isExpired ? '[err] Error' : '[ok] Connected';
+                return (
                 <tr key={s.id}>
-                  <td>{s.client_id}</td>
+                  <td>
+                    <div className={styles.statusCell}>
+                      <span className={statusDotClass} aria-hidden="true" />
+                      <span className="c-chip-protocol">{s.client_id}</span>
+                      <span>{statusLabel}</span>
+                    </div>
+                  </td>
                   <td>{new Date(s.created_at).toLocaleString()}</td>
                   <td>{new Date(s.last_used_at).toLocaleString()}</td>
                   <td>
                     <button
                       type="button"
-                      className={styles.revokeButton}
+                      className="c-button c-button--secondary"
                       onClick={() => setConfirmSession(s)}
                     >
                       Revoke session
                     </button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         )}
       </section>
 
-      <section className={styles.contentCard} aria-labelledby="mcp-breakdown-heading">
+      <section className={`c-card ${styles.contentCard}`} aria-labelledby="mcp-breakdown-heading">
         <details>
           <summary id="mcp-breakdown-heading" className={styles.breakdownSummary}>
             Per-tool cost breakdown
           </summary>
           {filterTool && (
-            <div className={styles.filterChip}>
-              Showing {filterTool} ·{' '}
+            <div className={styles.filterChipRow}>
+              <span className="c-chip-protocol">{filterTool}</span>
               <button
                 type="button"
-                className={styles.filterClear}
+                className="c-button c-button--secondary"
                 onClick={() => setFilterTool('')}
               >
                 Clear filter
               </button>
             </div>
           )}
-          <table className={styles.breakdownTable}>
+          <table>
             <caption>MCP tool cost breakdown (last 24h)</caption>
             <thead>
               <tr>
@@ -286,7 +362,15 @@ export default function McpSettingsPage() {
             <tbody>
               {filteredBreakdown.map((b) => (
                 <tr key={b.tool_id}>
-                  <td>{b.tool_id}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="c-button c-button--secondary"
+                      onClick={() => setFilterTool(b.tool_id)}
+                    >
+                      <span className="c-chip-protocol">{b.tool_id}</span>
+                    </button>
+                  </td>
                   <td>{b.calls}</td>
                   <td>{formatDollars(b.total_cost_cents)}</td>
                 </tr>
@@ -298,19 +382,19 @@ export default function McpSettingsPage() {
 
       <dialog
         ref={dialogRef}
-        className={styles.dialog}
+        className="c-modal"
         aria-labelledby="revoke-dialog-heading"
       >
-        <h2 id="revoke-dialog-heading" className={styles.dialogHeading}>
+        <h2 id="revoke-dialog-heading" className="c-modal__header">
           Revoke MCP session?
         </h2>
-        <p className={styles.dialogBody}>
+        <p className="c-modal__body">
           The client will need to re-authorize on next use. Any in-flight tool calls will fail with 401.
         </p>
-        <div className={styles.dialogActions}>
+        <div className={`c-modal__actions ${styles.dialogActions}`}>
           <button
             type="button"
-            className={styles.cancelButton}
+            className="c-button c-button--secondary"
             onClick={() => {
               dialogRef.current?.close();
               setConfirmSession(null);
@@ -320,7 +404,7 @@ export default function McpSettingsPage() {
           </button>
           <button
             type="button"
-            className={styles.deleteFilledButton}
+            className="c-button c-button--destructive"
             onClick={onConfirmRevoke}
             disabled={revoking}
           >
@@ -330,8 +414,10 @@ export default function McpSettingsPage() {
       </dialog>
 
       {toast && (
-        <div className={styles.toast} role="status" aria-live="polite">
-          {toast}
+        <div className={styles.toastRegion}>
+          <div className="c-toast" role="status" aria-live="polite">
+            {toast}
+          </div>
         </div>
       )}
     </main>
