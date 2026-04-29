@@ -59,11 +59,11 @@ Plans:
 **Goal:** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
 **Requirements Mapped:** API-02, QA-01..15
 **Depends on:** Phase 200
-**Closeout posture:** Historical hardening phase closeout. Live DNS, email, BotID, passkey, export, cookie, purge, and staging-load checks remain informational operational smokes rather than execution blockers.
+**Closeout posture:** Live DNS, email, BotID, passkey, export, cookie, purge, and staging-load checks are v4.0.0-release gates via scripts/staging-smokes/ harness (Phase 201.1 D-108).
 **Status:** ✅ Complete — verified 2026-04-17 (see 201-VERIFICATION.md)
 **Plans:** 8/8 plans complete
 **DISCUSS:** `.planning/phases/201-saas-tenancy-hardening/DISCUSS.md`
-**Planning Note:** Reconciled 2026-04-27 so validation, verification, and context artifacts all treat DNS, email, BotID, passkey, export, cookie, purge, and staging-load checks as operational hardening smokes rather than execution blockers.
+**Planning Note:** Reclassified 2026-04-27 by Phase 201.1 D-108 closure: validation, verification, and context artifacts treat DNS, email, BotID, passkey, export, cookie, purge, and staging-load checks as v4.0.0-release gates rather than informational notes.
 **Artifacts:** `201-CONTEXT.md`, `201-RESEARCH.md`, `201-REVIEWS.md`, `201-VALIDATION.md`, `201-VERIFICATION.md`
 
 Plans:
@@ -80,8 +80,8 @@ Plans:
 **Goal:** Close 6 HIGH and 1 MEDIUM concerns surfaced by the 2026-04-27 cross-AI review of Phase 201: move audit emit inline (drop res.end footgun in approve.js / submit.js), harden GDPR signed URL beyond bearer-credential semantics, pin canonical-JSON spec for Node↔Postgres parity with property-based fuzzer, add jittered-TTL + single-flight + transitional-410 to edge-config slug cache, eliminate the Plan-03 rate-limit race by promoting the SQL fn into Plan 03 (or a hard deploy-gate), and resolve the right-to-erasure vs hash-chain conflict with an explicit pseudonymize-with-tombstone policy. Operational smokes (DNS, email, BotID live, real-device passkey, GDPR retrieval, 30-day cron, cookie SameSite, staging perf) reclassified back to v4.0.0-release gates with a staging smoke harness rather than informational notes.
 **Requirements Mapped:** API-02, QA-01, QA-02, QA-04, QA-05, QA-09, QA-11, QA-12, QA-13, QA-15
 **Depends on:** Phase 201
-**Status:** Planning
-**Plans:** 7/11 plans executed
+**Status:** Verified — H1/H2/H3/H4/H5/H6 + M2/M3/M4/M6/M7 closed (2026-04-27)
+**Plans:** 11/11 plans complete
 **Source:** `.planning/phases/201-saas-tenancy-hardening/201-REVIEWS.md` (claude-cli separate-session pass, 2026-04-27)
 **Artifacts:** `201.1-CONTEXT.md`, `201.1-REVIEWS.md` (mirrors 201-REVIEWS.md)
 
@@ -93,10 +93,10 @@ Plans:
 - [x] 201.1-05-PLAN.md — D-104 jittered TTL + single-flight + transitional-410 rename (closes H5) — Wave 2
 - [x] 201.1-06-PLAN.md — D-106 pseudonymize-with-tombstone erase_audit_pii + tombstone-aware verifier (closes M4) — Wave 2
 - [x] 201.1-07-PLAN.md — D-110 vanity-login WCAG AA luminance gate + DB CHECK constraint (closes M3) — Wave 2
-- [ ] 201.1-08-PLAN.md — D-102 GDPR signed-URL hardening: 24h TTL + nonce + audience + reissue + F-107 (closes H3) — Wave 3
-- [ ] 201.1-09-PLAN.md — D-107 BYOD verified→failed 24h grace window + alert via webhook engine (closes M2) — Wave 3
-- [ ] 201.1-10-PLAN.md — D-111 Playwright golden-path tenancy smoke (closes M7, reverses QA-06 NA for tenancy) — Wave 3
-- [ ] 201.1-11-PLAN.md — D-108 STATE/ROADMAP/VERIFICATION reclass + scripts/staging-smokes scaffold + F-106/F-107 openapi regen (closes H2) — Wave 4
+- [x] 201.1-08-PLAN.md — D-102 GDPR signed-URL hardening: 24h TTL + nonce + audience + reissue + F-107 (closes H3) — Wave 3
+- [x] 201.1-09-PLAN.md — D-107 BYOD verified→failed 24h grace window + alert via webhook engine (closes M2) — Wave 3
+- [x] 201.1-10-PLAN.md — D-111 Playwright golden-path tenancy smoke (closes M7, reverses QA-06 NA for tenancy) — Wave 3
+- [x] 201.1-11-PLAN.md — D-108 STATE/ROADMAP/VERIFICATION reclass + scripts/staging-smokes scaffold + F-106/F-107 openapi regen (closes H2) — Wave 5
 
 ### Phase 202: MCP Server GA + Claude Marketplace Launch
 **Goal:** Graduate the 0-day MCP server to GA for the Claude Marketplace launch package: session persistence, +20 skills, marketplace-ready assets and docs, and a VS Code cert-ready path. Cursor / Windsurf / Warp / ChatGPT certifications defer to `202.1`.

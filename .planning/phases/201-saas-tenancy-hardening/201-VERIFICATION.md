@@ -5,6 +5,7 @@ status: passed
 score: 10/10 code-verifiable must-have clusters verified
 verdict: PASS
 scope_reconciled: 2026-04-27
+release_gate_reclassification: 2026-04-27
 test_totals:
   tenancy: 122 pass / 0 fail
   audit: 23 pass / 0 fail
@@ -31,7 +32,7 @@ non_applicable_requirements:
 **Phase Goal (ROADMAP.md):** Public signups with verification, org → tenant model, custom subdomains via routing middleware, audit-log alignment, tenant offboarding + data-export.
 **Verified:** 2026-04-17
 **Status:** PASS for the delivered hardening scope
-**Reconciliation note:** Metadata reconciled on 2026-04-27; the remaining live-platform smokes are informational follow-up only.
+**Reconciliation note:** Metadata reconciled on 2026-04-27, then re-reconciled on 2026-04-27 in Phase 201.1 H2 closure: the remaining live-platform smokes are now v4.0.0-release gates (separate from phase-completion gate). See `.planning/phases/201.1-saas-tenancy-followups/` and `scripts/staging-smokes/`.
 **Re-verification:** No — initial verification
 
 ---

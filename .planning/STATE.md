@@ -70,6 +70,35 @@ Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `
 - [x] 204-12: release CI + docs trio + llms.txt Phase 204 — .github/workflows/release-cli.yml (5-job DAG verify→npm→brew+scoop→smoke) + docs/cli/{errors,environment,commands}.md + public/llms.txt Phase 204 section + errors-map parity test + 15 tests — **Wave 4 CLOSED; Phase 204 SHIPS** (2026-04-24)
 - [x] 204-13: v2 compliance guardrails — migration 77 additive (15 v2 columns + back-fill + 3 indexes) + lib/markos/cli/runs.cjs v2-shaped payload writer (buildV2Payload, V2_REQUIRED_FIELDS, deriveIdempotencyKey, STATE_V1_TO_V2_MAP, PRICING_PLACEHOLDER_SENTINEL) + markos status recent_runs v2 projection + markos doctor +3 checks (agentrun_v2_alignment, pricing_placeholder_policy, vault_freshness → 12 total) + F-103 + openapi regen + v2-compliance.test.js (14 tests) — **Phase 204 GA ready for verification** (2026-04-23)
 
+## Planning overlay (2026-04-27 Phase 201.1 close — H2 reclassification)
+
+The 2026-04-27 reconciliation that demoted live-platform smokes (DNS, email,
+BotID, passkey, GDPR retrieval, 30-day cron, cookie SameSite, staging-load)
+to "informational follow-up only" is **REVERSED** for the v4.0.0 milestone gate.
+Phase 201.1 closes review concern H2 by:
+
+- Reclassifying the 8 operational smokes as v4.0.0-release gates (separate
+  from Phase 201 phase-completion gate).
+- Scaffolding `scripts/staging-smokes/` with one .cjs entry-point per smoke
+  + a `run-all.cjs` orchestrator + a separate `.github/workflows/staging-smokes.yml`
+  CI workflow triggered by `workflow_dispatch` + tag pushes matching `v4.0.0-*`.
+- Live-mode bodies for each smoke are STUBS in this delta phase; the
+  v4.0.0-release prep milestone fills them in. The scaffold being merged
+  HERE means H2 closure is no longer a release blocker — the work to fill
+  the bodies is bounded and well-scoped.
+
+Phase 201.1 also delivers code-level closures for H1 (audit emit inline +
+fail-closed), H3 (GDPR signed-URL hardening with download-once nonce + 24h
+TTL + audience claim + reissue), H4 (canonical-JSON spec lock + Postgres
+fn + property fuzzer), H5 (jittered TTL + single-flight + transitional 410
+on rename), H6 (atomic rate-limit SQL fn), M2 (BYOD verified→failed grace
+window + alert), M3 (vanity-login --accent WCAG luminance gate), M4
+(right-to-erasure tombstone reconciled with hash chain), M6 (versioned
+reserved-slug list + admin override + obscenity dataset), M7 (Playwright
+golden-path tenancy smoke).
+
+11 plans, ~6 migrations (90, 91, 92, 93, 94, 95, 97), 2 contracts (F-106 + F-107).
+
 ## Planning overlay (2026-04-23 incoming 18-26 commercial-engine routing)
 
 Incoming documents `18` through `26` introduce a larger commercial-system expansion than the existing SaaS Growth Strategy bundle:

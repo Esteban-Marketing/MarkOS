@@ -55,6 +55,12 @@
 - [Stable error-code reference](https://markos.dev/docs/cli/errors.md): 13 public-API error codes (INVALID_BRIEF..INTERNAL) + RFC 8628 device-flow codes + D-10 exit bands + TTY/JSON envelope shape; grep-asserted against bin/lib/cli/errors.cjs ERROR_TO_EXIT.
 - [Environment variables reference](https://markos.dev/docs/cli/environment.md): MARKOS_API_KEY/PROFILE/API_BASE_URL/NO_BROWSER + XDG_CONFIG_HOME + NO_COLOR + CI/GITHUB_ACTIONS; credential resolution order (env > keychain > XDG).
 
+## Phase 201.1 — Tenancy Hardening Followups
+
+- [Canonical Audit Spec](https://markos.dev/docs/canonical-audit-spec): Phase 201.1 D-103: pinned canonical-JSON spec for the audit hash chain.
+- [Playwright Tenancy Smoke](https://markos.dev/docs/playwright-tenancy-smoke): Phase 201.1 D-111: tenancy golden-path Playwright spec.
+- [Phase 201.1 Plans and SUMMARYs](.planning/phases/201.1-saas-tenancy-followups/): Phase 201.1 followup plans, migrations, and SUMMARYs.
+
 ## Optional
 
 - [Full Docs (concatenated markdown)](https://markos.dev/docs/llms-full.txt): Single-file concatenation of all documentation pages for LLM ingestion.
