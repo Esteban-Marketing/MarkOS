@@ -4,7 +4,7 @@ const resolverCjs = require('./resolver.cjs') as {
   DEFAULT_APEX: string;
   resolveHost: (host: string, apex?: string) => HostResolution;
   resolveTenantBySlug: (client: unknown, slug: string) => Promise<{ tenant_id: string; org_id: string; status: string } | null>;
-  resolveTenantByDomain: (client: unknown, domain: string) => Promise<{ tenant_id: string; org_id: string; status: string; verified_at: string | null } | null>;
+  resolveTenantByDomain: (client: unknown, domain: string, opts?: { allowGrace?: boolean }) => Promise<{ tenant_id: string; org_id: string; status: string; verified_at: string | null; withinGrace: boolean } | null>;
 };
 
 export type HostKind = 'bare' | 'first_party' | 'byod' | 'reserved' | 'system';

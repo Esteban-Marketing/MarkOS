@@ -104,13 +104,14 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     return NextResponse.next({ request: { headers } });
   }
 
-  // Layer 2c: BYOD custom domain → resolve via markos_custom_domains (status=verified only)
+  // Layer 2c: BYOD custom domain → resolve via markos_custom_domains
+  // Phase 201.1 D-107 (closes M2): allowGrace=true serves tenant for 24h after verified→failed.
   if (resolution.kind === 'byod') {
     const client = await createServiceClient();
     const { resolveTenantByDomain } = await import('./lib/markos/tenant/resolver');
-    const tenant = await resolveTenantByDomain(client, resolution.host);
+    const tenant = await resolveTenantByDomain(client, resolution.host, { allowGrace: true });
     if (!tenant) {
-      // Unverified BYOD — return next() so Next.js 404 handler runs (owner hasn't finished DNS).
+      // No verified match and no grace window — return next() so Next.js 404 handler runs.
       return NextResponse.next();
     }
     const headers = new Headers(req.headers);
@@ -118,6 +119,11 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
     headers.set('x-markos-org-id', tenant.org_id);
     headers.set('x-markos-byod', '1');
     headers.set('x-markos-custom-domain', resolution.host);
+    if (tenant.withinGrace) {
+      // Phase 201.1 D-107 (closes M2): domain verified→failed but within 24h grace window.
+      // Downstream surfaces (banner component) read this header to render a degraded-mode notice.
+      headers.set('x-markos-byod-grace', '1');
+    }
     return NextResponse.next({ request: { headers } });
   }
 
