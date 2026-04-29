@@ -356,10 +356,10 @@ Plans:
 **Goal:** [Urgent work - to be planned]
 **Requirements**: TBD
 **Depends on:** Phase 213
-**Plans:** 6/9 plans executed
+**Plans:** 9/9 plans complete
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 213.3 to break down)
+- [x] TBD (run /gsd:plan-phase 213.3 to break down) (completed 2026-04-29)
 
 ### Phase 213.2: UI Canon Adoption Wave 2 — auth surfaces (login, signup, invite, oauth-consent) to DESIGN.md tokens (INSERTED)
 
