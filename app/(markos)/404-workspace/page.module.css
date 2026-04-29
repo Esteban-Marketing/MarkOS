@@ -1,75 +1,28 @@
+/* Phase 213.4 Plan-07 — Token-only 404-workspace centered hero layout.
+ * Composes .c-card--feature (hero exception per D-13 — workspace-landing-page-equivalent),
+ * .c-button c-button--primary (Claim/Create CTA),
+ * .c-button c-button--tertiary (Back to dashboard secondary CTA — F-5),
+ * .t-label-caps (apex eyebrow).
+ * 75 LOC -> ~25 LOC. 10 hex eliminated. Card-feature hero IS the error surface
+ * — NO .c-notice banner; NO red splash; NO [err] glyph on heading (D-13). */
+
 .page {
+  background: var(--color-surface);
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 64px 24px;
-  background:
-    radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 22%),
-    linear-gradient(180deg, #f8fbfd 0%, #eef4fb 100%);
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  color: #0f172a;
+  padding: var(--space-xl) var(--space-md);
 }
 
-.card {
-  width: min(540px, 100%);
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 32px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
+.cardWrap {
+  width: min(var(--w-modal), 100%);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-md);
   text-align: center;
 }
 
-.eyebrow {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #0f766e;
-}
-
-.displayHeading {
-  margin: 0;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 32px;
-  font-weight: 600;
-  line-height: 1.0;
-  color: #0f172a;
-}
-
-.body {
-  margin: 0;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #475569;
-}
-
 .link {
-  color: #0f766e;
-  font-weight: 600;
-}
-
-.primaryCta {
-  align-self: center;
-  min-height: 44px;
-  padding: 10px 22px;
-  background: #0d9488;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 16px;
-  border: 0;
-  border-radius: 12px;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
-}
-
-.primaryCta:focus {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
+  color: var(--color-primary-text);
+  text-underline-offset: 2px;
 }
