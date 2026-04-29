@@ -149,7 +149,7 @@
   min-width: 120px;
 }
 .meterTrack {
-  height: 6px;
+  height: 8px; /* meter track parity — members + mcp peer modules */
   background: var(--color-border);
   border-radius: var(--radius-full);
   overflow: hidden;
