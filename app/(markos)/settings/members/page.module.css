@@ -1,210 +1,130 @@
+/**
+ * Members settings — token-only layout module.
+ * Source of truth: DESIGN.md v1.1.0 · app/tokens.css
+ * Primitives (.c-card, .c-button*, .c-input, .c-field*, .c-badge*, .c-notice*, .c-modal, .c-backdrop) compose JSX-side.
+ * Layout containers, meter recipe, table recipe, avatar recipe defined here.
+ */
+
+/* ── Page wrapper ──────────────────────────────────────────────────── */
 .page {
-  padding: 24px;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  color: #0f172a;
+  padding: var(--space-md);
+  background: var(--color-surface);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-md);
 }
 
+/* ── Content card (local override — .c-card provides bg/border/radius/padding JSX-side) ─ */
 .contentCard {
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 32px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
   max-width: 900px;
 }
 
-.heading {
-  margin: 0;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.subHeading {
-  margin: 0;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.subheading {
-  margin: 0;
-  font-size: 16px;
-  color: #475569;
-  line-height: 1.6;
-}
-
+/* ── Seat bar ──────────────────────────────────────────────────────── */
 .seatBar {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-xs);
 }
 
-.seatBarLabel {
-  font-size: 14px;
-  font-weight: 600;
-  color: #334155;
-}
-
-.seatBarTrack {
+/* Meter track — 8px height is a sizing literal (UI-SPEC Spacing Scale documented exception #4) */
+.meterTrack {
   height: 8px;
-  background: #e2e8f0;
-  border-radius: 999px;
+  background: var(--color-surface-overlay);
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
-.seatBarFill {
+/* Meter fill — base state (<70% utilization) */
+.meterFill {
   height: 100%;
-  background: #0d9488;
-  transition: width 180ms ease-out;
+  background: var(--color-success);
+  transition: width var(--duration-base) var(--ease-out);
 }
 
+/* Meter fill — warning state (70–90% utilization per UI-SPEC AC M-2) */
+.meterFill--warning {
+  background: var(--color-warning);
+}
+
+/* Meter fill — error state (>=90% utilization per UI-SPEC AC M-2) */
+.meterFill--error {
+  background: var(--color-error);
+}
+
+/* ── Members table ─────────────────────────────────────────────────── */
 .membersTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 8px;
+  margin-top: var(--space-xs);
 }
 
+/* Caption — .t-label-caps posture (eliminates legacy teal caption color) */
 .membersTable caption {
   caption-side: top;
   text-align: left;
-  padding-bottom: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  padding-block: var(--space-xs);
+  color: var(--color-on-surface-muted);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
   text-transform: uppercase;
-  color: #0f766e;
+  letter-spacing: var(--ls-label);
 }
 
+/* Table header — token recipe D-14 */
 .membersTable th {
   text-align: left;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #334155;
-  border-bottom: 1px solid #e2e8f0;
+  padding: var(--space-xs) var(--space-md);
+  color: var(--color-on-surface-muted);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-label);
+  border-bottom: 1px solid var(--color-border);
 }
 
+/* Table cell — token recipe D-14 */
 .membersTable td {
-  padding: 14px 16px;
-  font-size: 14px;
-  color: #0f172a;
-  border-bottom: 1px solid #f1f5f9;
+  padding: var(--space-xs) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-on-surface);
+  font-size: var(--fs-body-md);
   vertical-align: middle;
 }
 
+/* ── Avatar — 32px sizing literal (icon-xl token); not a spacing value ─ */
 .avatar {
   display: inline-flex;
   width: 32px;
   height: 32px;
-  border-radius: 999px;
-  background: #e6fffb;
-  color: #0f766e;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-overlay);
+  color: var(--color-on-surface-muted);
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 12px;
-  margin-right: 12px;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-code);
 }
 
-.memberLabel { font-weight: 500; }
-
+/* ── Invite form grid ──────────────────────────────────────────────── */
 .inviteForm {
   display: grid;
   grid-template-columns: 2fr 1fr auto;
-  gap: 12px;
+  gap: var(--space-xs);
   align-items: end;
 }
 
-.field {
+/* ── Action row (modal buttons) ────────────────────────────────────── */
+.actionRow {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 14px;
-  color: #334155;
+  gap: var(--space-xs);
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: var(--space-md);
 }
 
-.field input,
-.field select {
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  font-size: 14px;
-  background: #ffffff;
-}
-
-.field input:focus-visible,
-.field select:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-
-.sendInviteButton {
-  min-height: 44px;
-  padding: 10px 18px;
-  background: #0d9488;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 14px;
-  border: 0;
-  border-radius: 12px;
-  cursor: pointer;
-}
-
-.sendInviteButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-
-.sendInviteButton:disabled {
-  background: #cbd5e1;
-  color: #64748b;
-  cursor: not-allowed;
-}
-
-.removeButton {
-  min-height: 36px;
-  padding: 6px 12px;
-  background: transparent;
-  color: #9a3412;
-  border: 1px solid #fca5a5;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.removeButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-
-.pendingList ul {
-  margin: 8px 0 0;
-  padding-left: 20px;
-  color: #475569;
-  font-size: 14px;
-}
-
-.emptyState { font-size: 14px; color: #475569; }
-
-.toast {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  width: min(360px, calc(100vw - 32px));
-  padding: 12px 16px;
-  background: #ffffff;
-  border-left: 4px solid #0f766e;
-  border-radius: 12px;
-  font-size: 14px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+/* ── Empty state ───────────────────────────────────────────────────── */
+.emptyState {
+  font-size: var(--fs-body-md);
+  color: var(--color-on-surface-muted);
+  padding: var(--space-md);
 }
