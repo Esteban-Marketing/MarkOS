@@ -17,16 +17,14 @@ export default async function WorkspaceNotFoundPage({
   if (isReserved) {
     return (
       <main className={styles.page}>
-        <section className={styles.card} aria-labelledby="heading">
-          <p className={styles.eyebrow}>{apex}</p>
-          <h1 id="heading" className={styles.displayHeading}>
-            This address is reserved.
-          </h1>
-          <p className={styles.body}>
+        <section className={`c-card c-card--feature ${styles.cardWrap}`} aria-labelledby="heading">
+          <span className="t-label-caps">{apex}</span>
+          <h1 id="heading">This address is reserved.</h1>
+          <p>
             This subdomain is reserved for platform use. Available workspaces start at{' '}
             <a className={styles.link} href={`https://${apex}/signup`}>{apex}/signup</a>.
           </p>
-          <Link className={styles.primaryCta} href={`/signup`}>Create a workspace</Link>
+          <Link className="c-button c-button--primary" href="/signup">Create a workspace</Link>
         </section>
       </main>
     );
@@ -34,20 +32,21 @@ export default async function WorkspaceNotFoundPage({
 
   return (
     <main className={styles.page}>
-      <section className={styles.card} aria-labelledby="heading">
-        <p className={styles.eyebrow}>{apex}</p>
-        <h1 id="heading" className={styles.displayHeading}>
+      <section className={`c-card c-card--feature ${styles.cardWrap}`} aria-labelledby="heading">
+        <span className="t-label-caps">{apex}</span>
+        <h1 id="heading">
           {slug ? `${slug}.${apex}` : apex} is available.
         </h1>
-        <p className={styles.body}>
-          This workspace hasn&apos;t been claimed. Start yours and it&apos;s yours.
-        </p>
-        <Link
-          className={styles.primaryCta}
-          href={slug ? `/signup?slug=${encodeURIComponent(slug)}` : '/signup'}
-        >
-          Claim this workspace
-        </Link>
+        <p>This workspace has not been claimed. Start yours.</p>
+        <div className={styles.ctaRow}>
+          <Link
+            className="c-button c-button--primary"
+            href={slug ? `/signup?slug=${encodeURIComponent(slug)}` : '/signup'}
+          >
+            Claim this workspace
+          </Link>
+          <Link className="c-button c-button--tertiary" href="/">Back to dashboard</Link>
+        </div>
       </section>
     </main>
   );
