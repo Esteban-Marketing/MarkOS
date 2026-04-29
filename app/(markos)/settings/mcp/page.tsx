@@ -5,6 +5,7 @@
 // IA: cost-state notices (MC-3) → usage card (.c-card, cost meter, .c-chip-protocol top tools) →
 //     sessions card (table + revoke CTA) → breakdown <details> →
 //     revoke confirm (.c-modal + .c-backdrop) → toast region.
+// MCPPageView: presentational named export for Storybook isolation (D-15 sub-component extraction).
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './page.module.css';
@@ -419,6 +420,165 @@ export default function McpSettingsPage() {
             {toast}
           </div>
         </div>
+      )}
+    </main>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * MCPPageView — presentational named export for Storybook isolation.
+ * Mirrors DangerPageView / DomainPageView extraction pattern (D-15).
+ * Props-driven so stories can exercise all 5 UI-SPEC state variants without
+ * live fetch calls. Default export McpSettingsPage retains Phase 200 wiring.
+ * ───────────────────────────────────────────────────────────────────────────*/
+
+export type MCPTool = { id: string; cost: string };
+export type MCPServer = {
+  id: string;
+  name: string;
+  status: 'connected' | 'disconnected' | 'error';
+  costPct: number;
+  tools: MCPTool[];
+  apiKey: string;
+};
+export type MCPCostBudget = { used: number; limit: number; resetIn: string } | null;
+
+export type MCPPageViewProps = {
+  servers: MCPServer[];
+  costBudget: MCPCostBudget;
+  keyRotationInProgress?: boolean;
+  rotationDeadline?: string;
+};
+
+export function MCPPageView({
+  servers,
+  costBudget,
+  keyRotationInProgress = false,
+}: MCPPageViewProps) {
+  const costPct = costBudget
+    ? Math.min(100, (costBudget.used / costBudget.limit) * 100)
+    : 0;
+  const atCap = costPct >= 100;
+
+  function meterClass(pct: number) {
+    if (pct >= 90) return `${styles.meterFill} ${styles['meterFill--error']}`;
+    if (pct >= 70) return `${styles.meterFill} ${styles['meterFill--warning']}`;
+    return styles.meterFill;
+  }
+
+  return (
+    <main className={styles.page}>
+      {/* MC-3: Cost-state notices */}
+      {atCap && (
+        <div className="c-notice c-notice--error" role="status">
+          <strong>[err]</strong>{' '}Cost limit reached. MCP tools are paused. Adjust the budget to resume.
+        </div>
+      )}
+      {!atCap && costPct >= 70 && (
+        <div className="c-notice c-notice--warning" role="status">
+          <strong>[warn]</strong>{' '}Cost approaching limit. Review tool usage to avoid service interruption.
+        </div>
+      )}
+      {keyRotationInProgress && (
+        <div className="c-notice c-notice--info" role="status">
+          <strong>[info]</strong>{' '}Key rotation in progress. The previous key remains valid for 24 hours.
+        </div>
+      )}
+
+      {servers.length === 0 ? (
+        <section className={`c-card ${styles.contentCard}`}>
+          <div className={styles.cardHeaderRow}>
+            <h1>MCP servers</h1>
+            <button type="button" className="c-button c-button--primary">Add server</button>
+          </div>
+          <p className={styles.emptyState}>
+            No MCP servers configured. Add a server to connect AI agents to external tools.
+          </p>
+        </section>
+      ) : (
+        servers.map((server) => {
+          const dotClass =
+            server.status === 'connected' ? 'c-status-dot c-status-dot--live'
+            : server.status === 'error'   ? 'c-status-dot c-status-dot--error'
+            :                               'c-status-dot';
+          const statusLabel =
+            server.status === 'connected' ? '[ok] Connected'
+            : server.status === 'error'   ? '[err] Error'
+            :                               '[warn] Disconnected';
+          const pct = server.costPct;
+
+          return (
+            <section key={server.id} className={`c-card ${styles.contentCard}`}>
+              <div className={styles.cardHeaderRow}>
+                <div>
+                  <h1><span className="c-chip-protocol">{server.name}</span></h1>
+                  <div className={styles.statusCell}>
+                    <span className={dotClass} aria-hidden="true" />
+                    <span>{statusLabel}</span>
+                  </div>
+                </div>
+                <div className={styles.actionRow}>
+                  <button type="button" className="c-button c-button--primary">Add server</button>
+                  <button type="button" className="c-button c-button--secondary">Refresh</button>
+                </div>
+              </div>
+
+              {costBudget && (
+                <div className={styles.meterGroup}>
+                  <span className="t-label-caps">Cost budget</span>
+                  <div className={styles.meterTrack}>
+                    <div
+                      className={meterClass(pct)}
+                      role="meter"
+                      aria-valuenow={costBudget.used}
+                      aria-valuemin={0}
+                      aria-valuemax={costBudget.limit}
+                      aria-label="Cost budget"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <div className={styles.budgetValueRow}>
+                    <span>${costBudget.used} of ${costBudget.limit} used</span>
+                    <span className={styles.resetTimer}>Resets in {costBudget.resetIn}</span>
+                  </div>
+                </div>
+              )}
+
+              {server.tools.length > 0 && (
+                <div className={styles.topTools}>
+                  <h2>Top tools by cost</h2>
+                  <ol className={styles.topToolsList}>
+                    {server.tools.map((t) => (
+                      <li key={t.id} className={styles.topToolsItem}>
+                        <span className="c-chip-protocol">{t.id}</span>
+                        <span>{t.cost}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+              <h4>API keys</h4>
+              <div className={styles.keyRow}>
+                <span className="c-chip-protocol">mk_xxx</span>
+                <code className="c-code-inline">{server.apiKey}</code>
+                <button
+                  type="button"
+                  className="c-button c-button--icon"
+                  aria-label="Copy to clipboard"
+                >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false">
+                    <rect x="5" y="5" width="9" height="9" rx="1" stroke="currentColor" strokeWidth="1.5" fill="none" />
+                    <path d="M3 11V3a1 1 0 011-1h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+              <div className={styles.actionRow}>
+                <button type="button" className="c-button c-button--secondary">Rotate key</button>
+              </div>
+            </section>
+          );
+        })
       )}
     </main>
   );
