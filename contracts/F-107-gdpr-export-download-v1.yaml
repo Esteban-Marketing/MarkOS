@@ -1,0 +1,213 @@
+id: F-107-gdpr-export-download-v1
+flow_id: F-107-gdpr-export-download-v1
+flow_name: gdpr_export_download
+domain: tenancy
+phase: 201.1
+name: GDPR Export Server-Mediated Download + Reissue
+version: v1
+status: active
+summary: |
+  Phase 201.1 D-102 (closes review concern H3). Server-mediated GDPR export download
+  that validates a single-use nonce + audience claim before streaming bytes from R2/S3.
+  The presigned R2/S3 URL is a server-side secret — it is never sent to the client.
+  F-89 was already taken by mcp-oauth (Phase 202); this contract uses F-107.
+
+boundary:
+  tenant_scoped: true
+  requires_session: true
+  read_only: false
+
+decisions:
+  - D-102 GDPR URL hardening (H3 closure): TTL 7d -> 24h, single-use nonce, audience claim, server-mediated proxy
+  - M5 fold: GDPR_EXPORT_MAX_BYTES 2 GiB cap enforced in generateExportBundle
+
+openapi: "3.1.0"
+info:
+  title: GDPR Export Download + Reissue
+  version: v1
+
+paths:
+  /api/tenant/gdpr/download:
+    post:
+      summary: Server-mediated GDPR export download (single-use nonce)
+      operationId: gdprExportDownload
+      tags:
+        - tenancy
+        - gdpr
+      parameters:
+        - name: X-Markos-Tenant-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Markos-Session-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - export_id
+                - nonce
+              properties:
+                export_id:
+                  type: string
+                  description: The GDPR export identifier (gdpr-<uuid>)
+                nonce:
+                  type: string
+                  description: 64-char hex single-use nonce returned by generateExportBundle or reissueExport
+      responses:
+        '200':
+          description: ZIP bundle streamed to client. Content-Disposition attachment.
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Missing export_id or nonce
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing auth headers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Audience mismatch — export does not belong to requesting tenant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Export not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '410':
+          description: Nonce already consumed (replay blocked) or export expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream R2/S3 storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/tenant/gdpr/reissue:
+    post:
+      summary: Re-auth-required nonce rotation + 24h TTL extension
+      operationId: gdprExportReissue
+      tags:
+        - tenancy
+        - gdpr
+      parameters:
+        - name: X-Markos-Tenant-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: X-Markos-Session-Id
+          in: header
+          required: true
+          description: Must reference a still-valid session in markos_sessions_devices
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - export_id
+              properties:
+                export_id:
+                  type: string
+                  description: The GDPR export to reissue a fresh nonce for
+      responses:
+        '200':
+          description: Fresh nonce issued; previous nonce is invalidated by the nonce column update
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - export_id
+                  - nonce
+                  - expires_at
+                properties:
+                  export_id:
+                    type: string
+                  nonce:
+                    type: string
+                    description: New 64-char hex single-use nonce
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: New 24h expiry timestamp
+        '400':
+          description: Missing export_id
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing auth headers or session expired (re-auth required)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Not owner, or audience mismatch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Export not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+
+security_considerations:
+  - Presigned R2/S3 URL is a server-side secret — never returned to client (H3 closure part 1).
+  - Single-use nonce enforced at DB PK layer (export_id, nonce) on markos_gdpr_export_consumed (H3 part 2).
+  - Audience claim (audience_tenant_id) verified before bytes flow (H3 part 3).
+  - TTL cut to 24h (H3 part 4, was 7d).
+  - Reissue requires owner role + valid markos_sessions_devices session (re-auth gate).
+  - Audit emit on every download attempt: gdpr_export.downloaded | gdpr_export.replay_blocked.
+  - M5 size-bomb guard: GDPR_EXPORT_MAX_BYTES = 2 GiB default; oversize emits gdpr_export.oversize_aborted + HTTP 413.
