@@ -81,7 +81,7 @@ Plans:
 **Requirements Mapped:** API-02, QA-01, QA-02, QA-04, QA-05, QA-09, QA-11, QA-12, QA-13, QA-15
 **Depends on:** Phase 201
 **Status:** Planning
-**Plans:** 6/11 plans executed
+**Plans:** 7/11 plans executed
 **Source:** `.planning/phases/201-saas-tenancy-hardening/201-REVIEWS.md` (claude-cli separate-session pass, 2026-04-27)
 **Artifacts:** `201.1-CONTEXT.md`, `201.1-REVIEWS.md` (mirrors 201-REVIEWS.md)
 
@@ -92,7 +92,7 @@ Plans:
 - [x] 201.1-04-PLAN.md — D-101 inline audit emit fail-closed for approve/submit + webhooks fail-closed mode (closes H1) — Wave 2
 - [x] 201.1-05-PLAN.md — D-104 jittered TTL + single-flight + transitional-410 rename (closes H5) — Wave 2
 - [x] 201.1-06-PLAN.md — D-106 pseudonymize-with-tombstone erase_audit_pii + tombstone-aware verifier (closes M4) — Wave 2
-- [ ] 201.1-07-PLAN.md — D-110 vanity-login WCAG AA luminance gate + DB CHECK constraint (closes M3) — Wave 2
+- [x] 201.1-07-PLAN.md — D-110 vanity-login WCAG AA luminance gate + DB CHECK constraint (closes M3) — Wave 2
 - [ ] 201.1-08-PLAN.md — D-102 GDPR signed-URL hardening: 24h TTL + nonce + audience + reissue + F-107 (closes H3) — Wave 3
 - [ ] 201.1-09-PLAN.md — D-107 BYOD verified→failed 24h grace window + alert via webhook engine (closes M2) — Wave 3
 - [ ] 201.1-10-PLAN.md — D-111 Playwright golden-path tenancy smoke (closes M7, reverses QA-06 NA for tenancy) — Wave 3
