@@ -166,7 +166,7 @@
 }
 .filterChipGroup button[data-active='true'] {
   background: var(--color-primary-subtle, rgb(0 217 163 / 0.10));
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 /* ── Deliveries table ─────────────────────────────────────────────── */
@@ -209,7 +209,7 @@
 }
 .expandChevron[data-expanded='true'] {
   transform: rotate(90deg);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 /* ── Expand row (delivery detail) ─────────────────────────────────── */
