@@ -17,7 +17,7 @@ import type { TaskExecutionRecord } from "./task-types";
 
 /**
  * Story wrapper component: renders the full three-region layout seeded with a specific task fixture
- * Used for all five required state stories
+ * Used for all required state stories
  */
 function TaskUIStoryWrapper({ task }: Readonly<{ task: TaskExecutionRecord }>) {
   const seededState = {
@@ -31,41 +31,33 @@ function TaskUIStoryWrapper({ task }: Readonly<{ task: TaskExecutionRecord }>) {
   return (
     <TaskStoreProvider initialState={seededState}>
       <div className={styles.page}>
-        <section className={styles.storyHero}>
-          <p className={styles.eyebrow}>Phase 46 operator execution surface</p>
-          <h2 className={styles.heroTitle}>Operator Task UI</h2>
-          <p className={styles.heroText}>
-            Review the linear task graph, act on the current step, and inspect immutable evidence without leaving the same operator workspace.
-          </p>
-        </section>
-
         <div className={styles.layout}>
-          <aside className={`${styles.panel} ${styles.panelSticky}`}>
-            <p className={styles.panelEyebrow}>Task list</p>
-            <h3 className={styles.panelTitle}>Operator Tasks</h3>
-            <p className={styles.panelText}>
+          <aside className={`c-card ${styles.panelSticky}`}>
+            <p className="t-label-caps">Task list</p>
+            <h3>Operator Tasks</h3>
+            <p>
               Current task state is seeded from a deterministic story fixture.
             </p>
-          <TaskGraph />
-        </aside>
+            <TaskGraph />
+          </aside>
 
-          <main className={styles.panel}>
-            <p className={styles.panelEyebrow}>Active step</p>
-            <h2 className={styles.panelTitle}>Execution Controls</h2>
-            <p className={styles.panelText}>
+          <main className="c-card">
+            <p className="t-label-caps">Active step</p>
+            <h2>Execution Controls</h2>
+            <p>
               Only the current actionable step exposes transitions. Future steps stay locked until prior work is resolved.
             </p>
-          <StepRunner />
-        </main>
+            <StepRunner />
+          </main>
 
-          <aside className={`${styles.panel} ${styles.panelSticky}`}>
-            <p className={styles.panelEyebrow}>Audit evidence</p>
-            <h3 className={styles.panelTitle}>Evidence Panel</h3>
-            <p className={styles.panelText}>
+          <aside className={`c-card ${styles.panelSticky}`}>
+            <p className="t-label-caps">Audit evidence</p>
+            <h3>Evidence Panel</h3>
+            <p>
               Inputs, outputs, logs, timestamps, and retry history remain read-only for audit clarity.
             </p>
-          <EvidencePanel />
-        </aside>
+            <EvidencePanel />
+          </aside>
         </div>
       </div>
     </TaskStoreProvider>
@@ -73,7 +65,7 @@ function TaskUIStoryWrapper({ task }: Readonly<{ task: TaskExecutionRecord }>) {
 }
 
 const meta = {
-  title: "Phase 46 / Operator Task UI",
+  title: "Operations/Tasks",
   component: TaskUIStoryWrapper,
   parameters: {
     layout: "fullscreen",
@@ -84,8 +76,97 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Story 1: Queued
- * Initial task state: operator sees queued step and can trigger execution
+ * QueuedTask: Initial task state — operator sees queued step ready for execution
+ * Exercises: .c-badge--info [–] Queued, .c-button--primary Execute Task Step
+ */
+export const QueuedTask: Story = {
+  args: {
+    task: queuedStoryTask,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Initial task state where the first step is queued and waiting for operator action. Shows .c-badge--info [–] Queued badge and .c-button--primary Execute Task Step.",
+      },
+    },
+  },
+};
+
+/**
+ * ExecutingTask: Step actively running — operator sees executing banner and controls
+ * Exercises: .c-badge--warning [•] Executing, .c-notice c-notice--info helper banner, .c-button--destructive Fail Step
+ */
+export const ExecutingTask: Story = {
+  args: {
+    task: executingStoryTask,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Step actively executing. Shows .c-badge--warning [•] Executing badge, .c-notice c-notice--info helper banner ('[•] Step is executing...'), Mark Complete and Fail Step buttons.",
+      },
+    },
+  },
+};
+
+/**
+ * CompletedTask: Successfully finished task — full evidence trail visible
+ * Exercises: .c-badge--success [ok] Completed, evidence-panel .c-card entries, .c-chip-protocol IDs
+ */
+export const CompletedTask: Story = {
+  args: {
+    task: completedStoryTask,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Successfully completed task with full evidence trail including inputs, outputs, logs, timestamps, and actor audit. Shows .c-badge--success [ok] Completed badge and .c-chip-protocol IDs in evidence panel.",
+      },
+    },
+  },
+};
+
+/**
+ * FailedTask: Execution error with retry available
+ * Exercises: .c-badge--error [err] Failed, .c-notice c-notice--error helper banner, .c-button--secondary Retry Step
+ */
+export const FailedTask: Story = {
+  args: {
+    task: failedStoryTask,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Failed step with error message and retry history visible. Shows .c-badge--error [err] Failed badge, .c-notice c-notice--error ('[err] Step failed...'), and .c-button--secondary Retry Step.",
+      },
+    },
+  },
+};
+
+/**
+ * ApprovalRequired: Approval gate rendered — operator must approve or reject
+ * Exercises: .c-modal, .c-backdrop, .c-input + .c-field comment textarea, .c-button--primary Approve + .c-button--destructive Reject
+ */
+export const ApprovalRequired: Story = {
+  args: {
+    task: approvedStoryTask,
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Approval gate surface — step requires explicit operator decision. Shows .c-input + .c-field comment textarea, .c-button--primary Approve + .c-button--destructive Reject with .c-modal reject confirm.",
+      },
+    },
+  },
+};
+
+/**
+ * Queued (legacy alias — preserved for existing snapshot baseline)
  */
 export const Queued: Story = {
   args: {
@@ -102,8 +183,7 @@ export const Queued: Story = {
 };
 
 /**
- * Story 2: Approved
- * Step approved by operator: ready for execution
+ * Approved (legacy alias — preserved for existing snapshot baseline)
  */
 export const Approved: Story = {
   args: {
@@ -120,8 +200,7 @@ export const Approved: Story = {
 };
 
 /**
- * Story 3: Executing
- * Step actively running: operator sees progress logs
+ * Executing (legacy alias — preserved for existing snapshot baseline)
  */
 export const Executing: Story = {
   args: {
@@ -138,8 +217,7 @@ export const Executing: Story = {
 };
 
 /**
- * Story 4: Completed
- * Successfully finished task: all evidence captured
+ * Completed (legacy alias — preserved for existing snapshot baseline)
  */
 export const Completed: Story = {
   args: {
@@ -156,8 +234,7 @@ export const Completed: Story = {
 };
 
 /**
- * Story 5: Failed
- * Execution error with retry history: operator decides next action
+ * Failed (legacy alias — preserved for existing snapshot baseline)
  */
 export const Failed: Story = {
   args: {
