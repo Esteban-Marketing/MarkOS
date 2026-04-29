@@ -1,14 +1,59 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import WorkspaceNotFoundPage from './page';
+import Link from 'next/link';
+import styles from './page.module.css';
 
-// Phase 213.4 Plan 07 — NEW file per UI-SPEC F-6.
-// WorkspaceNotFoundPage is an async Server Component with searchParams: Promise<...>.
-// Storybook 8 resolves async components; we pass a pre-resolved Promise via args.
+// Phase 213.4 Plan 07 — Phase 213.5 polish — synchronous wrapper for Storybook.
+//
+// app/(markos)/404-workspace/page.tsx is an async Server Component (per D-23
+// preserves Next.js notFound() + force-dynamic + searchParams: Promise<…>).
+// Storybook 8 cannot reliably render async Server Components in browser
+// context (React minified error #482 on Chromatic snapshot capture). This
+// story file renders the same JSX/markup synchronously by inlining the
+// resolved-params branch logic — verifies primitive composition, copy, and
+// `.c-card--feature` hero exception (D-13) without invoking the async RSC
+// path. Production component is untouched per D-23.
 
-// Thin synchronous wrapper to adapt the async component for Storybook story args.
 function StoryWrapper({ slug, reserved }: { slug?: string; reserved?: string }) {
-  // @ts-expect-error — Storybook renders async RSC; searchParams prop accepts resolved Promise
-  return <WorkspaceNotFoundPage searchParams={Promise.resolve({ slug, reserved })} />;
+  const apex = 'markos.dev';
+  const cleanSlug = (slug || '').toLowerCase();
+  const isReserved = reserved === '1';
+
+  if (isReserved) {
+    return (
+      <main className={styles.page}>
+        <section className={`c-card c-card--feature ${styles.cardWrap}`} aria-labelledby="heading">
+          <span className="t-label-caps">{apex}</span>
+          <h1 id="heading">This address is reserved.</h1>
+          <p>
+            This subdomain is reserved for platform use. Available workspaces start at{' '}
+            <a className={styles.link} href={`https://${apex}/signup`}>{apex}/signup</a>.
+          </p>
+          <Link className="c-button c-button--primary" href="/signup">Create a workspace</Link>
+        </section>
+      </main>
+    );
+  }
+
+  return (
+    <main className={styles.page}>
+      <section className={`c-card c-card--feature ${styles.cardWrap}`} aria-labelledby="heading">
+        <span className="t-label-caps">{apex}</span>
+        <h1 id="heading">
+          {cleanSlug ? `${cleanSlug}.${apex}` : apex} is available.
+        </h1>
+        <p>This workspace has not been claimed. Start yours.</p>
+        <div className={styles.ctaRow}>
+          <Link
+            className="c-button c-button--primary"
+            href={cleanSlug ? `/signup?slug=${encodeURIComponent(cleanSlug)}` : '/signup'}
+          >
+            Claim this workspace
+          </Link>
+          <Link className="c-button c-button--tertiary" href="/">Back to dashboard</Link>
+        </div>
+      </section>
+    </main>
+  );
 }
 
 const meta = {
