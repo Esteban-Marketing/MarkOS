@@ -341,15 +341,17 @@ Plans:
 
 **Research/context:** `obsidian/brain/SaaS Suite Canon.md`, `obsidian/brain/SaaS Marketing OS Strategy Canon.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-suite-intake.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-marketing-os-strategy-intake.md`, `obsidian/work/incoming/16-SAAS-SUITE.md`, `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md`, `.agent/markos/references/saas-suite.md`, `.planning/V4.0.0-GSD-PHASE-RESEARCH-READINESS-MATRIX.md`.
 
-### Phase 213.5: marketing claude-landing + demo sandbox to DESIGN.md tokens close Phase 200 retroactive UI debt (INSERTED)
+### Phase 213.5: marketing claude-landing + demo sandbox to DESIGN.md tokens — close Phase 200 retroactive UI debt (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
+**Goal:** Close Phase 200 retroactive UI debt on the 2 customer-facing Claude Marketplace surfaces (app/(marketing)/integrations/claude/page.tsx 122 LOC + app/(marketing)/integrations/claude/demo/page.tsx 165 LOC). Both have orphan classNames (.btn / .hero / .tool-grid / .demo-form / .demo-result / .demo-error) and NO module.css. Compose canonical DESIGN.md v1.1.0 primitives — .c-card--feature hero (32px radius hero exception per D-15, same precedent as 404-workspace 213.4-07), .c-card--interactive + .c-chip-protocol per tool grid item, .c-button c-button--primary (×2: hero + final-cta) + .c-button c-button--tertiary, .c-code-inline MCP URL, .t-lead hero sub on landing; .c-field + .c-field__label + .c-input (5 form fields) + .c-button c-button--primary + .is-loading + .c-notice c-notice--{error,warning} (with [err]/[warn] glyphs) + .c-card result panel on demo sandbox. Insert HTTP 429 rate-limit branch in onSubmit (currently missing). Preserve voice classifier baseline (≥100/100 per Phase 200 D-11), MCP allow-list tool slugs (D-21), and demo/api/route.ts (untouched per D-20).
+**Requirements**: 213.5-UI-SPEC.md AC L-1..L-8 (landing) + DS-1..DS-9 (demo sandbox) + X-1..X-12 (cross-cutting) — 29 ACs binding contract; 213.5-UI-SPEC.md is canonical for this phase since no REQ-IDs map.
 **Depends on:** Phase 213
-**Plans:** 0 plans
+**Plans:** 1/3 plans executed
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 213.5 to break down)
+- [x] 213.5-01-PLAN.md — landing page to DESIGN.md tokens — NEW page.module.css token-only layout + page.tsx primitive composition (.c-card--feature hero + .c-card--interactive + .c-chip-protocol per tool + .c-button{,--primary,--tertiary} + .c-code-inline + .t-lead) + NEW page.stories.tsx (Default / ToolListExpanded / CTAFocus / MobileBreakpoint) — preserves TOOLS array (10 MCP allow-list slugs) + aria-labels + copy verbatim (L-1..L-8)
+- [ ] 213.5-02-PLAN.md — demo sandbox to DESIGN.md tokens — NEW demo/page.module.css token-only sandbox layout + demo/page.tsx form primitives (.c-field + .c-field__label + .c-input ×5) + submit (.c-button--primary + .is-loading + aria-busy) + state notices (.c-notice c-notice--error + [err], .c-notice c-notice--warning + [warn]) + result panel (.c-card) + INSERT response.status === 429 rate-limit branch in onSubmit (D-20 fetch wiring + route.ts preserved verbatim) + NEW demo/page.stories.tsx (Default / Drafting / Success / RateLimited / Error) (DS-1..DS-9)
+- [ ] 213.5-03-PLAN.md — cross-cutting closure — NEW test/ui-a11y/213-5-marketing-a11y.test.js (≥20 grep-shape tests / ≥4 L-* + ≥4 DS-* AC# mentions / mirrors 213-4-admin-ops-a11y.test.js shape) + Phase 200 voice classifier baseline preservation verification (X-10 ≥100/100) + full Phase 200 + 213.x suite green (X-12) + final phase commit closing Phase 200 retroactive UI debt (X-1..X-12)
 
 ### Phase 213.4: UI Canon Adoption Wave 4 — admin + operations + status + 404-workspace + theme to DESIGN.md tokens (INSERTED)
 
