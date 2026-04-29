@@ -17,11 +17,29 @@ export type PluginSettingsAction = (formData: FormData) => void | Promise<void>;
 export type PluginSettingsPageProps = Readonly<{
   savePluginSettingsAction?: PluginSettingsAction;
   disablePluginAction?: PluginSettingsAction;
+  /** Plugin slug for the protocol chip — defaults to "digital-agency-v1" */
+  pluginSlug?: string;
+  /** Whether the plugin is currently disabled */
+  disabled?: boolean;
+  /** Whether an update is available */
+  updateAvailable?: boolean;
+  /** Whether the plugin is compatible with the running MarkOS version */
+  compatible?: boolean;
+  /** Minimum required MarkOS version (used in compatibility warning) */
+  minVersion?: string;
+  /** Whether the plugin is currently installed/enabled */
+  installed?: boolean;
 }>;
 
 export function PluginSettingsPageShell({
   savePluginSettingsAction,
   disablePluginAction,
+  pluginSlug = "digital-agency-v1",
+  disabled = false,
+  updateAvailable = false,
+  compatible = true,
+  minVersion = "1.0.0",
+  installed = true,
 }: PluginSettingsPageProps) {
   const brandCtx = getPluginBrandContext("current-tenant", defaultBrandPack);
   const capabilityGroups = [
@@ -32,12 +50,12 @@ export function PluginSettingsPageShell({
   return (
     <div className={styles.page}>
       <div className={styles.shell}>
-        <section className={styles.summaryCard}>
+        <section className="c-card">
           <div className={styles.summaryHeader}>
             <div>
-              <p className={styles.eyebrow}>Workspace plugin control</p>
-              <h1 className={styles.title}>Digital Agency</h1>
-              <p className={styles.summaryText}>
+              <p className="t-label-caps">Workspace plugin control</p>
+              <h1>Plugins</h1>
+              <p>
                 Enable the tenant-branded campaign workspace, assign capability grants,
                 and keep disable controls explicit when access must fail closed.
               </p>
@@ -50,8 +68,10 @@ export function PluginSettingsPageShell({
                   <div className={styles.logoFallback}>DA</div>
                 )}
                 <div>
-                  <p className={styles.brandLabel}>{brandCtx.label}</p>
-                  <p className={styles.brandMeta}>Tenant-branded workflow surface</p>
+                  <p>{brandCtx.label}</p>
+                  <p>Tenant-branded workflow surface</p>
+                  {/* Plugin slug as protocol chip — P-3 */}
+                  <span className="c-chip-protocol">plugin:{pluginSlug}</span>
                 </div>
               </div>
             </div>
@@ -60,16 +80,35 @@ export function PluginSettingsPageShell({
 
         <section className={styles.contentGrid}>
           <div className={styles.mainColumn}>
-            <article className={styles.panel}>
+            {/* Compatibility warning — P-4 */}
+            {!compatible && (
+              <div className="c-notice c-notice--warning" role="status">
+                <strong>[warn]</strong>{" "}This plugin requires MarkOS v{minVersion} or later.
+              </div>
+            )}
+
+            <article className="c-card">
               <div className={styles.sectionHeader}>
                 <div>
-                  <h2 className={styles.sectionTitle}>Enablement and capability grants</h2>
-                  <p className={styles.bodyText}>
+                  <h2>Enablement and capability grants</h2>
+                  <p>
                     Workspace owners can toggle access and adjust role-safe permissions for
                     campaign drafting, review, and publishing.
                   </p>
                 </div>
-                <span className={styles.statusBadge}>Review-ready</span>
+                {/* Status badges — P-2 */}
+                {installed && !disabled && !updateAvailable && (
+                  <span className="c-chip c-chip--mint">[ok] Installed</span>
+                )}
+                {disabled && (
+                  <span className="c-badge c-badge--warning">[warn] Disabled</span>
+                )}
+                {updateAvailable && (
+                  <span className="c-badge c-badge--info">[info] Update available</span>
+                )}
+                {!installed && !disabled && (
+                  <span className="c-badge c-badge--info">Not installed</span>
+                )}
               </div>
 
               <form action={savePluginSettingsAction} className={styles.formStack}>
@@ -77,32 +116,31 @@ export function PluginSettingsPageShell({
 
                 <div className={styles.toggleCard}>
                   <div>
-                    <p className={styles.toggleTitle}>Enable Digital Agency Plugin</p>
-                    <p className={styles.toggleDescription}>
+                    <p>Enable Digital Agency Plugin</p>
+                    <p>
                       Restores the dashboard, campaign workflow routes, and approval surfaces
                       for this workspace.
                     </p>
                   </div>
                   <label htmlFor="plugin-enabled" className={styles.toggleControl}>
                     <span className={styles.srOnly}>Enable Digital Agency Plugin</span>
-                    <input id="plugin-enabled" type="checkbox" name="enabled" className={styles.toggleInput} />
+                    <input id="plugin-enabled" type="checkbox" name="enabled" />
                   </label>
                 </div>
 
                 <fieldset className={styles.fieldset}>
-                  <legend className={styles.legend}>Capability grants</legend>
+                  <legend>Capability grants</legend>
                   <div className={styles.capabilityGrid}>
                     {capabilityGroups.map((group) => (
                       <div key={group.map((cap) => cap.id).join("-")} className={styles.capabilityColumn}>
                         {group.map((cap) => (
-                          <label key={cap.id} className={styles.capabilityCard}>
+                          <label key={cap.id} className={`c-card c-card--interactive ${styles.capabilityCard}`}>
                             <input
                               type="checkbox"
                               name="capabilities"
                               value={cap.id}
-                              className={styles.capabilityInput}
                             />
-                            <span className={styles.capabilityText}>{cap.label}</span>
+                            <span>{cap.label}</span>
                           </label>
                         ))}
                       </div>
@@ -111,10 +149,11 @@ export function PluginSettingsPageShell({
                 </fieldset>
 
                 <div className={styles.actionRow}>
-                  <button type="submit" className={styles.primaryButton}>
+                  {/* Primary save action — P-2 */}
+                  <button type="submit" className="c-button c-button--primary">
                     Save Plugin Settings
                   </button>
-                  <button type="button" className={styles.secondaryButton}>
+                  <button type="button" className="c-button c-button--secondary">
                     Review Route Gate Impact
                   </button>
                 </div>
@@ -123,9 +162,9 @@ export function PluginSettingsPageShell({
           </div>
 
           <aside className={styles.sideColumn}>
-            <section className={styles.panel}>
-              <h2 className={styles.sectionTitle}>What changes when enabled</h2>
-              <p className={styles.bodyText}>
+            <section className="c-card">
+              <h2>What changes when enabled</h2>
+              <p>
                 The plugin exposes the branded dashboard, campaign assembly flow, draft review,
                 and gated publishing permissions for approved users.
               </p>
@@ -136,15 +175,16 @@ export function PluginSettingsPageShell({
               </ul>
             </section>
 
-            <section className={styles.dangerCard}>
-              <h2 className={styles.dangerTitle}>Disable access</h2>
-              <p className={styles.dangerText}>
+            <section className="c-card">
+              <h2>Disable access</h2>
+              <p>
                 Disabling the plugin removes workspace access immediately and forces protected
                 routes to fail closed until re-enabled.
               </p>
-              <form action={disablePluginAction}>
+              <form action={disablePluginAction} className={styles.actionRow}>
                 <input type="hidden" name="plugin_id" value={PLUGIN_ID} />
-                <button type="submit" className={styles.dangerButton}>
+                {/* Destructive uninstall action — P-4 */}
+                <button type="submit" className="c-button c-button--destructive">
                   Disable Digital Agency Plugin
                 </button>
               </form>
