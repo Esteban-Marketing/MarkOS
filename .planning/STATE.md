@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
 status: Ready to execute
-last_updated: "2026-04-29T01:10:46.070Z"
+last_updated: "2026-04-29T01:18:27.456Z"
 progress:
   total_phases: 17
   completed_phases: 5
@@ -17,7 +17,7 @@ progress:
 ## Current Position
 
 Phase: 213.3 (ui-canon-adoption-wave-3-settings) — EXECUTING
-Plan: 4 of 9
+Plan: 5 of 9
 Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `/gsd-discuss-phase 213.3` for the next decimal phase (settings surfaces — Files / Billing / Members / Sessions / Domain / Danger / MCP / Plugins / Webhooks).
 
 ## Phase 213.3 Plan Progress
@@ -25,6 +25,7 @@ Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `
 - [x] 213.3-01: billing surface to DESIGN.md tokens — page.module.css rewritten + page.tsx primitive composition + page.stories.tsx (CSF3 named state stories). Closes UI-SPEC AC B-1..B-N + X-4 (billing slice). (2026-04-29)
 - [x] 213.3-02: members surface to DESIGN.md tokens — page.module.css rewritten (210→133 LOC, zero hex) + .meterFill seat bar + .c-notice c-notice--info + .c-modal remove-confirm + MembersPageView extraction + page.stories.tsx (CSF3 5 named state stories: Default/Filled/InvitePending/RoleEdit/Empty). Closes UI-SPEC AC M-1..M-5 + X-4 (members slice). (2026-04-29)
 - [x] 213.3-03: sessions surface to DESIGN.md tokens — page.module.css rewritten (133→78 LOC, zero hex) + .c-status-dot--live + [ok] Active now current-session indicator + .c-badge--success [ok] Current badge + .c-modal + .c-backdrop revoke-confirm dialogs (per-session + revoke-all) + SessionsPageView extraction + page.stories.tsx (CSF3 4 named state stories: Default/RevokeConfirm/SingleSession/Empty). sessions-api.test.js stale CSS-lock + copy assertions updated to token-canon (Rule 1). Closes UI-SPEC AC S-1..S-4 + X-4 (sessions slice). (2026-04-29)
+- [x] 213.3-04: domain surface to DESIGN.md tokens — page.module.css rewritten (22→54 LOC GROWS, zero hex — highest hex-density surface in wave: 19 hex/22 LOC eliminated) + 4 .c-notice DNS state compositions (success/info/warning/error) + .c-status-dot--live/default/--error modifiers + bracketed-glyph pairing + .c-code-block inside .c-terminal CNAME display + .c-button--destructive Remove domain + .c-button--tertiary Resolve now + DomainPageView extraction + page.stories.tsx (CSF3 5 named state stories: Default/Pending/Verified/RotationGrace/Failed). Closes UI-SPEC AC D-1..D-5 + X-4 (domain slice). (2026-04-29)
 
 ## Phase 213.2 Plan Progress
 
