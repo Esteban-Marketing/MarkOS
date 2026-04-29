@@ -128,3 +128,9 @@
   color: var(--color-on-surface-muted);
   padding: var(--space-md);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .meterFill {
+    transition: none;
+  }
+}
