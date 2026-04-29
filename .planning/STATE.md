@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Ready to execute
-last_updated: "2026-04-29T18:09:04.277Z"
+status: Phase complete — ready for verification
+last_updated: "2026-04-29T18:16:18.827Z"
 progress:
   total_phases: 17
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 132
-  completed_plans: 60
-  percent: 45
+  completed_plans: 61
+  percent: 46
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -79,9 +79,11 @@ Phase 201.1 closes review concern H2 by:
 
 - Reclassifying the 8 operational smokes as v4.0.0-release gates (separate
   from Phase 201 phase-completion gate).
+
 - Scaffolding `scripts/staging-smokes/` with one .cjs entry-point per smoke
   + a `run-all.cjs` orchestrator + a separate `.github/workflows/staging-smokes.yml`
   CI workflow triggered by `workflow_dispatch` + tag pushes matching `v4.0.0-*`.
+
 - Live-mode bodies for each smoke are STUBS in this delta phase; the
   v4.0.0-release prep milestone fills them in. The scaffold being merged
   HERE means H2 closure is no longer a release blocker — the work to fill
