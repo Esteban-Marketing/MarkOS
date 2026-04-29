@@ -58,7 +58,7 @@ export default function MarkOSOperationsPage({
               <strong>[err]</strong>{" "}Role {"`"}
               {iamRole || 'unknown'}
               {"`"} lacks execute_task permission. Contact an owner or admin to request access.
-            </div>
+            </output>
             <ul className={styles.metaList}>
               <li className={styles.metaItem}>
                 <span className="t-label-caps">Required role</span>{" "}
