@@ -22,6 +22,11 @@ on:
       - "api/literacy/**"
       - "test/literacy-e2e.test.js"
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   # ============================================================================
   # Storybook Build & Chromatic Visual Regression
