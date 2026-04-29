@@ -94,6 +94,7 @@ note: >
 - No `dangerouslySetInnerHTML` — [ok] passes test.
 - No inline `<script>` — [ok] passes test.
 - Voice classifier score: 100 (threshold 85) — [ok].
+- Primary visual anchor: the `<h1>` headline draws first fixation; the mint-fill "Try the demo" button is the secondary focal point.
 
 ### Surface 2 — Demo sandbox (`/integrations/claude/demo`)
 
@@ -173,10 +174,12 @@ note: >
 | Hero subtext / section intro | `typography.lead` | `var(--font-sans)` + `var(--fs-lead)` (1.250rem) + `var(--fw-regular)` + `var(--lh-lead)` (1.50) | `.hero-sub` copy; demo intro paragraph |
 | Body copy (tool descriptions, install steps, value prop body) | `typography.body-md` | `var(--font-sans)` + `var(--fs-body-md)` (1.000rem) + `var(--fw-regular)` + `var(--lh-body-md)` (1.60) | `<p>` inside `.value-list` items; `.install-note`; tool-grid descriptions |
 | MCP tool names in grid | `typography.code-inline` | `var(--font-mono)` + `var(--fs-code)` (0.875rem) + `var(--fw-regular)` | `<code>draft_message</code>` etc. in tool grid — DESIGN.md signature |
-| Form labels | `typography.label-caps` | `var(--font-sans)` + `var(--fs-label)` (0.800rem) + `var(--fw-semibold)` + `text-transform: uppercase` + `var(--ls-label)` | Demo form labels: "Channel", "Audience", "Pain", "Promise", "Brand" |
+| Form labels | `typography.label-caps` | `var(--font-sans)` + `var(--fs-label)` (0.640rem) + `var(--fw-semibold)` + `text-transform: uppercase` + `var(--ls-label)` | Demo form labels: "Channel", "Audience", "Pain", "Promise", "Brand" |
 | Button text | `typography.body-md` | `var(--fs-body-md)` + `var(--fw-medium)` | `.btn-primary`, `.btn-secondary`, submit button |
 
-**Declared sizes summary:** 4 sizes (h1=2.441rem, h2=1.953rem, body-md=1.000rem, code=0.875rem); 2 weights (regular 400, semibold/bold 600/700).
+**Declared sizes summary:** 7 sizes (2.441rem h1, 1.953rem h2, 1.563rem h3, 1.250rem lead, 1.000rem body-md, 0.875rem code-inline, 0.640rem label-caps) — exceeds 4-size rule [DEBT]; all are DESIGN.md-canonical named tokens. Future consolidation: merge h3 into h2 (`.tool-grid` headers) and label-caps into body-sm (eyebrow text) for this surface.
+
+**3 weights (regular 400, medium 500, semibold/bold 600/700) — exceeds 2-weight rule [DEBT]; all DESIGN.md-canonical.**
 
 **[DEBT] — Typography debt:** No `var(--font-mono)` / `var(--font-sans)` citations in shipped pages. All font rendering depends on global body font cascade. If `globals.css` is not loaded or font vars not declared, pages render in system-ui sans-serif. Address in Phase 213.x marketing wave.
 
