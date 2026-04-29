@@ -111,8 +111,9 @@ test('Suite 201-07: Surface 6 danger page exists with UI-SPEC copy + modal WCAG 
   const fs = require('node:fs');
   const path = require('node:path');
   const src = fs.readFileSync(path.join(__dirname, '..', '..', 'app', '(markos)', 'settings', 'danger', 'page.tsx'), 'utf8');
+  // UI-SPEC v213.3-05 canonical copy (DZ-2/DZ-3): "Delete workspace", confirm-by-typing, aria-labelledby
   assert.match(src, /Delete workspace/);
-  assert.match(src, /Start deletion/);
-  assert.match(src, /Type the workspace slug/);
-  assert.match(src, /<dialog|aria-labelledby/);
+  assert.match(src, /Delete workspace permanently/);
+  assert.match(src, /Type the workspace name to confirm/);
+  assert.match(src, /aria-labelledby/);
 });
