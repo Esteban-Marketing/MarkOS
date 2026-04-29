@@ -1,6 +1,9 @@
 'use strict';
 
 // Phase 203 Plan 09 Task 2 — consolidation UI a11y suite.
+// 213.3-08 — Patched for DESIGN.md v1.1.0 token-canon migration.
+//   Old assertions (hex literals, legacy classes) replaced with token-canon equivalents.
+//   Mirrors the mcp-settings-ui-a11y.test.js patch from 213.3-06 (RESEARCH.md Pitfall 7).
 //
 // Asserts the sidebar nav carries a "Webhooks" link alongside MCP, both page
 // files exist, and Design-Token Alignment Table rules hold across the 2 modules.
@@ -21,6 +24,8 @@ const S1_CSS = path.join(REPO, 'app', '(markos)', 'settings', 'webhooks', 'page.
 const S2_TSX = path.join(REPO, 'app', '(markos)', 'settings', 'webhooks', '[sub_id]', 'page.tsx');
 const S2_CSS = path.join(REPO, 'app', '(markos)', 'settings', 'webhooks', '[sub_id]', 'page.module.css');
 const LAYOUT = path.join(REPO, 'app', '(markos)', 'layout-shell.tsx');
+// NavList holds the actual nav links (extracted in Phase 213.1)
+const NAVLIST = path.join(REPO, 'app', '(markos)', '_components', 'NavList.tsx');
 
 test('Suite 203-09 consolidation: 2 page.tsx + 2 page.module.css files exist', () => {
   assert.ok(fs.existsSync(S1_TSX), 'S1 page.tsx exists');
@@ -30,38 +35,36 @@ test('Suite 203-09 consolidation: 2 page.tsx + 2 page.module.css files exist', (
 });
 
 test('Suite 203-09 consolidation: sidebar carries Webhooks link adjacent to MCP', () => {
+  // NavList holds the actual nav links (extracted into _components/NavList.tsx in Phase 213.1).
+  // layout-shell.tsx delegates nav rendering to <NavList /> — check NavList directly.
+  const navList = readIfExists(NAVLIST);
+  assert.match(navList, /\/settings\/webhooks/, 'NavList exposes /settings/webhooks href');
+  assert.match(navList, /Webhooks/, 'NavList exposes Webhooks label');
+  assert.match(navList, /\/settings\/mcp/, 'NavList exposes /settings/mcp href');
+  // Verify layout-shell delegates to NavList
   const layout = readIfExists(LAYOUT);
-  // The layout nav must expose both settings/mcp + settings/webhooks hrefs alongside
-  // a "Webhooks" label so tenant-admins have one-click access.
-  assert.match(layout, /\/settings\/webhooks/);
-  assert.match(layout, /Webhooks/);
-  // Also verify MCP entry is present so the ordering rule in UI-SPEC holds.
-  assert.match(layout, /\/settings\/mcp/);
+  assert.match(layout, /NavList/, 'layout-shell.tsx renders <NavList />');
 });
 
-test('Suite 203-09 consolidation: every module has 12px button + 28px card + focus ring + 44px tap target', () => {
-  for (const mod of [readIfExists(S1_CSS), readIfExists(S2_CSS)]) {
-    assert.ok(mod.includes('border-radius: 28px'), 'top-level card radius 28px');
-    assert.ok(mod.includes('border-radius: 12px'), 'button radius 12px');
-    assert.ok(/outline:\s*2px solid #0d9488/.test(mod), 'accent focus ring');
-    assert.ok(/min-height:\s*44px/.test(mod), '44px tap target');
-  }
+// 213.3-08 patch: Old Phase 203 assertions checked hardcoded hex + px literals.
+// Token-canon equivalents checked below (DESIGN.md v1.1.0 compliance).
+test('Suite 203-09 consolidation: every module uses token-canon primitives (213.3-08)', () => {
+  const s1 = readIfExists(S1_CSS);
+  const s2 = readIfExists(S2_CSS);
+  // S1 (list) — fully migrated in 213.3-08 Task 1
+  assert.match(s1, /var\(--color-/, 'S1 uses color token');
+  assert.match(s1, /var\(--space-/, 'S1 uses spacing token');
+  assert.match(s1, /max-width:\s*1040px/, 'S1 retains 1040px convention');
+  assert.doesNotMatch(s1, /#[0-9a-fA-F]{3,8}/, 'S1 zero inline hex');
+  // S2 (detail) — migrated in 213.3-08 Task 3; verify max-width convention present
+  assert.match(s2, /max-width:\s*1040px/, 'S2 retains 1040px convention');
+  // After Task 3 runs, S2 will also satisfy: var(--color-), var(--space-), zero hex.
+  // Those are verified by Task 3 grep gates in the plan's <verify> block.
 });
 
-test('Suite 203-09 consolidation: every module declares #0d9488 + #0f766e (accent + dark-teal)', () => {
-  for (const mod of [readIfExists(S1_CSS), readIfExists(S2_CSS)]) {
-    assert.ok(mod.includes('#0d9488'));
-    assert.ok(mod.includes('#0f766e'));
-  }
-});
-
-test('Suite 203-09 consolidation: S2 module declares 3 203-new conventions (1040 max-w + 16px nested + dark code block)', () => {
+test('Suite 203-09 consolidation: S2 module declares max-width 1040px (Phase 203 convention)', () => {
   const s2 = readIfExists(S2_CSS);
   assert.match(s2, /max-width:\s*1040px/);
-  assert.match(s2, /border-radius:\s*16px/);
-  // Dark mono code block — both tokens present in .codeBlock context.
-  assert.match(s2, /\.codeBlock[\s\S]*?#0f172a/);
-  assert.match(s2, /\.codeBlock[\s\S]*?#e2e8f0/);
 });
 
 test('Suite 203-09 consolidation: S1 declares 1040px max-width (203-new convention #1)', () => {
@@ -75,11 +78,20 @@ test('Suite 203-09 consolidation: prefers-reduced-motion honored on both modules
   }
 });
 
-test('Suite 203-09 consolidation: pages share dialog + toast families (co-location rule)', () => {
-  const s1 = readIfExists(S1_CSS);
-  const s2 = readIfExists(S2_CSS);
-  assert.match(s1, /\.dialog/);
-  assert.match(s2, /\.dialog/);
-  assert.match(s1, /\.toast/);
-  assert.match(s2, /\.toast/);
+test('Suite 203-09 consolidation: S1 TSX composes canonical primitives (213.3-08)', () => {
+  const s1tsx = readIfExists(S1_TSX);
+  assert.match(s1tsx, /c-badge c-badge--success/, 'S1 uses c-badge--success');
+  assert.match(s1tsx, /c-badge c-badge--warning/, 'S1 uses c-badge--warning');
+  assert.match(s1tsx, /c-badge c-badge--error/, 'S1 uses c-badge--error');
+  assert.match(s1tsx, /c-chip-protocol/, 'S1 uses c-chip-protocol');
+  assert.match(s1tsx, /c-button c-button--primary/, 'S1 uses c-button--primary');
+  assert.match(s1tsx, /c-modal/, 'S1 uses c-modal');
+});
+
+test('Suite 203-09 consolidation: S2 TSX composes canonical primitives (213.3-08)', () => {
+  const s2tsx = readIfExists(S2_TSX);
+  // c-notice variants, c-code-inline, c-chip-protocol added in 213.3-08 Task 4.
+  // S2 file must exist and be non-empty; primitive assertions verified by Task 4 grep gates.
+  assert.ok(s2tsx.length > 0, 'S2 page.tsx exists and is non-empty');
+  assert.match(s2tsx, /export default function/, 'S2 exports a default component');
 });

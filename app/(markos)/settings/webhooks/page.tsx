@@ -1,6 +1,7 @@
 'use client';
 
 // Phase 203 Plan 09 Task 2 — Surface 1: /settings/webhooks tenant-admin dashboard.
+// 213.3-08 Task 2 — className migration to DESIGN.md v1.1.0 primitives.
 //
 // IA (top to bottom):
 //   1. Hero fleet metrics (4 numbers: 24h deliveries / Success rate / Avg latency / Dead-letter queue)
@@ -9,15 +10,13 @@
 //   3. Create-subscription native <dialog> (form with URL, events, rps override).
 //   4. Toast region (role=status aria-live=polite).
 //
-// Copy contract: every locked string from 203-UI-SPEC §Surface 1 Copywriting Contract
+// Copy contract: every locked string from 213.3-UI-SPEC §Surface 8 Copywriting Contract
 // is rendered literally (tests will grep).
-// A11y contract: aria-labelledby on 2 sections, role=meter on success bars, role=tablist
-// N/A here (S2), role=status on toast, <caption> + scope="col" on table, <dialog> for
-// create confirm. All interactive elements min-height 44px via CSS.
+// A11y contract: aria-labelledby on 2 sections, role=meter on success bars,
+// role=status on toast, <caption> + scope="col" on table, <dialog> for create confirm.
 //
 // Pattern lineage: app/(markos)/settings/mcp/page.tsx (202-09) — client component,
-// useState + useEffect parallel fetch on mount + 30s setInterval re-fetch; native
-// <dialog> with dialogRef for destructive/important confirms.
+// useState + useEffect parallel fetch on mount + 30s setInterval re-fetch.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './page.module.css';
@@ -57,16 +56,10 @@ type Subscription = {
   total_24h: number;
 };
 
-function chipCopyFor(chip: string) {
-  if (chip === 'Tripped') return 'Tripped';
-  if (chip === 'Half-open') return 'Half-open';
-  return 'Healthy';
-}
-
-function chipStateKey(chip: string) {
-  if (chip === 'Tripped') return 'open';
-  if (chip === 'Half-open') return 'half-open';
-  return 'closed';
+function subStatusBadge(chip: string): { cls: string; label: string } {
+  if (chip === 'Tripped') return { cls: 'c-badge c-badge--error', label: '[err] Failing' };
+  if (chip === 'Half-open') return { cls: 'c-badge c-badge--warning', label: '[warn] Disabled' };
+  return { cls: 'c-badge c-badge--success', label: '[ok] Enabled' };
 }
 
 function relativeTime(iso: string | null): string {
@@ -216,17 +209,17 @@ export default function WebhooksSettingsPage() {
 
   return (
     <main className={styles.page}>
-      <section className={styles.contentCard} aria-labelledby="webhooks-hero-heading">
+      <section className={`c-card ${styles.contentCard}`} aria-labelledby="webhooks-hero-heading">
         <div className={styles.cardHeaderRow}>
           <div>
-            <h1 id="webhooks-hero-heading" className={styles.heading}>Webhooks</h1>
-            <p className={styles.subheading}>
+            <h1 id="webhooks-hero-heading">Webhooks</h1>
+            <p className="t-lead">
               Deliver event callbacks to subscribers. HMAC-signed payloads with automatic retry, DLQ, and signing-secret rotation.
             </p>
           </div>
           <button
             type="button"
-            className={styles.primaryFilledButton}
+            className="c-button c-button--primary"
             onClick={openCreateDialog}
           >
             Create subscription
@@ -234,49 +227,44 @@ export default function WebhooksSettingsPage() {
         </div>
 
         {loadingMetrics ? (
-          <p className={styles.loadingText}>Loading metrics…</p>
+          <p>Loading metrics…</p>
         ) : (
           <div className={styles.heroGrid}>
-            <div className={styles.heroCard}>
-              <div className={styles.heroNumber}>{heroDisplay.total}</div>
-              <div className={styles.heroLabel}>24h deliveries</div>
+            <div className={`c-card ${styles.heroCard}`}>
+              <strong className={styles.heroNumber}>{heroDisplay.total}</strong>
+              <span className={styles.heroLabel}>24h deliveries</span>
             </div>
-            <div className={styles.heroCard}>
-              <div
-                className={styles.heroNumber}
-                data-variant={metrics && metrics.success_rate >= 99.9 ? 'success' : undefined}
-              >{heroDisplay.success}</div>
-              <div className={styles.heroLabel}>Success rate</div>
+            <div className={`c-card ${styles.heroCard}`}>
+              <strong className={styles.heroNumber}>{heroDisplay.success}</strong>
+              <span className={styles.heroLabel}>Success rate</span>
             </div>
-            <div className={styles.heroCard}>
-              <div className={styles.heroNumber}>{heroDisplay.latency}</div>
-              <div className={styles.heroLabel}>Avg latency (p50)</div>
+            <div className={`c-card ${styles.heroCard}`}>
+              <strong className={styles.heroNumber}>{heroDisplay.latency}</strong>
+              <span className={styles.heroLabel}>Avg latency (p50)</span>
             </div>
-            <div className={styles.heroCard}>
-              <div
-                className={styles.heroNumber}
-                data-variant={metrics && metrics.dlq_count > 0 ? 'dlq-alert' : undefined}
-              >{heroDisplay.dlq}</div>
-              <div className={styles.heroLabel}>Dead-letter queue</div>
+            <div className={`c-card ${styles.heroCard}`}>
+              <strong className={styles.heroNumber}>{heroDisplay.dlq}</strong>
+              <span className={styles.heroLabel}>Dead-letter queue</span>
             </div>
           </div>
         )}
       </section>
 
-      <section className={styles.contentCard} aria-labelledby="webhooks-subs-heading">
-        <h2 id="webhooks-subs-heading" className={styles.heading}>Subscriptions</h2>
+      <section className={`c-card ${styles.contentCard}`} aria-labelledby="webhooks-subs-heading">
+        <h2 id="webhooks-subs-heading">Subscriptions</h2>
         {loadingSubs ? (
-          <p className={styles.loadingText}>Loading subscriptions…</p>
+          <p>Loading subscriptions…</p>
         ) : subscriptions.length === 0 ? (
           <div className={styles.emptyState}>
-            <p>No webhook subscriptions yet. Create one to start receiving event callbacks.</p>
-            <a href="/docs/webhooks">Read the webhook setup guide</a>
+            <p>No webhook subscriptions. Create a subscription to receive event notifications.</p>
+            <a href="/docs/webhooks" className="c-button c-button--tertiary">Read the webhook setup guide</a>
           </div>
         ) : (
           <table className={styles.subscriptionsTable}>
             <caption>Active webhook subscriptions</caption>
             <thead>
               <tr>
+                <th scope="col">ID</th>
                 <th scope="col">URL</th>
                 <th scope="col">Events</th>
                 <th scope="col">Status</th>
@@ -287,12 +275,14 @@ export default function WebhooksSettingsPage() {
             </thead>
             <tbody>
               {subscriptions.map((sub) => {
-                const chip = chipCopyFor(sub.status_chip);
-                const chipKey = chipStateKey(sub.status_chip);
+                const { cls: badgeCls, label: badgeLabel } = subStatusBadge(sub.status_chip);
                 const successPct = typeof sub.success_rate === 'number' ? sub.success_rate : 100;
                 const firingBusy = !!testFiring[sub.id];
                 return (
                   <tr key={sub.id}>
+                    <td>
+                      <span className="c-chip-protocol">{sub.id}</span>
+                    </td>
                     <td>
                       <a
                         href={`/settings/webhooks/${encodeURIComponent(sub.id)}`}
@@ -303,28 +293,26 @@ export default function WebhooksSettingsPage() {
                       >{sub.url}</a>
                     </td>
                     <td>
-                      <div className={styles.eventChipGroup}>
+                      <div className={styles.chipGroup}>
                         {(sub.events || []).slice(0, 3).map((ev) => (
-                          <span key={ev} className={styles.eventChip}>{ev}</span>
+                          <span key={ev} className="c-chip-protocol">{ev}</span>
                         ))}
                         {(sub.events || []).length > 3 && (
-                          <span className={styles.overflowChip}>{`+${sub.events.length - 3} more`}</span>
+                          <span className="c-chip-protocol">{`+${sub.events.length - 3} more`}</span>
                         )}
                       </div>
                     </td>
                     <td>
-                      <span
-                        className={styles.statusChip}
-                        data-state={chipKey}
-                        aria-label={`Circuit breaker: ${chip}`}
-                      >{chip}</span>
+                      <span className={badgeCls} aria-label={`Circuit breaker: ${sub.status_chip}`}>
+                        {badgeLabel}
+                      </span>
                     </td>
                     <td>{relativeTime(sub.last_delivery_at)}</td>
                     <td>
                       <div className={styles.successRateCell}>
-                        <div className={styles.successBarTrack}>
+                        <div className={styles.meterTrack}>
                           <div
-                            className={styles.successBarFill}
+                            className={styles.meterFill}
                             role="meter"
                             aria-valuenow={Math.round(successPct * 10)}
                             aria-valuemin={0}
@@ -340,13 +328,13 @@ export default function WebhooksSettingsPage() {
                     <td>
                       <div className={styles.actionsCell}>
                         <a
-                          className={styles.viewLink}
+                          className="c-button c-button--tertiary"
                           href={`/settings/webhooks/${encodeURIComponent(sub.id)}`}
                           onClick={(e) => { e.preventDefault(); onViewDetail(sub); }}
                         >View</a>
                         <button
                           type="button"
-                          className={styles.testFireButton}
+                          className="c-button c-button--secondary"
                           onClick={() => onTestFire(sub)}
                           disabled={firingBusy}
                         >{firingBusy ? 'Firing…' : 'Test fire'}</button>
@@ -362,49 +350,52 @@ export default function WebhooksSettingsPage() {
 
       <dialog
         ref={createDialogRef}
-        className={styles.dialog}
+        className="c-modal"
         aria-labelledby="create-sub-heading"
       >
         <form method="dialog" onSubmit={onSubmitCreate}>
-          <h2 id="create-sub-heading" className={styles.dialogHeading}>Create webhook subscription</h2>
+          <h2 id="create-sub-heading">Create webhook subscription</h2>
           <div className={styles.dialogBody}>
-            <label className={styles.field}>
-              <span>Endpoint URL</span>
+            <label className="c-field">
+              <span className="c-field__label">Endpoint URL</span>
               <input
                 type="url"
                 required
+                className="c-input"
                 value={formUrl}
                 onChange={(e) => setFormUrl(e.target.value)}
                 placeholder="https://subscriber.example.com/webhooks"
               />
-              <span className={styles.fieldHelp}>HTTPS required. Private IPs are rejected.</span>
+              <span className="c-field__help">HTTPS required. Private IPs are rejected.</span>
             </label>
-            <label className={styles.field}>
-              <span>Events to subscribe to</span>
+            <label className="c-field">
+              <span className="c-field__label">Events to subscribe to</span>
               <input
                 type="text"
+                className="c-input"
                 value={formEvents}
                 onChange={(e) => setFormEvents(e.target.value)}
                 placeholder="approval.created, campaign.launched"
               />
             </label>
-            <label className={styles.field}>
-              <span>Rate limit override (optional)</span>
+            <label className="c-field">
+              <span className="c-field__label">Rate limit override (optional)</span>
               <input
                 type="number"
                 min={1}
+                className="c-input"
                 value={formRps}
                 onChange={(e) => setFormRps(e.target.value)}
               />
-              <span className={styles.fieldHelp}>Defaults to your plan tier. Cannot exceed the ceiling.</span>
+              <span className="c-field__help">Defaults to your plan tier. Cannot exceed the ceiling.</span>
             </label>
             {formError && (
-              <p role="alert" className={styles.formError}>{formError}</p>
+              <p role="alert" className="c-notice c-notice--error">{formError}</p>
             )}
           </div>
           <div className={styles.dialogActions}>
-            <button type="button" className={styles.cancelButton} onClick={closeCreateDialog}>Cancel</button>
-            <button type="submit" className={styles.primaryFilledButton} disabled={creating}>
+            <button type="button" className="c-button c-button--secondary" onClick={closeCreateDialog}>Cancel</button>
+            <button type="submit" className="c-button c-button--primary" disabled={creating}>
               {creating ? 'Creating…' : 'Create subscription'}
             </button>
           </div>
@@ -412,7 +403,7 @@ export default function WebhooksSettingsPage() {
       </dialog>
 
       {toast && (
-        <div className={styles.toast} role="status" aria-live="polite">{toast}</div>
+        <div className="c-toast c-toast--success" role="status" aria-live="polite">{toast}</div>
       )}
     </main>
   );

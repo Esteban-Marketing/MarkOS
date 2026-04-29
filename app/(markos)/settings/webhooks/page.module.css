@@ -134,8 +134,8 @@
   align-items: center;
 }
 
-/* ── Event chip group ─────────────────────────────────────────────── */
-.eventChipGroup {
+/* ── Chip group (event types cluster) ────────────────────────────── */
+.chipGroup {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xxs);
