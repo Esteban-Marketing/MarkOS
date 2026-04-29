@@ -187,10 +187,15 @@ test('ui-auth: operations layout provides auth context to child routes', () => {
 
 test('ui-auth tenant deny: layout fails closed when session tenant context is missing', () => {
   const layoutFile = readFile('app/(markos)/layout.tsx');
+  // Phase 213.1: denial copy extracted into MarkOSAccessDeniedState component
+  // in app/(markos)/layout-shell.tsx. Layout.tsx renders the denied state on
+  // tenant access errors; copy assertions live in layout-shell.tsx now.
+  assert.match(layoutFile, /MarkOSAccessDeniedState/);
+  assert.match(layoutFile, /tenant context|TENANT_CONTEXT_MISSING/i);
 
-  assert.match(layoutFile, /Access Denied/);
-  assert.match(layoutFile, /Unable to establish tenant context|Please sign in again/);
-  assert.match(layoutFile, /tenant context/i);
+  const layoutShellFile = readFile('app/(markos)/layout-shell.tsx');
+  assert.match(layoutShellFile, /Access Denied/);
+  assert.match(layoutShellFile, /Unable to establish tenant context|Sign in again/);
 });
 
 // ============================================================================

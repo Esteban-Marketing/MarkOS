@@ -46,11 +46,11 @@ rules:
       functionOptions:
         match: "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?(\\+[a-zA-Z0-9.]+)?$"
 
-  # Disable some noisy OAS rules that don't apply to MarkOS's style
-  # (These are intentional: MarkOS contracts use x-flow-id for operationId uniqueness)
-  operation-operationId-unique:
-    severity: warn
-  operation-success-response:
-    severity: warn
-  oas3-api-servers:
-    severity: off
+  # Disable some noisy OAS rules that don't apply to MarkOS's style.
+  # (MarkOS contracts use x-flow-id for operationId uniqueness.)
+  # Spectral 6.x severity-only override syntax: rule name maps directly to a
+  # severity scalar (`hint`/`info`/`warn`/`error`/`off`). Earlier syntax
+  # (`severity:` key inside an object) is rejected as a malformed rule.
+  operation-operationId-unique: warn
+  operation-success-response: warn
+  oas3-api-servers: off
