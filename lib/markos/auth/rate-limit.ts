@@ -4,7 +4,7 @@ const rlCjs = require('./rate-limit.cjs') as {
   hashIp: (ip: string) => string;
   windowStart: (now: number, window_ms: number) => string;
   checkSignupRateLimit: (client: unknown, input: { ip: string; email: string }) => Promise<{ allowed: boolean; reason: string }>;
-  recordSignupAttempt: (client: unknown, input: { ip: string; email: string }) => Promise<void>;
+  recordSignupAttempt: (client: unknown, input: { ip: string; email: string }) => Promise<{ attempt_count: number }>;
 };
 
 export const RATE_LIMITS = rlCjs.RATE_LIMITS;
