@@ -1,0 +1,184 @@
+/**
+ * MarkOS · Global stylesheet entry.
+ * Order matters: tailwind theme → tokens → reset → base typography → component primitives → tailwind utilities.
+ * Source of truth: /DESIGN.md
+ *
+ * Tailwind v4 setup:
+ *   - `@config` points at our hand-built theme (tailwind.config.ts) for darkMode + color/spacing/radius/fontFamily/keyframes.
+ *   - `@import "tailwindcss/theme"` loads Tailwind's default theme variables (kept minimal; our tokens override).
+ *   - `@import "tailwindcss/utilities"` loads only the utility layer; preflight is INTENTIONALLY OMITTED — our reset in this file handles base styles per DESIGN.md.
+ */
+
+@config "../tailwind.config.ts";
+@import "tailwindcss/theme.css" layer(theme);
+@import "./tokens.css";
+@import "../styles/components.css";
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Reset · minimal, surgical. We do not ship Normalize/Reset wholesale.
+   ────────────────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body-md);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-body-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+  font-feature-settings: "ss01" 0, "cv11" 0;
+}
+
+img, picture, video, canvas, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--color-info); text-decoration: underline; text-underline-offset: 2px; }
+a:hover { text-decoration: thickness 2px; }
+
+/* Selection — single mint tint */
+::selection {
+  background: var(--color-primary-subtle);
+  color: var(--color-on-surface);
+}
+
+/* Scrollbars — quiet, dark-aware */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-full);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Typography · base classes. Use directly or via @apply alternatives.
+   ────────────────────────────────────────────────────────────────────────── */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-mono);
+  color: var(--color-on-surface);
+  margin: 0;
+  font-feature-settings: "tnum" 1, "calt" 1;
+}
+
+h1 { font-size: var(--fs-h1); font-weight: var(--fw-bold);     line-height: var(--lh-h1); letter-spacing: var(--ls-h1); }
+h2 { font-size: var(--fs-h2); font-weight: var(--fw-semibold); line-height: var(--lh-h2); letter-spacing: var(--ls-h2); }
+h3 { font-size: var(--fs-h3); font-weight: var(--fw-semibold); line-height: var(--lh-h3); letter-spacing: var(--ls-h3); }
+h4 { font-size: var(--fs-h4); font-weight: var(--fw-medium);   line-height: var(--lh-h4); letter-spacing: var(--ls-h4); }
+
+p {
+  margin: 0;
+  font-size: var(--fs-body-md);
+  line-height: var(--lh-body-md);
+  max-width: 75ch;
+}
+
+small { font-size: var(--fs-body-sm); line-height: var(--lh-body-sm); letter-spacing: var(--ls-body-sm); }
+
+/* Responsive type ramp — step down at < md per DESIGN.md */
+@media (max-width: 767.98px) {
+  h1 { font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--ls-h2); }
+  h2 { font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: var(--ls-h3); }
+  h3 { font-size: var(--fs-h4); line-height: var(--lh-h4); letter-spacing: var(--ls-h4); }
+  /* h4, body-md unchanged — 16px is the floor */
+}
+
+.t-display {
+  font-family: var(--font-mono);
+  font-size: var(--fs-display);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+}
+
+.t-lead       { font-family: var(--font-sans); font-size: var(--fs-lead);   font-weight: var(--fw-regular); line-height: var(--lh-lead);   letter-spacing: var(--ls-lead); color: var(--color-on-surface-muted); }
+.t-body-md    { font-family: var(--font-sans); font-size: var(--fs-body-md); font-weight: var(--fw-regular); line-height: var(--lh-body-md); }
+.t-body-sm    { font-family: var(--font-sans); font-size: var(--fs-body-sm); font-weight: var(--fw-medium);  line-height: var(--lh-body-sm); letter-spacing: var(--ls-body-sm); }
+.t-label-caps { font-family: var(--font-sans); font-size: var(--fs-label);   font-weight: var(--fw-semibold); line-height: var(--lh-label); letter-spacing: var(--ls-label); text-transform: uppercase; font-feature-settings: "ss01" 1; color: var(--color-on-surface-muted); }
+.t-code       { font-family: var(--font-mono); font-size: var(--fs-code);    font-weight: var(--fw-regular); line-height: var(--lh-code);   font-feature-settings: "liga" 1, "calt" 1; }
+.t-code-block { font-family: var(--font-mono); font-size: var(--fs-code);    font-weight: var(--fw-regular); line-height: var(--lh-code-block); font-feature-settings: "liga" 1, "calt" 1; }
+
+/* Tabular numerals inside data grids */
+.tnum, table td, table th { font-feature-settings: "tnum" 1; }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Focus · non-negotiable. Never `outline: none` without replacement.
+   ────────────────────────────────────────────────────────────────────────── */
+
+:where(button, [role="button"], a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+  border-radius: var(--radius-sm);
+}
+
+/* Skip link — first focusable on every page */
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-sm);
+  inset-block-start: var(--space-sm);
+  z-index: 9999;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-on-surface);
+  border-radius: var(--radius-md);
+  transform: translateY(-200%);
+  transition: transform var(--duration-base) var(--ease-out);
+}
+.skip-link:focus-visible { transform: translateY(0); }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Layout · 12-col grid + container.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.container {
+  max-width: var(--w-container);
+  margin-inline: auto;
+  padding-inline: var(--space-sm);
+}
+@media (min-width: 640px)  { .container { padding-inline: var(--space-md); } }
+@media (min-width: 768px)  { .container { padding-inline: var(--space-xl); } }
+@media (min-width: 1280px) { .container { padding-inline: 0; } }
+
+.prose {
+  max-width: var(--w-prose);
+  margin-inline: auto;
+}
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+/* Section rhythm — match landing-page narrative cadence */
+.section { padding-block: var(--space-xxl); }
+.subsection { padding-block: var(--space-xl); }
+.group     { padding-block: var(--space-lg); }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Reduced motion · explicit overrides for the kernel pulse.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Kernel-pulse status dot freezes at full opacity */
+  .status-dot--live { animation: none !important; opacity: 1 !important; }
+}

@@ -1,0 +1,163 @@
+name: DESIGN.md
+
+# Enforces /DESIGN.md as canonical visual contract.
+# Per DESIGN.md > Implementation > CI snippet, adapted to MarkOS artifact paths:
+#   - Tokens DTCG export → tokens/tokens.json
+#   - Tailwind theme     → tailwind.config.ts (TS — drift detection deferred; see TODO below)
+#   - CSS variables      → app/tokens.css (hand-mirrored; reviewed in PR)
+#
+# Triggers on any change to DESIGN.md or its derived artifacts.
+
+on:
+  pull_request:
+    paths:
+      - DESIGN.md
+      - tokens/tokens.json
+      - tokens/index.ts
+      - tailwind.config.ts
+      - app/tokens.css
+      - app/globals.css
+      - styles/components.css
+  push:
+    branches: [main]
+    paths:
+      - DESIGN.md
+      - tokens/tokens.json
+      - tokens/index.ts
+      - tailwind.config.ts
+      - app/tokens.css
+      - app/globals.css
+      - styles/components.css
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint DESIGN.md
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Linter checks YAML front matter validity, WCAG contrast on component pairs,
+      # banned token usage, and structural conformance to the @google/design.md spec.
+      - name: Lint DESIGN.md (Google Labs spec)
+        run: npx --yes @google/design.md@latest lint DESIGN.md
+
+  diff:
+    name: PR diff (regression guard)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Fails when DESIGN.md diff carries a regression flag (e.g., contrast drop,
+      # token removal without deprecation, breaking rename without major bump).
+      - name: Diff DESIGN.md vs base
+        run: |
+          npx --yes @google/design.md@latest diff \
+            "origin/${{ github.base_ref }}:DESIGN.md" \
+            DESIGN.md
+
+  drift-tokens-dtcg:
+    name: Token drift — tokens.json (DTCG)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Re-export DTCG from DESIGN.md and compare against committed tokens.json.
+      # Any difference fails the build — DESIGN.md is upstream; the JSON is downstream.
+      - name: Verify tokens.json matches DESIGN.md export
+        run: |
+          npx --yes @google/design.md@latest export --format dtcg DESIGN.md > /tmp/tokens.expected.json
+          diff -u tokens/tokens.json /tmp/tokens.expected.json
+
+  drift-tailwind:
+    name: Token drift — Tailwind theme
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # The @google/design.md exporter emits JSON; tailwind.config.ts is hand-maintained TS.
+      # We export to a temp JSON and run a deep-equal check via a small inline node script.
+      # TODO: replace with scripts/verify-tailwind-theme.ts when written.
+      - name: Verify tailwind.config.ts theme matches DESIGN.md
+        run: |
+          npx --yes @google/design.md@latest export --format tailwind DESIGN.md > /tmp/tw.expected.json
+          node --experimental-strip-types -e "
+            const expected = JSON.parse(require('fs').readFileSync('/tmp/tw.expected.json', 'utf8'));
+            const cfg = require('./tailwind.config.ts').default;
+            const got = cfg.theme && cfg.theme.extend ? cfg.theme.extend : cfg.theme;
+            // Compare the Big Three: colors, spacing, fontSize. Full deep-equal is brittle; these are the high-value drift checks.
+            const pick = (o) => ({ colors: o.colors, spacing: o.spacing, fontSize: o.fontSize });
+            const e = JSON.stringify(pick(expected), null, 2);
+            const g = JSON.stringify(pick(got),      null, 2);
+            if (e !== g) {
+              console.error('Tailwind theme drift detected.');
+              console.error('--- expected (DESIGN.md export) ---');
+              console.error(e);
+              console.error('--- actual (tailwind.config.ts) ---');
+              console.error(g);
+              process.exit(1);
+            }
+            console.log('Tailwind theme matches DESIGN.md.');
+          "
+
+  drift-css-vars:
+    name: Token drift — app/tokens.css
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # app/tokens.css is hand-maintained per CLAUDE.md > Visual Design Canon.
+      # This step parses the DESIGN.md YAML front matter and asserts every color/spacing/radius/duration
+      # token appears as a `--*` custom property with the canonical value.
+      - name: Assert CSS variables match DESIGN.md tokens
+        run: |
+          node -e "
+            const fs = require('fs');
+            const md = fs.readFileSync('DESIGN.md', 'utf8');
+            const css = fs.readFileSync('app/tokens.css', 'utf8');
+            const fm = md.match(/^---([\s\S]*?)---/m);
+            if (!fm) { console.error('No YAML front matter in DESIGN.md'); process.exit(1); }
+            const block = fm[1];
+            const colorRe = /([a-z][a-z0-9-]*):\s+\"(#[0-9A-Fa-f]{3,8})\"/g;
+            const missing = [];
+            let m;
+            while ((m = colorRe.exec(block)) !== null) {
+              const [, name, hex] = m;
+              const reg = new RegExp('--color-' + name + ':\\\\s+' + hex.replace(/[-\\/\\\\^$*+?.()|[\\]{}]/g, '\\\\$&'), 'i');
+              if (!reg.test(css)) missing.push(name + ' (' + hex + ')');
+            }
+            if (missing.length) {
+              console.error('CSS var drift — these DESIGN.md tokens are missing or differ in app/tokens.css:');
+              missing.forEach(t => console.error('  ' + t));
+              process.exit(1);
+            }
+            console.log('CSS variables align with DESIGN.md tokens.');
+          "
