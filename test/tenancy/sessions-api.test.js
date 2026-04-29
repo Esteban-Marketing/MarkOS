@@ -41,7 +41,7 @@ test('Suite 201-05: revoke handler 401 when headers missing', async () => {
   }
 });
 
-test('Suite 201-05: /settings/sessions page.tsx renders table with caption and "(this device)" marker', () => {
+test('Suite 201-05: /settings/sessions page.tsx renders table with caption and current-session marker', () => {
   const p = path.join(__dirname, '..', '..', 'app', '(markos)', 'settings', 'sessions', 'page.tsx');
   const src = fs.readFileSync(p, 'utf8');
   assert.match(src, /'use client'/);
@@ -49,7 +49,7 @@ test('Suite 201-05: /settings/sessions page.tsx renders table with caption and "
   assert.match(src, /<caption>/);
   assert.match(src, /Revoke session/);
   assert.match(src, /Revoke all other sessions/);
-  assert.match(src, /this device/);
+  assert.match(src, /c-status-dot--live/);
   assert.match(src, /\/api\/tenant\/sessions\/list/);
   assert.match(src, /\/api\/tenant\/sessions\/revoke/);
 });
@@ -63,12 +63,13 @@ test('Suite 201-05: /404-workspace/page.tsx distinguishes reserved vs unclaimed'
   assert.match(src, /\/signup/);
 });
 
-test('Suite 201-05: Surface 2 + Surface 8 CSS lock UI-SPEC tokens', () => {
+test('Suite 201-05: Surface 2 CSS lock — token-canon (UI-SPEC 213.3 migration)', () => {
   const sessionsCss = fs.readFileSync(path.join(__dirname, '..', '..', 'app', '(markos)', 'settings', 'sessions', 'page.module.css'), 'utf8');
-  const notFoundCss = fs.readFileSync(path.join(__dirname, '..', '..', 'app', '(markos)', '404-workspace', 'page.module.css'), 'utf8');
-  for (const css of [sessionsCss, notFoundCss]) {
-    assert.match(css, /#0d9488|#0f766e/);
-    assert.match(css, /min-height: 44px/);
-    assert.match(css, /border-radius: 28px/);
-  }
+  // Sessions surface migrated to DESIGN.md v1.1.0 tokens in Phase 213.3-03.
+  // Assertions updated: teal hex → token vars; bespoke px → token vars.
+  assert.match(sessionsCss, /var\(--color-surface\)/);
+  assert.match(sessionsCss, /var\(--color-border\)/);
+  assert.match(sessionsCss, /var\(--space-md\)/);
+  assert.doesNotMatch(sessionsCss, /#0d9488|#0f766e/);
+  assert.doesNotMatch(sessionsCss, /border-radius:\s*28px/);
 });
