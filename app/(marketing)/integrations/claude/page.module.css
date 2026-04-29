@@ -1,0 +1,81 @@
+/* Phase 213.5 Plan-01 — Token-only Claude Marketplace landing-page layout.
+ * Composes .c-card--feature (hero panel, 32px radius hero exception per D-15,
+ * same precedent as 404-workspace 213.4-07), .c-card--interactive (tool grid),
+ * .c-chip-protocol (tool slugs), .c-button{,--primary,--tertiary} (CTAs),
+ * .c-code-inline (MCP URL), .t-lead (hero sub).
+ * NEW file (no prior module.css). Zero inline hex (whitelist: none here —
+ * all colors via var(--*)). 8px grid only. */
+
+.landing {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  min-height: 100dvh;
+  padding-block: var(--space-xl);
+  padding-inline: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  max-width: 75rem;
+  margin-inline: auto;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.valueProps {
+  padding-block: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.valueList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-md);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.tools {
+  padding-block: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.toolGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-sm);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.install {
+  padding-block: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.installLink {
+  color: var(--color-primary-text);
+  font-weight: var(--fw-semibold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.finalCta {
+  padding-block: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  text-align: center;
+}
