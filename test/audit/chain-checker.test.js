@@ -67,7 +67,9 @@ test('Suite 201-02: verifyTenantChain detects tampered middle row payload', asyn
   const result = await verifyTenantChain(mockClient(rows), 'tenant-b');
   assert.equal(result.ok, false);
   assert.ok(result.breaks.length >= 1, 'expected at least one break');
-  assert.ok(result.breaks.some(b => b.row_id === 2 && b.reason === 'row_hash mismatch'));
+  // Phase 201.1 D-106: 'row_hash mismatch' without a tombstone is now reported
+  // as 'tampering_suspected' by the augmented verifier (chain-checker D-106 upgrade).
+  assert.ok(result.breaks.some(b => b.row_id === 2 && b.reason === 'tampering_suspected'));
 });
 
 test('Suite 201-02: verifyTenantChain detects orphaned prev_hash pointer', async () => {
