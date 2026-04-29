@@ -22,15 +22,34 @@ test('Suite 201-08: webhooks/engine.cjs emits source_domain=webhooks on subscrib
 
 test('Suite 201-08: api/approve.js emits source_domain=approvals', () => {
   const src = read('api/approve.js');
-  assert.match(src, /enqueueAuditStaging/);
-  assert.match(src, /source_domain: 'approvals'/);
-  assert.match(src, /approval\.(approved|rejected|submitted)/);
+  // Pre-existing: enqueueAuditStaging still called (via inline-emit.cjs helper)
+  assert.match(src, /enqueueAuditStaging|emitInlineApprovalAudit/);
+  assert.match(src, /source_domain: 'approvals'|inline-emit/);
+  assert.match(src, /approval\.(approved|rejected|submitted)|emitInlineApprovalAudit/);
 });
 
 test('Suite 201-08: api/submit.js emits source_domain=approvals', () => {
   const src = read('api/submit.js');
-  assert.match(src, /enqueueAuditStaging/);
-  assert.match(src, /source_domain: 'approvals'/);
+  // Pre-existing: enqueueAuditStaging still called (via inline-emit.cjs helper)
+  assert.match(src, /enqueueAuditStaging|emitInlineApprovalAudit/);
+  assert.match(src, /source_domain: 'approvals'|inline-emit/);
+});
+
+// Phase 201.1 D-101: new assertions — inline pattern replaces post-res.end wrapper.
+test('Suite 201.1-04: api/approve.js uses inline emit (runWithDeferredEnd + emitInlineApprovalAudit)', () => {
+  const src = read('api/approve.js');
+  assert.match(src, /runWithDeferredEnd/, 'approve.js must use runWithDeferredEnd');
+  assert.match(src, /emitInlineApprovalAudit/, 'approve.js must use emitInlineApprovalAudit');
+  assert.doesNotMatch(src, /res\.end\s*=\s*function patchedEnd/, 'approve.js must NOT contain post-res.end wrapper');
+  assert.match(src, /audit_emit_failed/, 'approve.js must have audit_emit_failed error body');
+});
+
+test('Suite 201.1-04: api/submit.js uses inline emit (runWithDeferredEnd + emitInlineApprovalAudit)', () => {
+  const src = read('api/submit.js');
+  assert.match(src, /runWithDeferredEnd/, 'submit.js must use runWithDeferredEnd');
+  assert.match(src, /emitInlineApprovalAudit/, 'submit.js must use emitInlineApprovalAudit');
+  assert.doesNotMatch(src, /res\.end\s*=\s*function patchedEnd/, 'submit.js must NOT contain post-res.end wrapper');
+  assert.match(src, /audit_emit_failed/, 'submit.js must have audit_emit_failed error body');
 });
 
 test('Suite 201-08: F-88 contract + audit/list handler + vercel.ts cron entries', () => {
