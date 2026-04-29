@@ -80,3 +80,14 @@
   font-size: var(--fs-body-md);
   vertical-align: middle;
 }
+
+.heroActions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+}
+
+.modalActions {
+  display: flex;
+  gap: var(--space-xs);
+}
