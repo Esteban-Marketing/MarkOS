@@ -1,82 +1,60 @@
+/* Phase 213.4 Plan-03 — Token-only admin/governance layout shell.
+ * Composes .c-card (sections + detailCard), .c-button{,--primary,--destructive} (CTAs),
+ * .c-notice c-notice--{error,success} (denial / export-ready notices — AG-5),
+ * .c-badge--{error,success,info} (decision/status column inline — AG-3),
+ * .c-modal + .c-backdrop (Reject confirm),
+ * .t-label-caps (eyebrow / section nav labels),
+ * vanilla <table> with token-cited <th>/<td> recipe (D-14).
+ * All composition lives JSX-side. */
+
 .page {
-  font-family: "Space Grotesk", sans-serif;
-  background: #f5f7fa;
+  padding: var(--space-lg);
+  background: var(--color-surface);
   min-height: 100vh;
-  padding: 32px;
 }
 
 .shell {
-  max-width: 1280px;
+  max-width: var(--w-container);
   margin: 0 auto;
   display: grid;
-  gap: 32px;
-}
-
-.heroCard,
-.panel {
-  background: #ffffff;
-  border-radius: 20px;
-  border: 1px solid #e2e8f0;
-  padding: 24px;
-}
-
-.eyebrow {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #475569;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.title {
-  margin: 8px 0 0;
-  font-family: "Sora", sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.heroText {
-  margin: 8px 0 0;
-  color: #475569;
+  gap: var(--space-lg);
 }
 
 .layoutGrid {
   display: grid;
   grid-template-columns: 0.9fr 1.6fr 0.9fr;
-  gap: 24px;
+  gap: var(--space-md);
 }
 
-.sectionTitle {
-  margin: 0 0 16px;
-  font-size: 20px;
-  font-weight: 600;
-  color: #0f172a;
+@media (max-width: 1023.98px) {
+  .layoutGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .sectionList,
 .mainColumn {
   display: grid;
-  gap: 16px;
-}
-
-.sectionItem,
-.activeSection {
-  padding: 14px 16px;
-  border-radius: 14px;
-  font-weight: 600;
-  color: #0f172a;
+  gap: var(--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .sectionItem {
-  border: 1px solid #e2e8f0;
-  background: #ffffff;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-on-surface);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
 }
 
 .activeSection {
-  border: 1px solid #0d9488;
-  background: #f0fdfa;
+  border-color: var(--color-primary);
+  background: var(--color-primary-subtle);
 }
 
 .table {
@@ -84,38 +62,21 @@
   border-collapse: collapse;
 }
 
-.tableHead {
+.table th {
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--color-on-surface-muted);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-label);
+  border-bottom: 1px solid var(--color-border);
   text-align: left;
-  padding-bottom: 12px;
-  font-size: 14px;
 }
 
-.tableCell {
-  padding: 12px 0;
-  border-top: 1px solid #e2e8f0;
-}
-
-.detailCard {
-  background: #f8fafc;
-  border-left: 4px solid #0d9488;
-  border-radius: 16px;
-  padding: 16px;
-}
-
-.detailTitle {
-  margin: 0 0 12px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.detailText {
-  margin: 0 0 8px;
-  color: #475569;
-}
-
-@media (max-width: 1100px) {
-  .layoutGrid {
-    grid-template-columns: 1fr;
-  }
+.table td {
+  padding: var(--space-xs) var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-on-surface);
+  font-size: var(--fs-body-md);
+  vertical-align: middle;
 }
