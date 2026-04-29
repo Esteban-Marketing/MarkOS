@@ -1,326 +1,204 @@
 /*
- * Phase 203 Plan 09 Task 2 — Surface 1 /settings/webhooks styles.
+ * 213.3-08 Task 1 — /settings/webhooks (list) page module.
+ * Token-only layout module. Zero inline hex, zero off-brand typefaces,
+ * zero gradients/shadows/off-grid spacing, zero legacy button classes.
  *
- * Every class traces to a Phase 201 or 202 ancestor per 203-UI-SPEC §Component Reuse Map
- * OR is one of the 3 documented 203-new conventions:
- *   1. max-width 1040px on top-level cards (6-col subscriptions table needs width)
- *   2. border-radius 16px for nested cards (secretPanel + dangerCard)
- *   3. dark mono code block (#0f172a bg + #e2e8f0 text) — S2 only
+ * Primitives composited via JSX:
+ *   .c-card              (contentCard, heroCard sections)
+ *   .c-button--primary   (Create subscription)
+ *   .c-button--secondary (Test fire, Refresh)
+ *   .c-badge--{success,warning,error} (subscription status)
+ *   .c-chip-protocol     (subscription IDs, event types)
+ *   .c-modal + .c-backdrop (create-subscription dialog)
+ *   .c-toast             (feedback toast)
+ *   .c-field             (form fields)
  *
- * Ancestor map:
- *   .page, .contentCard, .heading, .subheading, .cardHeaderRow, .toast, .emptyState,
- *   .visuallyHidden, .dialog family, .cancelButton    → 202 mcp/page.module.css
- *   .subscriptionsTable (was .sessionsTable)           → 201 sessions/page.module.css
- *   .primaryFilledButton                               → 201 invite/[token]/.acceptButton
- *   .testFireButton (was .refreshButton)               → 202 mcp/.refreshButton
- *   .eventChip / .overflowChip (was .scopeChip)        → 202 oauth consent/.scopeChip
- *   .successBarTrack/.successBarFill (was .costMeter*) → 201 members/.seatBar*
- *   .statusChip (was .currentBadge, 3 data-variants)   → 201 sessions/.currentBadge
+ * Phase 203 documented convention retained:
+ *   max-width: 1040px on top-level cards (6-col subscriptions table needs room)
  */
 
+/* ── Page shell ───────────────────────────────────────────────────── */
 .page {
-  padding: 24px;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  color: #0f172a;
+  padding: var(--space-md);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-md);
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  min-height: 100%;
 }
 
+/* ── Content card ─────────────────────────────────────────────────── */
+/* Local max-width: 1040px — Phase 203 convention #1 (6-col table needs width) */
 .contentCard {
-  background: #ffffff;
-  border-radius: 28px;
-  padding: 32px;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 1040px; /* 203-new convention #1 — 6-col table needs room */
+  max-width: 1040px;
 }
 
-.heading {
-  margin: 0;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 28px;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.subheading {
-  margin: 0;
-  font-size: 16px;
-  color: #475569;
-  line-height: 1.6;
-}
-
+/* ── Card header row ──────────────────────────────────────────────── */
 .cardHeaderRow {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
 }
 
-.loadingText {
-  margin: 0;
-  font-size: 14px;
-  color: #475569;
-}
-
-/* ----------------------- Primary filled CTA (derived from invite/.acceptButton) */
-.primaryFilledButton {
-  min-height: 48px;
-  padding: 12px 22px;
-  background: #0d9488;
-  color: #ffffff;
-  border: 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background 120ms ease-out;
-}
-.primaryFilledButton:hover {
-  background: #0b877c;
-}
-.primaryFilledButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-.primaryFilledButton:disabled {
-  background: #94a3b8;
-  cursor: not-allowed;
-}
-
-/* ----------------------- Hero grid (new; derived from 202 budgetRow container) */
+/* ── Hero grid (4-column fleet metrics) ───────────────────────────── */
 .heroGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
+  gap: var(--space-md);
 }
 @media (max-width: 959px) {
   .heroGrid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 639px) {
-  .heroGrid { grid-template-columns: 1fr; gap: 12px; }
+  .heroGrid { grid-template-columns: 1fr; gap: var(--space-xs); }
 }
 
 .heroCard {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 20px;
+  gap: var(--space-xs);
+  padding: var(--space-md);
 }
 @media (min-width: 960px) {
   .heroCard:not(:last-child) {
-    border-right: 1px solid #f1f5f9;
+    border-right: 1px solid var(--color-border);
   }
 }
 
 .heroNumber {
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 32px;
-  font-weight: 600;
-  color: #0f172a;
-  line-height: 1.1;
+  font-family: var(--font-mono);
+  font-size: var(--fs-h3);
+  font-weight: var(--fw-semibold);
+  color: var(--color-on-surface);
+  line-height: var(--lh-h3);
 }
-.heroNumber[data-variant='success'] { color: #0d9488; }
-.heroNumber[data-variant='dlq-alert'] { color: #9a3412; }
 
 .heroLabel {
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 18px;
-  font-weight: 600;
-  color: #475569;
+  font-size: var(--fs-body-sm);
+  color: var(--color-on-surface-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-label);
 }
 
-/* ----------------------- Subscriptions table (mirrors 202 sessionsTable) */
+/* ── Subscriptions table ──────────────────────────────────────────── */
 .subscriptionsTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 8px;
+  margin-top: var(--space-md);
 }
 .subscriptionsTable caption {
   caption-side: top;
   text-align: left;
-  padding-bottom: 12px;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  padding-bottom: var(--space-xs);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-label);
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--color-on-surface-muted);
 }
+/* D-14 token recipe */
 .subscriptionsTable th {
   text-align: left;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #334155;
-  border-bottom: 1px solid #e2e8f0;
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  color: var(--color-on-surface-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-label);
+  border-bottom: 1px solid var(--color-border);
 }
 .subscriptionsTable td {
-  padding: 14px 16px;
-  font-size: 14px;
-  color: #0f172a;
-  border-bottom: 1px solid #f1f5f9;
+  padding: var(--space-xs) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-on-surface);
+  font-size: var(--fs-body-md);
   vertical-align: middle;
 }
 
+/* ── URL cell — mono truncation ───────────────────────────────────── */
 .urlCell {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
-  color: #0f172a;
-  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-code);
+  color: var(--color-primary-text, var(--color-on-surface));
+  text-decoration: underline;
+  text-underline-offset: 2px;
   max-width: 260px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   display: inline-block;
-}
-.urlCell:hover {
-  color: #0d9488;
-  text-decoration: underline;
-}
-.urlCell:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-  border-radius: 4px;
+  min-height: var(--h-control-touch);
+  align-items: center;
 }
 
-/* ----------------------- Event chip cluster (mirrors 202 scopeChip) */
+/* ── Event chip group ─────────────────────────────────────────────── */
 .eventChipGroup {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-}
-.eventChip {
-  background: #e6fffb;
-  color: #0f766e;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-}
-.overflowChip {
-  background: #f1f5f9;
-  color: #334155;
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
+  gap: var(--space-xxs);
 }
 
-/* ----------------------- Status chip (breaker state, 3 data-variants) */
-.statusChip {
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  display: inline-block;
-}
-.statusChip[data-state='closed'] {
-  background: #e6fffb;
-  color: #0f766e;
-}
-.statusChip[data-state='half-open'] {
-  background: #fef3c7;
-  color: #78350f;
-  border: 1px solid #d97706;
-}
-.statusChip[data-state='open'] {
-  background: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fca5a5;
-}
-
-/* ----------------------- Success-rate mini-bar (mirrors 202 costMeter*) */
+/* ── Success-rate meter ───────────────────────────────────────────── */
 .successRateCell {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--space-xxs);
   min-width: 120px;
 }
-.successBarTrack {
+.meterTrack {
   height: 6px;
-  background: #e2e8f0;
-  border-radius: 999px;
+  background: var(--color-border);
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
-.successBarFill {
+.meterFill {
   height: 100%;
-  background: #0d9488;
-  border-radius: 999px;
-  transition: width 180ms ease-out;
+  background: var(--color-success);
+  border-radius: var(--radius-full);
+  transition: width var(--duration-base) var(--ease-out);
 }
-.successBarFill[data-alert='true'] {
-  background: #9a3412;
+.meterFill[data-alert='true'] {
+  background: var(--color-error);
+}
+.meterFill[data-warn='true'] {
+  background: var(--color-warning);
 }
 
-/* ----------------------- Actions (View link + Test fire ghost) */
-.actionsCell {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.viewLink {
-  color: #0d9488;
-  text-decoration: underline;
-  font-weight: 600;
-  font-size: 14px;
-  min-height: 44px;
+/* ── Status cell ──────────────────────────────────────────────────── */
+.statusCell {
   display: inline-flex;
   align-items: center;
-  padding: 0 4px;
-}
-.viewLink:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-  border-radius: 4px;
+  gap: var(--space-xs);
 }
 
-.testFireButton {
-  min-height: 44px;
-  padding: 6px 12px;
-  background: transparent;
-  color: #334155;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: color 120ms ease-out, border-color 120ms ease-out;
+/* ── Actions cell ─────────────────────────────────────────────────── */
+.actionsCell {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
 }
-.testFireButton:hover {
-  color: #0d9488;
-  border-color: #0d9488;
-}
-.testFireButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-.testFireButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.actionRow {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
 }
 
-/* ----------------------- Empty state (mirrors 202) */
+/* ── Empty state ──────────────────────────────────────────────────── */
 .emptyState {
-  font-size: 14px;
-  color: #475569;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-.emptyState a {
-  color: #0d9488;
-  text-decoration: underline;
-  font-weight: 600;
-}
-.emptyState a:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-  border-radius: 4px;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl) var(--space-md);
+  color: var(--color-on-surface-muted);
+  font-size: var(--fs-body-md);
+  text-align: center;
 }
 
+/* ── Visually hidden (a11y) ───────────────────────────────────────── */
 .visuallyHidden {
   position: absolute;
   width: 1px;
@@ -334,123 +212,23 @@
   border: 0;
 }
 
-/* ----------------------- Dialog family (copied from 202 mcp) */
-.dialog {
-  border: 0;
-  border-radius: 24px;
-  padding: 28px;
-  width: min(520px, calc(100vw - 32px));
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  color: #0f172a;
-}
-.dialog::backdrop {
-  background: rgba(15, 23, 42, 0.35);
-}
-.dialogHeading {
-  margin: 0 0 12px;
-  font-family: 'Sora', 'Space Grotesk', sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-}
+/* ── Dialog form body ─────────────────────────────────────────────── */
 .dialogBody {
-  margin: 0 0 16px;
-  color: #0f172a;
-  font-size: 14px;
-  line-height: 1.5;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
+
+/* ── Dialog actions row ───────────────────────────────────────────── */
 .dialogActions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  margin-top: 20px;
-}
-.cancelButton {
-  min-height: 44px;
-  padding: 10px 18px;
-  background: #f1f5f9;
-  color: #334155;
-  border: 0;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-}
-.cancelButton:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
 }
 
-/* ----------------------- Field (mirrors members .field) */
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 14px;
-  color: #334155;
-  font-weight: 600;
-}
-.field input {
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 12px;
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-size: 14px;
-  color: #0f172a;
-  background: #ffffff;
-}
-.field input:focus-visible {
-  outline: 2px solid #0d9488;
-  outline-offset: 2px;
-}
-.fieldHelp {
-  font-size: 12px;
-  font-weight: 400;
-  color: #64748b;
-}
-.formError {
-  margin: 0;
-  padding: 10px 14px;
-  background: #fef2f2;
-  color: #991b1b;
-  border-left: 4px solid #dc2626;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-/* ----------------------- Toast (copy-verbatim from 202) */
-.toast {
-  position: fixed;
-  bottom: 16px;
-  right: 16px;
-  width: min(360px, calc(100vw - 32px));
-  padding: 12px 16px;
-  background: #ffffff;
-  border-left: 4px solid #0f766e;
-  border-radius: 12px;
-  font-size: 14px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
-  animation: toastSlideIn 200ms ease-out;
-}
-@keyframes toastSlideIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ----------------------- Reduced motion */
+/* ── Reduced motion ───────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .successBarFill,
-  .primaryFilledButton,
-  .testFireButton,
-  .urlCell {
-    transition: none !important;
-  }
-  .toast {
-    animation: none !important;
-  }
+  .meterFill { transition: none; }
 }
