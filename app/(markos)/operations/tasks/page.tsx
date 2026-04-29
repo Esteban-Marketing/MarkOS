@@ -30,6 +30,7 @@ import { TaskStoreProvider } from "./task-store";
 import { TaskGraph } from "./task-graph";
 import { StepRunner } from "./step-runner";
 import { EvidencePanel } from "./evidence-panel";
+import styles from "./task-ui.module.css";
 
 /**
  * Main route component for /markos/operations/tasks
@@ -38,46 +39,40 @@ import { EvidencePanel } from "./evidence-panel";
 export default function OperationsTasksPage() {
   return (
     <TaskStoreProvider>
-      <div className="flex flex-col lg:flex-row gap-4 p-6 min-h-screen bg-[#f5f7fa]">
-        {/* Left Region: Task List + Graph (30% desktop, full width mobile) */}
-        <aside className="w-full lg:w-[30%] bg-white rounded-lg border border-gray-200 shadow-sm overflow-y-auto max-h-[800px] lg:max-h-screen order-last lg:order-first">
-          <div className="p-4">
-            <h2 className="text-sm font-medium text-[#0f172a] mb-4">
-              Operator Tasks
-            </h2>
-            <Suspense fallback={<div className="text-sm text-[#475569]">Loading tasks...</div>}>
+      <div className={styles.page}>
+        <div className={styles.layout}>
+          {/* Left Region: Task List + Graph (0.9fr desktop, full width mobile) */}
+          <aside className={`c-card ${styles.panelSticky}`}>
+            <h2 className="t-label-caps">Operator Tasks</h2>
+            <Suspense fallback={<p className={styles.emptyState}>Loading tasks...</p>}>
               <TaskGraph />
             </Suspense>
-          </div>
-        </aside>
+          </aside>
 
-        {/* Center Region: Step Runner + Controls (45% desktop, full width mobile on stack) */}
-        <main className="w-full lg:w-[45%] bg-white rounded-lg border border-gray-200 shadow-sm p-6 order-2">
-          <h2 className="text-lg font-medium text-[#0f172a] mb-6">
-            Active Step
-          </h2>
-          <Suspense
-            fallback={
-              <div className="text-sm text-[#475569]">Loading step runner...</div>
-            }
-          >
-            <StepRunner />
-          </Suspense>
-        </main>
-
-        {/* Right Region: Evidence Drawer (25% desktop, hidden on mobile, overlay on tablet) */}
-        <aside className="hidden lg:block w-full lg:w-[25%] bg-white rounded-lg border border-gray-200 shadow-sm p-4 max-h-[800px] lg:max-h-screen overflow-y-auto order-3">
-          <div className="text-sm text-[#475569]">
-            <p className="font-medium text-[#0f172a] mb-4">Evidence Panel</p>
+          {/* Center Region: Step Runner + Controls (1.2fr desktop, full width mobile) */}
+          <main className="c-card">
+            <h2 className="t-label-caps">Active Step</h2>
             <Suspense
               fallback={
-                <div className="text-xs text-[#7c8192]">Loading evidence...</div>
+                <p className={styles.emptyState}>Loading step runner...</p>
+              }
+            >
+              <StepRunner />
+            </Suspense>
+          </main>
+
+          {/* Right Region: Evidence Drawer (0.95fr desktop, full width mobile) */}
+          <aside className={`c-card ${styles.panelSticky}`}>
+            <h2 className="t-label-caps">Evidence Panel</h2>
+            <Suspense
+              fallback={
+                <p className={styles.emptyState}>Loading evidence...</p>
               }
             >
               <EvidencePanel />
             </Suspense>
-          </div>
-        </aside>
+          </aside>
+        </div>
       </div>
     </TaskStoreProvider>
   );
