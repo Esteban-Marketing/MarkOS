@@ -20,6 +20,12 @@ export type RenameTenantSlugInput = {
   org_id?: string | null;
 };
 
+export type RenameTenantSlugResult = {
+  ok: boolean;
+  no_op?: boolean;
+  transitional_pin_confirmed?: boolean;
+};
+
 export const writeSlugThroughCache: (
   input: { slug: string; tenant_id: string },
 ) => Promise<void> = t.writeSlugThroughCache;
@@ -32,4 +38,5 @@ export const upsertTenantWithSlugCache: (
 export const renameTenantSlug: (
   client: unknown,
   input: RenameTenantSlugInput,
-) => Promise<void> = t.renameTenantSlug;
+  deps?: import('../tenant/slug-cache').SlugCacheDeps,
+) => Promise<RenameTenantSlugResult> = t.renameTenantSlug;

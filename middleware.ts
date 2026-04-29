@@ -44,14 +44,33 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   if (resolution.kind === 'first_party') {
     const slug = resolution.slug || '';
 
-    // Phase 201 Plan 08 Task 3: edge-config cache in front of Supabase (T-201-05-06 mitigation).
-    // Read-through: cache hit short-circuits the Supabase round-trip.
-    const { readSlugFromEdge, writeSlugToEdge } = await import('./lib/markos/tenant/slug-cache.cjs');
-    const cachedTenantId = await readSlugFromEdge(slug);
+    // Phase 201.1 D-104 (closes H5): single-flight + transitional-410 hardening.
+    const slugMod = await import('./lib/markos/tenant/slug-cache.cjs');
+    const sfMod = await import('./lib/markos/tenant/single-flight.cjs');
+    const { readSlugFromEdge, writeSlugToEdgeJittered, TRANSITIONAL_PREFIX } = slugMod as any;
+    const { singleFlight } = sfMod as any;
 
-    if (cachedTenantId) {
+    const cachedValue = await readSlugFromEdge(slug);
+
+    // Transitional 410: rename is in flight — point client to canonical host.
+    if (typeof cachedValue === 'string' && cachedValue.startsWith(TRANSITIONAL_PREFIX)) {
+      const newSlug = cachedValue.slice((TRANSITIONAL_PREFIX as string).length);
+      return new NextResponse(null, {
+        status: 410,
+        headers: {
+          'Location': `https://${newSlug}.${APEX}${url.pathname}${url.search}`,
+          'Sunset': new Date(Date.now() + 90_000).toUTCString(),
+          'Cache-Control': 'public, max-age=60',
+          'X-Markos-Renamed-From': slug,
+          'X-Markos-Renamed-To': newSlug,
+        },
+      });
+    }
+
+    // Cache hit (normal tenant id).
+    if (typeof cachedValue === 'string' && cachedValue.length > 0) {
       const headers = new Headers(req.headers);
-      headers.set('x-markos-tenant-id', cachedTenantId);
+      headers.set('x-markos-tenant-id', cachedValue);
       headers.set('x-markos-tenant-slug', slug);
       // org_id is not cached at this layer (keeps the edge-config value a simple string).
       // Downstream handlers requiring org_id already re-fetch via supabase when needed.
@@ -59,18 +78,22 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
       return NextResponse.next({ request: { headers } });
     }
 
-    const client = await createServiceClient();
-    const { resolveTenantBySlug } = await import('./lib/markos/tenant/resolver');
-    const tenant = await resolveTenantBySlug(client, slug);
+    // Cache miss → coalesce concurrent same-slug invocations within this warm instance.
+    const tenant = await singleFlight.coalesce(`slug:${slug}`, async () => {
+      const client = await createServiceClient();
+      const { resolveTenantBySlug } = await import('./lib/markos/tenant/resolver');
+      return resolveTenantBySlug(client, slug);
+    });
+
     if (!tenant) {
       url.pathname = '/404-workspace';
       url.searchParams.set('slug', slug);
       return NextResponse.rewrite(url);
     }
 
-    // Backfill the edge-config cache (fire-and-forget; never blocks the response).
+    // Backfill the edge-config cache with jittered TTL (fire-and-forget; never blocks response).
     if (tenant.status === 'active') {
-      writeSlugToEdge(slug, tenant.tenant_id).catch(() => {});
+      writeSlugToEdgeJittered(slug, tenant.tenant_id).catch(() => {});
     }
 
     const headers = new Headers(req.headers);
