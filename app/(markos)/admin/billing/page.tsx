@@ -108,7 +108,7 @@ export default function AdminBillingPage({
         <section className="c-card">
           <span className="t-label-caps">Operator billing reconciliation</span>
           <h1>Reconciliation queue</h1>
-          <p className="t-lead">Review Billing Evidence is the primary action when a mismatch or sync failure exists. Data is sourced from {OPERATOR_RECONCILIATION_ENDPOINT} and {HOLDS_ENDPOINT}, including incident severity, impacted workflows, same-period release evidence, and a restored active snapshot.</p>
+          <p className="t-lead">Review Billing Evidence is the primary action when a mismatch or sync failure exists. Data is sourced from {OPERATOR_RECONCILIATION_ENDPOINT} and {HOLDS_ENDPOINT}, including incident severity, impacted workflows, communication owner, recovery criteria, same-period release evidence, and a restored active snapshot.</p>
         </section>
 
         <section className={styles.layoutGrid}>
