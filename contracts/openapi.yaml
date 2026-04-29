@@ -5,7 +5,7 @@ openapi: 3.1.0
 info:
   title: MarkOS API
   version: 1.0.0
-  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 69 flow contracts.
+  description: Merged OpenAPI 3.1 specification for all MarkOS F-NN flow contracts. Generated from 71 flow contracts.
   contact:
     name: MarkOS Engineering
     url: "https://markos.esteban.marketing"
@@ -60,6 +60,12 @@ x-markos-flows:
   F-105:
     source: contracts/F-105-cli-whoami-status-v1.yaml
     description: MarkOS flow F-105
+  F-106-admin-reserved-slugs-v1:
+    source: contracts/F-106-admin-reserved-slugs-v1.yaml
+    description: MarkOS flow F-106-admin-reserved-slugs-v1
+  F-107-gdpr-export-download-v1:
+    source: contracts/F-107-gdpr-export-download-v1.yaml
+    description: MarkOS flow F-107-gdpr-export-download-v1
   F-11:
     source: contracts/F-11-literacy-admin-query-v1.yaml
     description: MarkOS flow F-11
@@ -234,6 +240,8 @@ tags:
     description: execution domain flows
   -     name: general
     description: general domain flows
+  -     name: governance
+    description: governance domain flows
   -     name: integration
     description: integration domain flows
   -     name: migration
@@ -502,6 +510,156 @@ paths:
       x-flow-id: F-100
       x-flow-name: "Webhook Rate-Limit & Breaker State"
       x-domain: webhooks
+      x-flow-version: v1
+  /api/admin/reserved-slugs/add:
+    post:
+      summary: Add a reserved slug
+      operationId: addAdminReservedSlug
+      tags:
+        - admin
+        - governance
+      parameters:
+        -           name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddReservedSlugRequest"
+      responses:
+        '200':
+          description: Slug added
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                  - slug
+                properties:
+                  ok:
+                    type: boolean
+                    enum: "[true]"
+                  slug:
+                    type: string
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthenticated"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+        '409':
+          description: Slug already exists
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        '503':
+          $ref: "#/components/responses/Tenant0Unavailable"
+      x-flow-id: F-106-admin-reserved-slugs-v1
+      x-flow-name: admin_reserved_slugs
+      x-domain: governance
+      x-flow-version: v1
+  /api/admin/reserved-slugs/list:
+    get:
+      summary: List all reserved slugs
+      operationId: listAdminReservedSlugs
+      tags:
+        - admin
+        - governance
+      parameters:
+        -           name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Caller user ID — must have org_role=owner on Tenant-0 org.
+      responses:
+        '200':
+          description: Full reserved slug list ordered by category then slug
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - slugs
+                  - total
+                properties:
+                  slugs:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ReservedSlugEntry"
+                  total:
+                    type: integer
+        '401':
+          $ref: "#/components/responses/Unauthenticated"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+        '503':
+          $ref: "#/components/responses/Tenant0Unavailable"
+      x-flow-id: F-106-admin-reserved-slugs-v1
+      x-flow-name: admin_reserved_slugs
+      x-domain: governance
+      x-flow-version: v1
+  /api/admin/reserved-slugs/remove:
+    post:
+      summary: Remove a reserved slug
+      operationId: removeAdminReservedSlug
+      tags:
+        - admin
+        - governance
+      parameters:
+        -           name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RemoveReservedSlugRequest"
+      responses:
+        '200':
+          description: Slug removed
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                properties:
+                  ok:
+                    type: boolean
+                    enum: "[true]"
+        '400':
+          $ref: "#/components/responses/BadRequest"
+        '401':
+          $ref: "#/components/responses/Unauthenticated"
+        '403':
+          $ref: "#/components/responses/Forbidden"
+        '404':
+          description: Slug not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        '409':
+          description: Category locked (system/protected/single_char cannot be removed)
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        '503':
+          $ref: "#/components/responses/Tenant0Unavailable"
+      x-flow-id: F-106-admin-reserved-slugs-v1
+      x-flow-name: admin_reserved_slugs
+      x-domain: governance
       x-flow-version: v1
   /api/auth/callback:
     get:
@@ -1888,6 +2046,178 @@ paths:
       x-flow-id: F-104
       x-flow-name: CLI Tenant Env Sync
       x-domain: cli
+      x-flow-version: v1
+  /api/tenant/gdpr/download:
+    post:
+      summary: Server-mediated GDPR export download (single-use nonce)
+      operationId: gdprExportDownload
+      tags:
+        - tenancy
+        - gdpr
+      parameters:
+        -           name: X-Markos-Tenant-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        -           name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        -           name: X-Markos-Session-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - export_id
+                - nonce
+              properties:
+                export_id:
+                  type: string
+                  description: "The GDPR export identifier (gdpr-<uuid>)"
+                nonce:
+                  type: string
+                  description: 64-char hex single-use nonce returned by generateExportBundle or reissueExport
+      responses:
+        '200':
+          description: ZIP bundle streamed to client. Content-Disposition attachment.
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Missing export_id or nonce
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Missing auth headers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '403':
+          description: Audience mismatch — export does not belong to requesting tenant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '404':
+          description: Export not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '410':
+          description: Nonce already consumed (replay blocked) or export expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '502':
+          description: Upstream R2/S3 storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-flow-id: F-107-gdpr-export-download-v1
+      x-flow-name: gdpr_export_download
+      x-domain: tenancy
+      x-flow-version: v1
+  /api/tenant/gdpr/reissue:
+    post:
+      summary: Re-auth-required nonce rotation + 24h TTL extension
+      operationId: gdprExportReissue
+      tags:
+        - tenancy
+        - gdpr
+      parameters:
+        -           name: X-Markos-Tenant-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        -           name: X-Markos-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        -           name: X-Markos-Session-Id
+          in: header
+          required: true
+          description: Must reference a still-valid session in markos_sessions_devices
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - export_id
+              properties:
+                export_id:
+                  type: string
+                  description: The GDPR export to reissue a fresh nonce for
+      responses:
+        '200':
+          description: Fresh nonce issued; previous nonce is invalidated by the nonce column update
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - export_id
+                  - nonce
+                  - expires_at
+                properties:
+                  export_id:
+                    type: string
+                  nonce:
+                    type: string
+                    description: New 64-char hex single-use nonce
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: New 24h expiry timestamp
+        '400':
+          description: Missing export_id
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Missing auth headers or session expired (re-auth required)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '403':
+          description: "Not owner, or audience mismatch"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '404':
+          description: Export not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      x-flow-id: F-107-gdpr-export-download-v1
+      x-flow-name: gdpr_export_download
+      x-domain: tenancy
       x-flow-version: v1
   /api/tenant/invites/accept:
     post:
@@ -4157,6 +4487,69 @@ components:
           type: integer
           minimum: 0
           example: 3
+    F_106_admin_reserved_slugs_v1_ReservedSlugEntry:
+      type: object
+      required:
+        - slug
+        - category
+        - source_version
+        - added_at
+      properties:
+        slug:
+          type: string
+        category:
+          type: string
+          enum: "[system, protected, vendor, single_char, profanity]"
+        source_version:
+          type: string
+          description: 201-01 for migration seeds; admin-YYYY-MM-DD for operator additions
+        added_at:
+          type: string
+          format: date-time
+        added_by:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+    F_106_admin_reserved_slugs_v1_AddReservedSlugRequest:
+      type: object
+      required:
+        - slug
+        - category
+      properties:
+        slug:
+          type: string
+          pattern: "^[a-z0-9-]{1,63}$"
+          description: Lowercase alphanumeric slug (hyphens allowed).
+        category:
+          type: string
+          enum: "[system, protected, vendor, single_char, profanity]"
+        notes:
+          type: string
+          nullable: true
+    F_106_admin_reserved_slugs_v1_RemoveReservedSlugRequest:
+      type: object
+      required:
+        - slug
+      properties:
+        slug:
+          type: string
+    F_106_admin_reserved_slugs_v1_Problem:
+      type: object
+      properties:
+        error:
+          type: string
+        detail:
+          type: string
+          nullable: true
+    F_107_gdpr_export_download_v1_ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
     F_63A_MutationFamily:
       type: string
       enum:
@@ -4572,3 +4965,28 @@ components:
         ceiling_rps: "{ type: integer, minimum: 1 }"
         effective_rps: "{ type: integer, minimum: 1 }"
         override_rps: "{ type: [integer, 'null'], minimum: 1 }"
+  responses:
+    F_106_admin_reserved_slugs_v1_Unauthenticated:
+      description: Missing or invalid X-Markos-User-Id header
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    F_106_admin_reserved_slugs_v1_Forbidden:
+      description: Caller does not have org_role=owner on Tenant-0
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    F_106_admin_reserved_slugs_v1_BadRequest:
+      description: Invalid request body (slug format or unknown category)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    F_106_admin_reserved_slugs_v1_Tenant0Unavailable:
+      description: Tenant-0 system org record not found in DB
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
