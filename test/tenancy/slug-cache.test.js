@@ -141,7 +141,8 @@ test('Suite 201-08: renameTenantSlug updates DB + emits audit tenant.slug_rename
     actor_id: 'u1',
   });
   assert.equal(updates[0].patch.slug, 'b');
-  assert.ok(audits.some((a) => a.action === 'tenant.slug_renamed'));
+  // Phase 201.1 D-104: action renamed from tenant.slug_renamed → tenant_slug.renamed (plan 05 spec).
+  assert.ok(audits.some((a) => a.action === 'tenant_slug.renamed'));
   assert.ok(audits.some((a) => a.source_domain === 'tenancy'));
 });
 
