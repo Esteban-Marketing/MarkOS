@@ -1,0 +1,46 @@
+/* Phase 213.5 Plan-02 — Token-only Claude Demo Sandbox layout.
+ * Composes .c-field + .c-field__label + .c-input (form primitives per D-13),
+ * .c-button c-button--primary + .is-loading (submit per D-14),
+ * .c-notice c-notice--{error,warning} (state signals per D-14),
+ * .c-card (result panel per DS-7).
+ * NEW file (no prior module.css). Centered modal-width sandbox surface
+ * — max-width: var(--w-modal) (560px verified in tokens.css). */
+
+.sandbox {
+  background: var(--color-surface);
+  color: var(--color-on-surface);
+  min-height: 100dvh;
+  padding-block: var(--space-xl);
+  padding-inline: var(--space-md);
+  max-width: var(--w-modal);
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.demoForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin: 0;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.result {
+  margin-top: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
