@@ -9,6 +9,165 @@ type OffboardingStatus = {
   purge_due_at: string | null;
 };
 
+// ── DangerPageView ───────────────────────────────────────────────────────────
+// Presentational subcomponent — props-driven for Storybook story isolation.
+// Mirrors Sessions/Members/Domain extraction pattern (213.3-03/02/04).
+
+export type DangerPageViewProps = {
+  workspaceSlug: string;
+  offboardingStatus: OffboardingStatus | null;
+  showDeleteConfirm: boolean;
+  confirmSlug: string;
+  busy: boolean;
+  toast: string | null;
+  exportInProgress?: boolean;
+  onOpenDeleteConfirm: () => void;
+  onCloseDeleteConfirm: () => void;
+  onConfirmSlugChange: (value: string) => void;
+  onStartDeletion: () => void;
+  onCancelDeletion: () => void;
+};
+
+export function DangerPageView({
+  workspaceSlug,
+  offboardingStatus,
+  showDeleteConfirm,
+  confirmSlug,
+  busy,
+  toast,
+  exportInProgress = false,
+  onOpenDeleteConfirm,
+  onCloseDeleteConfirm,
+  onConfirmSlugChange,
+  onStartDeletion,
+  onCancelDeletion,
+}: DangerPageViewProps) {
+  return (
+    <main className={styles.page}>
+      {offboardingStatus?.offboarding && (
+        <div className="c-notice c-notice--warning" role="alert">
+          <strong>[warn]</strong>{' '}
+          Workspace scheduled for deletion.{' '}
+          {offboardingStatus.days_remaining ?? '—'} days remaining before permanent purge.{' '}
+          <button
+            type="button"
+            className="c-button c-button--tertiary"
+            onClick={onCancelDeletion}
+            disabled={busy}
+          >
+            Cancel deletion
+          </button>
+        </div>
+      )}
+
+      {exportInProgress && (
+        <div className="c-notice c-notice--info" role="status">
+          <strong>[info]</strong>{' '}Export in progress. A download link will be sent to your email.
+        </div>
+      )}
+
+      <section className={`c-card ${styles.contentCard}`} aria-labelledby="danger-heading">
+        <h2 id="danger-heading">Danger zone</h2>
+        <p className="t-lead">
+          Deleting the workspace starts a 30-day grace window. During that window the owner can
+          cancel deletion. After 30 days every row is permanently purged and a GDPR export bundle
+          is generated.
+        </p>
+
+        <div className={styles.dangerStack}>
+          <div className={`c-card ${styles.dangerRow}`}>
+            <div className={styles.dangerActionRow}>
+              <div>
+                <h4>Delete workspace</h4>
+                <p className="c-field__help">Permanently deletes this workspace and all data. This action cannot be undone.</p>
+              </div>
+              <button
+                type="button"
+                className="c-button c-button--destructive"
+                onClick={onOpenDeleteConfirm}
+                disabled={busy || !!offboardingStatus?.offboarding}
+              >
+                Delete workspace
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {showDeleteConfirm && (
+        <>
+          <div
+            className="c-backdrop"
+            onClick={onCloseDeleteConfirm}
+            aria-hidden="true"
+          />
+          <div
+            className="c-modal"
+            role="dialog"
+            aria-labelledby="delete-confirm-heading"
+            aria-modal="true"
+          >
+            <h3 id="delete-confirm-heading">Delete workspace?</h3>
+
+            {/* DZ-2: Consequence notice ABOVE the confirm form */}
+            <div className="c-notice c-notice--error" role="status">
+              <strong>[err]</strong>{' '}Deleting this workspace removes all members, data, API keys, and webhook subscriptions.
+            </div>
+
+            <div className={`c-field ${styles.confirmField}`}>
+              <label htmlFor="confirm-name" className="c-field__label">
+                Type the workspace name to confirm
+              </label>
+              <input
+                id="confirm-name"
+                type="text"
+                required
+                className="c-input"
+                value={confirmSlug}
+                onChange={(e) => onConfirmSlugChange(e.target.value)}
+                placeholder={workspaceSlug}
+                aria-invalid={confirmSlug.length > 0 && confirmSlug !== workspaceSlug ? true : undefined}
+                autoFocus
+              />
+              {confirmSlug.length > 0 && confirmSlug !== workspaceSlug && (
+                <p className="c-field__error">Workspace name does not match.</p>
+              )}
+            </div>
+
+            <div className={styles.modalActionRow}>
+              <button
+                type="button"
+                className="c-button c-button--secondary"
+                onClick={onCloseDeleteConfirm}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="c-button c-button--destructive"
+                onClick={onStartDeletion}
+                disabled={confirmSlug !== workspaceSlug || busy}
+              >
+                {busy ? 'Scheduling…' : 'Delete workspace permanently'}
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {toast && (
+        <div className="c-toast" role="status" aria-live="polite">
+          {toast}
+        </div>
+      )}
+    </main>
+  );
+}
+
+// ── DangerPage (default export) ──────────────────────────────────────────────
+// 'use client' container — retains Phase 201 fetch wiring.
+// Wires internal state into DangerPageView.
+
 export default function DangerPage() {
   const [status, setStatus] = useState<OffboardingStatus | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -71,117 +230,18 @@ export default function DangerPage() {
   }
 
   return (
-    <main className={styles.page}>
-      {status?.offboarding && (
-        <div className="c-notice c-notice--warning" role="alert">
-          <strong>[warn]</strong>{' '}
-          Workspace scheduled for deletion.{' '}
-          {status.days_remaining ?? '—'} days remaining before permanent purge.{' '}
-          <button
-            type="button"
-            className="c-button c-button--tertiary"
-            onClick={cancelDeletion}
-            disabled={busy}
-          >
-            Cancel deletion
-          </button>
-        </div>
-      )}
-
-      <section className={`c-card ${styles.contentCard}`} aria-labelledby="danger-heading">
-        <h2 id="danger-heading">Danger zone</h2>
-        <p className="t-lead">
-          Deleting the workspace starts a 30-day grace window. During that window the owner can
-          cancel deletion. After 30 days every row is permanently purged and a GDPR export bundle
-          is generated.
-        </p>
-
-        <div className={styles.dangerStack}>
-          <div className={`c-card ${styles.dangerRow}`}>
-            <div className={styles.dangerActionRow}>
-              <div>
-                <h4>Delete workspace</h4>
-                <p className="c-field__help">Permanently deletes this workspace and all data. This action cannot be undone.</p>
-              </div>
-              <button
-                type="button"
-                className="c-button c-button--destructive"
-                onClick={openDeleteConfirm}
-                disabled={busy || !!status?.offboarding}
-              >
-                Delete workspace
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {showDeleteConfirm && (
-        <>
-          <div
-            className="c-backdrop"
-            onClick={closeDeleteConfirm}
-            aria-hidden="true"
-          />
-          <div
-            className="c-modal"
-            role="dialog"
-            aria-labelledby="delete-confirm-heading"
-            aria-modal="true"
-          >
-            <h3 id="delete-confirm-heading">Delete workspace?</h3>
-
-            {/* DZ-2: Consequence notice ABOVE the confirm form */}
-            <div className="c-notice c-notice--error" role="status">
-              <strong>[err]</strong>{' '}Deleting this workspace removes all members, data, API keys, and webhook subscriptions.
-            </div>
-
-            <div className={`c-field ${styles.confirmField}`}>
-              <label htmlFor="confirm-name" className="c-field__label">
-                Type the workspace name to confirm
-              </label>
-              <input
-                id="confirm-name"
-                type="text"
-                required
-                className="c-input"
-                value={confirmSlug}
-                onChange={(e) => setConfirmSlug(e.target.value)}
-                placeholder={workspaceSlug}
-                aria-invalid={confirmSlug.length > 0 && confirmSlug !== workspaceSlug ? true : undefined}
-                autoFocus
-              />
-              {confirmSlug.length > 0 && confirmSlug !== workspaceSlug && (
-                <p className="c-field__error">Workspace name does not match.</p>
-              )}
-            </div>
-
-            <div className={styles.modalActionRow}>
-              <button
-                type="button"
-                className="c-button c-button--secondary"
-                onClick={closeDeleteConfirm}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="c-button c-button--destructive"
-                onClick={startDeletion}
-                disabled={confirmSlug !== workspaceSlug || busy}
-              >
-                {busy ? 'Scheduling…' : 'Delete workspace permanently'}
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-
-      {toast && (
-        <div className="c-toast" role="status" aria-live="polite">
-          {toast}
-        </div>
-      )}
-    </main>
+    <DangerPageView
+      workspaceSlug={workspaceSlug}
+      offboardingStatus={status}
+      showDeleteConfirm={showDeleteConfirm}
+      confirmSlug={confirmSlug}
+      busy={busy}
+      toast={toast}
+      onOpenDeleteConfirm={openDeleteConfirm}
+      onCloseDeleteConfirm={closeDeleteConfirm}
+      onConfirmSlugChange={setConfirmSlug}
+      onStartDeletion={startDeletion}
+      onCancelDeletion={cancelDeletion}
+    />
   );
 }
