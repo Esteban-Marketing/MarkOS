@@ -341,6 +341,16 @@ Plans:
 
 **Research/context:** `obsidian/brain/SaaS Suite Canon.md`, `obsidian/brain/SaaS Marketing OS Strategy Canon.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-suite-intake.md`, `obsidian/work/active/2026-04-22-markos-v2-saas-marketing-os-strategy-intake.md`, `obsidian/work/incoming/16-SAAS-SUITE.md`, `obsidian/work/incoming/17-SAAS-MARKETING-OS-STRATEGY.md`, `.agent/markos/references/saas-suite.md`, `.planning/V4.0.0-GSD-PHASE-RESEARCH-READINESS-MATRIX.md`.
 
+### Phase 213.5: marketing claude-landing + demo sandbox to DESIGN.md tokens close Phase 200 retroactive UI debt (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 213
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 213.5 to break down)
+
 ### Phase 213.4: UI Canon Adoption Wave 4 — admin + operations + status + 404-workspace + theme to DESIGN.md tokens (INSERTED)
 
 **Goal:** Final wave of the 213.x DESIGN.md adoption initiative. Redesign the 7 operator + admin + system surfaces (admin/billing 175 CSS LOC + admin/governance 120 + operations 189 + operations/tasks composite 525+1384 + status/webhooks 179 + 404-workspace 75 + settings/theme 15 = 1263 CSS LOC + 2049 TSX LOC across 14 files; 182 inline hex eliminated) from the legacy teal-Sora-Space-Grotesk-light-bg-gradients-drop-shadows implementation to the canonical DESIGN.md v1.1.0 token system (Kernel Black surface, Protocol Mint signal, JetBrains Mono + Inter, strict 8px grid, 1px Border Mist hairlines, no gradients, no drop-shadows, no emoji, bracketed-glyph state coding); fold in 3 priority polish fixes flagged by Phase 213.3 ui-review (commit 34e4bee — F-1 webhooks/[sub_id] light-theme WCAG; F-2 webhooks meter-height parity; F-3 members reduced-motion block); compose .c-card / .c-button / .c-notice c-notice--{state} / .c-badge--{state} / .c-status-dot / .c-modal / .c-input / .c-field / .c-chip / .c-chip-protocol / .c-card--feature (404-workspace D-13 hero exception); preserve Phase 200/201/202/203/204/205/207 wiring (D-20 Phase 203 status-page + D-21 Phase 207 AgentRun v2 substrate + D-22 admin role-gate + D-23 Next.js notFound); ship Storybook + a11y coverage (≥20 named state stories across 7 surfaces + new test/ui-a11y/213-4-admin-ops-a11y.test.js ≥30 tests + ≥7 AC# mentions); close 213.4-UI-SPEC.md acceptance criteria (65 ACs across 8 plans).
