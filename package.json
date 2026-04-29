@@ -56,7 +56,9 @@
     "openapi:build": "node scripts/openapi/build-openapi.cjs",
     "prepublishOnly": "node -e \"console.log('Publishing MarkOS v' + require('./package.json').version + ' (human-run npm publish required)')\"",
     "test:playwright:tenancy": "playwright test --config=playwright.config.ts test-playwright/tenancy-golden-path.spec.ts",
-    "playwright:install": "playwright install --with-deps chromium"
+    "playwright:install": "playwright install --with-deps chromium",
+    "smokes:staging": "node scripts/staging-smokes/run-all.cjs",
+    "smokes:staging:live": "node scripts/staging-smokes/run-all.cjs --mode live"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",

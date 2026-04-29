@@ -1,0 +1,50 @@
+name: Staging Smokes (v4.0.0 release gate)
+
+# Phase 201.1 D-108: separate CI workflow for v4.0.0-release gating.
+# Closes review concern H2. NOT a per-PR gate.
+# Trigger: manual dispatch OR tag push matching v4.0.0-*.
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry or live'
+        required: true
+        default: 'dry'
+        type: choice
+        options:
+          - dry
+          - live
+  push:
+    tags:
+      - 'v4.0.0-*'
+
+jobs:
+  staging-smokes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci
+      - name: Run staging smokes
+        run: |
+          MODE="${{ github.event.inputs.mode || 'dry' }}"
+          if [ "$MODE" = "live" ]; then
+            npm run smokes:staging:live
+          else
+            npm run smokes:staging
+          fi
+        env:
+          STAGING_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          STAGING_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+          STAGING_VERCEL_TOKEN: ${{ secrets.STAGING_VERCEL_TOKEN }}
+          STAGING_VERCEL_PROJECT_ID: ${{ secrets.STAGING_VERCEL_PROJECT_ID }}
+          STAGING_BOTID_CLIENT_ID: ${{ secrets.STAGING_BOTID_CLIENT_ID }}
+          STAGING_BOTID_SECRET: ${{ secrets.STAGING_BOTID_SECRET }}
+          STAGING_R2_ENDPOINT: ${{ secrets.STAGING_R2_ENDPOINT }}
+          STAGING_R2_ACCESS_KEY_ID: ${{ secrets.STAGING_R2_ACCESS_KEY_ID }}
+          STAGING_R2_SECRET_ACCESS_KEY: ${{ secrets.STAGING_R2_SECRET_ACCESS_KEY }}
