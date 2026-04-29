@@ -38,6 +38,8 @@ export default function MembersPage() {
   const [inviteBusy, setInviteBusy] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('contributor');
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
 
   async function fetchMembers() {
     const r = await fetch('/api/tenant/members/list', { method: 'GET' });
@@ -76,66 +78,90 @@ export default function MembersPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function removeMember(user_id: string) {
-    if (!confirm('Remove this member? They lose tenant access immediately.')) return;
+  function requestRemoveMember(member: Member) {
+    setMemberToRemove(member);
+    setShowRemoveConfirm(true);
+  }
+
+  async function confirmRemove() {
+    if (!memberToRemove) return;
+    setShowRemoveConfirm(false);
     const r = await fetch('/api/tenant/members/remove', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user_id }),
+      body: JSON.stringify({ user_id: memberToRemove.user_id }),
     });
     setToast(r.ok ? 'Member removed.' : 'Could not remove member.');
     setTimeout(() => setToast(null), 4000);
     if (r.ok) fetchMembers();
+    setMemberToRemove(null);
   }
 
   const atQuota = seatUsage.quota > 0 && seatUsage.used >= seatUsage.quota;
   const usagePct = seatUsage.quota > 0 ? Math.min(100, Math.round((seatUsage.used / seatUsage.quota) * 100)) : 0;
 
+  const meterFillClass =
+    usagePct >= 90
+      ? `${styles.meterFill} ${styles['meterFill--error']}`
+      : usagePct >= 70
+        ? `${styles.meterFill} ${styles['meterFill--warning']}`
+        : styles.meterFill;
+
   return (
     <main className={styles.page}>
-      <section className={styles.contentCard} aria-labelledby="members-heading">
-        <h1 id="members-heading" className={styles.heading}>Members</h1>
-        <p className={styles.subheading}>
+      <section className={`c-card ${styles.contentCard}`} aria-labelledby="members-heading">
+        <h1 id="members-heading">Members</h1>
+        <p className="t-lead">
           Invite teammates, assign roles, and track seat usage.
         </p>
 
         <div className={styles.seatBar} aria-label="Seat usage">
-          <div className={styles.seatBarLabel}>
+          <span className="t-label-caps">
             {seatUsage.used} of {seatUsage.quota} seats used
-          </div>
-          <div className={styles.seatBarTrack}>
-            <div className={styles.seatBarFill} style={{ width: `${usagePct}%` }} />
+          </span>
+          <div className={styles.meterTrack}>
+            <div className={meterFillClass} style={{ width: `${usagePct}%` }} />
           </div>
         </div>
 
         {members === null && <p className={styles.emptyState}>Loading members…</p>}
 
-        {members !== null && (
+        {members !== null && members.length === 0 && (
+          <p className={styles.emptyState}>
+            No members yet. Invite your first team member to get started.
+          </p>
+        )}
+
+        {members !== null && members.length > 0 && (
           <table className={styles.membersTable}>
-            <caption>Tenant members and roles</caption>
+            <caption>Team members</caption>
             <thead>
               <tr>
                 <th scope="col">Member</th>
                 <th scope="col">Tenant role</th>
                 <th scope="col">Joined</th>
-                <th scope="col"></th>
+                <th scope="col"><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
             <tbody>
               {members.map(m => (
                 <tr key={m.id}>
                   <td>
-                    <div className={styles.avatar} aria-hidden="true">{(m.email || m.user_id).slice(0, 2).toUpperCase()}</div>
-                    <span className={styles.memberLabel}>{m.email || m.user_id}</span>
+                    <span className={styles.avatar} aria-hidden="true">
+                      {(m.email || m.user_id).slice(0, 2).toUpperCase()}
+                    </span>
+                    {m.email || m.user_id}
                   </td>
-                  <td>{m.iam_role}</td>
+                  <td>
+                    <span className="c-badge">{m.iam_role}</span>
+                  </td>
                   <td>{new Date(m.created_at).toLocaleDateString()}</td>
                   <td>
                     {m.iam_role !== 'owner' && (
                       <button
                         type="button"
-                        className={styles.removeButton}
-                        onClick={() => removeMember(m.user_id)}
+                        className="c-button c-button--destructive"
+                        onClick={() => requestRemoveMember(m)}
                       >
                         Remove
                       </button>
@@ -148,56 +174,128 @@ export default function MembersPage() {
         )}
       </section>
 
-      <section className={styles.contentCard} aria-labelledby="invite-heading">
-        <h2 id="invite-heading" className={styles.heading}>Invite teammates</h2>
+      <section className={`c-card ${styles.contentCard}`} aria-labelledby="invite-heading">
+        <h2 id="invite-heading">Invite teammates</h2>
+
+        {pendingInvites.length > 0 && (
+          <div className="c-notice c-notice--info" role="status">
+            <strong>[info]</strong>{' '}
+            Invite pending. Resend or revoke if the recipient has not responded.
+          </div>
+        )}
+
         <form onSubmit={sendInvite} className={styles.inviteForm}>
-          <label className={styles.field}>
-            <span>Email</span>
+          <div className="c-field">
+            <label htmlFor="invite-email" className="c-field__label">Email</label>
             <input
+              id="invite-email"
+              name="email"
               type="email"
               required
               value={inviteEmail}
               onChange={e => setInviteEmail(e.target.value)}
               disabled={atQuota}
               placeholder="teammate@company.com"
+              className="c-input"
             />
-          </label>
-          <label className={styles.field}>
-            <span>Role</span>
+          </div>
+          <div className="c-field">
+            <label htmlFor="invite-role" className="c-field__label">Role</label>
             <select
+              id="invite-role"
               value={inviteRole}
               onChange={e => setInviteRole(e.target.value)}
               disabled={atQuota}
+              className="c-input"
             >
               {TENANT_ROLE_OPTIONS.map(r => (
                 <option key={r.value} value={r.value}>{r.label}</option>
               ))}
             </select>
-          </label>
+          </div>
           <button
             type="submit"
-            className={styles.sendInviteButton}
+            className="c-button c-button--primary"
             disabled={atQuota || inviteBusy}
           >
-            {inviteBusy ? 'Sending…' : atQuota ? `Seat limit reached (${seatUsage.quota} seats)` : 'Send invite'}
+            {inviteBusy ? 'Sending…' : atQuota ? `Seat limit reached (${seatUsage.quota} seats)` : 'Invite member'}
           </button>
         </form>
 
         {pendingInvites.length > 0 && (
-          <div className={styles.pendingList}>
-            <h3 className={styles.subHeading}>Pending invites</h3>
-            <ul>
+          <table className={styles.membersTable}>
+            <caption>Pending invites</caption>
+            <thead>
+              <tr>
+                <th scope="col">Email</th>
+                <th scope="col">Role</th>
+                <th scope="col"><span className="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
               {pendingInvites.map(p => (
-                <li key={p.token}>{p.email} — {p.tenant_role}</li>
+                <tr key={p.token}>
+                  <td>
+                    {p.email}
+                    {' '}
+                    <span className="c-badge c-badge--info">[info] Pending</span>
+                  </td>
+                  <td>{p.tenant_role}</td>
+                  <td>
+                    <button type="button" className="c-button c-button--tertiary">
+                      Resend invite
+                    </button>
+                    <button type="button" className="c-button c-button--destructive">
+                      Revoke invite
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </ul>
-          </div>
+            </tbody>
+          </table>
         )}
       </section>
 
+      {showRemoveConfirm && memberToRemove && (
+        <>
+          <div
+            className="c-backdrop"
+            onClick={() => setShowRemoveConfirm(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="c-modal"
+            role="dialog"
+            aria-labelledby="remove-confirm-heading"
+            aria-modal="true"
+          >
+            <h3 id="remove-confirm-heading">
+              Remove {memberToRemove.email || memberToRemove.user_id} from this workspace?
+            </h3>
+            <p>They will lose access immediately.</p>
+            <div className={styles.actionRow}>
+              <button
+                type="button"
+                className="c-button c-button--secondary"
+                onClick={() => setShowRemoveConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="c-button c-button--destructive"
+                onClick={confirmRemove}
+              >
+                Remove member
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       {toast && (
-        <div className={styles.toast} role="status" aria-live="polite">
-          {toast}
+        <div className="c-toast-region" role="status" aria-live="polite">
+          <div className="c-toast">{toast}</div>
         </div>
       )}
     </main>

@@ -167,7 +167,7 @@ test('Suite 201-07: Surface 4 members page exists with UI-SPEC copy + focal WCAG
   const fs = require('node:fs');
   const path = require('node:path');
   const src = fs.readFileSync(path.join(__dirname, '..', '..', 'app', '(markos)', 'settings', 'members', 'page.tsx'), 'utf8');
-  assert.match(src, /Send invite/);
+  assert.match(src, /Invite member/);
   assert.match(src, /seats used/);
   assert.match(src, /aria-labelledby/);
 });
