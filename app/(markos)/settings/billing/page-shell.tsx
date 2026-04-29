@@ -40,7 +40,6 @@ export function BillingSettingsPageShell({
     ? "Premium features are temporarily paused. Billing history, settings, invoices, and recovery evidence remain available while the hold is active."
     : "Premium features remain available. If a workspace is on hold, restricted write, execute, and premium actions pause while usage records and invoices remain visible.";
 
-  const holdTitle = isHold ? "Billing hold active" : "Billing hold inactive";
   const holdText = isHold
     ? "Restricted write, execute, and premium actions are paused while payment or reconciliation issues are resolved. Usage records, invoices, settings, and release evidence remain available throughout the hold interval."
     : "No active hold is blocking the workspace. If a future provider sync fails, the hold interval and recovery evidence will appear here without hiding the failed attempt.";
@@ -48,80 +47,107 @@ export function BillingSettingsPageShell({
   return (
     <div className={styles.page}>
       <div className={styles.shell}>
-        <section className={styles.summaryCard}>
+        <section className="c-card">
           <div>
-            <p className={styles.eyebrow}>Billing status summary</p>
-            <h1 className={styles.title}>Growth Monthly</h1>
-            <p className={styles.summaryText}>{summaryText}</p>
+            <span className="t-label-caps">Billing status summary</span>
+            <h1>Growth Monthly</h1>
+            <p>{summaryText}</p>
           </div>
           <div className={styles.actionRow}>
             <form action={reviewCurrentInvoiceAction}>
-              <button type="submit" className={styles.primaryButton}>Review Current Invoice</button>
+              <button type="submit" className="c-button c-button--primary">Review current invoice</button>
             </form>
             <form action={reviewBillingDetailsAction}>
-              <button type="submit" className={styles.secondaryButton}>Review Billing Details</button>
+              <button type="submit" className="c-button c-button--secondary">Review billing details</button>
             </form>
           </div>
         </section>
 
         <section className={styles.contentGrid}>
           <div className={styles.mainColumn}>
-            <article className={styles.panel}>
-              <h2 className={styles.sectionTitle}>Current plan and included usage</h2>
-              <p className={styles.bodyText}>Included usage and current invoice data are sourced from {TENANT_BILLING_ENDPOINT} and translated into plain billing language.</p>
+            <article className="c-card">
+              <h2>Current plan and included usage</h2>
+              <p>Included usage and current invoice data are sourced from {TENANT_BILLING_ENDPOINT} and translated into plain billing language.</p>
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th className={styles.tableHead}>Category</th>
-                    <th className={styles.tableHead}>Included</th>
-                    <th className={styles.tableHead}>Used</th>
-                    <th className={styles.tableHead}>Projected overage</th>
-                    <th className={styles.tableHead}>Charge impact</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Included</th>
+                    <th scope="col">Used</th>
+                    <th scope="col">Projected overage</th>
+                    <th scope="col">Charge impact</th>
                   </tr>
                 </thead>
                 <tbody>
                   {usageRows.map((row) => (
                     <tr key={row.category}>
-                      <td className={styles.tableCell}>{row.category}</td>
-                      <td className={styles.tableCell}>{row.included}</td>
-                      <td className={styles.tableCell}>{row.used}</td>
-                      <td className={styles.tableCell}>{row.projectedOverage}</td>
-                      <td className={styles.tableCell}>{row.chargeImpact}</td>
+                      <td>{row.category}</td>
+                      <td>{row.included}</td>
+                      <td>{row.used}</td>
+                      <td>{row.projectedOverage}</td>
+                      <td>{row.chargeImpact}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </article>
 
-            <article className={styles.panel}>
-              <h2 className={styles.sectionTitle}>Invoice list</h2>
-              {invoices.map((invoice) => (
-                <div key={invoice.id} className={styles.invoiceRow}>
-                  <span>{invoice.id}</span>
-                  <span>{invoice.status}</span>
-                  <span>{invoice.total}</span>
-                  <span>{invoice.dueDate}</span>
-                </div>
-              ))}
+            <article className="c-card">
+              <h2>Invoice list</h2>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th scope="col">Invoice</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Due date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoices.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className={styles.emptyState}>
+                        No invoices yet. Invoices appear here after your first billing cycle.
+                      </td>
+                    </tr>
+                  ) : (
+                    invoices.map((invoice) => (
+                      <tr key={invoice.id}>
+                        <td>{invoice.id}</td>
+                        <td>{invoice.status}</td>
+                        <td>{invoice.total}</td>
+                        <td>{invoice.dueDate}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </article>
           </div>
 
           <aside className={styles.sideColumn}>
-            <section className={styles.panel}>
-              <h2 className={styles.sectionTitle}>Entitlement and premium-feature availability</h2>
-              <p className={styles.bodyText}>{entitlementText}</p>
+            <section className="c-card">
+              <h2>Entitlement and premium-feature availability</h2>
+              <p>{entitlementText}</p>
             </section>
 
-            <section className={styles.panel}>
-              <h2 className={styles.sectionTitle}>Billing evidence drawer trigger</h2>
-              <p className={styles.bodyText}>Billing evidence uses translated labels first and keeps raw lineage references behind a secondary drawer, including hold history, release evidence, impacted workflows, communication cadence, and the restored active snapshot.</p>
-              <button type="button" className={styles.secondaryButton}>Review Billing Details</button>
+            <section className="c-card">
+              <h2>Billing evidence drawer trigger</h2>
+              <p>Billing evidence uses translated labels first and keeps raw lineage references behind a secondary drawer, including hold history, release evidence, impacted workflows, communication cadence, and the restored active snapshot.</p>
+              <button type="button" className="c-button c-button--secondary">Review billing details</button>
             </section>
 
-            <section className={styles.holdCard}>
-              <h2 className={styles.holdTitle}>{holdTitle}</h2>
-              <p className={styles.holdText}>{holdText}</p>
-            </section>
+            {isHold && (
+              <div className="c-notice c-notice--warning" role="status">
+                <strong>[warn]</strong>{" "}Payment issue. Resolve to continue using MarkOS.{" "}
+                {holdText}
+              </div>
+            )}
+            {!isHold && (
+              <div className="c-notice c-notice--warning" role="status">
+                <strong>[warn]</strong>{" "}No active billing hold. {holdText}
+              </div>
+            )}
           </aside>
         </section>
       </div>
