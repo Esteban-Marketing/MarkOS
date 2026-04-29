@@ -54,7 +54,9 @@
     "vault:index": "node scripts/pageindex/build-vault-index.mjs",
     "vault:index:file": "bash scripts/pageindex/index-file.sh",
     "openapi:build": "node scripts/openapi/build-openapi.cjs",
-    "prepublishOnly": "node -e \"console.log('Publishing MarkOS v' + require('./package.json').version + ' (human-run npm publish required)')\""
+    "prepublishOnly": "node -e \"console.log('Publishing MarkOS v' + require('./package.json').version + ' (human-run npm publish required)')\"",
+    "test:playwright:tenancy": "playwright test --config=playwright.config.ts test-playwright/tenancy-golden-path.spec.ts",
+    "playwright:install": "playwright install --with-deps chromium"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
@@ -91,6 +93,8 @@
     "sharp": "^0.34.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.52.0",
+    "playwright": "^1.52.0",
     "@chromatic-com/storybook": "^1.2.21",
     "@storybook/addon-a11y": "^8.6.18",
     "@storybook/addon-essentials": "^8.6.18",

@@ -1,0 +1,54 @@
+name: Playwright Tenancy Smoke
+
+on:
+  pull_request:
+    paths:
+      - 'lib/markos/tenant/**'
+      - 'lib/markos/auth/**'
+      - 'middleware.ts'
+      - 'app/(marketing)/signup/**'
+      - 'app/(markos)/settings/**'
+      - 'api/auth/**'
+      - 'api/tenant/**'
+      - 'package.json'
+      - 'playwright.config.ts'
+      - 'test-playwright/**'
+
+jobs:
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Confirm test mode (in-process mocks only — no live Supabase)
+        run: |
+          echo "MARKOS_E2E_TEST_MODE=1 — using in-process route mocks; magic-link token read from local Supabase if available"
+        env:
+          MARKOS_E2E_TEST_MODE: '1'
+
+      - name: Run tenancy smoke spec
+        run: npm run test:playwright:tenancy
+        env:
+          MARKOS_E2E_TEST_MODE: '1'
+          NEXT_PUBLIC_APEX_DOMAIN: 'localhost:3000'
+          # Supabase env injected via repo secrets for full token-retrieval path.
+          # Without SUPABASE_SERVICE_ROLE_KEY, step 2 falls back to direct nav.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
