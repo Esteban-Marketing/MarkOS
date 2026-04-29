@@ -2,14 +2,13 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: SaaS Readiness 1.0
-status: Phase complete — ready for verification
-last_updated: "2026-04-29T18:16:18.827Z"
+status: Ready to plan
+last_updated: "2026-04-29T18:22:07.906Z"
 progress:
   total_phases: 17
   completed_phases: 6
   total_plans: 132
   completed_plans: 61
-  percent: 46
 ---
 
 > v4.0.0 "SaaS Readiness 1.0" initialized 2026-04-16 after v3.9.0 closeout and archive.
@@ -17,7 +16,7 @@ progress:
 ## Current Position
 
 Phase: 201.1 (saas-tenancy-followups) — EXECUTING
-Plan: 11 of 11
+Plan: Not started
 Next: `/gsd-verify-work 213.2` to verify Phase 213.2 against UI-SPEC ACs, then `/gsd-discuss-phase 213.3` for the next decimal phase (settings surfaces — Files / Billing / Members / Sessions / Domain / Danger / MCP / Plugins / Webhooks).
 
 ## Phase 213.4 Plan Progress
@@ -1215,7 +1214,7 @@ After verification clears, proceed to Phase 202 per ROADMAP.
 Phase: 201 (saas-tenancy-hardening)
 Plan: 1 of 8
 **Milestone:** v4.0.0 — SaaS Readiness 1.0 — active
-**Phase:** 213.5
+**Phase:** 202
 **Quality Baseline:** 15 gates defined in `.planning/phases/200-saas-readiness-wave-0/QUALITY-BASELINE.md`; inherited by every subsequent phase.
 
 ## What just happened (2026-04-16)
