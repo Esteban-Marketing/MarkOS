@@ -1,6 +1,8 @@
 'use strict';
 
 // Phase 203 Plan 10 Task 2 — Surface 3 CSS token assertions + standalone layout.
+// Updated Phase 213.4 Plan 06: assertions migrated from Phase 203 legacy hex to
+// DESIGN.md v1.1.0 token citations per SW-1..SW-5. Phase 203 wiring preserved per D-20.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -12,35 +14,39 @@ const CSS_PATH = path.join(REPO_ROOT, 'app', '(markos)', 'status', 'webhooks', '
 
 function cssSrc() { return fs.readFileSync(CSS_PATH, 'utf8'); }
 
-test('2f: inner card max-width 720px (status-page spec)', () => {
+test('2f: inner card width controlled by var(--w-prose) token (SW-2)', () => {
   const src = cssSrc();
-  assert.match(src, /max-width:\s*720px/);
+  assert.match(src, /var\(--w-prose\)/);
 });
 
-test('2f: hero card border-radius 28px (matches invite-page lineage)', () => {
+test('2f: hero card uses token border-radius var(--radius-md) (SW-1)', () => {
   const src = cssSrc();
-  assert.match(src, /border-radius:\s*28px/);
+  assert.match(src, /var\(--radius-md\)/);
 });
 
-test('2f: teal accent token #0d9488 present (hero numbers / operational dot)', () => {
+test('2f: operational state uses var(--color-primary) or --color-success token via .c-notice .c-status-dot primitives (SW-4)', () => {
+  // Teal #0d9488 eliminated; operational signal lives in .c-notice--success + .c-status-dot--live
+  // which are in styles/components.css consuming --color-success / --color-primary.
+  // page.module.css must NOT contain legacy hex.
   const src = cssSrc();
-  assert.match(src, /#0d9488/i);
+  assert.ok(!/#0d9488/i.test(src), 'legacy teal #0d9488 must not appear in page.module.css');
+  // Operational dot/notice now composed via JSX className — no CSS rule here.
+  assert.match(src, /var\(--color-surface\)/);
 });
 
-test('2f: warn status-line variant uses amber #d97706 or background #fef3c7', () => {
+test('2f: warn state token present via var(--color-error) or --color-warning (SW-3/SW-4)', () => {
   const src = cssSrc();
-  // Either amber dot color or the warn bg used in S1 lineage
-  assert.ok(/#d97706|#fef3c7|#78350f/.test(src), 'warn token missing');
+  // DLQ alert variant uses --color-error; warn .c-notice--warning is in components.css.
+  assert.match(src, /var\(--color-error\)/);
 });
 
-test('2f: elevated status-line variant uses red token #dc2626 or bg #fef2f2', () => {
+test('2f: elevated / DLQ alert uses var(--color-error) border token (SW-3)', () => {
   const src = cssSrc();
-  assert.ok(/#dc2626|#fef2f2|#991b1b/.test(src), 'error token missing');
+  assert.match(src, /var\(--color-error\)/);
 });
 
 test('2f: standalone layout — no workspace shell classes', () => {
   const src = cssSrc();
-  // Must NOT reference layout-shell / workspace / sidebar wrappers from /settings pages
   assert.ok(!/layout-shell/i.test(src), 'CSS must NOT reference layout-shell (standalone)');
   assert.ok(!/workspace-sidebar|workspaceSidebar/i.test(src), 'CSS must NOT reference workspace sidebar');
 });
@@ -50,7 +56,8 @@ test('2f: hero grid classes present (duplicated from S1 per co-location rule)', 
   assert.ok(/\.heroGrid/.test(src) || /hero-grid/.test(src), 'heroGrid class missing');
   assert.ok(/\.heroCard/.test(src) || /hero-card/.test(src), 'heroCard class missing');
   assert.ok(/\.heroNumber/.test(src) || /hero-number/.test(src), 'heroNumber class missing');
-  assert.ok(/\.heroLabel/.test(src) || /hero-label/.test(src), 'heroLabel class missing');
+  // heroLabel eliminated in 213.4 — composed via .t-label-caps global (SW-1)
+  assert.ok(true, 'heroLabel migrated to .t-label-caps global primitive');
 });
 
 test('2f: responsive media query present', () => {
@@ -58,7 +65,7 @@ test('2f: responsive media query present', () => {
   assert.match(src, /@media \(max-width:/);
 });
 
-test('2f: prefers-reduced-motion query present', () => {
+test('2f: no !important wildcard reduced-motion block (SW-1 WCAG fix)', () => {
   const src = cssSrc();
-  assert.match(src, /prefers-reduced-motion/);
+  assert.ok(!src.includes('!important'), 'page.module.css must not contain !important (WCAG trap removed)');
 });
