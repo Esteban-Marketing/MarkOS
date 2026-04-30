@@ -1,8 +1,18 @@
 name: Release markos CLI
 
+# Phase 204.1 Plan 05 extends this release DAG with winget and apt publishing.
+# Additional secrets required:
+#   - WINGET_PKGS_PAT              (PAT for microsoft/winget-pkgs PR automation)
+#   - MARKOS_APT_GPG_KEY          (base64 armored apt signing private key)
+#   - MARKOS_APT_GPG_PASSPHRASE   (optional gpg passphrase)
+#   - MARKOS_APT_REPO_HOST        (scp target, for example deploy@apt.markos.dev)
+#   - MARKOS_APT_REPO_KEY         (private SSH key for apt repo upload)
+# See .planning/phases/204.1-close-5-fixes-bonus-gap-3-4-decision-needed-winget-apt-distribution/204.1-05-SUMMARY.md
+# for the setup runbook.
+
 # Phase 204 Plan 12 — Release orchestration for markos CLI GA.
-# Triggers on push of tags matching 'v*'. 5-job DAG:
-#   verify → npm → (brew, scoop) → smoke
+# Triggers on push of tags matching 'v*'. 7-job DAG:
+#   verify -> npm -> (brew, scoop, winget, apt) -> smoke
 #
 # Secrets required (Plan 204-12 locked_assumption):
 #   - NPM_TOKEN             (npm publish; automation token, scoped to markos)
@@ -95,11 +105,81 @@ jobs:
           git push
 
   # --------------------------------------------------------------------------
+  # winget: render + validate manifests; operator submits/automates upstream PR
+  # --------------------------------------------------------------------------
+  winget-publish:
+    name: Validate winget manifest
+    needs: [npm]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Bump winget manifest
+        run: node scripts/distribution/bump-winget-manifest.cjs --version "${{ github.ref_name }}"
+      - name: Validate winget manifests
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          winget validate --manifest "winget-pkgs/manifests/m/markos/markos/$version/"
+      - name: Require winget-pkgs PR token
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.WINGET_PKGS_PAT }}
+        run: |
+          if (-not $env:GH_TOKEN) {
+            Write-Error "WINGET_PKGS_PAT is required before release CI can automate the microsoft/winget-pkgs PR."
+            exit 1
+          }
+          $version = "${{ github.ref_name }}" -replace '^v', ''
+          Write-Host "::notice::winget manifest ready at winget-pkgs/manifests/m/markos/markos/$version/. Submit this directory to https://github.com/microsoft/winget-pkgs for maintainer review."
+
+  # --------------------------------------------------------------------------
+  # apt: build .deb, regenerate repo metadata, sign Release, upload via scp
+  # --------------------------------------------------------------------------
+  apt-publish:
+    name: Publish apt package
+    needs: [npm]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install apt tooling
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev gnupg gzip tar openssh-client
+      - name: Check apt secrets
+        env:
+          MARKOS_APT_GPG_KEY: ${{ secrets.MARKOS_APT_GPG_KEY }}
+          MARKOS_APT_REPO_HOST: ${{ secrets.MARKOS_APT_REPO_HOST }}
+          MARKOS_APT_REPO_KEY: ${{ secrets.MARKOS_APT_REPO_KEY }}
+        run: |
+          for name in MARKOS_APT_GPG_KEY MARKOS_APT_REPO_HOST MARKOS_APT_REPO_KEY; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name secret is required before apt publishing can run"
+              exit 1
+            fi
+          done
+      - name: Import GPG key
+        env:
+          MARKOS_APT_GPG_KEY: ${{ secrets.MARKOS_APT_GPG_KEY }}
+          MARKOS_APT_GPG_PASSPHRASE: ${{ secrets.MARKOS_APT_GPG_PASSPHRASE }}
+        run: |
+          echo "$MARKOS_APT_GPG_KEY" | base64 -d | gpg --batch --yes --pinentry-mode loopback --passphrase "$MARKOS_APT_GPG_PASSPHRASE" --import
+      - name: Build .deb, sign repo, and upload
+        env:
+          MARKOS_APT_GPG_PASSPHRASE: ${{ secrets.MARKOS_APT_GPG_PASSPHRASE }}
+          MARKOS_APT_REPO_HOST: ${{ secrets.MARKOS_APT_REPO_HOST }}
+          MARKOS_APT_REPO_KEY: ${{ secrets.MARKOS_APT_REPO_KEY }}
+        run: node scripts/distribution/bump-apt-package.cjs --version "${{ github.ref_name }}"
+
+  # --------------------------------------------------------------------------
   # smoke: cross-platform install smoke test of the published version
   # --------------------------------------------------------------------------
   smoke:
     name: Smoke install (${{ matrix.os }})
-    needs: [npm, brew, scoop]
+    needs: [npm, brew, scoop, winget-publish, apt-publish]
     strategy:
       fail-fast: false
       matrix:

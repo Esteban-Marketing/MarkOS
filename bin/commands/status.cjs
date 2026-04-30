@@ -34,8 +34,10 @@
 const { authedFetch, BASE_URL, AuthError, TransientError } = require('../lib/cli/http.cjs');
 const { getToken } = require('../lib/cli/keychain.cjs');
 const { resolveProfile } = require('../lib/cli/config.cjs');
-const { EXIT_CODES, shouldUseJson, shouldUseColor, ANSI, renderJson } = require('../lib/cli/output.cjs');
+const { createSpinner } = require('../lib/cli/spinner.cjs');
+const { EXIT_CODES, shouldUseJson, shouldUseColor, ANSI, renderJson, pickGlyphs } = require('../lib/cli/output.cjs');
 const { formatError } = require('../lib/cli/errors.cjs');
+const { PRICING_PLACEHOLDER_SENTINEL } = require('../../lib/markos/cli/runs.cjs');
 
 // ─── Constants ─────────────────────────────────────────────────────────────
 
@@ -256,9 +258,47 @@ function renderDashboard(envelope, cli) {
 
 // ─── Fetch helpers ─────────────────────────────────────────────────────────
 
+function renderBoxPanel(title, lines, opts = {}) {
+  const G = pickGlyphs();
+  const innerWidth = Math.max(
+    title.length + 4,
+    ...lines.map((l) => strip(l).length),
+    opts.minWidth || 0,
+  );
+  const out = [];
+  out.push(
+    G.topLeft
+      + G.horiz
+      + ' '
+      + title
+      + ' '
+      + G.horiz.repeat(Math.max(0, innerWidth - title.length - 1))
+      + G.topRight,
+  );
+  for (const l of lines) {
+    const pad = Math.max(0, innerWidth - strip(l).length);
+    out.push(G.vert + ' ' + l + ' '.repeat(pad) + ' ' + G.vert);
+  }
+  out.push(G.bottomLeft + G.horiz.repeat(innerWidth + 2) + G.bottomRight);
+  return out;
+}
+
+function renderSubscriptionPanel(subscription, useColor) {
+  const hasPricingRecommendation = Object.prototype.hasOwnProperty.call(subscription || {}, 'pricing_recommendation_id');
+  const planDisplay = hasPricingRecommendation && subscription.pricing_recommendation_id == null
+    ? PRICING_PLACEHOLDER_SENTINEL
+    : (subscription.plan_tier || 'â€”');
+  const lines = [
+    `Plan:           ${planDisplay}`,
+    `Billing status: ${subscription.billing_status || 'â€”'}`,
+  ];
+  return renderBoxPanel('Subscription', lines, { minWidth: 36 });
+}
+
 async function fetchStatus(token, cli) {
   const limit = resolveRunsLimit(cli);
   const path = limit ? `${STATUS_ENDPOINT}?runs=${limit}` : STATUS_ENDPOINT;
+  const spinner = createSpinner({ label: 'fetching status', opts: cli });
   try {
     return await authedFetch(path, { method: 'GET' }, { token });
   } catch (err) {
@@ -273,6 +313,8 @@ async function fetchStatus(token, cli) {
     }
     exitTransient(cli, 'NETWORK_ERROR', err?.message || 'Unknown network error');
     return null;
+  } finally {
+    spinner.stop();
   }
 }
 

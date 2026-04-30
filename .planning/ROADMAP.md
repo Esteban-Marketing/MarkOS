@@ -164,11 +164,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 204.1-01-PLAN.md — Audit trail wrapper at dispatch (D-01 + D-12 fallback) — Wave 1
-- [ ] 204.1-02-PLAN.md — Spinner primitive + stream-split (D-02 + D-03) — Wave 1
-- [ ] 204.1-03-PLAN.md — ASCII fallback + <60-col width breakpoint (D-04 + D-05) — Wave 2
-- [ ] 204.1-04-PLAN.md — Env mask last-4 + status pricing placeholder + status spinner (D-06 + D-07) — Wave 3
-- [ ] 204.1-05-PLAN.md — winget manifest + apt repo distribution (D-08 + D-09, includes user-setup checkpoint) — Wave 1
+- [x] 204.1-01-PLAN.md — Audit trail wrapper at dispatch (D-01 + D-12 fallback) — Wave 1
+- [x] 204.1-02-PLAN.md — Spinner primitive + stream-split (D-02 + D-03) — Wave 1
+- [x] 204.1-03-PLAN.md — ASCII fallback + <60-col width breakpoint (D-04 + D-05) — Wave 2
+- [x] 204.1-04-PLAN.md — Env mask last-4 + status pricing placeholder + status spinner (D-06 + D-07) — Wave 3
+- [x] 204.1-05-PLAN.md — winget manifest + apt repo distribution (D-08 + D-09, includes user-setup checkpoint) — Wave 1 — code shipped; user setup pending
 
 ### Phase 205: Pricing Engine Foundation + Billing Readiness
 **Goal:** Replace static public pricing assumptions with Pricing Engine-backed intelligence: cost models, competitor matrix, PricingRecommendation records, approval-gated price tests, PRC agents, MCP/API/UI surfaces, and billing-readiness handoff. Stripe billing remains in scope only after pricing objects, cost floors, and packaging recommendations are modeled.

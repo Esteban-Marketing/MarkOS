@@ -607,6 +607,80 @@ async function performPresetInstall(cli) {
   console.log(`  Next step:     Open MarkOS-Vault in Obsidian, or run \`node onboarding/backend/server.cjs\` to review seed data.\n`);
 }
 
+class CommandExitSignal extends Error {
+  constructor(code) {
+    super(`process.exit(${code})`);
+    this.name = 'CommandExitSignal';
+    this.exitCode = Number.isInteger(code) ? code : 0;
+  }
+}
+
+function normalizeExitCode(code, fallback = 5) {
+  const numeric = Number(code);
+  return Number.isInteger(numeric) ? numeric : fallback;
+}
+
+async function dispatchWithAudit(commandName, modulePath, cli) {
+  const { main } = require(modulePath);
+  const { recordCommandAudit } = require('./lib/cli/audit.cjs');
+  const startedAt = Date.now();
+  const originalExit = process.exit;
+  const initialExitCode = process.exitCode;
+  let exitCode = 0;
+  let shouldExitAfterReturn = false;
+  let thrown = null;
+
+  process.exit = (code) => {
+    exitCode = normalizeExitCode(code, 0);
+    shouldExitAfterReturn = true;
+    throw new CommandExitSignal(exitCode);
+  };
+
+  try {
+    await main({ cli });
+
+    if (Number.isInteger(process.exitCode) && process.exitCode !== initialExitCode) {
+      exitCode = process.exitCode;
+      shouldExitAfterReturn = true;
+    }
+  } catch (error) {
+    if (error instanceof CommandExitSignal) {
+      exitCode = normalizeExitCode(error.exitCode, 0);
+      shouldExitAfterReturn = true;
+    } else {
+      thrown = error;
+      exitCode = normalizeExitCode(error && error.exitCode, 5);
+      if (error && !Number.isInteger(error.exitCode)) {
+        error.exitCode = exitCode;
+      }
+    }
+  } finally {
+    process.exit = originalExit;
+    process.exitCode = initialExitCode;
+
+    try {
+      await recordCommandAudit({
+        command: commandName,
+        parsed: cli,
+        profile: cli.profile,
+        exit_code: exitCode,
+        duration_ms: Date.now() - startedAt,
+        debug: Boolean(cli.debug),
+      });
+    } catch {
+      // Best effort only: audit transport can never block the CLI exit path.
+    }
+  }
+
+  if (thrown) {
+    throw thrown;
+  }
+
+  if (shouldExitAfterReturn) {
+    originalExit(exitCode);
+  }
+}
+
 async function run() {
   const cli = parseCliArgs();
 
@@ -676,71 +750,61 @@ async function run() {
   //     business logic lands in 204-02 through 204-11). Alphabetical order.
   if (cli.command === 'doctor') {
     rl.close();
-    const { main } = require('./commands/doctor.cjs');
-    await main({ cli });
+    await dispatchWithAudit('doctor', './commands/doctor.cjs', cli);
     return;
   }
 
   if (cli.command === 'env') {
     rl.close();
-    const { main } = require('./commands/env.cjs');
-    await main({ cli });
+    await dispatchWithAudit('env', './commands/env.cjs', cli);
     return;
   }
 
   if (cli.command === 'eval') {
     rl.close();
-    const { main } = require('./commands/eval.cjs');
-    await main({ cli });
+    await dispatchWithAudit('eval', './commands/eval.cjs', cli);
     return;
   }
 
   if (cli.command === 'init') {
     rl.close();
-    const { main } = require('./commands/init.cjs');
-    await main({ cli });
+    await dispatchWithAudit('init', './commands/init.cjs', cli);
     return;
   }
 
   if (cli.command === 'keys') {
     rl.close();
-    const { main } = require('./commands/keys.cjs');
-    await main({ cli });
+    await dispatchWithAudit('keys', './commands/keys.cjs', cli);
     return;
   }
 
   if (cli.command === 'login') {
     rl.close();
-    const { main } = require('./commands/login.cjs');
-    await main({ cli });
+    await dispatchWithAudit('login', './commands/login.cjs', cli);
     return;
   }
 
   if (cli.command === 'plan') {
     rl.close();
-    const { main } = require('./commands/plan.cjs');
-    await main({ cli });
+    await dispatchWithAudit('plan', './commands/plan.cjs', cli);
     return;
   }
 
   if (cli.command === 'run') {
     rl.close();
-    const { main } = require('./commands/run.cjs');
-    await main({ cli });
+    await dispatchWithAudit('run', './commands/run.cjs', cli);
     return;
   }
 
   if (cli.command === 'status') {
     rl.close();
-    const { main } = require('./commands/status.cjs');
-    await main({ cli });
+    await dispatchWithAudit('status', './commands/status.cjs', cli);
     return;
   }
 
   if (cli.command === 'whoami') {
     rl.close();
-    const { main } = require('./commands/whoami.cjs');
-    await main({ cli });
+    await dispatchWithAudit('whoami', './commands/whoami.cjs', cli);
     return;
   }
 
@@ -793,10 +857,11 @@ async function run() {
 }
 
 if (require.main === module) {
-  run().catch(e => { console.error(e); rl.close(); process.exit(1); });
+  run().catch(e => { console.error(e); rl.close(); process.exit(Number.isInteger(e && e.exitCode) ? e.exitCode : 1); });
 }
 
 module.exports = {
   run,
   applyGitignoreProtections,
+  _dispatchWithAudit: dispatchWithAudit,
 };

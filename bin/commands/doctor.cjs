@@ -19,7 +19,7 @@
 //   5 INTERNAL_BUG    (unexpected exception)
 
 const { runChecks } = require('../lib/cli/doctor-checks.cjs');
-const { EXIT_CODES, shouldUseJson, shouldUseColor, ANSI, renderJson } = require('../lib/cli/output.cjs');
+const { EXIT_CODES, shouldUseJson, shouldUseColor, ANSI, renderJson, pickGlyphs } = require('../lib/cli/output.cjs');
 const { formatError } = require('../lib/cli/errors.cjs');
 
 // ─── Status icons + colors ─────────────────────────────────────────────────
@@ -77,6 +77,41 @@ function renderDashboard(checks, summary, cli) {
   if (summary.skip) parts.push(`${summary.skip} skipped`);
   if (summary.fixed) parts.push(paint(`${summary.fixed} fixed`, ANSI.GREEN));
   process.stdout.write(parts.join('  ·  ') + '\n');
+}
+
+function renderDashboard(checks, summary, cli) {
+  const color = shouldUseColor(cli);
+  const quiet = Boolean(cli && cli.quiet);
+  const paint = (text, ansi) => color ? (ansi + text + ANSI.RESET) : text;
+  const G = pickGlyphs();
+
+  process.stdout.write(G.topLeft + G.horiz + ' markos doctor ' + G.horiz.repeat(48) + G.topRight + '\n');
+
+  for (const c of checks) {
+    if (quiet && (c.status === 'ok' || c.status === 'skip')) continue;
+
+    const icon = paint(ICON[c.status] || '?', colorFor(c.status));
+    const label = c.label.padEnd(24, ' ').slice(0, 24);
+    const msg = c.message || '';
+    let line = `${G.vert} ${icon} ${label}${msg}`;
+    if (c.fixed === true) line += paint('  [fixed]', ANSI.GREEN);
+    if (c.fixed === false) line += paint('  [fix failed]', ANSI.RED);
+    process.stdout.write(line + '\n');
+
+    if (c.hint && (c.status === 'warn' || c.status === 'error')) {
+      process.stdout.write(`${G.vert}   ${paint('hint:', ANSI.DIM)} ${c.hint}\n`);
+    }
+  }
+
+  process.stdout.write(G.bottomLeft + G.horiz.repeat(64) + G.bottomRight + '\n');
+
+  const parts = [];
+  parts.push(`${summary.ok} ok`);
+  parts.push(`${summary.warn} warn`);
+  parts.push(`${summary.error} error`);
+  if (summary.skip) parts.push(`${summary.skip} skipped`);
+  if (summary.fixed) parts.push(paint(`${summary.fixed} fixed`, ANSI.GREEN));
+  process.stdout.write(parts.join('  Â·  ') + '\n');
 }
 
 function renderJsonDashboard(checks, summary) {

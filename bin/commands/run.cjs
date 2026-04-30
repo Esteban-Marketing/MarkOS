@@ -34,9 +34,10 @@ const path = require('node:path');
 const { authedFetch, BASE_URL, AuthError, TransientError } = require('../lib/cli/http.cjs');
 const { getToken } = require('../lib/cli/keychain.cjs');
 const { resolveProfile } = require('../lib/cli/config.cjs');
+const { createSpinner } = require('../lib/cli/spinner.cjs');
 const { streamSSE } = require('../lib/cli/sse.cjs');
 const {
-  EXIT_CODES, shouldUseJson, shouldUseColor, ANSI,
+  EXIT_CODES, shouldUseJson, shouldUseColor, ANSI, pickGlyphs,
 } = require('../lib/cli/output.cjs');
 const { formatError } = require('../lib/cli/errors.cjs');
 const { parseBrief, validateBrief, normalizeBrief } = require('../lib/brief-parser.cjs');
@@ -148,11 +149,12 @@ async function postRun(normalized, token, cli) {
 // ─── Rendering ─────────────────────────────────────────────────────────────
 
 function ttyIcon(event, color) {
+  const G = pickGlyphs();
   if (!color) {
     if (event === 'run.completed') return 'done';
     if (event === 'run.step.completed') return 'ok  ';
     if (event === 'run.step.started') return '... ';
-    if (event === 'run.snapshot') return '>>  ';
+    if (event === 'run.snapshot') return `${G.arrow}  `;
     if (event === 'heartbeat') return '·   ';
     if (event === 'run.aborted') return '!!  ';
     return '    ';
@@ -162,6 +164,26 @@ function ttyIcon(event, color) {
   if (event === 'run.step.started') return ANSI.CYAN + '◐ ' + ANSI.RESET;
   if (event === 'run.snapshot') return ANSI.DIM + '» ' + ANSI.RESET;
   if (event === 'heartbeat') return ANSI.DIM + '· ' + ANSI.RESET;
+  if (event === 'run.aborted') return ANSI.YELLOW + '! ' + ANSI.RESET;
+  return '  ';
+}
+
+function ttyIcon(event, color) {
+  const G = pickGlyphs();
+  if (!color) {
+    if (event === 'run.completed') return 'done';
+    if (event === 'run.step.completed') return 'ok  ';
+    if (event === 'run.step.started') return '... ';
+    if (event === 'run.snapshot') return `${G.arrow}  `;
+    if (event === 'heartbeat') return 'Â·   ';
+    if (event === 'run.aborted') return '!!  ';
+    return '    ';
+  }
+  if (event === 'run.completed') return ANSI.GREEN + 'âœ“ ' + ANSI.RESET;
+  if (event === 'run.step.completed') return ANSI.GREEN + 'âœ“ ' + ANSI.RESET;
+  if (event === 'run.step.started') return ANSI.CYAN + 'â— ' + ANSI.RESET;
+  if (event === 'run.snapshot') return ANSI.DIM + `${G.arrow} ` + ANSI.RESET;
+  if (event === 'heartbeat') return ANSI.DIM + 'Â· ' + ANSI.RESET;
   if (event === 'run.aborted') return ANSI.YELLOW + '! ' + ANSI.RESET;
   return '  ';
 }
@@ -239,7 +261,13 @@ async function main(ctx = {}) {
   }
 
   // 4. POST the run.
-  const res = await postRun(normalized, token, cli);
+  const submitSpinner = createSpinner({ label: 'submitting run', opts: cli });
+  let res;
+  try {
+    res = await postRun(normalized, token, cli);
+  } finally {
+    submitSpinner.stop();
+  }
   if (!res) return;
 
   let body;
@@ -273,8 +301,8 @@ async function main(ctx = {}) {
     if (shouldUseJson(cli)) {
       process.stdout.write(JSON.stringify({ run_id, status: body.status || 'pending', events_url }) + '\n');
     } else {
-      process.stdout.write(`Run submitted: ${run_id}\n`);
-      process.stdout.write(`Watch with: markos status run ${run_id}\n`);
+      process.stderr.write(`Run submitted: ${run_id}\n`);
+      process.stderr.write(`Watch with: markos status run ${run_id}\n`);
     }
     return process.exit(EXIT_CODES.SUCCESS);
   }

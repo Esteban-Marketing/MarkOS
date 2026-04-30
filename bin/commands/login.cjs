@@ -1,34 +1,18 @@
 'use strict';
 
-// Phase 204 Plan 02 Task 3 — `markos login` command.
-//
-// Two modes:
-//
-//   1. Device flow (default, RFC 8628):
-//      - POST ${BASE_URL}/api/cli/oauth/device/start with JSON {client_id, scope}
-//      - Open browser to verification_uri_complete (unless --no-browser or !TTY)
-//      - Poll /token every `interval` seconds honoring slow_down + expired_token + access_denied
-//      - On success: write access_token to OS keychain (or XDG fallback) + exit 0
-//
-//   2. Token paste (--token=<mks_ak_...>) non-interactive CI fallback:
-//      - Validate token format
-//      - Write straight to keychain + exit 0
-//
-// Exit codes (D-10):
-//   0 success | 1 user_error (invalid token format) | 2 transient (network)
-//   3 auth_failure (expired, denied, SIGINT)
+// Phase 204 Plan 02 Task 3 - `markos login` command.
 
 const { setToken } = require('../lib/cli/keychain.cjs');
 const { resolveProfile } = require('../lib/cli/config.cjs');
 const { openBrowser } = require('../lib/cli/open-browser.cjs');
 const { BASE_URL } = require('../lib/cli/http.cjs');
+const { createSpinner } = require('../lib/cli/spinner.cjs');
 const { EXIT_CODES, shouldUseJson } = require('../lib/cli/output.cjs');
 const { formatError } = require('../lib/cli/errors.cjs');
 
 const TOKEN_REGEX = /^mks_ak_[a-f0-9]{32,}$/;
 const DEFAULT_TIMEOUT_SEC = 900;
 
-// Exposed for tests — allows swapping fetch with a harness stub.
 function getFetch() {
   return globalThis.fetch;
 }
@@ -45,10 +29,11 @@ function emitSuccess(opts, profile, mode, keyFingerprint) {
       mode,
       key_fingerprint: keyFingerprint || null,
     }) + '\n');
-  } else {
-    process.stdout.write(`\n  ✓ Logged in (profile: ${profile}, mode: ${mode})\n`);
-    if (keyFingerprint) process.stdout.write(`  fingerprint: ${keyFingerprint}\n\n`);
+    return;
   }
+
+  process.stderr.write(`\n  OK Logged in (profile: ${profile}, mode: ${mode})\n`);
+  if (keyFingerprint) process.stderr.write(`  fingerprint: ${keyFingerprint}\n\n`);
 }
 
 async function tokenPasteMode(cli, profile) {
@@ -61,6 +46,7 @@ async function tokenPasteMode(cli, profile) {
     });
     process.exit(EXIT_CODES.USER_ERROR);
   }
+
   await setToken(profile, token);
   emitSuccess(cli, profile, 'token-paste', null);
   process.exit(EXIT_CODES.SUCCESS);
@@ -74,11 +60,12 @@ function printVerification(opts, envelope) {
       user_code: envelope.user_code,
       expires_in: envelope.expires_in,
     }) + '\n');
-  } else {
-    process.stdout.write('\n');
-    process.stdout.write(`  Go to: ${envelope.verification_uri}\n`);
-    process.stdout.write(`  Code:  ${envelope.user_code}\n\n`);
+    return;
   }
+
+  process.stderr.write('\n');
+  process.stderr.write(`  Go to: ${envelope.verification_uri}\n`);
+  process.stderr.write(`  Code:  ${envelope.user_code}\n\n`);
 }
 
 async function deviceFlowMode(cli, profile) {
@@ -88,7 +75,6 @@ async function deviceFlowMode(cli, profile) {
     process.exit(EXIT_CODES.INTERNAL_BUG);
   }
 
-  // Step 1: /start
   let startRes;
   try {
     startRes = await fetchFn(`${BASE_URL}/api/cli/oauth/device/start`, {
@@ -100,29 +86,29 @@ async function deviceFlowMode(cli, profile) {
     formatError({ error: 'NETWORK_ERROR', message: `Failed to reach ${BASE_URL}: ${err.message}` });
     process.exit(EXIT_CODES.TRANSIENT);
   }
+
   if (!startRes.ok) {
     const body = await startRes.text().catch(() => '');
     formatError({ error: 'SERVER_ERROR', message: `Device-code request failed (${startRes.status}): ${body}` });
     process.exit(EXIT_CODES.TRANSIENT);
   }
-  const envelope = await startRes.json();
 
+  const envelope = await startRes.json();
   printVerification(cli, envelope);
 
-  // Step 2: open browser unless suppressed.
   const noBrowser = Boolean(cli.noBrowser) || process.env.MARKOS_NO_BROWSER === '1';
   if (!noBrowser) {
     openBrowser(envelope.verification_uri_complete);
   }
 
-  // Step 3: poll /token at `interval` seconds until approval or deadline.
   const timeoutSec = Number.isFinite(Number(cli.timeout)) ? Number(cli.timeout) : DEFAULT_TIMEOUT_SEC;
   const deadline = Date.now() + Math.min(timeoutSec, envelope.expires_in || DEFAULT_TIMEOUT_SEC) * 1000;
   let intervalMs = Math.max(1, (envelope.interval || 5)) * 1000;
+  const spinner = createSpinner({ label: 'polling for approval', opts: cli });
 
-  // SIGINT handling — clean exit 3.
   const sigintHandler = () => {
-    process.stdout.write('\n  Login aborted.\n');
+    spinner.stop();
+    process.stderr.write('\n  Login aborted.\n');
     process.exit(EXIT_CODES.AUTH_FAILURE);
   };
   process.on('SIGINT', sigintHandler);
@@ -130,7 +116,6 @@ async function deviceFlowMode(cli, profile) {
   try {
     while (Date.now() < deadline) {
       await sleep(intervalMs);
-      // Preemptive expiry check — prevents race documented in Pitfall 2.
       if (Date.now() >= deadline) break;
 
       const params = new URLSearchParams({
@@ -146,8 +131,7 @@ async function deviceFlowMode(cli, profile) {
           headers: { 'content-type': 'application/x-www-form-urlencoded' },
           body: params.toString(),
         });
-      } catch (err) {
-        // Transient network hiccup — retry on next interval.
+      } catch {
         continue;
       }
 
@@ -156,13 +140,12 @@ async function deviceFlowMode(cli, profile) {
       try { body = JSON.parse(bodyText); } catch { body = { error: 'invalid_response' }; }
 
       if (pollRes.ok) {
-        // Success — write to keychain + exit clean.
+        spinner.stop();
         await setToken(profile, body.access_token);
         emitSuccess(cli, profile, 'device-flow', body.key_fingerprint);
         return process.exit(EXIT_CODES.SUCCESS);
       }
 
-      // Typed polling errors per RFC 8628 §3.5.
       const code = body && body.error;
       if (code === 'authorization_pending') continue;
       if (code === 'slow_down') {
@@ -170,6 +153,7 @@ async function deviceFlowMode(cli, profile) {
         continue;
       }
       if (code === 'expired_token') {
+        spinner.stop();
         formatError({
           error: 'TOKEN_EXPIRED',
           message: 'Login expired before approval.',
@@ -178,18 +162,20 @@ async function deviceFlowMode(cli, profile) {
         return process.exit(EXIT_CODES.AUTH_FAILURE);
       }
       if (code === 'access_denied') {
+        spinner.stop();
         formatError({
           error: 'UNAUTHORIZED',
           message: 'Login denied.',
         });
         return process.exit(EXIT_CODES.AUTH_FAILURE);
       }
-      // Unknown error — surface verbatim.
+
+      spinner.stop();
       formatError({ error: 'SERVER_ERROR', message: `Unexpected token response: ${code || bodyText.slice(0, 200)}` });
       return process.exit(EXIT_CODES.TRANSIENT);
     }
 
-    // Fell out of the loop — we ran past the deadline.
+    spinner.stop();
     formatError({
       error: 'TOKEN_EXPIRED',
       message: 'Login expired before approval.',
@@ -197,6 +183,7 @@ async function deviceFlowMode(cli, profile) {
     });
     process.exit(EXIT_CODES.AUTH_FAILURE);
   } finally {
+    spinner.stop();
     process.removeListener('SIGINT', sigintHandler);
   }
 }
@@ -212,5 +199,4 @@ async function main(ctx = {}) {
 }
 
 module.exports = { main };
-// Exposed for tests.
 module.exports._TOKEN_REGEX = TOKEN_REGEX;

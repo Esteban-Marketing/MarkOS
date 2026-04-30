@@ -1,0 +1,20 @@
+PackageIdentifier: markos.markos
+PackageVersion: PLACEHOLDER_VERSION
+PackageLocale: en-US
+Publisher: Inarcus
+PublisherUrl: https://markos.esteban.marketing
+PublisherSupportUrl: https://github.com/Esteban-Marketing/MarkOS/issues
+PackageName: MarkOS
+PackageUrl: https://markos.esteban.marketing
+License: MIT
+LicenseUrl: https://github.com/Esteban-Marketing/MarkOS/blob/main/LICENSE
+ShortDescription: Marketing Operating System CLI - generate, plan, run, and evaluate marketing assets from briefs.
+Description: |
+  MarkOS is the marketing operating-system CLI. Subcommands include init, generate, plan, run, eval, login, keys, whoami, env, status, and doctor.
+Tags:
+  - cli
+  - marketing
+  - automation
+  - ai
+ManifestType: defaultLocale
+ManifestVersion: 1.6.0
