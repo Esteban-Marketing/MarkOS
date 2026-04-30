@@ -414,16 +414,17 @@ Plans:
 **Planning Note:** Replanned 2026-04-27 with refreshed research, validation strategy, lifecycle state machine, CRM bridge, and Phase 218 growth-extension gate.
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/214-saas-suite-activation-subscription-core/DISCUSS.md`
-**Artifacts:** `214-CONTEXT.md`, `214-RESEARCH.md`, `214-REVIEWS.md`, `214-VALIDATION.md`
-**Plans:** 6/6 plans drafted
+**Artifacts:** `214-CONTEXT.md`, `214-RESEARCH.md`, `214-REVIEWS.md`, `214-UI-SPEC.md`, `214-VALIDATION.md`
+**Plans:** 7/7 plans drafted (UI-SPEC fold 2026-04-29: Plan 06 split into 06 backend + 07 UI render)
 
 Plans:
-- [ ] 214-01-PLAN.md - Activation gate, business_type normalization, Wave 0.5 architecture-lock, upstream preflight, and slot/F-ID coordination
-- [ ] 214-02-PLAN.md - Core SaaS profile/plan/subscription/event schema plus Pricing Engine sentinel enforcement
-- [ ] 214-03-PLAN.md - Explicit lifecycle state machine, approval-required transitions, idempotency, and rollback
-- [ ] 214-04-PLAN.md - SaaS customer bridge and CRM identity resolution workflow
-- [ ] 214-05-PLAN.md - Lifecycle governance, approval routing, audit linkage, and evidence-pack enforcement
-- [ ] 214-06-PLAN.md - SaaS API/MCP/operator surfaces and the Phase 218 growth-extension translation gate
+- [ ] 214-01-PLAN.md - Activation gate, business_type normalization, Wave 0.5 architecture-lock (4 doctrine-string ban + UI-path prefix lock when wave<5), upstream preflight, and slot/F-ID coordination (BD-1, BD-2, BD-3)
+- [ ] 214-02-PLAN.md - Core SaaS profile/plan/subscription/event schema plus Pricing Engine sentinel enforcement (BD-4, BD-5, BD-6); 8-state CHECK + 16-event-type CHECK
+- [ ] 214-03-PLAN.md - Explicit 16-transition lifecycle state machine, approval-required transitions, idempotency, and rollback contract (BD-6, BD-7)
+- [ ] 214-04-PLAN.md - SaaS customer bridge and CRM identity resolution workflow with 4-literal resolution_status (BD-8); never duplicate customer truth
+- [ ] 214-05-PLAN.md - Lifecycle governance, approval routing (buildApprovalPackage reuse), audit linkage, evidence-pack enforcement, 7 mutation_family literals, billing_charge_approval handoff_kind (BD-9, BD-10, BD-11)
+- [ ] 214-06-PLAN.md - SaaS surface-gating helper + gated API + MCP + growth-extension metadata-only + mobile_priority=secondary (SG-1, SG-3, BD-12, X-10 backend half)
+- [ ] 214-07-PLAN.md - Settings/SaaS UI render: page.tsx + extracted SaaSActivationPanel + SaaSSubscriptionsTable + 22 Storybook state stories + a11y test suite (SS-1..15, AP-1..7, ST-1..8, SG-2, X-1..10)
 
 ### Phase 215: SaaS Billing, Payments, and Multi-Country Compliance
 **Goal:** Add invoices, payment processors, Stripe/US billing, Mercado Pago/Colombia support, QuickBooks/Siigo/Alegra sync, DIAN setup, legal invoice compliance, and processor webhook routing through the existing webhook engine.
