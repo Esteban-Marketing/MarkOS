@@ -1,0 +1,17 @@
+{
+  "name": "neuro pillar adherence",
+  "tool_input": {
+    "channel": "email",
+    "content": "MarkOS Docs-first brief for operator. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use loss aversion so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_003. Keep every claim in bounds. Queue the approved draft without changing the contract.",
+    "scheduled_at": "2026-05-03T12:00:00Z"
+  },
+  "enqueue_result": {
+    "post_id": "post-3",
+    "status": "queued"
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_003"
+  ],
+  "expected_neuro_pillar": "loss_aversion",
+  "expected_archetype": "operator"
+}

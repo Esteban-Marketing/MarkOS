@@ -1,22 +1,22 @@
 'use strict';
 
-// Phase 203 Plan 05 Task 1 — delivery.cjs dual-sign integration tests.
+// Phase 203 Plan 05 Task 1 - delivery.cjs dual-sign integration tests.
 // Unit of signPayloadDualSign was tested in Plan 203-04 signing.test.js.
 // This suite asserts INTEGRATION: processDelivery injects both secrets into outbound
 // headers via fetch capture.
-//
-// Covers behaviors 1i (single V1 when secret_v2 null), 1j (both V1+V2 when secret_v2),
-// 1k (shared X-Markos-Timestamp across V1+V2), 1l (replay headers x-markos-replayed-from +
-// x-markos-attempt when delivery.replayed_from is set).
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const { processDelivery } = require('../../lib/markos/webhooks/delivery.cjs');
+const { createInMemoryVaultClient, storeSecret } = require('../../lib/markos/webhooks/secret-vault.cjs');
 
-// --- Minimal stores -------------------------------------------------------
+async function makeStores({ subscription, delivery, primarySecret }) {
+  const client = createInMemoryVaultClient();
+  if (primarySecret) {
+    subscription.secret_vault_ref = await storeSecret(client, subscription.id, primarySecret);
+  }
 
-function makeStores({ subscription, delivery }) {
   const deliveries = {
     async findById(id) { return id === delivery.id ? { ...delivery } : null; },
     async update(id, patch) {
@@ -25,6 +25,7 @@ function makeStores({ subscription, delivery }) {
     },
   };
   const subscriptions = {
+    client,
     async findById(_tenant_id, sub_id) {
       return sub_id === subscription.id ? subscription : null;
     },
@@ -32,7 +33,6 @@ function makeStores({ subscription, delivery }) {
   return { deliveries, subscriptions };
 }
 
-// Capture outbound fetch request details
 function makeCaptureFetch({ ok = true, status = 200 } = {}) {
   const captured = [];
   const fetchImpl = async (url, init) => {
@@ -42,7 +42,6 @@ function makeCaptureFetch({ ok = true, status = 200 } = {}) {
   return { fetchImpl, captured };
 }
 
-// Bypass SSRF guard for public URLs by forcing lookup to public IPv4
 function passthroughLookup() {
   return async () => ({ address: '93.184.216.34', family: 4 });
 }
@@ -52,7 +51,6 @@ test('1i: when sub.secret_v2 is null, dispatch sends single X-Markos-Signature-V
     id: 'whsub_1',
     tenant_id: 'ten_a',
     url: 'https://example.com/hook',
-    secret: 'v1-secret-abc',
     secret_v2: null,
   };
   const delivery = {
@@ -65,7 +63,11 @@ test('1i: when sub.secret_v2 is null, dispatch sends single X-Markos-Signature-V
     status: 'pending',
     replayed_from: null,
   };
-  const { deliveries, subscriptions } = makeStores({ subscription, delivery });
+  const { deliveries, subscriptions } = await makeStores({
+    subscription,
+    delivery,
+    primarySecret: 'v1-secret-abc',
+  });
   const { fetchImpl, captured } = makeCaptureFetch();
 
   await processDelivery(deliveries, subscriptions, 'whdel_1', {
@@ -85,7 +87,6 @@ test('1j: when sub.secret_v2 is present, dispatch sends BOTH V1 + V2 headers', a
     id: 'whsub_1',
     tenant_id: 'ten_a',
     url: 'https://example.com/hook',
-    secret: 'v1-secret-abc',
     secret_v2: 'v2-secret-xyz',
   };
   const delivery = {
@@ -98,7 +99,11 @@ test('1j: when sub.secret_v2 is present, dispatch sends BOTH V1 + V2 headers', a
     status: 'pending',
     replayed_from: null,
   };
-  const { deliveries, subscriptions } = makeStores({ subscription, delivery });
+  const { deliveries, subscriptions } = await makeStores({
+    subscription,
+    delivery,
+    primarySecret: 'v1-secret-abc',
+  });
   const { fetchImpl, captured } = makeCaptureFetch();
 
   await processDelivery(deliveries, subscriptions, 'whdel_2', {
@@ -118,7 +123,6 @@ test('1k: X-Markos-Timestamp is identical across V1 + V2 (single signed timestam
     id: 'whsub_1',
     tenant_id: 'ten_a',
     url: 'https://example.com/hook',
-    secret: 'v1',
     secret_v2: 'v2',
   };
   const delivery = {
@@ -131,7 +135,11 @@ test('1k: X-Markos-Timestamp is identical across V1 + V2 (single signed timestam
     status: 'pending',
     replayed_from: null,
   };
-  const { deliveries, subscriptions } = makeStores({ subscription, delivery });
+  const { deliveries, subscriptions } = await makeStores({
+    subscription,
+    delivery,
+    primarySecret: 'v1',
+  });
   const { fetchImpl, captured } = makeCaptureFetch();
 
   await processDelivery(deliveries, subscriptions, 'whdel_3', {
@@ -142,8 +150,6 @@ test('1k: X-Markos-Timestamp is identical across V1 + V2 (single signed timestam
   const headers = captured[0].init.headers;
   assert.ok(headers['X-Markos-Timestamp']);
   assert.match(headers['X-Markos-Timestamp'], /^\d+$/);
-  // There is only ONE timestamp header — implicitly shared across both signatures.
-  // Verify by ensuring both signatures were computed against the same ts.body input.
   assert.ok(headers['X-Markos-Signature-V1'].startsWith('sha256='));
   assert.ok(headers['X-Markos-Signature-V2'].startsWith('sha256='));
 });
@@ -153,7 +159,6 @@ test('1l: replay delivery carries x-markos-replayed-from + x-markos-attempt head
     id: 'whsub_1',
     tenant_id: 'ten_a',
     url: 'https://example.com/hook',
-    secret: 'v1',
     secret_v2: null,
   };
   const delivery = {
@@ -167,7 +172,11 @@ test('1l: replay delivery carries x-markos-replayed-from + x-markos-attempt head
     replayed_from: 'whdel_original_abc',
     created_at: '2026-04-01T00:00:00.000Z',
   };
-  const { deliveries, subscriptions } = makeStores({ subscription, delivery });
+  const { deliveries, subscriptions } = await makeStores({
+    subscription,
+    delivery,
+    primarySecret: 'v1',
+  });
   const { fetchImpl, captured } = makeCaptureFetch();
 
   await processDelivery(deliveries, subscriptions, 'whdel_replay', {
@@ -178,6 +187,5 @@ test('1l: replay delivery carries x-markos-replayed-from + x-markos-attempt head
   const headers = captured[0].init.headers;
   assert.equal(headers['x-markos-replayed-from'], 'whdel_original_abc');
   assert.ok(headers['x-markos-attempt']);
-  // attempt is delivery.attempt + 1 = 1
   assert.equal(String(headers['x-markos-attempt']), '1');
 });

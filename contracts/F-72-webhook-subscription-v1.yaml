@@ -44,7 +44,7 @@ paths:
               $ref: '#/components/schemas/WebhookSubscribeRequest'
       responses:
         '201':
-          description: Subscription created
+          description: Subscription created; signing secret returned once in plaintext_secret_show_once
           content:
             application/json:
               schema:
@@ -102,52 +102,56 @@ components:
           minItems: 1
         secret:
           type: string
-          description: Optional caller-provided secret; auto-generated if omitted.
+          description: Optional caller-provided secret; auto-generated if omitted. Regardless of origin, the resolved secret is only returned once at create or rotate time.
     WebhookSubscription:
       type: object
-      required: [id, tenant_id, url, secret, events, active, created_at, updated_at]
+      required: [id, tenant_id, url, events, active, created_at, updated_at]
       properties:
         id: { type: string, pattern: "^whsub_" }
         tenant_id: { type: string }
         url: { type: string, format: uri }
-        secret: { type: string, description: "V1 signing secret. Masked to last 8 chars in UI (UI-SPEC §Surface 2 Settings); never echoed in list/detail API responses during rotation." }
         events: { type: array, items: { type: string } }
         active: { type: boolean }
         created_at: { type: string, format: date-time }
         updated_at: { type: string, format: date-time }
-        # Phase 203 Plan 05 — rotation state columns (migration 72 Plan 203-02).
+        # Phase 203 Plan 05: rotation state columns (migration 72 Plan 203-02).
         secret_v2:
           type: string
           nullable: true
           readOnly: true
-          description: "Phase 203 D-10 — dual-sign secret during 30-day grace window. Never echoed in API responses (hashed or masked to last 8 chars in UI). Null outside an active rotation."
+          description: "Phase 203 D-10: dual-sign secret during the 30-day grace window. Never echoed in API responses."
         rotation_state:
           type: string
           nullable: true
           enum: [active, rolled_back, null]
-          description: "Phase 203 D-09 — active during grace window; rolled_back after explicit D-12 rollback; null outside rotation."
+          description: "Phase 203 D-09: active during grace window; rolled_back after explicit D-12 rollback; null outside rotation."
         grace_started_at:
           type: string
           format: date-time
           nullable: true
-          description: "Phase 203 D-10 — rotation grace window start; null outside rotation."
+          description: "Phase 203 D-10: rotation grace window start; null outside rotation."
         grace_ends_at:
           type: string
           format: date-time
           nullable: true
-          description: "Phase 203 D-10 — rotation grace window end (start + 30 days); null outside rotation. After grace closes the old secret is purged (D-12)."
+          description: "Phase 203 D-10: rotation grace window end (start + 30 days); null outside rotation."
         rps_override:
           type: integer
           nullable: true
           minimum: 1
-          description: "Phase 203 D-13 — per-subscription RPS override. May only LOWER the plan-tier default; cannot exceed plan ceiling."
+          description: "Phase 203 D-13: per-subscription RPS override. May only lower the plan-tier default; cannot exceed the plan ceiling."
     WebhookSubscribeResponse:
       type: object
+      required: [success, subscription_id, subscription, plaintext_secret_show_once]
       properties:
         success: { type: boolean }
+        subscription_id: { type: string, pattern: "^whsub_" }
         subscription: { $ref: '#/components/schemas/WebhookSubscription' }
+        plaintext_secret_show_once:
+          type: string
+          description: Show-once signing secret. This value is not readable again from subscription or list endpoints.
 
 storage:
   table: markos_webhook_subscriptions
   rls: markos_tenant_memberships
-  migration: supabase/migrations/70_markos_webhook_subscriptions.sql
+  migration: supabase/migrations/70.2_markos_webhook_secret_vault.sql

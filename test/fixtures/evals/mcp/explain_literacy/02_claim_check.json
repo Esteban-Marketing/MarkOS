@@ -1,0 +1,25 @@
+{
+  "name": "claim check grounding",
+  "tool_input": {
+    "archetype": "founder-sam"
+  },
+  "pack": {
+    "pains": [],
+    "archetypes": [
+      {
+        "slug": "founder-sam",
+        "description": "MarkOS Docs-first brief for founder-sam. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use social proof so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_002. Keep every claim in bounds.",
+        "examples": [
+          "Example with evidence_grounding_002",
+          "Example centered on social proof"
+        ]
+      }
+    ],
+    "canon": []
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_002"
+  ],
+  "expected_neuro_pillar": "social_proof",
+  "expected_archetype": "founder-sam"
+}

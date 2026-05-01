@@ -33,6 +33,8 @@ export default {
     // MCP KPI digest (Plan 202-10) — weekly founders email: installs + top tools + p95 (D-23 >= 50 installs/30d)
     { path: '/api/cron/mcp-kpi-digest', schedule: '0 9 * * 1' },
     // Webhook DLQ purge (Plan 203-03) — hard-delete failed deliveries past 7d (D-08); audit row emitted per batch
+    // Webhook nonce purge (Plan 200.1-05) - drops replay-protection nonces older than 10 minutes
+    { path: '/api/cron/webhooks-nonce-purge', schedule: '*/5 * * * *' },
     { path: '/api/cron/webhooks-dlq-purge', schedule: '30 3 * * *' },
     // Webhook rotation notifications (Plan 203-06) — sweep active rotations at T-7/T-1/T-0 stages and email
     // tenant admins (role in owner/admin). Redis SET NX EX 90d dedupes each rotation+stage to exactly one send.

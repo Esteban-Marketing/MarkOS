@@ -1,0 +1,111 @@
+flow_id: F-72.1
+phase: 200.1
+name: Webhook Secret Rotation
+status: active
+summary: Rotate a webhook subscription signing secret and return the new secret once.
+
+openapi: 3.1.0
+info:
+  title: F-72.1 Webhook secret rotation
+  version: 1.0.0
+  description: |
+    Rotates a webhook subscription HMAC secret. The new secret is returned in
+    `plaintext_secret_show_once` exactly once and is not readable from any
+    other endpoint. The endpoint emits `source_domain='webhooks' action='secret.rotated'`.
+
+paths:
+  /api/webhooks/rotate-secret:
+    post:
+      operationId: rotateWebhookSecret
+      summary: Rotate a webhook subscription signing secret
+      tags:
+        - webhooks
+      security:
+        - hostedSupabaseAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subscription_id]
+              properties:
+                subscription_id:
+                  type: string
+                  pattern: "^whsub_"
+      responses:
+        '200':
+          description: Rotation succeeded; new secret returned once in plaintext_secret_show_once.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, subscription_id, plaintext_secret_show_once, rotated_at]
+                properties:
+                  ok: { type: boolean, enum: [true] }
+                  subscription_id: { type: string, pattern: "^whsub_" }
+                  plaintext_secret_show_once:
+                    type: string
+                    description: The new signing secret. Clients must persist it immediately because it is never readable again.
+                  rotated_at: { type: string, format: date-time }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/ServerError' }
+
+components:
+  securitySchemes:
+    hostedSupabaseAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: { type: string }
+              detail: { type: string }
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: { type: string }
+              message: { type: [string, 'null'] }
+    Forbidden:
+      description: Forbidden - subscription does not belong to caller tenant
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: { type: string }
+    NotFound:
+      description: Subscription not found
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: { type: string }
+    ServerError:
+      description: Server error (vault unavailable, DB failure, or audit emit failure)
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error: { type: string }
+              detail: { type: string }

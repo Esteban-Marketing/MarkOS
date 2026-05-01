@@ -271,6 +271,7 @@ create or replace function finalize_expired_webhook_rotations(
 ) returns json as $$
 declare
   v_row record;
+  v_secret_vault_ref text;
   v_results jsonb := '[]'::jsonb;
 begin
   for v_row in
@@ -286,8 +287,20 @@ begin
        and r.grace_ends_at < p_now
   loop
     -- Promote secret_v2 → secret; purge grace state.
+    v_secret_vault_ref := 'markos:webhook:secret:' || v_row.subscription_id;
+    if v_row.secret_v2 is not null then
+      perform vault_create_or_update_secret(
+        v_row.secret_v2,
+        v_secret_vault_ref,
+        'Phase 203 rotation finalize'
+      );
+    end if;
+
     update markos_webhook_subscriptions
-      set secret = coalesce(v_row.secret_v2, secret),
+      set secret_vault_ref = case
+            when v_row.secret_v2 is not null then v_secret_vault_ref
+            else secret_vault_ref
+          end,
           secret_v2 = null,
           grace_started_at = null,
           grace_ends_at = null,

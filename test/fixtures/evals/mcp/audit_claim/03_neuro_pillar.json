@@ -1,0 +1,28 @@
+{
+  "name": "neuro pillar adherence",
+  "tool_input": {
+    "claim": "MarkOS Docs-first brief for operator. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use loss aversion so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_003. Keep every claim in bounds. Prove it with evidence_grounding_003."
+  },
+  "canon": [
+    {
+      "title": "Operator benchmark",
+      "text": "evidence_grounding_003 MarkOS Docs-first brief for operator. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use loss aversion so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_003. Keep every claim in bounds. Benchmark confirms the sourced claim."
+    }
+  ],
+  "expected_llm_output": {
+    "supported": true,
+    "confidence": 0.93,
+    "evidence": [
+      {
+        "source": "evidence_grounding_003",
+        "quote": "MarkOS Docs-first brief for operator. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use loss aversion so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_003. Keep every claim in bounds.",
+        "score": 0.91
+      }
+    ]
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_003"
+  ],
+  "expected_neuro_pillar": "loss_aversion",
+  "expected_archetype": "operator"
+}

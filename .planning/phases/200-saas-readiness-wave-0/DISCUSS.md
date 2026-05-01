@@ -96,3 +96,19 @@ Ship in 2 weeks: public OpenAPI, MCP server with Claude Marketplace listing, web
 - [MarkOS Codebase Atlas](../../../obsidian/reference/MarkOS%20Codebase%20Atlas.md)
 - [HTTP Layer](../../../obsidian/reference/HTTP%20Layer.md) · [Core Lib](../../../obsidian/reference/Core%20Lib.md)
 - [Contracts Registry](../../../obsidian/reference/Contracts%20Registry.md) · [Database Schema](../../../obsidian/reference/Database%20Schema.md)
+
+---
+
+## Threat models (added by Phase 200.1)
+
+> Added 2026-04-29 by Phase 200.1 plan 04 to close gate-11 ("threat model per new domain") for Phase 200's MCP, webhooks, and marketplace surfaces. The original 5-row Risks table above remains the historical scoping artifact; the STRIDE documents below are the formal models the baseline requires.
+
+Three STRIDE threat models cover the new domains Phase 200 introduced:
+
+- **MCP server** - `../200.1-saas-readiness-hardening/threat-models/mcp-stride.md`
+- **Webhook engine** - `../200.1-saas-readiness-hardening/threat-models/webhooks-stride.md`
+- **Marketplace + demo sandbox** - `../200.1-saas-readiness-hardening/threat-models/marketplace-stride.md`
+
+Each model maps threats to mitigation plans (`200.1-01` through `200.1-10`), residual risk, and concrete verifier hooks. Cross-reference integrity is enforced programmatically by `test/threat-models/stride-references.test.js`.
+
+Originally surfaced by review concern **H6** in `200-REVIEWS.md` and mirrored in `200.1-REVIEWS.md`.

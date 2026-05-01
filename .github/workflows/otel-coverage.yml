@@ -1,0 +1,38 @@
+name: OTEL coverage
+
+on:
+  pull_request:
+    paths:
+      - 'api/webhooks/**'
+      - 'api/mcp/**'
+      - 'lib/markos/observability/**'
+      - 'scripts/ci/check-otel-coverage.cjs'
+      - 'scripts/verify/verify-200-1-09-task-2.cjs'
+      - 'test/observability/otel.test.js'
+      - '.github/workflows/otel-coverage.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'api/webhooks/**'
+      - 'api/mcp/**'
+      - 'lib/markos/observability/**'
+      - 'scripts/ci/check-otel-coverage.cjs'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: --test-isolation=none
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run OTEL coverage gate
+        run: node scripts/ci/check-otel-coverage.cjs
+      - name: Run OTEL unit tests
+        run: node --test test/observability/otel.test.js

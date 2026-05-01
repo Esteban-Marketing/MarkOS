@@ -1,0 +1,28 @@
+{
+  "name": "neuro pillar adherence",
+  "tool_input": {
+    "prompt": "Write a risk-aware brief for operators who need to avoid churn, drift, and silent regressions. evidence_grounding_003. MarkOS Docs-first brief for operator. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use loss aversion so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_003. Keep every claim in bounds."
+  },
+  "expected_llm_output": {
+    "channel": "email",
+    "audience": "operator",
+    "pain": "MarkOS Docs-first brief for operator. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use loss aversion so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_003. Keep every claim in bounds.",
+    "promise": "Ship the pipeline with human approval",
+    "brand": "MarkOS",
+    "derived_from": "fixture-eval",
+    "claims": [
+      {
+        "evidence_id": "evidence_grounding_003",
+        "text": "Evidence chain evidence_grounding_003"
+      }
+    ],
+    "neuro_pillar": "loss_aversion",
+    "archetype": "operator",
+    "tone": "quietly confident"
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_003"
+  ],
+  "expected_neuro_pillar": "loss_aversion",
+  "expected_archetype": "operator"
+}

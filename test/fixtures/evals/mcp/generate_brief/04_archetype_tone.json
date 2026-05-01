@@ -1,0 +1,28 @@
+{
+  "name": "archetype tone fidelity",
+  "tool_input": {
+    "prompt": "Draft a lean brief for a scrappy solopreneur who needs control, speed, and zero babysitting. evidence_grounding_004. MarkOS Docs-first brief for solopreneur. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use agency so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_004. Keep every claim in bounds."
+  },
+  "expected_llm_output": {
+    "channel": "sms",
+    "audience": "solopreneur",
+    "pain": "MarkOS Docs-first brief for solopreneur. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use agency so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_004. Keep every claim in bounds.",
+    "promise": "Ship the pipeline with human approval",
+    "brand": "MarkOS",
+    "derived_from": "fixture-eval",
+    "claims": [
+      {
+        "evidence_id": "evidence_grounding_004",
+        "text": "Evidence chain evidence_grounding_004"
+      }
+    ],
+    "neuro_pillar": "agency",
+    "archetype": "solopreneur",
+    "tone": "quietly confident"
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_004"
+  ],
+  "expected_neuro_pillar": "agency",
+  "expected_archetype": "solopreneur"
+}

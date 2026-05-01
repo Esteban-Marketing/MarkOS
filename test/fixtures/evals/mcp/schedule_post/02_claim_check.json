@@ -1,0 +1,17 @@
+{
+  "name": "claim check grounding",
+  "tool_input": {
+    "channel": "linkedin",
+    "content": "MarkOS Docs-first brief for founder-sam. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use social proof so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_002. Keep every claim in bounds. Queue the approved draft without changing the contract.",
+    "scheduled_at": "2026-05-02T12:00:00Z"
+  },
+  "enqueue_result": {
+    "post_id": "post-2",
+    "status": "queued"
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_002"
+  ],
+  "expected_neuro_pillar": "social_proof",
+  "expected_archetype": "founder-sam"
+}

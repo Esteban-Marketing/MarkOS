@@ -1,0 +1,32 @@
+name: Preset parity (bin/lib/presets -> .agent/markos/templates/presets)
+
+on:
+  pull_request:
+    paths:
+      - 'bin/lib/presets/**'
+      - '.agent/markos/templates/presets/**'
+      - 'scripts/ci/check-preset-parity.cjs'
+      - 'test/onboarding/preset-parity.test.js'
+      - '.github/workflows/preset-parity.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'bin/lib/presets/**'
+      - '.agent/markos/templates/presets/**'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run parity script
+        run: node scripts/ci/check-preset-parity.cjs
+      - name: Run unit tests
+        run: node --test test/onboarding/preset-parity.test.js

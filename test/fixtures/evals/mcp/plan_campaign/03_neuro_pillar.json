@@ -1,0 +1,32 @@
+{
+  "name": "neuro pillar adherence",
+  "tool_input": {
+    "objective": "Frame the rollout around loss aversion and drift prevention.",
+    "audience": "operator",
+    "budget": "$2500"
+  },
+  "expected_llm_output": {
+    "channels": [
+      {
+        "channel": "email",
+        "blocks": [
+          {
+            "subject": "Ship the operator pipeline with proof",
+            "body": "MarkOS Docs-first brief for operator. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use loss aversion so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_003. Keep every claim in bounds."
+          }
+        ],
+        "claims": [
+          {
+            "evidence_id": "evidence_grounding_003",
+            "note": "Ground the claim with evidence_grounding_003."
+          }
+        ]
+      }
+    ]
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_003"
+  ],
+  "expected_neuro_pillar": "loss_aversion",
+  "expected_archetype": "operator"
+}

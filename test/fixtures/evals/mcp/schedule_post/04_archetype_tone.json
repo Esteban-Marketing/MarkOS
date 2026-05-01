@@ -1,0 +1,17 @@
+{
+  "name": "archetype tone fidelity",
+  "tool_input": {
+    "channel": "sms",
+    "content": "MarkOS Docs-first brief for solopreneur. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use agency so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_004. Keep every claim in bounds. Queue the approved draft without changing the contract.",
+    "scheduled_at": "2026-05-04T12:00:00Z"
+  },
+  "enqueue_result": {
+    "post_id": "post-4",
+    "status": "queued"
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_004"
+  ],
+  "expected_neuro_pillar": "agency",
+  "expected_archetype": "solopreneur"
+}

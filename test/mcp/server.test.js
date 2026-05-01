@@ -132,23 +132,23 @@ test('POST /api/mcp/session initialize returns protocolVersion', async () => {
   assert.equal(payload.result.protocolVersion, '2025-06-18');
 });
 
-test('POST /api/mcp/tools/list_pain_points dispatch returns 200', async () => {
+test('POST /api/mcp/tools/list_pain_points requires bearer auth', async () => {
   const req = makeReq({ method: 'POST', url: '/api/mcp/tools/list_pain_points', query: { toolName: 'list_pain_points' } });
   req.body = {};
   const res = makeRes();
   await handleToolInvocation(req, res);
-  assert.equal(res.statusCode, 200);
+  assert.equal(res.statusCode, 401);
   const payload = parse(res);
-  assert.equal(payload.success, true);
-  assert.equal(payload.tool, 'list_pain_points');
+  assert.equal(payload.success, false);
+  assert.equal(payload.error, 'invalid_token');
 });
 
-test('POST /api/mcp/tools/unknown returns 404', async () => {
+test('POST /api/mcp/tools/unknown still requires bearer auth before tool lookup', async () => {
   const req = makeReq({ method: 'POST', url: '/api/mcp/tools/ghost', query: { toolName: 'ghost' } });
   req.body = {};
   const res = makeRes();
   await handleToolInvocation(req, res);
-  assert.equal(res.statusCode, 404);
+  assert.equal(res.statusCode, 401);
 });
 
 // ---------------------------------------------------------------------------

@@ -198,12 +198,15 @@ test('213.5 DS-7: demo page.tsx eliminates legacy .demo-result orphan class', ()
   assert.doesNotMatch(read(DEMO_TSX), /"demo-result"/);
 });
 
-test('213.5 DS-8: demo page.tsx preserves fetch URL /integrations/claude/demo/api verbatim', () => {
-  assert.match(read(DEMO_TSX), /fetch\('\/integrations\/claude\/demo\/api'/);
+test('213.5 DS-8: demo page.tsx calls issue-token and invoke endpoints (hardened flow)', () => {
+  const src = read(DEMO_TSX);
+  assert.match(src, /fetch\('\/integrations\/claude\/demo\/api\/issue-token'/);
+  assert.match(src, /fetch\('\/integrations\/claude\/demo\/api\/invoke'/);
 });
 
-test("213.5 DS-8: demo page.tsx preserves tool: 'draft_message' in fetch body verbatim", () => {
-  assert.match(read(DEMO_TSX), /tool: 'draft_message'/);
+test("213.5 DS-8: demo page.tsx posts tool_name = 'draft_message' in the invoke body", () => {
+  assert.match(read(DEMO_TSX), /tool_name:\s*toolName/);
+  assert.match(read(DEMO_TSX), /invokeTool\('draft_message'\)/);
 });
 
 // ===========================================================================
