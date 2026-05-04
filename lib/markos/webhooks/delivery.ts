@@ -59,6 +59,11 @@ export declare function enqueueDelivery(
 ): Promise<WebhookDelivery>;
 export type ProcessDeliveryOptions = {
   fetch?: typeof fetch;
+  request?: (currentUrl: string, requestOptions: Record<string, unknown>, body: string) => Promise<{
+    statusCode: number;
+    headers?: Record<string, string | string[] | undefined>;
+    body?: string;
+  }>;
   now?: () => number;
   // Phase 203-02 Task 1: dispatch-time SSRF re-check (DNS-rebinding defense).
   // When provided, the SSRF guard uses this lookup instead of node:dns.
@@ -68,14 +73,26 @@ export type ProcessDeliveryOptions = {
   // D-13 ceiling when the subscription row doesn't carry it inline yet. Both are optional.
   redis?: unknown;
   planTier?: string;
+  vaultClient?: unknown;
 };
 
 export declare function processDelivery(
   deliveries: DeliveryStore,
-  subscriptions: Pick<WebhookStore, 'findById'>,
+  subscriptions: Pick<WebhookStore, 'findById'> & { client?: unknown },
   delivery_id: string,
   options?: ProcessDeliveryOptions,
 ): Promise<
   | { delivered: true; status: number; attempt: number }
   | { delivered: false; reason?: string; attempt?: number; status?: DeliveryStatus; next_retry_at?: string; last_error?: string }
+>;
+
+export declare function dispatchWithValidation(
+  currentUrl: string,
+  redirectsRemaining: number,
+  body: string,
+  headers: Record<string, string>,
+  options?: ProcessDeliveryOptions,
+): Promise<
+  | { ok: true; statusCode: number; headers?: Record<string, string | string[] | undefined>; body?: string }
+  | { ok: false; retryable: false; error: string; reason?: string; detail?: string }
 >;

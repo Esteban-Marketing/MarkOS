@@ -199,7 +199,7 @@ test('1m: assertUrlIsPublic rejects IPv6 fe80::/10 (link-local)', async () => {
 // Subscribe-time wiring (1n-1p)
 // ---------------------------------------------------------------------------
 
-test('1n: POST /api/webhooks/subscribe with https://localhost → 400 {error:private_ip}', async () => {
+test('1n: POST /api/webhooks/subscribe with https://localhost → 400 {error:invalid_subscriber_url, reason:private_ip}', async () => {
   const req = makeReq({
     method: 'POST',
     body: { url: 'https://localhost', events: ['approval.created'] },
@@ -208,14 +208,15 @@ test('1n: POST /api/webhooks/subscribe with https://localhost → 400 {error:pri
   await handleSubscribe(req, res);
   assert.equal(res.statusCode, 400);
   const payload = parse(res);
-  assert.equal(payload.error, 'private_ip');
+  assert.equal(payload.error, 'invalid_subscriber_url');
+  assert.equal(payload.reason, 'ipv6_loopback');
   // insert must not have happened — no subs for tenant.
   const { subscriptions } = getWebhookStores();
   const rows = await subscriptions.listByTenant('t-1');
   assert.equal(rows.length, 0);
 });
 
-test('1o: POST /api/webhooks/subscribe with http:// → 400 {error:https_required}', async () => {
+test('1o: POST /api/webhooks/subscribe with http:// → 400 {error:invalid_subscriber_url, reason:https_required}', async () => {
   const req = makeReq({
     method: 'POST',
     body: { url: 'http://example.com', events: ['approval.created'] },
@@ -223,7 +224,9 @@ test('1o: POST /api/webhooks/subscribe with http:// → 400 {error:https_require
   const res = makeRes();
   await handleSubscribe(req, res);
   assert.equal(res.statusCode, 400);
-  assert.equal(parse(res).error, 'https_required');
+  const payload = parse(res);
+  assert.equal(payload.error, 'invalid_subscriber_url');
+  assert.equal(payload.reason, 'protocol_http_denied');
 });
 
 test('1p: POST /api/webhooks/subscribe with public HTTPS succeeds (guard passes)', async () => {

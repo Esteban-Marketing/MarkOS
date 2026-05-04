@@ -1,39 +1,24 @@
 'use strict';
 
-// Phase 204 Plan 04 Task 2 — `markos whoami` CLI command.
+// Phase 204 Plan 04 Task 2 - `markos whoami` CLI command.
 //
-// Observability command — prints the caller's tenant/role/email + active API
+// Observability command - prints the caller's tenant/role/email + active API
 // key fingerprint. Closes Wave 1 by proving end-to-end auth + tenant routing.
-//
-// Flow:
-//   1. resolveProfile(cli) → profile name (--profile > MARKOS_PROFILE > config)
-//   2. getToken(profile) → Bearer token from keychain
-//        • if null → first-run nudge: `Run markos login to get started` + exit 3
-//   3. authedFetch GET /api/tenant/whoami with the token
-//   4. On 200 → render:
-//        • TTY:  boxed unicode table (profile, tenant, role, email, user_id,
-//                key fingerprint + last-used, scope)
-//        • !TTY / --json: one-line JSON envelope
-//   5. On 401 invalid_token → exit 3 'Session expired. Run `markos login` again.'
-//      On 401 revoked_token → exit 3 'This API key was revoked. Run `markos login`.'
-//      On 5xx             → exit 2 transient
-//      On network error   → exit 2 transient
-//
-// Security:
-//   - NEVER prints the Bearer token to stdout or stderr (T-204-04-01).
-//   - Only key_fingerprint (8 hex chars of sha256) is displayed — safe to log.
-//   - Token read happens via keychain primitive; we never format it into a
-//     user-visible string.
 
 const { authedFetch, BASE_URL, AuthError, TransientError } = require('../lib/cli/http.cjs');
 const { getToken } = require('../lib/cli/keychain.cjs');
 const { resolveProfile } = require('../lib/cli/config.cjs');
-const { EXIT_CODES, shouldUseJson, shouldUseColor, renderJson, ANSI } = require('../lib/cli/output.cjs');
+const { createSpinner } = require('../lib/cli/spinner.cjs');
+const {
+  EXIT_CODES,
+  shouldUseJson,
+  shouldUseColor,
+  renderJson,
+  ANSI,
+  pickGlyphs,
+} = require('../lib/cli/output.cjs');
 const { formatError } = require('../lib/cli/errors.cjs');
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
-
-// Human-readable "last used X ago" for the TTY table.
 function formatLastUsed(iso) {
   if (!iso) return 'never';
   const then = Date.parse(iso);
@@ -50,25 +35,24 @@ function formatLastUsed(iso) {
   return `${day}d ago`;
 }
 
-// Render the boxed TTY envelope. Hand-rolled unicode box (zero-dep per D-08).
 function renderBox(envelope, profile, opts) {
   const color = shouldUseColor(opts);
+  const G = pickGlyphs();
   const lines = [];
-  const label = (s) => color ? (ANSI.DIM + s + ANSI.RESET) : s;
-  const value = (s) => color ? (ANSI.BOLD + s + ANSI.RESET) : s;
+  const label = (s) => (color ? (ANSI.DIM + s + ANSI.RESET) : s);
+  const value = (s) => (color ? (ANSI.BOLD + s + ANSI.RESET) : s);
 
   const fp = envelope.key_fingerprint
-    ? `sha256:${envelope.key_fingerprint}… (last used ${formatLastUsed(envelope.last_used_at)})`
-    : '(session — no API key)';
+    ? `sha256:${envelope.key_fingerprint}... (last used ${formatLastUsed(envelope.last_used_at)})`
+    : '(session - no API key)';
 
-  // Rows: [label, value].
   const rows = [
-    ['Tenant',  `${envelope.tenant_name} (${envelope.tenant_id})`],
-    ['Role',    envelope.role],
-    ['Email',   envelope.email],
+    ['Tenant', `${envelope.tenant_name} (${envelope.tenant_id})`],
+    ['Role', envelope.role],
+    ['Email', envelope.email],
     ['User ID', envelope.user_id],
-    ['Key',     fp],
-    ['Scope',   envelope.scope],
+    ['Key', fp],
+    ['Scope', envelope.scope],
   ];
 
   const headerText = `whoami (profile: ${profile})`;
@@ -76,26 +60,28 @@ function renderBox(envelope, profile, opts) {
   const valueWidth = Math.max(...rows.map(([, v]) => String(v).length));
   const contentWidth = Math.max(headerText.length, labelWidth + 2 + valueWidth);
 
-  // Top border.
-  lines.push('┌─ ' + headerText + ' ' + '─'.repeat(Math.max(0, contentWidth - headerText.length - 1)) + '┐');
-  // Rows.
+  lines.push(
+    G.topLeft
+      + G.horiz
+      + ' '
+      + headerText
+      + ' '
+      + G.horiz.repeat(Math.max(0, contentWidth - headerText.length - 1))
+      + G.topRight,
+  );
+
   for (const [l, v] of rows) {
     const labelCell = l.padEnd(labelWidth, ' ');
     const valueStr = String(v);
     const pad = Math.max(0, contentWidth - labelWidth - 2 - valueStr.length);
-    lines.push('│ ' + label(labelCell) + '  ' + value(valueStr) + ' '.repeat(pad) + '│');
+    lines.push(G.vert + ' ' + label(labelCell) + '  ' + value(valueStr) + ' '.repeat(pad) + G.vert);
   }
-  // Bottom border.
-  lines.push('└' + '─'.repeat(contentWidth + 2) + '┘');
+
+  lines.push(G.bottomLeft + G.horiz.repeat(contentWidth + 2) + G.bottomRight);
 
   for (const line of lines) process.stdout.write(line + '\n');
 }
 
-// ─── Error dispatch helpers ────────────────────────────────────────────────
-
-// Map an auth-error signature (error code or 'revoked_token' / 'invalid_token'
-// substring) to the right formatError payload. Centralised so main() stays
-// under the cognitive-complexity budget.
 function authErrorPayload(signature) {
   if (signature === 'revoked_token') {
     return {
@@ -134,7 +120,6 @@ function exitTransient(cli, error, message) {
   return process.exit(EXIT_CODES.TRANSIENT);
 }
 
-// Handle the thrown fetch error (AuthError, TransientError, or network).
 function handleFetchError(err, cli) {
   if (err instanceof AuthError) {
     const bodyText = typeof err?.body === 'string' ? err.body : '';
@@ -146,7 +131,6 @@ function handleFetchError(err, cli) {
   return exitTransient(cli, 'NETWORK_ERROR', err?.message || 'Unknown network error');
 }
 
-// Render the envelope to stdout in JSON or boxed TTY form.
 function renderEnvelope(body, profile, cli) {
   if (shouldUseJson(cli)) {
     renderJson({
@@ -160,18 +144,16 @@ function renderEnvelope(body, profile, cli) {
       scope: body.scope,
       last_used_at: body.last_used_at || null,
     });
-  } else {
-    renderBox(body, profile, cli);
+    return;
   }
+
+  renderBox(body, profile, cli);
 }
 
-// ─── main ─────────────────────────────────────────────────────────────────
-
 async function main(ctx = {}) {
-  const cli = (ctx?.cli) || ctx || {};
+  const cli = (ctx && ctx.cli) || ctx || {};
   const profile = resolveProfile(cli);
 
-  // 1. Keychain lookup. Absent → first-run nudge.
   const token = await getToken(profile);
   if (!token) {
     formatError({
@@ -182,23 +164,22 @@ async function main(ctx = {}) {
     return process.exit(EXIT_CODES.AUTH_FAILURE);
   }
 
-  // 2. Fetch whoami envelope.
-  // `cli.retries` is an escape hatch for tests + CI — production default is the
-  // authedFetch built-in (4 retries with exponential backoff).
   const retries = Number.isFinite(cli.retries) ? cli.retries : undefined;
   let res;
+  const spinner = createSpinner({ label: 'fetching identity', opts: cli });
   try {
     const ctxOpts = { token };
     if (retries !== undefined) ctxOpts.retries = retries;
     res = await authedFetch('/api/tenant/whoami', { method: 'GET' }, ctxOpts);
   } catch (err) {
     return handleFetchError(err, cli);
+  } finally {
+    spinner.stop();
   }
 
   let body;
   try { body = await res.json(); } catch { body = {}; }
 
-  // 3. Error-body dispatch for 401s authedFetch did not throw on (defensive).
   if (res.status === 401) {
     return exitAuth(cli, body?.error || 'generic');
   }
@@ -207,7 +188,6 @@ async function main(ctx = {}) {
     return exitTransient(cli, 'SERVER_ERROR', `Whoami failed (${res.status}): ${body?.error || 'unknown'}`);
   }
 
-  // 4. Render. NEVER echo the Bearer token.
   renderEnvelope(body, profile, cli);
   process.exit(EXIT_CODES.SUCCESS);
 }

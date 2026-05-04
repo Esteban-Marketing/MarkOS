@@ -1,4 +1,6 @@
 import { randomBytes, randomUUID } from 'node:crypto';
+import { validateWebhookUrl } from './url-validator';
+import { createInMemoryVaultClient, deleteSecret, storeSecret, type VaultReadableClient } from './secret-vault';
 
 export const WEBHOOK_EVENTS = [
   'approval.created',
@@ -13,6 +15,7 @@ export const WEBHOOK_EVENTS = [
   'incident.resolved',
   'consent.changed',
   'consent.revoked',
+  'byod.verification_lost',
 ] as const;
 
 export type WebhookEvent = (typeof WEBHOOK_EVENTS)[number];
@@ -21,21 +24,36 @@ export type WebhookSubscription = {
   id: string;
   tenant_id: string;
   url: string;
-  secret: string;
   events: WebhookEvent[];
   active: boolean;
   created_at: string;
   updated_at: string;
+  secret?: string;
+  secret_v2?: string | null;
+  secret_vault_ref?: string | null;
+  grace_started_at?: string | null;
+  grace_ends_at?: string | null;
+  rotation_state?: 'active' | 'rolled_back' | null;
+  rps_override?: number | null;
 };
+
+export type PublicWebhookSubscription = Omit<WebhookSubscription, 'secret' | 'secret_v2' | 'secret_vault_ref'>;
 
 export type SubscribeInput = {
   tenant_id: string;
   url: string;
   events: WebhookEvent[];
   secret?: string;
+  rps_override?: number | null;
+};
+
+export type SubscribeResult = {
+  subscription: PublicWebhookSubscription;
+  plaintext_secret_show_once: string;
 };
 
 export type WebhookStore = {
+  client?: VaultReadableClient;
   insert: (row: WebhookSubscription) => Promise<WebhookSubscription>;
   updateActive: (tenant_id: string, id: string, active: boolean) => Promise<WebhookSubscription | null>;
   listByTenant: (tenant_id: string) => Promise<WebhookSubscription[]>;
@@ -69,45 +87,79 @@ function generateSecret(): string {
   return randomBytes(32).toString('hex');
 }
 
-// Phase 201 Plan 08 Task 1: optional audit-emit carrier for subscribe/unsubscribe.
-// Backward-compatible: opts is optional; callers that don't pass it get the existing behaviour.
+export function sanitizeSubscriptionRow(row: WebhookSubscription): PublicWebhookSubscription {
+  const { secret, secret_v2, secret_vault_ref, ...publicRow } = row;
+  return publicRow;
+}
+
 export type WebhookAuditOpts = {
   auditClient?: { from: (table: string) => unknown };
   org_id?: string | null;
   actor_id?: string;
   actor_role?: string;
+  vaultClient?: VaultReadableClient;
+  allowLocalhostHttp?: boolean;
+  lookup?: (host: string, opts: { all: boolean; family: number }) =>
+    Promise<Array<{ address: string; family: number }> | { address: string; family: number }>;
+  validateUrl?: typeof validateWebhookUrl;
 };
 
 export async function subscribe(
   store: WebhookStore,
   input: SubscribeInput,
-  // _opts: TS signature carrier — runtime wiring lives in engine.cjs
   _opts?: WebhookAuditOpts,
-): Promise<WebhookSubscription> {
+): Promise<SubscribeResult> {
   if (!input.tenant_id) throw new Error('tenant_id is required');
   assertValidUrl(input.url);
   assertValidEvents(input.events);
 
+  const validation = await (_opts?.validateUrl || validateWebhookUrl)(input.url, {
+    allowLocalhostHttp: _opts?.allowLocalhostHttp ?? (process.env.MARKOS_WEBHOOK_ALLOW_LOCALHOST_HTTP === '1'),
+    lookup: _opts?.lookup,
+  });
+  if (!validation.ok) {
+    const suffix = validation.detail ? `:${validation.detail}` : '';
+    throw new Error(`invalid_subscriber_url:${validation.reason}${suffix}`);
+  }
+
+  const vaultClient = _opts?.vaultClient || store.client;
+  if (!vaultClient) throw new Error('vault_unavailable:missing_client');
+
   const now = new Date().toISOString();
+  const plaintextSecret = input.secret ?? generateSecret();
   const row: WebhookSubscription = {
     id: `whsub_${randomUUID()}`,
     tenant_id: input.tenant_id,
     url: input.url,
-    secret: input.secret ?? generateSecret(),
     events: [...input.events],
     active: true,
+    secret_vault_ref: null,
+    rps_override: input.rps_override === undefined ? null : input.rps_override,
     created_at: now,
     updated_at: now,
   };
-  return store.insert(row);
+
+  let vaultRef: string | null = null;
+  try {
+    vaultRef = await storeSecret(vaultClient, row.id, plaintextSecret);
+    row.secret_vault_ref = vaultRef;
+    const inserted = await store.insert(row);
+    return {
+      subscription: sanitizeSubscriptionRow(inserted),
+      plaintext_secret_show_once: plaintextSecret,
+    };
+  } catch (error) {
+    if (vaultRef) {
+      await deleteSecret(vaultClient, vaultRef).catch(() => {});
+    }
+    throw error;
+  }
 }
 
 export async function unsubscribe(
   store: WebhookStore,
   tenant_id: string,
   id: string,
-  // _opts: TS signature carrier — runtime wiring lives in engine.cjs
-  _opts?: WebhookAuditOpts,
 ): Promise<WebhookSubscription> {
   const updated = await store.updateActive(tenant_id, id, false);
   if (!updated) throw new Error(`subscription not found: ${id}`);
@@ -124,7 +176,9 @@ export async function listSubscriptions(
 
 export function createInMemoryStore(): WebhookStore {
   const rows = new Map<string, WebhookSubscription>();
+  const client = createInMemoryVaultClient();
   return {
+    client,
     async insert(row) {
       rows.set(row.id, row);
       return row;

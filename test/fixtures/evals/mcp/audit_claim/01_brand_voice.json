@@ -1,0 +1,28 @@
+{
+  "name": "brand voice baseline",
+  "tool_input": {
+    "claim": "MarkOS Docs-first brief for founder-sam. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use identity so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_001. Keep every claim in bounds. Prove it with evidence_grounding_001."
+  },
+  "canon": [
+    {
+      "title": "Operator benchmark",
+      "text": "evidence_grounding_001 MarkOS Docs-first brief for founder-sam. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use identity so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_001. Keep every claim in bounds. Benchmark confirms the sourced claim."
+    }
+  ],
+  "expected_llm_output": {
+    "supported": true,
+    "confidence": 0.93,
+    "evidence": [
+      {
+        "source": "evidence_grounding_001",
+        "quote": "MarkOS Docs-first brief for founder-sam. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use identity so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_001. Keep every claim in bounds.",
+        "score": 0.91
+      }
+    ]
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_001"
+  ],
+  "expected_neuro_pillar": "identity",
+  "expected_archetype": "founder-sam"
+}

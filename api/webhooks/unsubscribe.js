@@ -1,8 +1,16 @@
 'use strict';
 
 const { writeJson } = require('../../lib/markos/crm/api.cjs');
-const { unsubscribe } = require('../../lib/markos/webhooks/engine.cjs');
+const { initOtel, withSpan } = require('../../lib/markos/observability/otel.cjs');
+const { sanitizeSubscriptionRow, unsubscribe } = require('../../lib/markos/webhooks/engine.cjs');
 const { getWebhookStores } = require('../../lib/markos/webhooks/store.cjs');
+
+initOtel({ serviceName: 'markos' });
+
+function writeJsonWithSpan(span, res, statusCode, payload) {
+  span?.setAttribute('status_code', statusCode);
+  return writeJson(res, statusCode, payload);
+}
 
 function resolveTenantId(req) {
   const auth = (req && (req.markosAuth || req.tenantContext)) || {};
@@ -25,33 +33,35 @@ async function readJsonBody(req) {
   });
 }
 
-async function handleUnsubscribe(req, res) {
+async function handleUnsubscribe(req, res, span) {
   if (req.method !== 'POST' && req.method !== 'DELETE') {
-    return writeJson(res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
+    return writeJsonWithSpan(span, res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
   }
   const tenantId = resolveTenantId(req);
-  if (!tenantId) return writeJson(res, 401, { success: false, error: 'TENANT_CONTEXT_REQUIRED' });
+  if (!tenantId) return writeJsonWithSpan(span, res, 401, { success: false, error: 'TENANT_CONTEXT_REQUIRED' });
+  span?.setAttribute('tenant_id', tenantId);
 
   let id;
   try {
     const body = req.method === 'DELETE' ? {} : await readJsonBody(req);
     id = body.id || (req.query && req.query.id);
   } catch {
-    return writeJson(res, 400, { success: false, error: 'INVALID_JSON' });
+    return writeJsonWithSpan(span, res, 400, { success: false, error: 'INVALID_JSON' });
   }
-  if (!id) return writeJson(res, 400, { success: false, error: 'ID_REQUIRED' });
+  if (!id) return writeJsonWithSpan(span, res, 400, { success: false, error: 'ID_REQUIRED' });
+  span?.setAttribute('webhook_subscription_id', id);
 
   const { subscriptions } = getWebhookStores();
   try {
     const row = await unsubscribe(subscriptions, tenantId, id);
-    return writeJson(res, 200, { success: true, subscription: row });
+    return writeJsonWithSpan(span, res, 200, { success: true, subscription: sanitizeSubscriptionRow(row) });
   } catch (error) {
     const status = /not found/i.test(error.message) ? 404 : 400;
-    return writeJson(res, status, { success: false, error: error.message });
+    return writeJsonWithSpan(span, res, status, { success: false, error: error.message });
   }
 }
 
 module.exports = async function handler(req, res) {
-  return handleUnsubscribe(req, res);
+  return withSpan('webhook.unsubscribe', { method: req.method }, async (span) => handleUnsubscribe(req, res, span));
 };
 module.exports.handleUnsubscribe = handleUnsubscribe;

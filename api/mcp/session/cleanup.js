@@ -7,6 +7,10 @@
 // Auth: shared-secret header (x-markos-cron-secret) OR Bearer token matching
 // process.env.MARKOS_MCP_CRON_SECRET. Returns { success, purged } as JSON.
 
+const { initOtel, withSpan } = require('../../../lib/markos/observability/otel.cjs');
+
+initOtel({ serviceName: 'markos' });
+
 function writeJson(res, statusCode, payload) {
   if (typeof res.writeHead === 'function') {
     res.writeHead(statusCode, { 'Content-Type': 'application/json' });
@@ -15,6 +19,11 @@ function writeJson(res, statusCode, payload) {
     if (typeof res.setHeader === 'function') res.setHeader('Content-Type', 'application/json');
   }
   res.end(JSON.stringify(payload));
+}
+
+function writeJsonWithSpan(span, res, statusCode, payload) {
+  span?.setAttribute('status_code', statusCode);
+  return writeJson(res, statusCode, payload);
 }
 
 function authorized(req) {
@@ -36,12 +45,12 @@ function defaultClient() {
   );
 }
 
-async function handleCleanup(req, res, deps = {}) {
+async function handleCleanup(req, res, deps = {}, span) {
   if (req.method !== 'POST' && req.method !== 'GET') {
-    return writeJson(res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
+    return writeJsonWithSpan(span, res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
   }
   if (!authorized(req)) {
-    return writeJson(res, 401, { success: false, error: 'UNAUTHORIZED' });
+    return writeJsonWithSpan(span, res, 401, { success: false, error: 'UNAUTHORIZED' });
   }
 
   const client = deps.client || defaultClient();
@@ -54,11 +63,13 @@ async function handleCleanup(req, res, deps = {}) {
     .delete()
     .or(`expires_at.lt.${cutoff},revoked_at.lt.${cutoff}`)
     .select('id');
-  if (error) return writeJson(res, 500, { success: false, error: error.message });
+  if (error) return writeJsonWithSpan(span, res, 500, { success: false, error: error.message });
 
   const purged = Array.isArray(data) ? data.length : 0;
-  return writeJson(res, 200, { success: true, purged });
+  return writeJsonWithSpan(span, res, 200, { success: true, purged });
 }
 
-module.exports = async function handler(req, res) { return handleCleanup(req, res); };
+module.exports = async function handler(req, res, deps = {}) {
+  return withSpan('mcp.session.cleanup', { method: req.method }, async (span) => handleCleanup(req, res, deps, span));
+};
 module.exports.handleCleanup = handleCleanup;

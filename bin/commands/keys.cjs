@@ -26,6 +26,7 @@ const readline = require('node:readline');
 const { authedFetch, BASE_URL, AuthError, TransientError } = require('../lib/cli/http.cjs');
 const { getToken } = require('../lib/cli/keychain.cjs');
 const { resolveProfile } = require('../lib/cli/config.cjs');
+const { createSpinner } = require('../lib/cli/spinner.cjs');
 const { EXIT_CODES, shouldUseJson, renderTable, renderJson } = require('../lib/cli/output.cjs');
 const { formatError } = require('../lib/cli/errors.cjs');
 
@@ -101,10 +102,13 @@ async function doList(cli) {
   const token = await getAuthToken(profile);
 
   let res;
+  const spinner = createSpinner({ label: 'fetching keys', opts: cli });
   try {
     res = await authedFetch('/api/tenant/api-keys', { method: 'GET' }, { token });
   } catch (err) {
     return handleHttpError(err, cli);
+  } finally {
+    spinner.stop();
   }
 
   let body;
@@ -217,7 +221,7 @@ async function doRevoke(cli) {
     // Interactive confirmation.
     const answer = await promptYesNo(`Revoke key ${key_id}? This cannot be undone. [y/N] `);
     if (answer !== 'y' && answer !== 'yes') {
-      process.stdout.write('Aborted.\n');
+      process.stderr.write('Aborted.\n');
       return process.exit(EXIT_CODES.USER_ERROR);
     }
   }
@@ -243,7 +247,7 @@ async function doRevoke(cli) {
     if (shouldUseJson(cli)) {
       renderJson({ revoked_at: body.revoked_at, key_id });
     } else {
-      process.stdout.write(`\n  Key ${key_id} revoked.\n\n`);
+      process.stderr.write(`\n  Key ${key_id} revoked.\n\n`);
     }
     return process.exit(EXIT_CODES.SUCCESS);
   }

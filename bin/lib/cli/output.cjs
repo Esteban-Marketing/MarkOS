@@ -32,6 +32,41 @@ const ANSI = Object.freeze({
   RED: '\x1b[31m',
 });
 
+const GLYPHS_UTF8 = Object.freeze({
+  topLeft: '┌',
+  topRight: '┐',
+  bottomLeft: '└',
+  bottomRight: '┘',
+  horiz: '─',
+  vert: '│',
+  junction: '┼',
+  arrow: '→',
+});
+
+const GLYPHS_ASCII = Object.freeze({
+  topLeft: '+',
+  topRight: '+',
+  bottomLeft: '+',
+  bottomRight: '+',
+  horiz: '-',
+  vert: '|',
+  junction: '+',
+  arrow: '->',
+});
+
+function pickGlyphs(env = process.env, platform = process.platform) {
+  if (env.MARKOS_FORCE_ASCII === '1' || env.MARKOS_CODEPAGE === '437') {
+    return GLYPHS_ASCII;
+  }
+
+  const sample = env.LC_ALL || env.LANG || '';
+  if (sample && !/UTF-?8/i.test(sample)) {
+    return GLYPHS_ASCII;
+  }
+
+  return GLYPHS_UTF8;
+}
+
 function shouldUseJson(opts = {}) {
   if (!process.stdout.isTTY) return true;
   if (opts.json === true) return true;
@@ -64,6 +99,23 @@ function renderJson(obj) {
   process.stdout.write(JSON.stringify(obj) + '\n');
 }
 
+function renderTableNarrow(rows, cols, opts = {}) {
+  const color = shouldUseColor(opts);
+  const labelPrefix = color ? ANSI.DIM : '';
+  const labelSuffix = color ? ANSI.RESET : '';
+
+  for (let index = 0; index < rows.length; index += 1) {
+    const row = rows[index];
+    for (const col of cols) {
+      const val = row == null ? '' : row[col];
+      process.stdout.write(`${labelPrefix}${col}${labelSuffix}: ${val == null ? '' : val}\n`);
+    }
+    if (index < rows.length - 1) {
+      process.stdout.write('\n');
+    }
+  }
+}
+
 function renderTable(rows, columns, opts = {}) {
   if (!Array.isArray(rows) || rows.length === 0) {
     if (shouldUseColor(opts)) {
@@ -77,6 +129,12 @@ function renderTable(rows, columns, opts = {}) {
   const cols = Array.isArray(columns) && columns.length
     ? columns
     : Object.keys(rows[0]);
+  const termWidth = process.stdout.columns || 80;
+
+  if (termWidth < 60) {
+    renderTableNarrow(rows, cols, opts);
+    return;
+  }
 
   // Compute widths from header + each cell.
   const widths = cols.map((col) => {
@@ -132,4 +190,7 @@ module.exports = {
   renderJson,
   renderTable,
   render,
+  pickGlyphs,
+  GLYPHS_UTF8,
+  GLYPHS_ASCII,
 };

@@ -1,12 +1,20 @@
 'use strict';
 
 const { writeJson, getCrmStore } = require('../../lib/markos/crm/api.cjs');
+const { initOtel, withSpan } = require('../../lib/markos/observability/otel.cjs');
 const { normalizeOutboundEventForLedger } = require('../../lib/markos/outbound/events.ts');
 const { appendConversationProviderEvent, applyOptOutFromConversation } = require('../../lib/markos/outbound/conversations.ts');
 
-async function handleTwilioWebhook(req, res) {
+initOtel({ serviceName: 'markos' });
+
+function writeJsonWithSpan(span, res, statusCode, payload) {
+  span?.setAttribute('status_code', statusCode);
+  return writeJson(res, statusCode, payload);
+}
+
+async function handleTwilioWebhook(req, res, span) {
   if (req.method !== 'POST') {
-    return writeJson(res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
+    return writeJsonWithSpan(span, res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
   }
 
   const store = getCrmStore(req);
@@ -27,14 +35,14 @@ async function handleTwilioWebhook(req, res) {
         reason: 'provider_opt_out',
       });
     }
-    return writeJson(res, 200, { success: true, provider_event: normalized });
+    return writeJsonWithSpan(span, res, 200, { success: true, provider_event: normalized });
   } catch (error) {
-    return writeJson(res, 400, { success: false, error: error.message });
+    return writeJsonWithSpan(span, res, 400, { success: false, error: error.message });
   }
 }
 
 module.exports = async function handler(req, res) {
-  return handleTwilioWebhook(req, res);
+  return withSpan('webhook.twilio_events', { method: req.method }, async (span) => handleTwilioWebhook(req, res, span));
 };
 
 module.exports.handleTwilioWebhook = handleTwilioWebhook;

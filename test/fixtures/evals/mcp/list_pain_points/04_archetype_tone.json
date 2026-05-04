@@ -1,0 +1,31 @@
+{
+  "name": "archetype tone fidelity",
+  "tool_input": {
+    "category": "execution"
+  },
+  "pack": {
+    "pains": [
+      {
+        "id": "evidence_grounding_004-pain",
+        "name": "Pipeline drift for solopreneur",
+        "description": "MarkOS Docs-first brief for solopreneur. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use agency so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_004. Keep every claim in bounds.",
+        "score": 0.94,
+        "category": "execution"
+      },
+      {
+        "id": "evidence_grounding_004-noise",
+        "name": "generic noise",
+        "description": "Filtered by category mismatch.",
+        "score": 0.1,
+        "category": "noise"
+      }
+    ],
+    "archetypes": [],
+    "canon": []
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_004"
+  ],
+  "expected_neuro_pillar": "agency",
+  "expected_archetype": "solopreneur"
+}

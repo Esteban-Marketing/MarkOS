@@ -45,6 +45,9 @@ test('POST /api/webhooks/subscribe creates a subscription', async () => {
   const payload = parse(res);
   assert.equal(payload.success, true);
   assert.match(payload.subscription.id, /^whsub_/);
+  assert.equal(typeof payload.plaintext_secret_show_once, 'string');
+  assert.equal(payload.subscription.secret, undefined);
+  assert.equal(payload.subscription.secret_vault_ref, undefined);
 });
 
 test('subscribe rejects missing tenant context', async () => {
@@ -65,11 +68,11 @@ test('subscribe rejects non-POST', async () => {
 test('GET /api/webhooks/list returns only tenant rows', async () => {
   const subs = getWebhookStores().subscriptions;
   await subs.insert({
-    id: 'whsub_a', tenant_id: 't-1', url: 'https://a', secret: 's', events: ['approval.created'],
+    id: 'whsub_a', tenant_id: 't-1', url: 'https://a', secret_vault_ref: 'markos:webhook:secret:whsub_a', events: ['approval.created'],
     active: true, created_at: 'x', updated_at: 'x',
   });
   await subs.insert({
-    id: 'whsub_b', tenant_id: 't-2', url: 'https://b', secret: 's', events: ['approval.created'],
+    id: 'whsub_b', tenant_id: 't-2', url: 'https://b', secret_vault_ref: 'markos:webhook:secret:whsub_b', events: ['approval.created'],
     active: true, created_at: 'x', updated_at: 'x',
   });
   const req = makeReq({ method: 'GET', tenant_id: 't-1' });
@@ -79,6 +82,7 @@ test('GET /api/webhooks/list returns only tenant rows', async () => {
   const payload = parse(res);
   assert.equal(payload.subscriptions.length, 1);
   assert.equal(payload.subscriptions[0].id, 'whsub_a');
+  assert.equal(payload.subscriptions[0].secret_vault_ref, undefined);
 });
 
 test('POST /api/webhooks/unsubscribe deactivates matching row', async () => {

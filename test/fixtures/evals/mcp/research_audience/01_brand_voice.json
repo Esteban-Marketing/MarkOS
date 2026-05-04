@@ -1,0 +1,29 @@
+{
+  "name": "brand voice baseline",
+  "tool_input": {
+    "segment": "founders"
+  },
+  "pack": {
+    "pains": [
+      {
+        "name": "MarkOS Docs-first brief for founder-sam. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use identity so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_001. Keep every claim in bounds.",
+        "segment": "founders"
+      },
+      {
+        "name": "Audit backlog for founder-sam evidence_grounding_001",
+        "segment": "founders"
+      }
+    ],
+    "archetypes": [
+      {
+        "slug": "founder-sam"
+      }
+    ],
+    "canon": []
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_001"
+  ],
+  "expected_neuro_pillar": "identity",
+  "expected_archetype": "founder-sam"
+}

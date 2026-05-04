@@ -1,12 +1,20 @@
 'use strict';
 
 const { writeJson, getCrmStore } = require('../../lib/markos/crm/api.cjs');
+const { initOtel, withSpan } = require('../../lib/markos/observability/otel.cjs');
 const { normalizeOutboundEventForLedger } = require('../../lib/markos/outbound/events.ts');
 const { appendConversationProviderEvent } = require('../../lib/markos/outbound/conversations.ts');
 
-async function handleResendWebhook(req, res) {
+initOtel({ serviceName: 'markos' });
+
+function writeJsonWithSpan(span, res, statusCode, payload) {
+  span?.setAttribute('status_code', statusCode);
+  return writeJson(res, statusCode, payload);
+}
+
+async function handleResendWebhook(req, res, span) {
   if (req.method !== 'POST') {
-    return writeJson(res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
+    return writeJsonWithSpan(span, res, 405, { success: false, error: 'METHOD_NOT_ALLOWED' });
   }
 
   const store = getCrmStore(req);
@@ -20,14 +28,14 @@ async function handleResendWebhook(req, res) {
       status: normalized.status,
       text: normalized.body,
     });
-    return writeJson(res, 200, { success: true, provider_event: normalized });
+    return writeJsonWithSpan(span, res, 200, { success: true, provider_event: normalized });
   } catch (error) {
-    return writeJson(res, 400, { success: false, error: error.message });
+    return writeJsonWithSpan(span, res, 400, { success: false, error: error.message });
   }
 }
 
 module.exports = async function handler(req, res) {
-  return handleResendWebhook(req, res);
+  return withSpan('webhook.resend_events', { method: req.method }, async (span) => handleResendWebhook(req, res, span));
 };
 
 module.exports.handleResendWebhook = handleResendWebhook;

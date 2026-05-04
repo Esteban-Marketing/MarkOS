@@ -1,0 +1,28 @@
+{
+  "name": "claim check grounding",
+  "tool_input": {
+    "prompt": "Generate a proof-heavy brief that references the benchmark and keeps every claim sourced. evidence_grounding_002. MarkOS Docs-first brief for founder-sam. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use social proof so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_002. Keep every claim in bounds."
+  },
+  "expected_llm_output": {
+    "channel": "linkedin",
+    "audience": "founder-sam",
+    "pain": "MarkOS Docs-first brief for founder-sam. Ship the CLI, API, and MCP pipeline with contracts, webhooks, and an audit step. This agent is Grounded in your first-party data with human approval. Use social proof so the operator keeps agency without drift. Direct, quietly confident copy with restraint, precision, and data-dense proof. evidence_grounding_002. Keep every claim in bounds.",
+    "promise": "Ship the pipeline with human approval",
+    "brand": "MarkOS",
+    "derived_from": "fixture-eval",
+    "claims": [
+      {
+        "evidence_id": "evidence_grounding_002",
+        "text": "Evidence chain evidence_grounding_002"
+      }
+    ],
+    "neuro_pillar": "social_proof",
+    "archetype": "founder-sam",
+    "tone": "quietly confident"
+  },
+  "expected_evidence_ids": [
+    "evidence_grounding_002"
+  ],
+  "expected_neuro_pillar": "social_proof",
+  "expected_archetype": "founder-sam"
+}

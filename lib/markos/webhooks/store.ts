@@ -14,12 +14,14 @@ export type WebhookStoreDeps = {
 
 export type WebhookStoresBundle = {
   subscriptions: {
+    client?: unknown;
     insert: (row: any) => Promise<any>;
     updateActive: (tenant_id: string, id: string, active: boolean) => Promise<any | null>;
     listByTenant: (tenant_id: string) => Promise<any[]>;
     findById: (tenant_id: string, id: string) => Promise<any | null>;
   };
   deliveries: {
+    client?: unknown;
     insert: (row: any) => Promise<any>;
     findById: (id: string) => Promise<any | null>;
     update: (id: string, patch: Record<string, any>) => Promise<any | null>;

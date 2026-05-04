@@ -5,6 +5,7 @@
 const adapter = require('./store-supabase.cjs');
 
 export type SubscriptionsStore = {
+  client?: unknown;
   insert: (row: any) => Promise<any>;
   updateActive: (tenant_id: string, id: string, active: boolean) => Promise<any | null>;
   listByTenant: (tenant_id: string) => Promise<any[]>;
@@ -12,6 +13,7 @@ export type SubscriptionsStore = {
 };
 
 export type DeliveriesStore = {
+  client?: unknown;
   insert: (row: any) => Promise<any>;
   findById: (id: string) => Promise<any | null>;
   update: (id: string, patch: Record<string, any>) => Promise<any | null>;
