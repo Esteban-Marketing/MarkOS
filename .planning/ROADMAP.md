@@ -461,21 +461,23 @@ Plans:
 - [ ] 216-06-PLAN.md - Growth handoff signals for PLG, expansion, advocacy, community, and experiments
 
 ### Phase 217: SaaS Revenue Intelligence, SAS Agents, API/MCP/UI Readiness
-**Goal:** Ship MRR/ARR/NRR/GRR/churn/expansion dashboards, SAS-01..06 agent definitions, `/v1/saas/*` APIs, `markos-saas` MCP tools, and SaaS-specific navigation gated by activation.
+**Goal:** Ship MRR/ARR/NRR/GRR/churn/expansion dashboards, SAS-01..06 agent definitions, `/v1/saas/*` APIs, `markos-saas` MCP tools, and SaaS-specific navigation gated by activation. UI-SPEC fold (2026-05-04) splits 217-06 into 06 (backend nav gating + closeout regression), 07 (layout + Overview + 7 NEW extracted components + Storybook), 08 (8 sub-pages + cross-cutting + a11y + checkpoint:human-verify); 121 UI-SPEC ACs folded across 8 plans.
 **Requirements Mapped:** SAS-09..10, MCP-01, API-01, LOOP-01..08, QA-01..15
 **Depends on:** Phases 202, 205, 207-216
 **Status:** 📋 Planned
 **DISCUSS:** `.planning/phases/217-saas-suite-revenue-agents-api-ui/DISCUSS.md`
-**Artifacts:** `217-CONTEXT.md`, `217-RESEARCH.md`
-**Plans:** 6/6 plans drafted
+**Artifacts:** `217-CONTEXT.md`, `217-RESEARCH.md`, `217-UI-SPEC.md`, `217-VALIDATION.md`
+**Plans:** 8/8 plans drafted (UI-SPEC fold split — 121 ACs)
 
 Plans:
-- [ ] 217-01-PLAN.md - SaaS revenue metric definitions and source precedence
-- [ ] 217-02-PLAN.md - SaaSMRRSnapshot and revenue intelligence records
-- [ ] 217-03-PLAN.md - SAS agent readiness registry
-- [ ] 217-04-PLAN.md - `/v1/saas/*` API contracts
-- [ ] 217-05-PLAN.md - `markos-saas` MCP tool family
-- [ ] 217-06-PLAN.md - SaaS UI navigation and post-217 growth translation gate
+- [ ] 217-01-PLAN.md - SaaS revenue metric definitions and source precedence (folds B-1, B-2)
+- [ ] 217-02-PLAN.md - SaaSMRRSnapshot and revenue intelligence records (folds B-3, B-4, B-5, B-6)
+- [ ] 217-03-PLAN.md - SAS agent readiness registry (folds B-7, G-1..G-3)
+- [ ] 217-04-PLAN.md - `/v1/saas/*` API contracts (folds B-8, B-12 partial)
+- [ ] 217-05-PLAN.md - `markos-saas` MCP tool family (folds B-9, Layer 3 sanitization)
+- [ ] 217-06-PLAN.md - SaaS UI nav backend + activation gate DB-trigger + translation gate seed + closeout regression (folds B-10, B-11, B-12 backend)
+- [ ] 217-07-PLAN.md - app/saas/layout.tsx activation gate + Overview KPI grid + 7 NEW extracted components + Storybook stories (folds L-1..L-10 + O-1..O-10 + 7 component ACs = 27)
+- [ ] 217-08-PLAN.md - 8 sub-pages (subscriptions/plans/revenue/waterfall/churn/invoices/support/agents) + cross-cutting + axe a11y + checkpoint:human-verify (folds S/P/R/W/C/I/SP/G + X-1..X-10 = 89)
 
 ### Phase 218: SaaS Growth Profile, PLG, In-App, and Experimentation
 **Goal:** Translate SaaS growth-mode routing, PLG activation, PQL scoring, upgrade triggers, in-app marketing, and growth experimentation into governed product objects.
