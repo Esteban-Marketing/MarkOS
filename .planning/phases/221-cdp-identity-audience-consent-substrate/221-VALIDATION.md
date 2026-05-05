@@ -156,6 +156,117 @@ Plan acceptance criteria MUST reference this architecture:
 
 ---
 
+---
+
+## UI-SPEC AC Coverage Map (no-UI-scope variant — 221 substrate phase)
+
+> Per orchestrator UI-SPEC fold directive 2026-05-04 (light fold; START-OF-v4.2.0 Commercial Engines lane opening phase).
+> Maps backend doctrine assertions, future-surface UI binding contracts, translation gate dissolutions, and downstream UI inheritance citations to per-plan grep gates.
+
+### Backend Doctrine Assertions (per-plan grep gates)
+
+| Doctrine | Assertion | Plan(s) | Grep Gate (verbatim) |
+|----------|-----------|---------|----------------------|
+| D-32 architecture-lock | FORBIDDEN: App Router/vitest/playwright/.test.ts/createApprovalPackage/requireSupabaseAuth/lookupPlugin/route.ts/public/openapi.json/app/(public)/app/(markos)/api/v1/.../route.ts/app/api/cron/.../route.ts/`stub if missing`/`if exists` | 221-01 (Wave 0 detector) + carries forward to 221-02..221-06 | `grep -nE "createApprovalPackage\|requireSupabaseAuth\|requireTenantContext\|serviceRoleClient\|lookupPlugin\|public/openapi.json\|app/\(public\)\|app/\(markos\)\|vitest run\|from 'vitest'\|stub if missing\|if exists" lib/markos/cdp/ api/v1/cdp/` returns 0 actionable matches (allowlisted self-reference inside `architecture-lock.ts` FORBIDDEN_PATTERNS literal); regression covered by `test/cdp-preflight/architecture-lock.test.js` |
+| RL1 DSL operator whitelist | 16 verbatim allowed operators: `{ if, ==, !=, <, <=, >, >=, in, and, or, not, +, -, *, /, var, missing, missing_some }` | 221-04 | `grep -c "if\\|==\\|!=\\|<\\|<=\\|>\\|>=\\|in\\|and\\|or\\|not\\|+\\|-\\|*\\|/\\|var\\|missing\\|missing_some" lib/markos/cdp/audiences/dsl-whitelist.ts` returns ≥16 unique operator literal occurrences inside `ALLOWED_OPERATORS` set; `grep -n "CDP_DSL_OPERATOR_REJECTED\\|cdp_audience_dsl_rejected" lib/markos/cdp/audiences/dsl-whitelist.ts` returns ≥2 lines |
+| RL2 json-logic-js@2.0.5 EXACT pin | EXACT pin (no caret `^`, no tilde `~`) — Wave 0 install in Plan 01 | 221-01 (install) + 221-04 (consumer) | `node -e "const v=require('./package.json').dependencies['json-logic-js']; if(v!=='2.0.5'){process.exit(1)}"` exits 0 |
+| RM1 HOURLY drift cron | Schedule `0 * * * *` verbatim (NOT daily `0 0 * * *`) | 221-02 | `grep -n "0 \\* \\* \\* \\*" vercel.json` returns ≥1 line for path `/api/cron/cdp-consent-drift-audit` |
+| RM2 single-writer DB-trigger | `app.consent_writer_source` GUC + `cdp_setConsentState` canonical writer + `CDP_CONSENT_WRITER_VIOLATION` error code | 221-02 | `grep -n "app.consent_writer_source\\|cdp_setConsentState\\|CDP_CONSENT_WRITER_VIOLATION" supabase/migrations/106_cdp_consent_single_writer_trigger.sql` returns ≥3 lines |
+| RM4 F-ID + migration slot pre-allocation | F-106..F-112 + 101 + 102a + 102b + 103 + 104 + 105 + 106 non-overlapping | 221-01 (allocation table) + 221-06 (collision regression) | `grep -nE "F-10[6-9]\\|F-11[0-2]" contracts/flow-registry.json` returns ≥7 lines + `ls supabase/migrations/{101,102a,102b,103,104,105,106}_cdp_*.sql` exists |
+| 27th handoff_kind | `consent_drift_resolution` literal verbatim (single_approval; informational + remediation) | 221-02 | `grep -n "consent_drift_resolution" lib/markos/cdp/consent/drift-audit.ts` returns ≥1 line |
+| 28th handoff_kind | `audience_activation_approval` literal verbatim (single_approval; mutation-class `external.send`) | 221-04 | `grep -n "audience_activation_approval" lib/markos/cdp/audiences/activation.ts` returns ≥1 line |
+| 29th handoff_kind | `dsr_export_approval` literal verbatim (dual_approval per SOC2 P206 Type I; mutation-class `data.export`) | 221-06 | `grep -n "dsr_export_approval" lib/markos/cdp/deletion/dsr-export.ts` returns ≥1 line + `grep -nE "dual_approval\\|default_approval_mode" lib/markos/cdp/deletion/dsr-export.ts` returns ≥1 line |
+| 3 banned-lexicon validators (3 NEW mutation classes) | (1) Consent override copy emit (Plan 02); (2) Audience activation copy (Plan 04); (3) DSR export envelope text rendering (Plan 06) — zero-match required pre-dispatch on every `external.send` and `data.export` mutation | 221-02 / 221-04 / 221-06 (substrate) + future P223+ frontend phases (validator placement) | per-plan substrate field tagging covered by individual per-task grep gates in Plan 02 + Plan 04 + Plan 06 acceptance_criteria_additions blocks |
+| PII inheritance from 215 Layer 6 + 216 5-classification ENUM | 5-value taxonomy `no_pii`/`pseudonymous`/`personal`/`sensitive`/`highly_sensitive`; `<PIIRedactedField />` clipboard `onCopy preventDefault()`; audit-log `event_type == 'identity_view'` (NEW) + `consent_view` (NEW) | 221-01 (cdp_identity_profiles PII fields) + 221-02 (cdp_consent_states.preference_tags + quiet_hours + jurisdiction + source) + 221-03 (cdp_trait_snapshots.value when PII-bearing) + 221-06 (DSR envelope highly_sensitive composite) | per-plan substrate field tagging (column comments OR companion classification table per 221-RESEARCH.md §Schema Sketches) |
+| START-OF-v4.2.0 chip count assertion | Final P208 chip count = 29 (26 post-220 end-of-v4.1.0 + 3 NEW from 221) | 221-06 closeout | chip-count growth: 26 (post-220) → 27 (Plan 02) → 28 (Plan 04) → 29 (Plan 06); regression covered by future P208 admin extension phase |
+
+### 5 Future-Surface UI Binding Contracts Table
+
+| UI Binding | Surface | Substrate Plan(s) | Future Surface (DEFERRED) | Translation Gate |
+|------------|---------|-------------------|---------------------------|------------------|
+| §UI Binding 1 — Unified Profile | `<UnifiedProfileViewer />` + identity merge timeline + consent state inline indicator + trait snapshot timeline + tombstone status indicator | 221-01 (identity profiles + links + canonical_identity_id FK) + 221-03 (cdp_events partition selector + cdp_trait_snapshots timeline rows) | `app/saas/cdp/profiles/[profile_id]/page.tsx` + `app/saas/cdp/profiles/[profile_id]/events/page.tsx` + `app/saas/cdp/profiles/[profile_id]/traits/page.tsx` (future) | future_phase_221_admin_ui |
+| §UI Binding 2 — Consent State | `<ConsentStateBrowser />` + 5-state ENUM badge mapping + drift indicator + single-writer enforcement visibility + trigger rejection log + audit-log every consent view + drift resolution modal + provenance display + retention indicator (post-DSR) | 221-02 (cdp_consent_states + RM2 single-writer DB-trigger + RM1 hourly drift audit + 27th chip) | `app/saas/cdp/profiles/[profile_id]/consent/page.tsx` + `app/saas/cdp/consent-drifts/page.tsx` (future) | future_phase_221_admin_ui + future_phase_221_approval_inbox_extensions |
+| §UI Binding 3 — Audience Definition | `<AudienceDefinitionEditor />` + JSON Logic DSL editor with live preview + DSL operator whitelist validator (inline rejection) + DSL operator whitelist viewer + audience snapshot browser + audience membership preview + double-gate consent re-validation preview + audience activation approval modal | 221-04 (cdp_audience_definitions + cdp_audience_snapshots + cdp_audience_snapshot_memberships + RL1 DSL whitelist + 28th chip) | `app/saas/cdp/audiences/[audience_id]/edit/page.tsx` + `app/saas/cdp/audiences/dsl-whitelist/page.tsx` + `app/saas/cdp/audiences/[audience_id]/snapshots/[snapshot_id]/page.tsx` + `app/saas/cdp/audience-activations/page.tsx` (future) | future_phase_221_audience_editor + future_phase_221_approval_inbox_extensions |
+| §UI Binding 4 — DSR + Audit | `<DsrRequestQueue />` + tombstone status indicator + cascade purge timeline + mutation-class data.export indicator with dual_approval + DSR export approval modal + 8-table RLS denial visible audit + Pitfall 5 late-event-after-tombstone indicator + dual-write reconciliation timeline + Plan 06 checkpoint:human-action indicator | 221-06 (DSR tombstone + cascade purge + DSR export contract + 8-table RLS suite + Pitfall 1 daily reconciliation + 29th chip + RL3 checkpoint:human-action) + 221-05 (read endpoints powering DSR queue) | `app/saas/cdp/dsr/page.tsx` + `app/saas/cdp/dsr-exports/page.tsx` + `app/saas/cdp/reconciliation/page.tsx` + `app/saas/cdp/rls-audit/page.tsx` (future) | future_phase_221_dsr_console + future_phase_221_approval_inbox_extensions |
+| §UI Binding 5 — Identity Merge | Hard/soft merge decision badge + identity score breakdown chip-row + hard-match signal chip-row + identity link browser + identity merge approval modal + anonymous-to-known stitching display + tenant fail-closed indicator | 221-01 (hard/soft merge decision logic + scoreIdentityCandidate carry-forward + buildApprovalPackage extension per D-33; existing P100 merge-review chip — NOT a new chip) | `app/saas/cdp/identity-merges/page.tsx` (future) | future_phase_221_admin_ui (existing merge-review chip extension) |
+
+### Translation Gates Opened (future-phase placeholders)
+
+| Translation Gate | Substrate Plan(s) | Future Phase |
+|------------------|-------------------|--------------|
+| `future_phase_221_admin_ui` | 221-01 + 221-02 + 221-03 + 221-04 + 221-05 + 221-06 | future P221+ admin/tenant frontend phase |
+| `future_phase_221_approval_inbox_extensions` | 221-02 (27th chip) + 221-04 (28th chip) + 221-06 (29th chip) | future P208 admin extension phase |
+| `future_phase_221_dsr_console` | 221-06 | future P221+ tenant DSR console phase |
+| `future_phase_221_audience_editor` | 221-04 | future P221+ tenant audience editor phase |
+| `future_phase_222_attribution_substrate` | 221-03 (cdp_events + cdp_trait_snapshots) | future P222 CRM 360 + P225 Analytics consumer |
+| `future_phase_223_dispatch_substrate` | 221-02 (cdp_consent_states) + 221-04 (cdp_audience_snapshot_memberships) | future P223 Messaging + P224 Conversion + P225 Analytics + P226 Sales Enablement consumer |
+
+### Translation Gates Dissolved (substrate-feed layer)
+
+1. `220-UI-SPEC §future_phase_222_attribution_substrate` — DISSOLVED at substrate-feed layer by 221-03 (cdp_events 10-domain ENUM + cdp_trait_snapshots freshness modes); UI-layer placeholder removal requires future P222+ commercial-engines tenant frontend phase
+2. `220-UI-SPEC §future_phase_223_dispatch_substrate` — DISSOLVED at substrate-feed layer by 221-02 + 221-04 (cdp_consent_states + cdp_audience_snapshot_memberships double-gate); UI-layer placeholder removal requires future P223+ commercial-engines tenant frontend phase
+3. `215-UI-SPEC §future_phase_217_pii_audit_log` — DISSOLVED at substrate-feed layer by 221-05 migration 105 audit-log indexes for 8+ CDP event types Plan 06 emits
+4. `MarkOS marketing operating loop CDP consumer` — DISSOLVED at substrate-feed layer by full P221 substrate completion (CDP-01..05); MarkOS v2 operating loop consumes CDP via read-through adapter pattern per `obsidian/reference/MarkOS v2 Operating Loop Spec.md`
+
+### Downstream UI Inheritance Citations (≥15 future surfaces)
+
+Plan 05 read endpoints (8 endpoints) + Plan 05 MCP tools (2 `.cjs` tools) are consumed by ALL of the following ≥15 future surfaces:
+
+1. `<UnifiedProfileViewer />` (UI Binding 1)
+2. `<IdentityLinkBrowser />` (UI Binding 1 + 5)
+3. `<IdentityMergeApprovalQueue />` (UI Binding 5)
+4. `<ConsentStateBrowser />` (UI Binding 2)
+5. `<ConsentDriftResolutionQueue />` (UI Binding 2)
+6. `<CdpEventBrowser />` (UI Binding 1 — partition selector)
+7. `<TraitSnapshotViewer />` (UI Binding 1 — recompute trigger)
+8. `<AudienceDefinitionEditor />` (UI Binding 3)
+9. `<DslOperatorWhitelistViewer />` (UI Binding 3)
+10. `<AudienceSnapshotBrowser />` (UI Binding 3)
+11. `<AudienceActivationApprovalQueue />` (UI Binding 3)
+12. `<DsrRequestQueue />` (UI Binding 4)
+13. `<DsrExportApprovalModal />` (UI Binding 4)
+14. `<DualWriteReconciliationTimeline />` (UI Binding 4)
+15. `<8TableRlsDenialTestViewer />` (UI Binding 4)
+16. P208 Approval Inbox at `/operations/approvals` — extends 26-chip set to 29 chips
+17. 217-06 `app/saas/agents/page.tsx` — future CDP agent family rendering (deferred per 221-CONTEXT §Deferred Ideas)
+18. P209 EvidenceMap consumer — `<EvidenceMapPanel />` + `<EvidenceCitationChip />` reference 221 source_event_ref + evidence_ref
+
+### 213.4 Carry-Forward + 217 D-21 + NEW D-32
+
+- 213.4-VALIDATION.md §Carry-forward: D-08 token-only, D-09 mint-as-text, D-09b `.c-notice` mandatory, D-13 `.c-card--feature` reserved, D-14 no `.c-table`, D-15 selective extraction, D-21 server/client boundary — carries verbatim into all future 221-consuming admin/tenant surfaces
+- 217 D-21 server/client boundary doctrine: every future 221 admin/tenant surface MUST be a default server component reading via `requireHostedSupabaseAuth(request)` + tenant-scoped supabase client; client components opt in via `'use client'` only for interactive primitives
+- D-32 architecture-lock (NEW per 221 review-driven addendum 2026-04-26): legacy `api/*.js` (NOT App Router) + `requireHostedSupabaseAuth` (NOT `requireSupabaseAuth`) + `npm test` Node `--test` (NOT vitest/playwright) + `contracts/openapi.json` (NOT `public/openapi.json`) + `lib/markos/mcp/tools/index.cjs` (NOT `.ts`) + `api/cron/` SINGULAR with `*.js` filenames + `buildApprovalPackage` (NOT `createApprovalPackage`)
+
+### Cross-Cutting Doctrine Binding (10 Parent UI-SPECs)
+
+Phase 221 inherits doctrine verbatim from the following 10 parent UI-SPECs per UI-SPEC §parent_doctrine_chain:
+
+1. `206-UI-SPEC.md` — mutation-class doctrine: `data.export` for DSR + `external.send` for consent override; `default_approval_mode == dual_approval` for `dsr_export_approval` per SOC2 P206 Type I
+2. `207-UI-SPEC.md` — RunApiEnvelope; AgentRunEventType for 30+ new event types across 6 substrate layers; ApprovalHandoffRecord
+3. `208-UI-SPEC.md` (PARENT) — Approval Inbox extends 3 new handoff_kind literals 27th-29th in canonical chain; START-OF-v4.2.0 chip count = 29
+4. `209-UI-SPEC.md` (PARENT) — ConsentState provenance + audit log evidence binding; trait provenance source_event_ref[] mandatory; EVD-01 + EVD-03 + EVD-04 + EVD-05 carry; immutable evidence_refs pattern
+5. `213-UI-SPEC.md` — 213-04 public-proof boundary STRICT for DSR exports — PRIVATE forever; banned-lexicon zero-match BEFORE `data.export` / `external.send` dispatch
+6. `214-UI-SPEC.md` (PARENT) — SaaS Suite Activation; saas_subscriptions FK; CDP profile read-through adapter pattern
+7. `215-UI-SPEC.md` (PARENT) — sensitive credential UI binding Layer 6 EXTENDS to PII data; 215 billing-correction modal recipe REUSED for `dsr_export_approval` + `audience_activation_approval` + `consent_drift_resolution`
+8. `216-UI-SPEC.md` (PARENT) — PII+Retention UI binding contract; 5 `pii_classification` badges carry verbatim; `<PIIRedactedField />` clipboard preventDefault + audit-log `identity_view` extends 216 `credential_view` pattern
+9. `217-UI-SPEC.md` (PARENT) — `saas_nav_visibility` consumer eventually; **D-32 architecture-lock carries verbatim**; D-21 server/client boundary doctrine
+10. `220-UI-SPEC.md` (PARENT) — END-OF-v4.1.0 milestone state; 26 P208 chips at v4.1.0 closeout; 221 opens v4.2.0 commercial-engines lane and EXTENDS to 29 chips with 3 new literals; the 220 6-future-surface UI binding contracts pattern reused as 5 parallel contracts in 221
+
+### START-OF-v4.2.0 State Assertions (29 chips total)
+
+| Phase | Chips Added | Cumulative Chip Count | Milestone Position |
+|-------|-------------|------------------------|---------------------|
+| Post-219 (legacy 19-chip set per UI-SPEC §parent_doctrine_chain 220 entry) | — | 19 | mid-v4.1.0 |
+| Post-220 (end-of-v4.1.0 closeout) | +7 (community_moderation_approval 20th + event_promotion_approval 21st + pr_pitch_approval 22nd + g2_review_pricing_approval 23rd + partnership_activation_approval 24th + affiliate_commission_issuance_approval 25th + partner_payout_export_approval 26th) | 26 | END-OF-v4.1.0 |
+| 221-02 (Plan 2 — Consent State substrate) | +1 (consent_drift_resolution 27th) | 27 | START-OF-v4.2.0 (Wave 2) |
+| 221-04 (Plan 4 — Audience Definition substrate) | +1 (audience_activation_approval 28th) | 28 | START-OF-v4.2.0 (Wave 3) |
+| 221-06 (Plan 6 — DSR + Audit closeout) | +1 (dsr_export_approval 29th) | **29** | **START-OF-v4.2.0 commercial-engines lane (Wave 4)** |
+
+**START-OF-v4.2.0 chip count assertion: 29 chips total post-221.**
+
+---
+
+
 ## Validation Sign-Off
 
 - [ ] All tasks have `<automated>` verify or Wave 0 dependencies
