@@ -156,6 +156,142 @@ Plan acceptance criteria MUST reference this architecture:
 
 ---
 
+---
+
+## UI-SPEC AC Coverage Map (HEAVY-UI HYBRID FOLD)
+
+> Source: `222-UI-SPEC.md` (heavy-UI hybrid: 3 backend plans 01/02/06 + 3 UI plans 03/04/05). Every UI-SPEC acceptance criterion maps to a plan + task. Backend doctrine assertions, future-surface UI binding contracts, translation gates, downstream UI inheritance, parent UI-SPEC carry-forward, cross-cutting doctrine, END-OF-v4.2.0-Wave-1 state assertions, manual operator-journey checklists, Chromatic baselines all enumerated below.
+
+### Backend doctrine assertions (UI-SPEC §parent_doctrine_chain + §Plan Scope Classification + §Color + §Sensitive Credential UI Binding)
+
+| Assertion | Plan | Owning Task | Verify Command |
+|-----------|------|-------------|----------------|
+| D-32 + D-43 architecture-lock — legacy `api/*.js` flat tree; `app/(markos)` PRESERVED as existing route, FORBIDDEN as NEW path | 01 | Task 0.5 architecture-lock detector | `node --test test/crm360/preflight/architecture-lock.test.js` |
+| D-42 helper canon `buildApprovalPackage` (NEVER `createApprovalPackage`) | 01 + 04 + 05 | helper-presence test + buildApprovalPackage wiring (Plan 04 NBA execute + lifecycle high-risk + tombstone cascade; Plan 05 API handlers) | `grep -c "buildApprovalPackage" lib/markos/crm360/**/*.ts >= 3` AND `grep -c "createApprovalPackage" lib/markos/crm360/**/*.ts == 0` |
+| 11 source_domain ENUM verbatim (UI-SPEC §Surface A; CONTEXT D-05) | 01 + 03 | Plan 03 migration 110 CHECK constraint + buildCrmTimeline mapping | `grep -P "'website','email','messaging','meeting','crm','billing','support','product','social','research','agent'" supabase/migrations/110_crm360_crm_activity_extensions.sql` |
+| 11 lifecycle_stage ENUM verbatim (UI-SPEC §Surface B; CONTEXT D-11) | 01 + 02 + 04 | Plan 01 migration 106 + Plan 02 migration 107 + Plan 04 migration 108 D-45 trigger | grep gates on each migration enumerating exactly 11 values |
+| 7 commercial_signal ENUM verbatim (UI-SPEC §Surface A) + color-coding | 03 | Plan 03 TimelineDetailView per-row `.c-badge--{state}` (verbatim mapping per UI-SPEC §Color) | AC TDV-8; `node --test test/crm360/timeline-extensions.test.js` |
+| 8 role ENUM verbatim (UI-SPEC §Surface D; CONTEXT D-15) | 05 | Plan 05 migration 109 buying_committee_members.role CHECK | `grep -P "champion\|economic_buyer\|technical_buyer\|end_user\|blocker\|legal\|finance\|unknown" supabase/migrations/109_crm360_buying_committees.sql` |
+| 5-persona ENUM verbatim (UI-SPEC §Surface D — subset of 8-role) | 05 | Plan 05 BuyingCommitteePanel `<.c-chip>` rendering (AC BCP-3) | AC BCP-3 Storybook story `Crm360/BuyingCommitteePanel` |
+| 3 actor_type ENUM verbatim (UI-SPEC §Surface A) | 02 + 03 | Plan 02 migration 107 + Plan 03 migration 110 CHECK constraints | grep gates |
+| 3 sentiment ENUM verbatim (UI-SPEC §Surface A) | 03 | Plan 03 migration 110 CHECK constraint + AC TDV-9 bracketed-glyph pairing | `grep -P "positive\|neutral\|negative" supabase/migrations/110_crm360_crm_activity_extensions.sql` |
+| TimelineDetailView replaces record-detail.tsx as DEFAULT (D-24) + non-regression | 03 + 05 | Plan 03 ships TimelineDetailView; Plan 05 wires SWAP via workspace-shell.tsx evolution; AC WSE-4 preserves legacy callers | `node --test test/crm360/api-crm360.test.js` (Plan 05 workspace-shell integration test) |
+| 30th-32nd handoff_kind chip extension — 3 NEW literals (UI-SPEC §Approval Inbox Handoff Chain Extension) | 04 + 05 | Plan 04 buildApprovalPackage wiring (3 paths) + Plan 06 closeout chip count grep | `grep -roP 'crm360_(nba_execute\|lifecycle_transition\|tombstone_cascade)_approval' lib/ \| sort -u \| wc -l` == 3 |
+| D-15 extracted-component REUSE manifest (HealthScoreBadge + RiskBandBadge + KbGroundingPanel + RetentionClassChip + PIIRedactedField + ClassifierChipRow REUSED, NOT re-implemented) | 03 + 04 + 05 | Plan 03 + 04 + 05 import these from existing 217-06 `Saas/*` Storybook origin; architecture-lock grep gate asserts NO re-implementation | architecture-lock grep gate per Plan |
+| Banned-lexicon zero-match BEFORE approval-package dispatch on 4 surfaces (NBA rationale + lifecycle reason + committee proof_gap_refs + Customer360 current_summary) | 04 + 05 | Plan 04 NBA recompute upsert + Plan 05 API handler buildApprovalPackage wiring; Plan 05 copilot-record-panel render (AC CRP-4) | `node scripts/marketing-loop/check-banned-lexicon.mjs` (zero-match on the 4 doctrine fields) |
+| Chromatic snapshot gate (4 NEW UI surfaces × ≥5 named-state stories per surface = 22+ snapshots) | 06 | Plan 06 chromatic.config.json + 4 *.stories.tsx | `npx chromatic --project-token=$CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes` |
+| Mobile priority per surface (TimelineDetailView/LifecycleTransitionTimeline/NBAExplainPanel/BuyingCommitteePanel = secondary; execution-queue = critical) | 03 + 04 + 05 | Each plan registers in `lib/markos/operator/shell.ts` `SurfaceRouteContract` | `grep "surface_family.*crm360_" lib/markos/operator/shell.ts \| wc -l` >= 7 |
+| `desktop_only` FORBIDDEN as mobile_priority value (208-01 architecture-lock) | 03 + 04 + 05 | grep gate on every mobile_priority literal | `grep "desktop_only" components/markos/crm/{TimelineDetailView,LifecycleTransitionTimeline,NBAExplainPanel,BuyingCommitteePanel,workspace-shell,execution-queue,copilot-record-panel}*` returns 0 |
+| END-OF-v4.2.0-Wave-1 chip count = 32 (29 pre-222 + 3 NEW) | 06 | Plan 06 closeout grep gate | `node -e "const k = require('./lib/markos/approvals/handoff-kinds.cjs'); if (k.length !== 32) process.exit(1)"` |
+
+### 6 future-surface UI binding contracts (UI-SPEC §Future-Surface UI Binding Contracts)
+
+| Future surface | Anticipated path | Owning Plan | Plan 06 SUMMARY documents |
+|----------------|------------------|-------------|---------------------------|
+| `future_phase_222_admin_ui` | `app/(markos)/crm/{customer360,opportunities,committees,nba,funnel,reconciliation,rls-audit}/page.tsx` future | Future admin extension | yes |
+| `future_phase_222_approval_inbox_extensions` | `/operations/approvals` (P208) row rendering for 3 new chips | Future P208 admin extension | yes |
+| `future_phase_223_dispatch_substrate` | P223 messaging engine consumer | P223 | yes |
+| `future_phase_222_chromatic_baselines` | `chromatic.config.json` + 4 `*.stories.tsx` | 06 (THIS PHASE) | yes |
+| `future_phase_223_legacy_crm_entities_cutover` | post-P222 cleanup phase (`crm_entities` → derived view) | P223+ | yes |
+| 4 NEW components (TDV/LTT/NEP/BCP) + 3 EVOLVED (workspace-shell/execution-queue/copilot-record-panel) | UI-SPEC §Surface A..G | 03 + 04 + 05 | yes |
+
+### Translation gates (UI-SPEC §translation_gates_dissolved_by_222 + §translation_gates_opened_by_222)
+
+| Gate | State | Owner |
+|------|-------|-------|
+| 221-UI-SPEC §future_phase_222_attribution_substrate | DISSOLVED (Plan 01 ships Customer360 + Opportunity SOR; Plan 03 ships crm_activity_ledger extensions) | 222 (Plans 01 + 03) |
+| 217-UI-SPEC §future_phase_222 | DISSOLVED (Plan 03 ships TimelineDetailView; Plan 04 ships NBAExplainPanel; Plan 05 ships BuyingCommitteePanel + workspace-shell + copilot-record-panel evolution) | 222 (Plans 03 + 04 + 05) |
+| 100-105 legacy CRM workspace placeholder | DISSOLVED (P100-P105 substrate PRESERVED; 222 OVERLAYS additively per D-19 read-through adapter) | 222 (Plan 01 D-19 adapter) |
+| `future_phase_223_dispatch_substrate` | OPENED (P223 messaging engine consumer) | 222 (Plan 06 SUMMARY documents) |
+| `future_phase_222_admin_ui` | OPENED (multi-page CRM 360 admin) | 222 (Plan 06 SUMMARY documents) |
+| `future_phase_222_approval_inbox_extensions` | OPENED (P208 row rendering for 3 new chips) | 222 (Plan 06 SUMMARY documents) |
+| `future_phase_222_chromatic_baselines` | OPENED (Plan 06 OWNS this gate) | 222 (Plan 06) |
+| `future_phase_223_legacy_crm_entities_cutover` | OPENED (post-P222 cleanup) | 222 (Plan 06 SUMMARY documents) |
+
+**Total: 3 dissolved, 5 opened.**
+
+### Downstream UI inheritance citations (≥10 future surfaces)
+
+The 4 NEW components + 3 EVOLVED components serve as parent contracts for ≥10 future surfaces:
+
+| Future surface | Inherits from 222 | Plan 06 SUMMARY documents |
+|----------------|-------------------|---------------------------|
+| P223 dispatch eligibility surface | customer_360_records + opportunities + buying_committees + buying_committee_members | yes |
+| P223 NBA-driven outbound campaign trigger | nba_records.action_type ∈ {send_followup, propose_expansion, send_renewal_reminder, draft_outreach} | yes |
+| P224 conversion surface personalization | customer_360_records + lifecycle_stage + nba_records | yes |
+| P224 launch orchestration audience selection | customer_360_records + buying_committees + opportunities | yes |
+| P225 attribution semantic layer | customer_360_records + opportunities + lifecycle_transitions + nba_records | yes |
+| P225 customer journey analytics | lifecycle_transitions + crm_activity_ledger (extended) | yes |
+| P225 narrative intelligence | nba_records + score_provenance | yes |
+| P226 sales enablement battlecards | opportunities + buying_committees + evidence_gaps | yes |
+| P226 proof pack generation | EvidenceMap + nba_records.evidence_refs[] | yes |
+| P227 ecosystem partner workflows | customer_360_records + opportunities (mode='b2b2c') | yes |
+| P208 Morning Brief CRM rollups | crm360_nba_summary + committee_gap_summary entry types (Plan 05 ships) | yes |
+| P208 Approval Inbox row rendering for 3 NEW chips (DEFERRED) | crm360_nba_execute_approval + crm360_lifecycle_transition_approval + crm360_tombstone_cascade_approval | yes |
+| Future P208 Task Board task entry types | crm360_drift_reconciliation + crm360_nba_expired (Plan 06 owns the cron triggers) | yes |
+
+### 213.4 carry-forward + 217 D-21 + 221 D-32 (UI-SPEC §parent_doctrine_chain)
+
+| Carry-forward | Owning Plan | Verify |
+|---------------|-------------|--------|
+| 213.4 D-08 token-only (zero hex literals in `components/markos/crm/*` module.css) | 03 + 04 + 05 | AC TDV-13 + AC NEP-15 + AC BCP-16; grep gate per Plan |
+| 213.4 D-09 mint-as-text (`--color-primary-text` for `[ok]`/`[up]` glyphs + .c-chip-protocol IDs + action-link inline CTAs) | 03 + 04 + 05 | grep-based audit |
+| 213.4 D-09b `.c-notice` mandatory (zero `.banner`/`.alert`/`.warning`/`.callout` classes) | 03 + 04 + 05 | grep gate per Plan |
+| 213.4 D-13 `.c-card--feature` reserved (FORBIDDEN in 222 components) | 03 + 04 + 05 | grep gate per Plan |
+| 213.4 D-14 no `.c-table` primitive (vanilla `<table>`/`<ol>`/`<ul>` only) | 03 + 04 + 05 | grep gate per Plan |
+| 213.4 D-15 selective extraction (7 components first consumed in 217-06 REUSED in 222) | 03 + 04 + 05 | architecture-lock grep gate (no re-implementation) |
+| 213.4 D-21 server/client boundary (4 NEW components are `'use client'`; consuming pages remain server components) | 03 + 04 + 05 | AC TDV-1 + AC LTT-1 + AC NEP-1 + AC NEP-14 + AC BCP-1 + AC BCP-15 |
+| 217 D-32 architecture-lock (legacy api/*.js + components/markos/crm/* + app/(markos)/* PRESERVED) | 01 + 04 + 05 + 06 | architecture-lock detector test (Task 0.5) |
+| 221 D-32 tombstone cascade (P221 D-24 → Customer360 PII scrub + ownership/lifecycle/NBA preserved) | 04 | D-47 outbox + Plan 04 tombstoneCustomer360 buildApprovalPackage wiring |
+
+### Cross-cutting doctrine binding (11 parent UI-SPECs — UI-SPEC §parent_doctrine_chain)
+
+| Parent UI-SPEC | Doctrine inherited | Carrying Plan(s) |
+|----------------|---------------------|------------------|
+| 206-UI-SPEC | mutation-class doctrine — `external.send` + `single_approval` mode + `buildApprovalPackage` (NEVER `createApprovalPackage`) | 04 + 05 |
+| 207-UI-SPEC | RunApiEnvelope.run_id linked to NBA recompute + lifecycle transitions + tombstone cascade + 3 cron handlers; 18 NEW AgentRunEventType registrations | 02 + 04 + 05 + 06 |
+| 208-UI-SPEC | Approval Inbox + Morning Brief + Task Board + cockpit pattern (3 NEW chips DEFERRED row rendering) | 05 (substrate) + 06 (gate) |
+| 209-UI-SPEC | EvidenceMap binding + KbGroundingPanel + nba_evidence_refs_nonempty CHECK + D-46 score provenance immutability | 04 |
+| 213-UI-SPEC | Tenant 0 readiness gate + public-proof boundary (banned-lexicon zero-match) | 04 + 05 |
+| 214-UI-SPEC | SaaS bridge — Customer360.canonical_identity_id FK targets P221 (NOT P214); D-32 architecture-lock | 01 |
+| 215-UI-SPEC | sensitive credential UI binding Layer 6 EXTENDED to PII per 216; 215 billing-correction modal recipe REUSED | 04 + 05 |
+| 216-UI-SPEC | Health Score binding + 6 extracted components (D-15) REUSED; banned-lexicon zero-match | 03 + 04 + 05 |
+| 217-UI-SPEC | heavy-UI pattern reference; D-15 extracted components; D-21 server/client boundary; D-32 architecture-lock | 03 + 04 + 05 |
+| 220-UI-SPEC | END-OF-v4.1.0 milestone state (26 chips at v4.1.0 closeout) | 06 (chip count assertion) |
+| 221-UI-SPEC | CDP read-through adapter; opens v4.2.0 (29 chips post-221); CRM mutations emit cdp_events; tombstone cascade | 01 + 02 + 04 |
+
+### END-OF-v4.2.0-Wave-1 state assertions (chip count 32 post-222)
+
+| Assertion | Plan | Verify |
+|-----------|------|--------|
+| chip count = 32 (29 pre-222 + 3 NEW) | 06 | Plan 06 closeout grep gate |
+| 30th `crm360_nba_execute_approval` literal present | 04 | grep gate |
+| 31st `crm360_lifecycle_transition_approval` literal present | 04 (wiring) + 02 (substrate) | grep gate |
+| 32nd `crm360_tombstone_cascade_approval` literal present | 04 | grep gate |
+
+### 4 manual operator-journey checklists (UI-SPEC §Manual Operator-Journey Checklist; Plan 06)
+
+| Journey | Surface | Plan owning checklist |
+|---------|---------|------------------------|
+| 1 — TimelineDetailView filter | Plan 03 ships component; Plan 06 ships checklist | 06 |
+| 2 — BuyingCommitteePanel invite role | Plan 05 ships component; Plan 06 ships checklist | 06 |
+| 3 — NBAExplainPanel accept | Plan 04 ships component; Plan 06 ships checklist | 06 |
+| 4 — LifecycleTransitionTimeline render | Plan 03 ships component; Plan 06 ships checklist | 06 |
+
+Per D-39 Playwright DEFERRED — manual operator-journey checklist + Chromatic snapshot gate REPLACES Playwright e2e.
+
+### Chromatic baselines (4 surfaces × Storybook story sets)
+
+| Surface | Story sets | Snapshot count | Plan owning stories |
+|---------|------------|----------------|---------------------|
+| `Crm360/TimelineDetailView` | Empty / Populated / Loading / Filtered / FilteredEmpty / Tombstoned | 6 | 03 |
+| `Crm360/LifecycleTransitionTimeline` | Empty / Populated / WithHandoff / WithRejected | 4 | 03 |
+| `Crm360/NBAExplainPanel` | Empty / ActiveFreeAction / ActiveApprovalRequired / Executed / Superseded / Expired / Tombstoned | 7 | 04 |
+| `Crm360/BuyingCommitteePanel` | Empty / Populated / CoverageLow / CoverageFull / Tombstoned | 5 | 05 |
+
+**Total: 22+ Chromatic snapshots.** Plan 06 ships `chromatic.config.json` covering all 4 surfaces. Per D-51 Plan 06 `autonomous: false`; first batch requires operator review.
+
+
 ## Validation Sign-Off
 
 - [ ] All tasks have `<automated>` verify or Wave 0 dependencies
