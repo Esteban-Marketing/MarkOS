@@ -1,0 +1,86 @@
+
+---
+
+## UI-SPEC AC Coverage Map (added 2026-05-05 per UI-SPEC fold)
+
+> Per 224-UI-SPEC.md heavy-UI hybrid fold (5 NO_UI backend + 2 IN_SCOPE UI plans). This section maps every UI-SPEC AC RANGE + cross-cutting binding + translation gate + chip-count assertion to the owning plan. Source authority: `224-UI-SPEC.md` (this phase) + 13 parent UI-SPECs (206/207/208/209/213/214/215/216/217/220/221/222/223) per parent_doctrine_chain.
+
+### Per-Plan UI-SPEC Assertions
+
+| Plan | ui_scope | UI-SPEC AC Ranges (verbatim) | Backend Doctrine Cited | Validation Path |
+|------|----------|------------------------------|------------------------|-----------------|
+| **224-01** | NO_UI | XC-architecture-lock + XC-hard-preflight + XC-migration-slot-pre-allocation + XC-F-ID-slot + XC-RLS-13-tables + XC-helper-canon | D-57..D-72 (Plan 01 Task 0.5 owns detector) + helper canon `buildApprovalPackage` + assertUpstreamReady(['P205','P207','P208','P209','P221','P222','P223']) hard-fail | `node --test test/conversion/preflight/architecture-lock.test.js test/conversion/preflight/upstream-gate.test.js test/conversion/preflight/helper-presence.test.js` |
+| **224-02** | NO_UI | XC-emit-fan-out + XC-consent-state-trigger + XC-rate-limit-primitive + XC-public-form-submit + XC-architecture-lock + XC-helper-canon | D-33/D-34 single-writer 7-sink + D-67 ConsentState BEFORE INSERT trigger + D-68 purpose-built rate-limit (NOT checkSignupRateLimit reuse) + D-60 hard-fail upstream | `node --test test/conversion/events/ test/conversion/forms/ test/conversion/triggers/ test/conversion/contracts/f137-f138.test.js` |
+| **224-03** | IN_SCOPE (PUBLIC) | B1-B15 ranges (15 block components × ≈6 ACs each ≈90 ACs) + R1-R2 ranges (2 renderers × ≈20 ACs ≈40) + FF1-FF2 (2 form sub × ≈8 ACs ≈16) + PR1 (public route ≈15) + pub-arch (publish/archive ≈10) + XC-1..XC-30 (cross-surface ≈30) | D-19 belt+suspenders + D-22 variant overrides + D-29 catch-all under (marketing) + D-30 ISR cacheTag + D-31 sitemap + D-32 RSC/client island + D-42 legacy *.js publish + D-58 buildApprovalPackage + D-64 NO app/(public) + D-69 render-time freshness + D-72 P224-owned classifier + 213-04 public-proof boundary STRICT + sentinel discipline (`{{MARKOS_PRICING_ENGINE_PENDING}}` + `{{MARKOS_EVIDENCE_PENDING}}`) | `node --test test/conversion/blocks/ test/conversion/render/ test/conversion/forms/` + `npm run chromatic` (PublicPageRender ≥30 snapshots) |
+| **224-04** | NO_UI | XC-d65-readiness-trigger + XC-4-gate-evaluators + XC-d71-outcome-fail-closed + XC-polymorphic-fk + XC-state-machine + XC-waiver-rbac-buildapprovalpkg + XC-architecture-lock + XC-helper-canon | D-15 state machine + D-14 polymorphic FK + D-16 4 gate kinds + D-18 waiver tenant-admin RBAC + D-58 buildApprovalPackage + D-65 readiness DB trigger + D-71 outcome fail-closed | `node --test test/launches/triggers/readiness-required.test.js test/launches/gates/ test/launches/surfaces/ test/launches/outcomes/ test/launches/api/` |
+| **224-05** | NO_UI | XC-d70-sha256-hash-deterministic + XC-d70-no-xxhash-dep + XC-pitfall5-traffic-split-immutability + XC-experiment-variant-capture-at-emit + XC-architecture-lock + XC-helper-canon + translation gate XC-future_phase_225_attribution_journey_analytics opened | D-22 variant overrides + D-23 sticky assignment + D-24 deferral to P225 + D-70 SHA-256 truncated + Pitfall 5 traffic_split immutability | `node --test test/conversion/experiments/` + grep test on package.json for absence of xxhash-wasm |
+| **224-06** | NO_UI | XC-d66-runbook-execute-trigger + XC-d37-agentrun-hard-fail + XC-pitfall6-reverse-rollback + XC-pitfall3-isr-invalidation-on-rollback + XC-4-cron-d49-paths + XC-architecture-lock + XC-helper-canon | D-35 step DAG + D-36 reverse rollback + D-37 AgentRun bridge + D-48..D-50 cron cadence + D-49 cron path + D-58 buildApprovalPackage + D-66 runbook execute DB trigger + Pitfall 3 ISR + Pitfall 6 reverse-rollback | `node --test test/launches/runbook/ test/launches/cron/ test/launches/triggers/runbook-execute-required.test.js test/launches/api/runbooks-api.test.js` |
+| **224-07** | IN_SCOPE (OPERATOR) | CWS-1..18 (ConversionWorkspace ≈18) + PE-1..15 + FE-1..15 (PageEditor + FormEditor ≈30) + LCP-1..15 + RBE-1..15 (LaunchCockpit + RunbookEditor ≈30) + LRB-1..10 + GP-1..10 + OD-1..10 (ReadinessBoard + Gates + Outcomes ≈30) + AICE-1..15 + MBL-1..10 (P208 PATCHes ≈25) + MCP-1..18 (6 MCP tools ≈18) + API-1..14 (7 legacy APIs ≈14) + XC-1..32 (cross-surface ≈32) | D-43 + D-63 .cjs MCP + D-45 + D-64 operator carve-out + D-46 axe-playwright reuse + D-56 slot-collision + D-58 buildApprovalPackage final scan + D-62 OpenAPI bundle + RL1 Phase 226 W1 checkpoint model + 6 NEW handoff_kind chips wired (37th-42nd) + END-OF-v4.2.0-Wave-3 chip count = 42 | `node --test test/conversion/api/ test/mcp/ test/api/openapi-parity.test.js test/regression/ test/migrations/slot-collision.test.js test/conversion/rls-suite.test.js` + `npm run chromatic` (4 operator stories ≥34 snapshots) + manual `checkpoint:human-verify` operator UI density |
+
+### 31 NEW UI Artifacts Coverage
+
+| # | Artifact | Plan | Path | Mobile | Storybook | Chromatic |
+|---|----------|------|------|--------|-----------|-----------|
+| 1-15 | 15 block components (B1-B15) | 03 | `components/markos/conversion/blocks/{Hero,Content,Pricing,Cta,Testimonial,Faq,Footer,Image,Video,Comparison,SocialProof,EvidenceBlockComponent,SignupWidget,Form,CustomHtml}Block.tsx` | critical (B4/B13/B14) / secondary (rest) | PublicPageRender#{Hero,Content,Pricing#Resolved,Pricing#PendingSentinel,Cta#Idle,Cta#ClickedAndStitched,Testimonial,Faq,Footer,Image,Video,Comparison,SocialProof,Evidence,SignupWidget#Empty,SignupWidget#Submitted,Form,CustomHtml} ≥30 snapshots | yes |
+| 16-17 | 2 renderers (R1 page-renderer + R2 form-renderer) | 03 | `lib/markos/conversion/render/page-renderer.tsx` + `lib/markos/conversion/forms/form-renderer.tsx` | n/a (server) | covered via PublicPageRender | yes |
+| 18-19 | 2 form sub (FF1 FormField + FF2 FormFieldGroup) | 03 | `components/markos/conversion/forms/{FormField,FormFieldGroup}.tsx` | critical (parent inherits) | covered via PublicPageRender | yes |
+| 20 | public dynamic route (PR1) | 03 | `app/(marketing)/conversion-page/[[...slug]]/page.tsx` + `loading.tsx` + `app/sitemap.ts` | n/a (route) | n/a | yes (server-render via composite story) |
+| 21-29 | 9 operator surfaces | 07 | `app/(markos)/conversion/{page,PageEditor,FormEditor}.tsx` + `app/(markos)/launches/{page,LaunchCockpit,RunbookEditor,LaunchReadinessBoard,GatesPanel,OutcomesDashboard}.tsx` | critical (ConversionWorkspace) / secondary (rest) | ConversionWorkspace + PageEditor + LaunchCockpit + LaunchReadinessBoard ≥34 snapshots (4 stories × ≥4 named-state each + variants) | yes |
+| 30-31 | 2 P208 PATCHes (ApprovalInboxConversionEntries entry-types + MorningBriefLaunchesSection) | 07 | `lib/markos/operating/approvals/entry-types.ts` PATCH + `lib/markos/operating/morning-brief/launches-section.ts` | n/a (consumes existing 208 mobile_priority) | covered via 208 ApprovalInbox + MorningBrief stories | n/a (consumes existing 208 baseline) |
+
+### 6 Future-Surface UI Binding Contracts
+
+| Translation Gate Opened | Owner Plan | Consumer | Future Phase |
+|-------------------------|------------|----------|--------------|
+| `future_phase_225_attribution_journey_analytics` | 05 (substrate) + 07 (UI) | reads `conversion_events` + `experiment_assignments` + `launch_outcomes` | P225 |
+| `future_phase_224_visual_page_builder` | 03 (substrate) + 07 (UI) | reads `conversion_pages.content_blocks` JSONB | future P229+ |
+| `future_phase_226_sales_enablement_launch_surface` | 04 (substrate) + 07 (UI) | reads `LaunchSurface(surface_target_kind='sales_enablement')` registry slot | P226 |
+| `future_phase_227_partner_pack_launch_surface` | 04 (substrate) + 07 (UI) | reads `LaunchSurface(surface_target_kind='partner_pack')` registry slot | P227 |
+| `future_phase_224_chromatic_baselines` | 07 | downstream phases must register stories for any new `components/markos/conversion/*` OR `app/(markos)/conversion + launches` sub-routes | downstream |
+| `future_phase_224_route_group_migration` | (deferred) | future migration of `app/(marketing)/conversion-page/` → `app/(public)/[[...slug]]/` | future P229+ |
+
+### Translation Gates Dissolved by 224
+
+| Gate | Source | Dissolution Plan | Layer |
+|------|--------|------------------|-------|
+| `223 future_phase_224_conversion_surfaces` | 223-UI-SPEC.md | 01 (substrate) + 03 (UI) + 07 (operator UI) | substrate-feed FULLY DISSOLVED — `<PlaceholderBanner variant="future_phase_224_conversion_surfaces">` REMOVED |
+| `222 future_phase_222_admin_ui` | 222-UI-SPEC.md | 07 | operator-UI extension PARTIALLY DISSOLVED — only conversion + launch admin sub-trees; CRM admin remains DEFERRED |
+| `100/101 legacy CRM workspace placeholder` | 100-CONTEXT + 101-CONTEXT | 02 (additive ingest retrofit) | DISSOLVED — P100-P105 substrate preserved verbatim; 224 OVERLAYS via shared `source_event_ref` thread |
+
+### Downstream UI Inheritance + Cross-Cutting Bindings
+
+- **213.4-VALIDATION.md carry-forward (D-08..D-15 + D-21):** every public block (15) + 2 form sub + 9 operator surfaces enforce token-only (D-08), mint-as-text (D-09), `.c-notice` mandatory (D-09b), `.c-card--feature` reserved (D-13), no `.c-table` (D-14), selective extraction (D-15), server/client boundary (D-21).
+- **217-UI-SPEC D-21 server/client boundary:** `lib/markos/conversion/*` + `lib/markos/launches/*` are server-only; client components live under `components/markos/conversion/*`; `app/(markos)/conversion/` + `app/(markos)/launches/` consume existing layout-shell.
+- **221-UI-SPEC D-32 architecture-lock:** carries verbatim into Plans 02 + 03 + 07 (legacy `*.js` API; `requireHostedSupabaseAuth`; `npm test`; `contracts/openapi.json`; `.cjs` MCP registry; `api/cron/*.js`).
+- **222-UI-SPEC D-43 architecture-lock:** carries verbatim — `app/(markos)/` tree preserved; PERMITTED carve-out for `app/(markos)/conversion/` + `app/(markos)/launches/` sub-routes (Plan 07).
+- **223-UI-SPEC D-42 architecture-lock + D-46 axe-playwright reuse:** carries verbatim — Plan 07 reuses existing `axe-playwright` devDep (NOT new playwright runtime); meta-test asserts `package.json` gained no `vitest` or `@playwright/test` keys during P224.
+- **13 parent UI-SPECs cross-cutting binding (verbatim):** 206 mutation-class + 207 RunApiEnvelope/AgentRunEventType/ApprovalHandoffRecord + 208 cockpit + Approval Inbox + Morning Brief + 209 EvidenceMap + KbGroundingPanel + 213 T0 gate + public-proof boundary + 214 SaaS adapter + 215 Layer 6 sensitive credentials + 216 Health Score binding + D-15 extracted components + 217 heavy-UI pattern + 220 chip count baseline + 221 CDP read-through + 222 CRM 360 + 223 Channel Engine.
+
+### END-OF-v4.2.0-Wave-3 Chip Count Assertions
+
+| Assertion | Value | Plan(s) | Verification |
+|-----------|-------|---------|--------------|
+| Chips entering 224 (post-223) | 36 | n/a (baseline) | grep gate at 224-01 Wave 0.5 (architecture-lock test) baseline |
+| 6 NEW handoff_kind literals (verbatim) | `page_publish_approval` (37th) + `form_publish_approval` (38th) + `launch_arm_approval` (39th) + `launch_execute_approval` (40th) + `gate_waiver_approval` (41st) + `rollback_approval` (42nd) | 03 (37+38) + 04 (41) + 06 (39+40+42 substrate) + 07 (final UI rendering) | `grep -c` test on `lib/markos/operating/approvals/entry-types.ts` (Plan 07) |
+| Chips post-224 | **42** | 07 (closeout grep gate) | `test/regression/chip-count.test.js` (Plan 07) |
+
+### Chromatic Baselines (≥64 snapshots total)
+
+| Story | Plan | Snapshots | Surface Family |
+|-------|------|-----------|----------------|
+| `PublicPageRender.stories.tsx` | 03 | ≥30 (15 blocks × ≥2 named states) | public_conversion_* |
+| `ConversionWorkspace.stories.tsx` | 07 | ≥8 (Empty / Populated / Filtered / EventsStreamingLive × 2 viewport variants) | conversion_workspace |
+| `PageEditor.stories.tsx` | 07 | ≥8 (Editing / Preview / ClassifierFlagged / PendingApproval × 2 variants) | conversion_workspace |
+| `LaunchCockpit.stories.tsx` | 07 | ≥10 (Empty / 5-status-kanban populated × 2 variants) | launches_cockpit |
+| `LaunchReadinessBoard.stories.tsx` | 07 | ≥8 (Empty / Partial / Complete / BlockedByGate × 2 variants) | launches_readiness |
+| **Total** | — | **≥64** (30 public + 34 operator) | — |
+
+### Manual Operator-Journey Checklists
+
+| Journey | Plan | Checkpoint Type |
+|---------|------|-----------------|
+| Public page render → form submit → ConversionEvent emitted with consent → identity stitched → Customer360 progressed | 03 + 02 | `checkpoint:human-verify` (operator manual sample) |
+| Launch brief create → readiness checks → 4 gates evaluate → arm runbook → execute → rollback (testing reverse-rollback for non-reversible step) | 04 + 06 + 07 | `checkpoint:human-verify` (operator manual full journey per RL1) |
+| 9 operator surfaces visual review (UI density acknowledgment per RL1 + Phase 226 W1 model) | 07 | `checkpoint:human-action` (autonomous: false) |
+| BotID + rate-limit + honeypot + ConsentState double-gate manual penetration test | 02 + 03 | `checkpoint:human-verify` (post-deploy) |
+

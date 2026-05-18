@@ -1,0 +1,42 @@
+<ui_spec_fold>
+<!-- Per 224-UI-SPEC.md heavy-UI hybrid (5 NO_UI backend + 2 IN_SCOPE UI plans). Plan 01 = NO_UI. Architecture-lock + assertUpstreamReady + 10-of-13 SOR foundation + 10 F-IDs + block schema. Cite UI-SPEC parent_doctrine_chain + Inheritance Bindings; D-32 + D-42 + D-43 + D-45 + D-64 architecture-lock; helper canon `buildApprovalPackage`; assertUpstreamReady(D-60) hard-fail on P205/P207/P208/P209/P221/P222/P223. Compact fold per 222/223 pattern; AC RANGES cited (not per-AC enumeration). -->
+
+<ui_scope>NO_UI</ui_scope>
+
+<ui_spec_block_reference>
+- 224-UI-SPEC.md frontmatter parent_doctrine_chain (lines 27-41) — 13 parent UI-SPECs (206/207/208/209/213/214/215/216/217/220/221/222/223) — D-57..D-72 architecture-lock authority chain; 213.4-VALIDATION D-08..D-15 + D-21 carry-forward.
+- 224-UI-SPEC.md Plan Scope Classification table — Plan 01 row: NO_UI; primary surface = supabase/migrations/121-126 + lib/markos/conversion/preflight/{upstream-gate,errors}.ts + lib/markos/conversion/blocks/schema.ts (15 Zod validators) + lib/markos/{conversion,launches}/contracts/*.ts + scripts/preconditions/224-check-upstream.cjs + test/conversion/preflight/architecture-lock.test.js + F-132..F-136 + F-139..F-141 + F-143..F-144.
+- 224-UI-SPEC.md §Cross-Surface AC ranges XC-architecture-lock + XC-hard-preflight + XC-migration-slot-pre-allocation + XC-F-ID-slot + XC-RLS-13-tables + XC-helper-canon (verbatim D-57..D-72 enforcement; Plan 01 Task 0.5 owns the detector).
+- 224-UI-SPEC.md §Sensitive Credential UI Binding (Layer 6 carries verbatim from 215; PII inheritance from 216) — Plan 01 ships SOR tables; ZERO PII rendering in this plan.
+- 224-UI-SPEC.md §END-OF-v4.2.0-Wave-3 chip count baseline = 36 entering 224 (post-223); 224 extends to 42 chips with 6 NEW handoff_kind literals (37th-42nd) wired in plans 03/04/06/07. Plan 01 ships ZERO new chips — only the substrate the chips later bind to.
+</ui_spec_block_reference>
+
+<cross_cutting_carry_forward>
+- **Architecture-lock D-57 (carry from 217/221/222/223):** legacy api/*.js (NOT App Router app/api/.../route.ts); requireHostedSupabaseAuth from onboarding/backend/runtime-context.cjs:491 (NOT requireSupabaseAuth which does not exist); npm test (Node --test) runner; .test.js files (NOT .test.ts per D-61); contracts/openapi.json (NOT public/openapi.json per D-62); lib/markos/mcp/tools/index.cjs (NOT .ts per D-63); api/cron/*.js (NOT app/api/cron/.../route.ts); NO app/(public)/ (per D-64 — route-group migration deferred); NO app/(markos)/ AS NEW FILE PATH except 2 PERMITTED carve-outs (conversion/ + launches/) shipped in Plan 07.
+- **Helper canon D-58 (canonical):** `buildApprovalPackage` from `lib/markos/crm/agent-actions.ts:68` — NEVER `createApprovalPackage` (verified non-existent in codebase per 224-REVIEWS.md HIGH-1). Architecture-lock detector test (Task 0.5) scans all 224-*-PLAN.md for forbidden tokens.
+- **D-59 P224-owned greenfield map:** lib/markos/conversion/* + lib/markos/launches/* trees are created NEW by P224. `lib/markos/cdp/*` (P221) + `lib/markos/crm360/*` (P222) + `lib/markos/channels/*` (P223) are upstream-owned greenfield; P224 hard-fails via assertUpstreamReady (D-60) if absent. NO "bridge stub if absent" / "fallback path" / "stub if missing" patterns (forbidden tokens).
+- **D-60 hard preflight:** REQUIRED_UPSTREAM = ['P205','P207','P208','P209','P221','P222','P223']; assertUpstreamReady() throws UpstreamPhaseNotLandedError if any phase absent. CLI wrapper at scripts/preconditions/224-check-upstream.cjs.
+- **D-61 axe-playwright reuse + .test.js files:** test runner is npm test (Node --test); all *.test.js files (NOT .test.ts); imports node:test + node:assert/strict; NO new vitest/playwright runtime in P224 (existing axe-playwright + chromatic devDeps preserved).
+- **Migration slot table D-56 (slot-collision regression in Plan 07):** P224 owns slots 121..133 (13 migrations across 7 plans). Plan 01 owns 121-126 (6 migrations: SOR foundation); Plan 02 owns 130; Plan 04 owns 127/129/133; Plan 05 owns 131; Plan 06 owns 128/132. Closeout migration-slot-collision regression (Plan 07).
+- **F-ID slot table D-55 (P224 owns F-132..F-146 = 15 contracts):** Plan 01 owns F-132/F-133/F-134/F-135/F-136 + F-139/F-140/F-141/F-143/F-144 (10 read-only stubs registered draft); F-137/F-138 owned by Plan 02; F-142 owned by Plan 06; F-145/F-146 owned by Plan 07.
+- **15 block types verbatim (D-02):** hero / form / cta / testimonial / pricing / faq / footer / content / image / video / comparison / signup_widget / social_proof / evidence_block / custom_html. Block schema validators in lib/markos/conversion/blocks/schema.ts cover all 15 with Zod; admin-only enforcement on custom_html.
+- **9 launch_surface polymorphic kinds verbatim (D-14):** email_campaign / messaging_thread / lifecycle_journey / conversion_page / social_pack / sales_enablement / partner_pack / support_pack / docs_update. CHECK constraint enforced in migration 126.
+- **Banned-lexicon zero-match (carry from 213-04 + 216):** enforced on every public surface (8 surfaces in Plan 03 + LaunchBrief positioning + runbook step.name + LaunchOutcome narrative_summary in Plan 04/06) BEFORE any approval-package dispatch. Plan 01 ships substrate; enforcement runs at Plan 03/07.
+- **D-21 server/client boundary (carry from 217-06):** lib/* tree is server-only; UI client components live under components/markos/conversion/* (Plan 03) + app/(markos)/conversion + app/(markos)/launches (Plan 07).
+- **PII inheritance from 215+216+221+222:** All recipient PII (primary_email/primary_phone/company_name/display_name) consumed by downstream UI is sourced via P221 lib/markos/cdp/adapters/crm-projection.ts::getProfileForContact. 224-01 creates SOR tables; ZERO direct PII rendering. Layer 6 enforcement applies at Plan 03 (TestimonialBlock + SocialProofBlock + EvidenceBlock + Form) + Plan 07 operator surfaces.
+</cross_cutting_carry_forward>
+
+<downstream_ui_consumers>
+<!-- Plan 01 ships substrate consumed by 15 block components + 2 renderers + 2 form sub + 1 public route in Plan 03 + 9 operator surfaces + 2 P208 PATCHes in Plan 07. NO direct UI in Plan 01. -->
+- 15 block components (B1-B15; UI-SPEC §Surface Inventory) — read content_blocks JSONB validated by Plan 01 schema.ts; all 15 D-02 block types render in Plan 03.
+- page-renderer + form-renderer (UI-SPEC §Surface Inventory) — Plan 03 composes blocks via Plan 01 BlockSchemas + ConversionPage type.
+- FormField + FormFieldGroup (UI-SPEC §Surface Inventory) — Plan 03 renders 11 D-06 field types from ConversionForm contract shipped here.
+- public dynamic route at app/(marketing)/conversion-page/[[...slug]]/page.tsx (UI-SPEC §Plan Scope; Plan 03) — reads conversion_pages by slug from migration 121.
+- ConversionWorkspace + PageEditor + FormEditor + LaunchCockpit + RunbookEditor + LaunchReadinessBoard + GatesPanel + OutcomesDashboard (9 operator surfaces; UI-SPEC §Plan Scope; Plan 07) — read 13 SOR tables from migrations 121-133.
+- ApprovalInboxConversionEntries + MorningBriefLaunchesSection (2 P208 PATCHes; UI-SPEC §Plan Scope; Plan 07) — wire 6 NEW handoff_kind chips via buildApprovalPackage extension (37th-42nd chip in chain).
+- Chromatic snapshot gate (UI-SPEC §future_phase_224_chromatic_baselines translation gate; ≥30 public PublicPageRender + ≥34 operator = ≥64 total snapshots; Plan 07).
+- D-15 extracted-component recipes from 216 origin REUSED in Plan 03/07 surfaces: KbGroundingPanel + ClassifierChipRow + PIIRedactedField (NOT re-implemented).
+- END-OF-v4.2.0-Wave-3 chip count post-224 = 42 (start = 36 entering; +6 = page_publish_approval + form_publish_approval + launch_arm_approval + launch_execute_approval + gate_waiver_approval + rollback_approval; closeout grep gate per Plan 07).
+</downstream_ui_consumers>
+
+</ui_spec_fold>

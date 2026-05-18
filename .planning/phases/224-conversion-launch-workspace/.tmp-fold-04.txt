@@ -1,0 +1,36 @@
+<ui_spec_fold>
+<!-- Per 224-UI-SPEC.md heavy-UI hybrid fold. Plan 04 = NO_UI. Launch governance core: launch_gates + launch_outcomes + D-65/RH9 readiness DB trigger + 4 evaluators + waiver via buildApprovalPackage + LaunchSurface state machine + polymorphic FK + D-71/RM5 LaunchOutcome fail-closed. 1 NEW handoff_kind chip wired (41st gate_waiver_approval substrate). -->
+
+<ui_scope>NO_UI</ui_scope>
+
+<ui_spec_block_reference>
+- 224-UI-SPEC.md frontmatter parent_doctrine_chain — 207 PARENT (computeLaunchOutcome AgentRun + AgentRunEventType for 'launch_gate_evaluation' / 'launch_gate_waived' / 'launch_outcome_computed' / 'launch_readiness_required_violation' D-65 trigger fired); 208 PARENT (Approval Inbox gains gate_waiver entry; ApprovalReviewPanel handoff_kind chip 41st wired here); 209 PARENT (EvidenceMap evaluator); 222 PARENT (LaunchOutcome.pipeline_created reads opportunities via crm360 hard-fail D-71); 223 PARENT (LaunchOutcome.signups reads dispatch_events hard-fail D-71).
+- 224-UI-SPEC.md Plan Scope Classification table — Plan 04 row: NO_UI; primary surface = supabase/migrations/127_launch_gates.sql + 129_launch_outcomes.sql + 133_launch_readiness_required_trigger.sql + lib/markos/launches/gates/{pricing,evidence,readiness,approval,evaluate-all,waiver}-evaluator.ts + lib/markos/launches/surfaces/{surface-coordinator,state-machine}.ts + lib/markos/launches/outcomes/{compute,metrics}.ts + 7 api/v1/launches/*.js endpoints + F-141 + F-143 graduate active.
+- 224-UI-SPEC.md §Cross-Surface AC ranges — XC-d65-readiness-trigger + XC-4-gate-evaluators + XC-d71-outcome-fail-closed + XC-polymorphic-fk + XC-state-machine + XC-waiver-rbac-buildapprovalpkg + XC-architecture-lock + XC-helper-canon (verbatim D-65/D-66/D-71/D-58/D-18/D-15 enforcement).
+- 224-UI-SPEC.md §Approval Inbox Handoff Chain Extension — 41st chip gate_waiver_approval wired here: gates-waive.js path → buildApprovalPackage(kind='gate_waiver_approval') with tenant-admin RBAC + waiver_reason validation; 39th + 40th chips (launch_arm_approval + launch_execute_approval) wired in Plan 06; 42nd chip (rollback_approval) wired in Plan 06/07. Chip count entering Plan 04 = 38; post-Plan 04 = 39.
+- 224-UI-SPEC.md §banned-lexicon enforcement — zero-match required on LaunchBrief.positioning_summary BEFORE buildApprovalPackage(kind='launch_brief_publish'); briefs.js path runs check.
+</ui_spec_block_reference>
+
+<cross_cutting_carry_forward>
+- **D-65 / RH9 readiness DB trigger:** BEFORE UPDATE on launch_surfaces REJECTS status='published' if any launch_gates row for the same launch_id has status='blocking'. Mirrors Phase 226 D-83/D-84 enforcement-boundary doctrine; service-role + alternative-API write paths cannot bypass app-level evaluator.
+- **D-60 hard preflight (4 evaluators):** evaluatePricingGate calls assertUpstreamReady(['P205']); evaluateEvidenceGate calls assertUpstreamReady(['P209']); evaluateApprovalGate calls assertUpstreamReady(['P208']); evaluateReadinessGate has no upstream dep. NO 'A13 fallback posture' / 'WARNING + audit' / 'p205_adapter_unavailable' bridge stub strings (D-57 forbidden tokens).
+- **D-71 / RM5 LaunchOutcome fail-closed:** computeLaunchOutcome calls assertUpstreamReady(['P222','P223']) BEFORE reading crm_activity + dispatch_events. Throws UpstreamPhaseNotLandedError if absent. NO silent empty-row fallback that downstream P225 would consume as '0 signups, 0 pipeline'.
+- **D-15 LaunchSurface state machine:** draft → blocked ↔ approved → published → archived; transition to approved/published triggers gate evaluation; failed gates set status='blocked' with blocking_reasons.
+- **D-14 polymorphic FK validation:** read-after-write check that surface_target_id exists in correct table per surface_target_kind (9 kinds verbatim per CHECK constraint); invalid → orphan rejected.
+- **D-18 + D-58 waiver:** tenant-admin RBAC required + waiver_reason non-empty + buildApprovalPackage(kind='gate_waiver_approval') (NEVER createApprovalPackage); writes markos_audit_log event_type='gate_waived'.
+- **Architecture-lock D-57 carry:** legacy api/v1/launches/*.js (NOT route.ts); requireHostedSupabaseAuth from onboarding/backend/runtime-context.cjs:491 (D-42).
+- **F-ID graduation:** F-141 launch-gate-v1 + F-143 launch-outcome-v1 + F-139 launch-brief-v1 + F-140 launch-surface-v1 + F-144 launch-readiness-check-v1 graduate from draft (Plan 01) to active.
+- **PII inheritance carry:** LaunchBrief.positioning_summary + LaunchOutcome.narrative_summary subject to 213-04 public-proof boundary (Layer 6 carry); Plan 07 operator surfaces (LaunchCockpit + OutcomesDashboard + GatesPanel) consume these and apply PIIRedactedField + banned-lexicon assertions.
+</cross_cutting_carry_forward>
+
+<downstream_ui_consumers>
+<!-- Plan 04 ships SUBSTRATE. Plan 07 consumes via LaunchCockpit + LaunchReadinessBoard + GatesPanel + OutcomesDashboard. -->
+- LaunchCockpit (Plan 07) — Briefs kanban (planning→pending→ready→live→completed); reads launch_briefs (Plan 01) + launch_surfaces (Plan 01) + launch_gates (this plan).
+- LaunchReadinessBoard (Plan 07) — dependency graph of launch_readiness_checks + LaunchGate status (this plan) + countdown to launch_date.
+- GatesPanel (Plan 07) — pricing/evidence/readiness/approval gate row evidence_refs[] preview using <KbGroundingPanel /> from 216 D-15; per-row waive CTA opens 215 billing-correction modal recipe → buildApprovalPackage(kind='gate_waiver_approval') 41st chip.
+- OutcomesDashboard (Plan 07) — reads launch_outcomes (this plan) at T+7/T+14/T+30; 5 metric tiles (reach/signups/pipeline_created/influenced_revenue/activation_lift); narrative_summary subject to banned-lexicon + PIIRedactedField.
+- ApprovalInboxConversionEntries (Plan 07) — 41st handoff chip subject_type='gate_waiver' renders ApprovalReviewPanel row title "Gate waiver: {gate_kind} — {launch.name}" + reason capture (≥20 chars per 216 carry).
+- F-141 + F-143 + F-139 + F-140 + F-144 active in contracts/openapi.json (D-62) consumed by Plan 07 closeout OpenAPI parity test.
+</downstream_ui_consumers>
+
+</ui_spec_fold>
